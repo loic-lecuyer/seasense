@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "build": "ng build --outputPath=..\\www",
+    "watch": "ng build --watch --configuration development --outputPath=..\\www",
     "test": "ng test"
   },
   "private": true,

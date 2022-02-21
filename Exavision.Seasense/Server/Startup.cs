@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.IO;
+using System.Reflection;
 
 namespace Exavision.Seasense.Server {
     public class Startup {
@@ -11,9 +13,9 @@ namespace Exavision.Seasense.Server {
             services.AddCors(c => {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
-
+            string appPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             services.AddSpaStaticFiles(configuration => {
-                configuration.RootPath = "../Client/dist/seamos-client";
+                configuration.RootPath = Path.Combine(appPath,"www");
             });
         }
 

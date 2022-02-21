@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Client\" />
+    <Folder Include="Client\src\app\pages\" />
+    <Folder Include="www\" />
     <Folder Include="Server\" />
   </ItemGroup>
 
@@ -21,6 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="seasense.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="settings.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -30,6 +34,10 @@
     <Exec WorkingDirectory="Client" Command="ng build --outputPath=$(PublishDir)\www" />  
 	<Exec WorkingDirectory="$(PublishDir)" Command="rmdir Client /s /q" />  
 	<Exec WorkingDirectory="$(PublishDir)" Command="rmdir Server /s /q" />
+  </Target>
+  
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="xcopy &quot;$(ProjectDir)www\*.*&quot; &quot;$(TargetDir)\www&quot; /Y /I /E" />
   </Target>
 
 </Project>
