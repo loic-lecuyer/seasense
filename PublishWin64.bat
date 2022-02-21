@@ -1,0 +1,1 @@
+dotnet publish Exavision.Seasense\Exavision.Seasense.csproj -c Release -r win-x64 --self-contained true -o Release\Win64

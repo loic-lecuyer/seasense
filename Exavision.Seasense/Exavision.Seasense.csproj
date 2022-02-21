@@ -2,10 +2,34 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Client\" />
+    <Folder Include="Server\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EasySharpIni" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.14" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
+    <PackageReference Include="Serilog" Version="2.10.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="settings.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+  <Target Name="BuildAngular" AfterTargets="Publish">
+    <Exec WorkingDirectory="Client" Command="ng build --outputPath=$(PublishDir)\www" />  
+	<Exec WorkingDirectory="$(PublishDir)" Command="rmdir Client /s /q" />  
+	<Exec WorkingDirectory="$(PublishDir)" Command="rmdir Server /s /q" />
+  </Target>
 
 </Project>
