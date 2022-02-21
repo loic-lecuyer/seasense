@@ -1,1 +1,57 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import '~@angular/material/theming';
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$seamos-client-primary: mat-palette($mat-blue,800);
+$seamos-client-accent: mat-palette($mat-gray, 100);
+
+// The warn palette is optional (defaults to red).
+$seamos-client-warn: mat-palette($mat-red);
+
+// Create the theme object (a Sass map containing all of the palettes).
+$seamos-client-theme: mat-dark-theme($seamos-client-primary, $seamos-client-accent, $seamos-client-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($seamos-client-theme);
+
 /* You can add global styles to this file, and also import other style files */
+$roboto-font-path: "~roboto-fontface/fonts" !default;
+@import "~roboto-fontface/css/roboto/sass/roboto-fontface";
+@font-face {
+  font-family: 'neuropol';
+  src: url('assets/neuropol.woff');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Expansivabold';
+  src: url('assets/Expansivabold.woff');
+  font-style: bold;
+}
+html, body {
+    height: 100%;
+    margin:0px;
+    padding:0px;
+    display:flex;
+    flex:1;
+}
+body {
+  margin: 0px;
+  padding: 0px;
+  background-color: black;
+  font-family: Roboto,"Helvetica Neue", sans-serif;
+  display: flex;
+  flex: 1;
+}

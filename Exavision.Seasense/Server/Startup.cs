@@ -34,6 +34,9 @@ namespace Exavision.Seasense.Server {
                 }
 
             });
+            app.UseStaticFiles(new StaticFileOptions() {
+                ServeUnknownFileTypes = true
+            });
             /*
             app.UseEndpoints(endpoints => {
                 endpoints.MapGet("/", async context => {
