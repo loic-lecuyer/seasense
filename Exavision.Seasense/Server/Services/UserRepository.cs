@@ -31,5 +31,9 @@ namespace Exavision.Seasense.Server.Services {
         public User FindUser(string login, string passwordHash) {
             return (from u in users where u.Login.Equals(login) && u.PasswordHash.Equals(passwordHash) select u).FirstOrDefault();
         }
+
+        public User FindUserById(string userId) {
+            return (from u in users where u.Id.Equals(userId) select u).FirstOrDefault();
+        }
     }
 }

@@ -29,6 +29,10 @@ $seamos-client-theme: mat-dark-theme($seamos-client-primary, $seamos-client-acce
 /* You can add global styles to this file, and also import other style files */
 $roboto-font-path: "~roboto-fontface/fonts" !default;
 @import "~roboto-fontface/css/roboto/sass/roboto-fontface";
+
+$material-icons-font-path: '~material-icons/iconfont/';
+@import '~material-icons/iconfont/material-icons.scss';
+
 @font-face {
   font-family: 'neuropol';
   src: url('assets/fonts/neuropol.woff');
@@ -58,4 +62,16 @@ body {
 .full-width {
     width:100%;
 }
+.display-flex{
+    display:flex;
+}
+.flex-1{
+    flex:1;
+}
+.flex-align-stretch{
+    align-items:stretch;
+}
 
+.flex-align-end {
+  align-items: end;
+}

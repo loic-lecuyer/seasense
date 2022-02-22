@@ -1,6 +1,8 @@
-<mat-toolbar color="primary">
-  <div>
+<mat-toolbar class="display-flex" color="primary">
+  <div class="display-flex flex-1 flex-align-end">
     <div matTooltip="Go to home page" (click)="onHomeClick()" class="title">Seasens</div>
     <div matTooltip="Go to home page" (click)="onHomeClick()" class="sub-title">By Exavision</div>
+    <div class="flex-1"></div>
+    <button *ngIf="this.userService.user != null" (click)="onLogoutClick()" mat-raised-button color="accent">Logout</button>
   </div>
 </mat-toolbar>

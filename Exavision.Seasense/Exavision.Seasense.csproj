@@ -11,6 +11,8 @@
     <None Remove="Client\src\app\api\http\http-response.ts" />
     <None Remove="Client\src\app\api\http\login-request.ts" />
     <None Remove="Client\src\app\api\http\login-response.ts" />
+    <None Remove="Client\src\app\api\http\logout-request.ts" />
+    <None Remove="Client\src\app\api\http\logout-response.ts" />
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
@@ -35,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Exavision.Api.Http\Exavision.Seasense.Api.Http.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Api.Http\Exavision.Seasense.Api.Http.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
@@ -44,7 +45,9 @@
     <TypeScriptCompile Include="Client\src\app\api\http\http-message.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\http-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\http-response.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\logout-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\login-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\logout-response.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\login-response.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-response.ts">
       <SubType>Code</SubType>

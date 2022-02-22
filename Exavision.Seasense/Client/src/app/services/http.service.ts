@@ -5,6 +5,8 @@ import { LoginResponse } from '../api/http/login-response';
 import { Observable } from 'rxjs';
 import { ValidateTokenResponse } from '../api/http/validate-token-response';
 import { ValidateTokenRequest } from '../api/http/validate-token-request';
+import { LogoutResponse } from '../api/http/logout-response';
+import { LogoutRequest } from '../api/http/logout-request';
 
 @Injectable({
   providedIn: 'root'
@@ -29,8 +31,8 @@ export class HttpService {
       url += "/api/";     
       this.baseApiUrl = url;
     }
-    let pathUrl: string = this.baseApiUrl + path;
-    return pathUrl;
+ 
+    return this.baseApiUrl + path;
   }
   login(login: string, hash: string): Observable<LoginResponse> {
     let url: string = this.getApiUrl("login");
@@ -39,6 +41,12 @@ export class HttpService {
       passwordHash: hash
     };
     return this.http.post<LoginResponse>(url, req)
+  }
+
+  logout(): Observable<LogoutResponse> {
+    let url: string = this.getApiUrl("logout");
+    let req: LogoutRequest = { };
+    return this.http.post<LogoutResponse>(url, req)
   }
 
   validateToken(): Observable<ValidateTokenResponse> {

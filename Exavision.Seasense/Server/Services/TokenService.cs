@@ -1,15 +1,22 @@
 ﻿using Exavision.Seasense.Shared.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
 namespace Exavision.Seasense.Server.Services {
     public class TokenService : ITokenService {
+        private readonly IConfiguration configuration;
+        public TokenService(IConfiguration configuration) {
+            this.configuration = configuration;
+        }
         private const double EXPIRY_DURATION_MINUTES = 30;
-        public string BuildToken(string key,
-        string issuer, User user) {
+        public string BuildToken(User user) {
+            string key = configuration["Jwt:Key"].ToString();
+            string issuer = configuration["Jwt:Issuer"].ToString();
             var claims = new[] {
                 new Claim(ClaimTypes.Name, user.Login),
                 new Claim(ClaimTypes.Role, user.Role.ToString()),
@@ -34,10 +41,12 @@ namespace Exavision.Seasense.Server.Services {
 
         //    return new JwtSecurityTokenHandler().WriteToken(token);
         //}
-        public bool IsTokenValid(string key, string issuer, string token) {
+        public bool IsTokenValid(string token, out string userId) {
+            userId = null;
+            string key = configuration["Jwt:Key"].ToString();
+            string issuer = configuration["Jwt:Issuer"].ToString();
             var mySecret = Encoding.UTF8.GetBytes(key);
             var mySecurityKey = new SymmetricSecurityKey(mySecret);
-
             var tokenHandler = new JwtSecurityTokenHandler();
             try {
                 tokenHandler.ValidateToken(token, new TokenValidationParameters {
@@ -48,6 +57,9 @@ namespace Exavision.Seasense.Server.Services {
                     ValidAudience = issuer,
                     IssuerSigningKey = mySecurityKey,
                 }, out SecurityToken validatedToken);
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                userId = jwtToken.Claims.First(x => x.Type.IndexOf("nameidentifier") != -1).Value;
+                return true;
             }
             catch {
                 return false;

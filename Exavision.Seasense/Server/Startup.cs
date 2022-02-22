@@ -1,3 +1,4 @@
+using Exavision.Seasense.Server.Middlewares;
 using Exavision.Seasense.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -31,8 +32,7 @@ namespace Exavision.Seasense.Server {
             });
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<ITokenService, TokenService>();
-            services.AddControllers().AddJsonOptions(j =>
-            {
+            services.AddControllers().AddJsonOptions(j => {
                 j.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
@@ -52,10 +52,12 @@ namespace Exavision.Seasense.Server {
             services.AddCors(c => {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
+
             services.AddMvc((MvcOptions options) => {
                 options.SslPort = 443;
                 options.EnableEndpointRouting = false;
             });
+
             string appPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             services.AddSpaStaticFiles(configuration => {
                 configuration.RootPath = Path.Combine(appPath, "www");
@@ -68,7 +70,7 @@ namespace Exavision.Seasense.Server {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseMiddleware<JwtMiddleware>();
             app.UseRouting();
             app.UseSpaStaticFiles();
             app.UseSpa(spa => {
@@ -82,6 +84,7 @@ namespace Exavision.Seasense.Server {
                 ServeUnknownFileTypes = true
             });
             app.UseMvc();
+
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
