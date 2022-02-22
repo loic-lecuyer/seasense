@@ -29,18 +29,19 @@ export class HttpService {
     let pathUrl: string = this.baseApiUrl  + path;
     return pathUrl;
   }
-  async login(login: string, hash: string): Promise<boolean> {
+  async login(login: string, hash: string): Promise<LoginResponse> {
+    let res: LoginResponse = {};
     let req: LoginRequest = {
       login: login,
       passwordHash: hash
     };
     let url: string = this.getApiUrl("login");
-    console.log('call ' + url);
-    this.http.post(url, req).subscribe(data => {
-
-    });
-  
-    return false;
+   
+   
+    await this.http.post(url, req).subscribe(data => {
+      res = data;
+    },(err) => {  });  
+    return res;
   }
  
   

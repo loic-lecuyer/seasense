@@ -428,6 +428,7 @@ class HttpService {
     var _this = this;
 
     return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+      let success = false;
       let req = {
         login: login,
         passwordHash: hash
@@ -436,10 +437,12 @@ class HttpService {
       let url = _this.getApiUrl("login");
 
       console.log('call ' + url);
-
-      _this.http.post(url, req).subscribe(data => {});
-
-      return false;
+      yield _this.http.post(url, req).subscribe(data => {
+        success = true;
+      }, err => {
+        success = false;
+      });
+      return success;
     })();
   }
 
