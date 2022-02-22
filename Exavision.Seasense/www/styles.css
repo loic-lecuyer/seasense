@@ -3012,13 +3012,13 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
 
 @font-face {
   font-family: "neuropol";
-  src: url("./assets/neuropol.woff");
+  src: url('neuropol.woff');
   font-style: normal;
 }
 
 @font-face {
   font-family: "Expansivabold";
-  src: url("./assets/Expansivabold.woff");
+  src: url('Expansivabold.woff');
   font-style: bold;
 }
 

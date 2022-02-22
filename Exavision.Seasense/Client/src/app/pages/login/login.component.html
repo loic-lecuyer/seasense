@@ -4,17 +4,20 @@
     <mat-card-subtitle>Please identify yourself</mat-card-subtitle>
   </mat-card-header>  
   <mat-card-content>
-    <mat-form-field class="full-width" >
-      <mat-label>Login</mat-label>
-      <input [(ngModel)]="login"  matInput>
-    </mat-form-field>
-    <mat-form-field class="full-width" >
-      <mat-label>Password</mat-label>
-      <input  [(ngModel)]="password" type="password" matInput>
-    </mat-form-field>
+    <form>
+      <mat-form-field class="full-width">
+        <mat-label>Login</mat-label>
+        <input [disabled]="loginRunning" name="login" [(ngModel)]="login" matInput>
+      </mat-form-field>
+      <mat-form-field class="full-width">
+        <mat-label>Password</mat-label>
+        <input [disabled]="loginRunning" name="password" [(ngModel)]="password" type="password" matInput>
+      </mat-form-field>
+    </form>
+    <mat-error *ngIf="errorMessage != ''">{{errorMessage}}</mat-error>
   </mat-card-content>
   <mat-card-actions>
-    <button class="full-width" (click)="onConnectButtonClick()" mat-button>Connect</button>
+    <button [disabled]="loginRunning" class="full-width" (click)="onConnectButtonClick()" mat-button>Connect</button>
 
   </mat-card-actions>
 </mat-card>

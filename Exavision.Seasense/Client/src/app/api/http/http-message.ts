@@ -1,1 +1,1 @@
-export abstract class HttpMessage { }
+export interface HttpMessage { }

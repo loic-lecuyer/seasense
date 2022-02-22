@@ -31,13 +31,13 @@ $roboto-font-path: "~roboto-fontface/fonts" !default;
 @import "~roboto-fontface/css/roboto/sass/roboto-fontface";
 @font-face {
   font-family: 'neuropol';
-  src: url('assets/neuropol.woff');
+  src: url('assets/fonts/neuropol.woff');
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Expansivabold';
-  src: url('assets/Expansivabold.woff');
+  src: url('assets/fonts/Expansivabold.woff');
   font-style: bold;
 }
 html, body {

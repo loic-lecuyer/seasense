@@ -16,7 +16,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { HttpService } from './services/http.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { UserService } from './services/user.service';
+import { JwtInterceptor } from './interceptor/jwt-interceptor';
+/** Http interceptor providers in outside-in order */
+export const httpInterceptorProviders = [
+  { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+];
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +44,7 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     HttpClientModule
   ],
-  providers: [HttpService],
+  providers: [HttpService, UserService, httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

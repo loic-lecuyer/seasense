@@ -1,3 +1,3 @@
 import { HttpMessage } from "./http-message";
 
-export abstract class HttpResponse extends HttpMessage { }
+export interface HttpResponse extends HttpMessage { }

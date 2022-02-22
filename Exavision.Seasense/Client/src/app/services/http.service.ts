@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { LoginRequest } from '../api/http/login-request';
 import { LoginResponse } from '../api/http/login-response';
+import { Observable } from 'rxjs';
+import { ValidateTokenResponse } from '../api/http/validate-token-response';
+import { ValidateTokenRequest } from '../api/http/validate-token-request';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpService {
   private baseApiUrl: string = "";
+
   constructor(private http: HttpClient) {
   }
   getApiUrl(path : string): string{
@@ -26,23 +29,21 @@ export class HttpService {
       url += "/api/";     
       this.baseApiUrl = url;
     }
-    let pathUrl: string = this.baseApiUrl  + path;
+    let pathUrl: string = this.baseApiUrl + path;
     return pathUrl;
   }
-  async login(login: string, hash: string): Promise<LoginResponse> {
-    let res: LoginResponse = {};
+  login(login: string, hash: string): Observable<LoginResponse> {
+    let url: string = this.getApiUrl("login");
     let req: LoginRequest = {
       login: login,
       passwordHash: hash
     };
-    let url: string = this.getApiUrl("login");
-   
-   
-    await this.http.post(url, req).subscribe(data => {
-      res = data;
-    },(err) => {  });  
-    return res;
+    return this.http.post<LoginResponse>(url, req)
   }
- 
-  
+
+  validateToken(): Observable<ValidateTokenResponse> {
+    let url: string = this.getApiUrl("token/validate");
+    let req: ValidateTokenRequest = {};
+    return this.http.post<ValidateTokenResponse>(url, req)
+  }
 }

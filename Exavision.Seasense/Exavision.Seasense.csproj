@@ -11,6 +11,10 @@
     <None Remove="Client\src\app\api\http\http-response.ts" />
     <None Remove="Client\src\app\api\http\login-request.ts" />
     <None Remove="Client\src\app\api\http\login-response.ts" />
+    <None Remove="Client\src\app\api\http\validate-token-request.ts" />
+    <None Remove="Client\src\app\api\http\validate-token-response.ts" />
+    <None Remove="Client\src\app\jwt-interceptor.ts" />
+    <None Remove="Client\src\app\models\user.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,16 +24,20 @@
 
   <ItemGroup>
     <PackageReference Include="EasySharpIni" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.14" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Exavision.Api.Http\Exavision.Api.Http.csproj" />
+    <ProjectReference Include="..\Exavision.Api.Http\Exavision.Seasense.Api.Http.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Api.Http\Exavision.Seasense.Api.Http.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +46,12 @@
     <TypeScriptCompile Include="Client\src\app\api\http\http-response.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\login-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\login-response.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\validate-token-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\interceptor\jwt-interceptor.ts" />
+    <TypeScriptCompile Include="Client\src\app\models\user.ts" />
   </ItemGroup>
 
   <ItemGroup>

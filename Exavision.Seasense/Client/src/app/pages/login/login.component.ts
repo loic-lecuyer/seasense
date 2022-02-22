@@ -1,6 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { sha512 } from 'js-sha512';
+import { LoginResponse } from '../../api/http/login-response';
 import { HttpService } from '../../services/http.service';
+import { UserService } from '../../services/user.service';
 
 
 @Component({
@@ -11,14 +15,34 @@ import { HttpService } from '../../services/http.service';
 export class LoginComponent implements OnInit {
   public login: string = "";
   public password: string = "";
-  constructor(private httpService: HttpService) { }
+  public loginRunning: boolean = false;
+  public errorMessage: string = "";
+
+  constructor(private httpService: HttpService, private userService: UserService,private router: Router) {
+   
+  }
 
   ngOnInit(): void {
   }
   async onConnectButtonClick() {
+    this.loginRunning = true;
+    this.userService.clearToken();
+    this.userService.clearUser();
+    this.errorMessage = "";
     let hash: string = sha512(this.password);
-    let logged : boolean = await this.httpService.login(this.login, hash);
-    console.log("try login " + this.login + " " + this.password);
+    this.httpService.login(this.login, hash).subscribe({
+      next: (response: LoginResponse) => {
+        this.userService.setToken(response.token);
+        this.userService.setUser(response.user);
+        this.loginRunning = false;
+        this.router.navigate(['/home'])
+      },
+      error: (err: HttpErrorResponse) => {
+        this.errorMessage = err.message;
+        this.loginRunning = false;
+      },
+    });  
+    
   }
 
 }

@@ -1,9 +1,6 @@
-﻿using Exavision.Api.Http.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Exavision.Seasense.Api.Http.Core;
 
-namespace Exavision.Api.Http.Login {
+namespace Exavision.Seasense.Api.Http.Login {
     public class LoginRequest : HttpRequest {
         public string Login { get; set; }
         public string PasswordHash { get; set; }
