@@ -1,5 +1,942 @@
-"use strict";
 (self["webpackChunkseasense_client"] = self["webpackChunkseasense_client"] || []).push([["vendor"],{
+
+/***/ 2414:
+/*!**********************************************!*\
+  !*** ./node_modules/js-sha512/src/sha512.js ***!
+  \**********************************************/
+/***/ ((module, exports, __webpack_require__) => {
+
+var __WEBPACK_AMD_DEFINE_RESULT__;/*
+ * [js-sha512]{@link https://github.com/emn178/js-sha512}
+ *
+ * @version 0.8.0
+ * @author Chen, Yi-Cyuan [emn178@gmail.com]
+ * @copyright Chen, Yi-Cyuan 2014-2018
+ * @license MIT
+ */
+/*jslint bitwise: true */
+(function () {
+  'use strict';
+
+  var INPUT_ERROR = 'input is invalid type';
+  var FINALIZE_ERROR = 'finalize already called';
+  var WINDOW = typeof window === 'object';
+  var root = WINDOW ? window : {};
+  if (root.JS_SHA512_NO_WINDOW) {
+    WINDOW = false;
+  }
+  var WEB_WORKER = !WINDOW && typeof self === 'object';
+  var NODE_JS = !root.JS_SHA512_NO_NODE_JS && typeof process === 'object' && process.versions && process.versions.node;
+  if (NODE_JS) {
+    root = global;
+  } else if (WEB_WORKER) {
+    root = self;
+  }
+  var COMMON_JS = !root.JS_SHA512_NO_COMMON_JS && "object" === 'object' && module.exports;
+  var AMD =  true && __webpack_require__.amdO;
+  var ARRAY_BUFFER = !root.JS_SHA512_NO_ARRAY_BUFFER && typeof ArrayBuffer !== 'undefined';
+  var HEX_CHARS = '0123456789abcdef'.split('');
+  var EXTRA = [-2147483648, 8388608, 32768, 128];
+  var SHIFT = [24, 16, 8, 0];
+  var K = [
+    0x428A2F98, 0xD728AE22, 0x71374491, 0x23EF65CD,
+    0xB5C0FBCF, 0xEC4D3B2F, 0xE9B5DBA5, 0x8189DBBC,
+    0x3956C25B, 0xF348B538, 0x59F111F1, 0xB605D019,
+    0x923F82A4, 0xAF194F9B, 0xAB1C5ED5, 0xDA6D8118,
+    0xD807AA98, 0xA3030242, 0x12835B01, 0x45706FBE,
+    0x243185BE, 0x4EE4B28C, 0x550C7DC3, 0xD5FFB4E2,
+    0x72BE5D74, 0xF27B896F, 0x80DEB1FE, 0x3B1696B1,
+    0x9BDC06A7, 0x25C71235, 0xC19BF174, 0xCF692694,
+    0xE49B69C1, 0x9EF14AD2, 0xEFBE4786, 0x384F25E3,
+    0x0FC19DC6, 0x8B8CD5B5, 0x240CA1CC, 0x77AC9C65,
+    0x2DE92C6F, 0x592B0275, 0x4A7484AA, 0x6EA6E483,
+    0x5CB0A9DC, 0xBD41FBD4, 0x76F988DA, 0x831153B5,
+    0x983E5152, 0xEE66DFAB, 0xA831C66D, 0x2DB43210,
+    0xB00327C8, 0x98FB213F, 0xBF597FC7, 0xBEEF0EE4,
+    0xC6E00BF3, 0x3DA88FC2, 0xD5A79147, 0x930AA725,
+    0x06CA6351, 0xE003826F, 0x14292967, 0x0A0E6E70,
+    0x27B70A85, 0x46D22FFC, 0x2E1B2138, 0x5C26C926,
+    0x4D2C6DFC, 0x5AC42AED, 0x53380D13, 0x9D95B3DF,
+    0x650A7354, 0x8BAF63DE, 0x766A0ABB, 0x3C77B2A8,
+    0x81C2C92E, 0x47EDAEE6, 0x92722C85, 0x1482353B,
+    0xA2BFE8A1, 0x4CF10364, 0xA81A664B, 0xBC423001,
+    0xC24B8B70, 0xD0F89791, 0xC76C51A3, 0x0654BE30,
+    0xD192E819, 0xD6EF5218, 0xD6990624, 0x5565A910,
+    0xF40E3585, 0x5771202A, 0x106AA070, 0x32BBD1B8,
+    0x19A4C116, 0xB8D2D0C8, 0x1E376C08, 0x5141AB53,
+    0x2748774C, 0xDF8EEB99, 0x34B0BCB5, 0xE19B48A8,
+    0x391C0CB3, 0xC5C95A63, 0x4ED8AA4A, 0xE3418ACB,
+    0x5B9CCA4F, 0x7763E373, 0x682E6FF3, 0xD6B2B8A3,
+    0x748F82EE, 0x5DEFB2FC, 0x78A5636F, 0x43172F60,
+    0x84C87814, 0xA1F0AB72, 0x8CC70208, 0x1A6439EC,
+    0x90BEFFFA, 0x23631E28, 0xA4506CEB, 0xDE82BDE9,
+    0xBEF9A3F7, 0xB2C67915, 0xC67178F2, 0xE372532B,
+    0xCA273ECE, 0xEA26619C, 0xD186B8C7, 0x21C0C207,
+    0xEADA7DD6, 0xCDE0EB1E, 0xF57D4F7F, 0xEE6ED178,
+    0x06F067AA, 0x72176FBA, 0x0A637DC5, 0xA2C898A6,
+    0x113F9804, 0xBEF90DAE, 0x1B710B35, 0x131C471B,
+    0x28DB77F5, 0x23047D84, 0x32CAAB7B, 0x40C72493,
+    0x3C9EBE0A, 0x15C9BEBC, 0x431D67C4, 0x9C100D4C,
+    0x4CC5D4BE, 0xCB3E42B6, 0x597F299C, 0xFC657E2A,
+    0x5FCB6FAB, 0x3AD6FAEC, 0x6C44198C, 0x4A475817
+  ];
+
+  var OUTPUT_TYPES = ['hex', 'array', 'digest', 'arrayBuffer'];
+
+  var blocks = [];
+
+  if (root.JS_SHA512_NO_NODE_JS || !Array.isArray) {
+    Array.isArray = function (obj) {
+      return Object.prototype.toString.call(obj) === '[object Array]';
+    };
+  }
+
+  if (ARRAY_BUFFER && (root.JS_SHA512_NO_ARRAY_BUFFER_IS_VIEW || !ArrayBuffer.isView)) {
+    ArrayBuffer.isView = function (obj) {
+      return typeof obj === 'object' && obj.buffer && obj.buffer.constructor === ArrayBuffer;
+    };
+  }
+
+  var createOutputMethod = function (outputType, bits) {
+    return function (message) {
+      return new Sha512(bits, true).update(message)[outputType]();
+    };
+  };
+
+  var createMethod = function (bits) {
+    var method = createOutputMethod('hex', bits);
+    method.create = function () {
+      return new Sha512(bits);
+    };
+    method.update = function (message) {
+      return method.create().update(message);
+    };
+    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
+      var type = OUTPUT_TYPES[i];
+      method[type] = createOutputMethod(type, bits);
+    }
+    return method;
+  };
+
+  var createHmacOutputMethod = function (outputType, bits) {
+    return function (key, message) {
+      return new HmacSha512(key, bits, true).update(message)[outputType]();
+    };
+  };
+
+  var createHmacMethod = function (bits) {
+    var method = createHmacOutputMethod('hex', bits);
+    method.create = function (key) {
+      return new HmacSha512(key, bits);
+    };
+    method.update = function (key, message) {
+      return method.create(key).update(message);
+    };
+    for (var i = 0; i < OUTPUT_TYPES.length; ++i) {
+      var type = OUTPUT_TYPES[i];
+      method[type] = createHmacOutputMethod(type, bits);
+    }
+    return method;
+  };
+
+  function Sha512(bits, sharedMemory) {
+    if (sharedMemory) {
+      blocks[0] = blocks[1] = blocks[2] = blocks[3] = blocks[4] =
+      blocks[5] = blocks[6] = blocks[7] = blocks[8] =
+      blocks[9] = blocks[10] = blocks[11] = blocks[12] =
+      blocks[13] = blocks[14] = blocks[15] = blocks[16] =
+      blocks[17] = blocks[18] = blocks[19] = blocks[20] =
+      blocks[21] = blocks[22] = blocks[23] = blocks[24] =
+      blocks[25] = blocks[26] = blocks[27] = blocks[28] =
+      blocks[29] = blocks[30] = blocks[31] = blocks[32] = 0;
+      this.blocks = blocks;
+    } else {
+      this.blocks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
+
+    if (bits == 384) {
+      this.h0h = 0xCBBB9D5D;
+      this.h0l = 0xC1059ED8;
+      this.h1h = 0x629A292A;
+      this.h1l = 0x367CD507;
+      this.h2h = 0x9159015A;
+      this.h2l = 0x3070DD17;
+      this.h3h = 0x152FECD8;
+      this.h3l = 0xF70E5939;
+      this.h4h = 0x67332667;
+      this.h4l = 0xFFC00B31;
+      this.h5h = 0x8EB44A87;
+      this.h5l = 0x68581511;
+      this.h6h = 0xDB0C2E0D;
+      this.h6l = 0x64F98FA7;
+      this.h7h = 0x47B5481D;
+      this.h7l = 0xBEFA4FA4;
+    } else if (bits == 256) {
+      this.h0h = 0x22312194;
+      this.h0l = 0xFC2BF72C;
+      this.h1h = 0x9F555FA3;
+      this.h1l = 0xC84C64C2;
+      this.h2h = 0x2393B86B;
+      this.h2l = 0x6F53B151;
+      this.h3h = 0x96387719;
+      this.h3l = 0x5940EABD;
+      this.h4h = 0x96283EE2;
+      this.h4l = 0xA88EFFE3;
+      this.h5h = 0xBE5E1E25;
+      this.h5l = 0x53863992;
+      this.h6h = 0x2B0199FC;
+      this.h6l = 0x2C85B8AA;
+      this.h7h = 0x0EB72DDC;
+      this.h7l = 0x81C52CA2;
+    } else if (bits == 224) {
+      this.h0h = 0x8C3D37C8;
+      this.h0l = 0x19544DA2;
+      this.h1h = 0x73E19966;
+      this.h1l = 0x89DCD4D6;
+      this.h2h = 0x1DFAB7AE;
+      this.h2l = 0x32FF9C82;
+      this.h3h = 0x679DD514;
+      this.h3l = 0x582F9FCF;
+      this.h4h = 0x0F6D2B69;
+      this.h4l = 0x7BD44DA8;
+      this.h5h = 0x77E36F73;
+      this.h5l = 0x04C48942;
+      this.h6h = 0x3F9D85A8;
+      this.h6l = 0x6A1D36C8;
+      this.h7h = 0x1112E6AD;
+      this.h7l = 0x91D692A1;
+    } else { // 512
+      this.h0h = 0x6A09E667;
+      this.h0l = 0xF3BCC908;
+      this.h1h = 0xBB67AE85;
+      this.h1l = 0x84CAA73B;
+      this.h2h = 0x3C6EF372;
+      this.h2l = 0xFE94F82B;
+      this.h3h = 0xA54FF53A;
+      this.h3l = 0x5F1D36F1;
+      this.h4h = 0x510E527F;
+      this.h4l = 0xADE682D1;
+      this.h5h = 0x9B05688C;
+      this.h5l = 0x2B3E6C1F;
+      this.h6h = 0x1F83D9AB;
+      this.h6l = 0xFB41BD6B;
+      this.h7h = 0x5BE0CD19;
+      this.h7l = 0x137E2179;
+    }
+    this.bits = bits;
+
+    this.block = this.start = this.bytes = this.hBytes = 0;
+    this.finalized = this.hashed = false;
+  }
+
+  Sha512.prototype.update = function (message) {
+    if (this.finalized) {
+      throw new Error(FINALIZE_ERROR);
+    }
+    var notString, type = typeof message;
+    if (type !== 'string') {
+      if (type === 'object') {
+        if (message === null) {
+          throw new Error(INPUT_ERROR);
+        } else if (ARRAY_BUFFER && message.constructor === ArrayBuffer) {
+          message = new Uint8Array(message);
+        } else if (!Array.isArray(message)) {
+          if (!ARRAY_BUFFER || !ArrayBuffer.isView(message)) {
+            throw new Error(INPUT_ERROR);
+          }
+        }
+      } else {
+        throw new Error(INPUT_ERROR);
+      }
+      notString = true;
+    }
+    var code, index = 0, i, length = message.length, blocks = this.blocks;
+
+    while (index < length) {
+      if (this.hashed) {
+        this.hashed = false;
+        blocks[0] = this.block;
+        blocks[1] = blocks[2] = blocks[3] = blocks[4] =
+        blocks[5] = blocks[6] = blocks[7] = blocks[8] =
+        blocks[9] = blocks[10] = blocks[11] = blocks[12] =
+        blocks[13] = blocks[14] = blocks[15] = blocks[16] =
+        blocks[17] = blocks[18] = blocks[19] = blocks[20] =
+        blocks[21] = blocks[22] = blocks[23] = blocks[24] =
+        blocks[25] = blocks[26] = blocks[27] = blocks[28] =
+        blocks[29] = blocks[30] = blocks[31] = blocks[32] = 0;
+      }
+
+      if(notString) {
+        for (i = this.start; index < length && i < 128; ++index) {
+          blocks[i >> 2] |= message[index] << SHIFT[i++ & 3];
+        }
+      } else {
+        for (i = this.start; index < length && i < 128; ++index) {
+          code = message.charCodeAt(index);
+          if (code < 0x80) {
+            blocks[i >> 2] |= code << SHIFT[i++ & 3];
+          } else if (code < 0x800) {
+            blocks[i >> 2] |= (0xc0 | (code >> 6)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          } else if (code < 0xd800 || code >= 0xe000) {
+            blocks[i >> 2] |= (0xe0 | (code >> 12)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          } else {
+            code = 0x10000 + (((code & 0x3ff) << 10) | (message.charCodeAt(++index) & 0x3ff));
+            blocks[i >> 2] |= (0xf0 | (code >> 18)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 12) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | ((code >> 6) & 0x3f)) << SHIFT[i++ & 3];
+            blocks[i >> 2] |= (0x80 | (code & 0x3f)) << SHIFT[i++ & 3];
+          }
+        }
+      }
+
+      this.lastByteIndex = i;
+      this.bytes += i - this.start;
+      if (i >= 128) {
+        this.block = blocks[32];
+        this.start = i - 128;
+        this.hash();
+        this.hashed = true;
+      } else {
+        this.start = i;
+      }
+    }
+    if (this.bytes > 4294967295) {
+      this.hBytes += this.bytes / 4294967296 << 0;
+      this.bytes = this.bytes % 4294967296;
+    }
+    return this;
+  };
+
+  Sha512.prototype.finalize = function () {
+    if (this.finalized) {
+      return;
+    }
+    this.finalized = true;
+    var blocks = this.blocks, i = this.lastByteIndex;
+    blocks[32] = this.block;
+    blocks[i >> 2] |= EXTRA[i & 3];
+    this.block = blocks[32];
+    if (i >= 112) {
+      if (!this.hashed) {
+        this.hash();
+      }
+      blocks[0] = this.block;
+      blocks[1] = blocks[2] = blocks[3] = blocks[4] =
+      blocks[5] = blocks[6] = blocks[7] = blocks[8] =
+      blocks[9] = blocks[10] = blocks[11] = blocks[12] =
+      blocks[13] = blocks[14] = blocks[15] = blocks[16] =
+      blocks[17] = blocks[18] = blocks[19] = blocks[20] =
+      blocks[21] = blocks[22] = blocks[23] = blocks[24] =
+      blocks[25] = blocks[26] = blocks[27] = blocks[28] =
+      blocks[29] = blocks[30] = blocks[31] = blocks[32] = 0;
+    }
+    blocks[30] = this.hBytes << 3 | this.bytes >>> 29;
+    blocks[31] = this.bytes << 3;
+    this.hash();
+  };
+
+  Sha512.prototype.hash = function () {
+    var h0h = this.h0h, h0l = this.h0l, h1h = this.h1h, h1l = this.h1l,
+      h2h = this.h2h, h2l = this.h2l, h3h = this.h3h, h3l = this.h3l,
+      h4h = this.h4h, h4l = this.h4l, h5h = this.h5h, h5l = this.h5l,
+      h6h = this.h6h, h6l = this.h6l, h7h = this.h7h, h7l = this.h7l,
+      blocks = this.blocks, j, s0h, s0l, s1h, s1l, c1, c2, c3, c4,
+      abh, abl, dah, dal, cdh, cdl, bch, bcl,
+      majh, majl, t1h, t1l, t2h, t2l, chh, chl;
+
+    for (j = 32; j < 160; j += 2) {
+      t1h = blocks[j - 30];
+      t1l = blocks[j - 29];
+      s0h = ((t1h >>> 1) | (t1l << 31)) ^ ((t1h >>> 8) | (t1l << 24)) ^ (t1h >>> 7);
+      s0l = ((t1l >>> 1) | (t1h << 31)) ^ ((t1l >>> 8) | (t1h << 24)) ^ ((t1l >>> 7) | t1h << 25);
+
+      t1h = blocks[j - 4];
+      t1l = blocks[j - 3];
+      s1h = ((t1h >>> 19) | (t1l << 13)) ^ ((t1l >>> 29) | (t1h << 3)) ^ (t1h >>> 6);
+      s1l = ((t1l >>> 19) | (t1h << 13)) ^ ((t1h >>> 29) | (t1l << 3)) ^ ((t1l >>> 6) | t1h << 26);
+
+      t1h = blocks[j - 32];
+      t1l = blocks[j - 31];
+      t2h = blocks[j - 14];
+      t2l = blocks[j - 13];
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF) + (s0l & 0xFFFF) + (s1l & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (s0l >>> 16) + (s1l >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (s0h & 0xFFFF) + (s1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (s0h >>> 16) + (s1h >>> 16) + (c3 >>> 16);
+
+      blocks[j] = (c4 << 16) | (c3 & 0xFFFF);
+      blocks[j + 1] = (c2 << 16) | (c1 & 0xFFFF);
+    }
+
+    var ah = h0h, al = h0l, bh = h1h, bl = h1l, ch = h2h, cl = h2l, dh = h3h, dl = h3l, eh = h4h, el = h4l, fh = h5h, fl = h5l, gh = h6h, gl = h6l, hh = h7h, hl = h7l;
+    bch = bh & ch;
+    bcl = bl & cl;
+    for (j = 0; j < 160; j += 8) {
+      s0h = ((ah >>> 28) | (al << 4)) ^ ((al >>> 2) | (ah << 30)) ^ ((al >>> 7) | (ah << 25));
+      s0l = ((al >>> 28) | (ah << 4)) ^ ((ah >>> 2) | (al << 30)) ^ ((ah >>> 7) | (al << 25));
+
+      s1h = ((eh >>> 14) | (el << 18)) ^ ((eh >>> 18) | (el << 14)) ^ ((el >>> 9) | (eh << 23));
+      s1l = ((el >>> 14) | (eh << 18)) ^ ((el >>> 18) | (eh << 14)) ^ ((eh >>> 9) | (el << 23));
+
+      abh = ah & bh;
+      abl = al & bl;
+      majh = abh ^ (ah & ch) ^ bch;
+      majl = abl ^ (al & cl) ^ bcl;
+
+      chh = (eh & fh) ^ (~eh & gh);
+      chl = (el & fl) ^ (~el & gl);
+
+      t1h = blocks[j];
+      t1l = blocks[j + 1];
+      t2h = K[j];
+      t2l = K[j + 1];
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF) + (chl & 0xFFFF) + (s1l & 0xFFFF) + (hl & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (chl >>> 16) + (s1l >>> 16) + (hl >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (chh & 0xFFFF) + (s1h & 0xFFFF) + (hh & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (chh >>> 16) + (s1h >>> 16) + (hh >>> 16) + (c3 >>> 16);
+
+      t1h = (c4 << 16) | (c3 & 0xFFFF);
+      t1l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (majl & 0xFFFF) + (s0l & 0xFFFF);
+      c2 = (majl >>> 16) + (s0l >>> 16) + (c1 >>> 16);
+      c3 = (majh & 0xFFFF) + (s0h & 0xFFFF) + (c2 >>> 16);
+      c4 = (majh >>> 16) + (s0h >>> 16) + (c3 >>> 16);
+
+      t2h = (c4 << 16) | (c3 & 0xFFFF);
+      t2l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (dl & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (dl >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (dh & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (dh >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      hh = (c4 << 16) | (c3 & 0xFFFF);
+      hl = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      dh = (c4 << 16) | (c3 & 0xFFFF);
+      dl = (c2 << 16) | (c1 & 0xFFFF);
+
+      s0h = ((dh >>> 28) | (dl << 4)) ^ ((dl >>> 2) | (dh << 30)) ^ ((dl >>> 7) | (dh << 25));
+      s0l = ((dl >>> 28) | (dh << 4)) ^ ((dh >>> 2) | (dl << 30)) ^ ((dh >>> 7) | (dl << 25));
+
+      s1h = ((hh >>> 14) | (hl << 18)) ^ ((hh >>> 18) | (hl << 14)) ^ ((hl >>> 9) | (hh << 23));
+      s1l = ((hl >>> 14) | (hh << 18)) ^ ((hl >>> 18) | (hh << 14)) ^ ((hh >>> 9) | (hl << 23));
+
+      dah = dh & ah;
+      dal = dl & al;
+      majh = dah ^ (dh & bh) ^ abh;
+      majl = dal ^ (dl & bl) ^ abl;
+
+      chh = (hh & eh) ^ (~hh & fh);
+      chl = (hl & el) ^ (~hl & fl);
+
+      t1h = blocks[j + 2];
+      t1l = blocks[j + 3];
+      t2h = K[j + 2];
+      t2l = K[j + 3];
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF) + (chl & 0xFFFF) + (s1l & 0xFFFF) + (gl & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (chl >>> 16) + (s1l >>> 16) + (gl >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (chh & 0xFFFF) + (s1h & 0xFFFF) + (gh & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (chh >>> 16) + (s1h >>> 16) + (gh >>> 16) + (c3 >>> 16);
+
+      t1h = (c4 << 16) | (c3 & 0xFFFF);
+      t1l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (majl & 0xFFFF) + (s0l & 0xFFFF);
+      c2 = (majl >>> 16) + (s0l >>> 16) + (c1 >>> 16);
+      c3 = (majh & 0xFFFF) + (s0h & 0xFFFF) + (c2 >>> 16);
+      c4 = (majh >>> 16) + (s0h >>> 16) + (c3 >>> 16);
+
+      t2h = (c4 << 16) | (c3 & 0xFFFF);
+      t2l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (cl & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (cl >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (ch & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (ch >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      gh = (c4 << 16) | (c3 & 0xFFFF);
+      gl = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      ch = (c4 << 16) | (c3 & 0xFFFF);
+      cl = (c2 << 16) | (c1 & 0xFFFF);
+
+      s0h = ((ch >>> 28) | (cl << 4)) ^ ((cl >>> 2) | (ch << 30)) ^ ((cl >>> 7) | (ch << 25));
+      s0l = ((cl >>> 28) | (ch << 4)) ^ ((ch >>> 2) | (cl << 30)) ^ ((ch >>> 7) | (cl << 25));
+
+      s1h = ((gh >>> 14) | (gl << 18)) ^ ((gh >>> 18) | (gl << 14)) ^ ((gl >>> 9) | (gh << 23));
+      s1l = ((gl >>> 14) | (gh << 18)) ^ ((gl >>> 18) | (gh << 14)) ^ ((gh >>> 9) | (gl << 23));
+
+      cdh = ch & dh;
+      cdl = cl & dl;
+      majh = cdh ^ (ch & ah) ^ dah;
+      majl = cdl ^ (cl & al) ^ dal;
+
+      chh = (gh & hh) ^ (~gh & eh);
+      chl = (gl & hl) ^ (~gl & el);
+
+      t1h = blocks[j + 4];
+      t1l = blocks[j + 5];
+      t2h = K[j + 4];
+      t2l = K[j + 5];
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF) + (chl & 0xFFFF) + (s1l & 0xFFFF) + (fl & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (chl >>> 16) + (s1l >>> 16) + (fl >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (chh & 0xFFFF) + (s1h & 0xFFFF) + (fh & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (chh >>> 16) + (s1h >>> 16) + (fh >>> 16) + (c3 >>> 16);
+
+      t1h = (c4 << 16) | (c3 & 0xFFFF);
+      t1l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (majl & 0xFFFF) + (s0l & 0xFFFF);
+      c2 = (majl >>> 16) + (s0l >>> 16) + (c1 >>> 16);
+      c3 = (majh & 0xFFFF) + (s0h & 0xFFFF) + (c2 >>> 16);
+      c4 = (majh >>> 16) + (s0h >>> 16) + (c3 >>> 16);
+
+      t2h = (c4 << 16) | (c3 & 0xFFFF);
+      t2l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (bl & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (bl >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (bh & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (bh >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      fh = (c4 << 16) | (c3 & 0xFFFF);
+      fl = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      bh = (c4 << 16) | (c3 & 0xFFFF);
+      bl = (c2 << 16) | (c1 & 0xFFFF);
+
+      s0h = ((bh >>> 28) | (bl << 4)) ^ ((bl >>> 2) | (bh << 30)) ^ ((bl >>> 7) | (bh << 25));
+      s0l = ((bl >>> 28) | (bh << 4)) ^ ((bh >>> 2) | (bl << 30)) ^ ((bh >>> 7) | (bl << 25));
+
+      s1h = ((fh >>> 14) | (fl << 18)) ^ ((fh >>> 18) | (fl << 14)) ^ ((fl >>> 9) | (fh << 23));
+      s1l = ((fl >>> 14) | (fh << 18)) ^ ((fl >>> 18) | (fh << 14)) ^ ((fh >>> 9) | (fl << 23));
+
+      bch = bh & ch;
+      bcl = bl & cl;
+      majh = bch ^ (bh & dh) ^ cdh;
+      majl = bcl ^ (bl & dl) ^ cdl;
+
+      chh = (fh & gh) ^ (~fh & hh);
+      chl = (fl & gl) ^ (~fl & hl);
+
+      t1h = blocks[j + 6];
+      t1l = blocks[j + 7];
+      t2h = K[j + 6];
+      t2l = K[j + 7];
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF) + (chl & 0xFFFF) + (s1l & 0xFFFF) + (el & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (chl >>> 16) + (s1l >>> 16) + (el >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (chh & 0xFFFF) + (s1h & 0xFFFF) + (eh & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (chh >>> 16) + (s1h >>> 16) + (eh >>> 16) + (c3 >>> 16);
+
+      t1h = (c4 << 16) | (c3 & 0xFFFF);
+      t1l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (majl & 0xFFFF) + (s0l & 0xFFFF);
+      c2 = (majl >>> 16) + (s0l >>> 16) + (c1 >>> 16);
+      c3 = (majh & 0xFFFF) + (s0h & 0xFFFF) + (c2 >>> 16);
+      c4 = (majh >>> 16) + (s0h >>> 16) + (c3 >>> 16);
+
+      t2h = (c4 << 16) | (c3 & 0xFFFF);
+      t2l = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (al & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (al >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (ah & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (ah >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      eh = (c4 << 16) | (c3 & 0xFFFF);
+      el = (c2 << 16) | (c1 & 0xFFFF);
+
+      c1 = (t2l & 0xFFFF) + (t1l & 0xFFFF);
+      c2 = (t2l >>> 16) + (t1l >>> 16) + (c1 >>> 16);
+      c3 = (t2h & 0xFFFF) + (t1h & 0xFFFF) + (c2 >>> 16);
+      c4 = (t2h >>> 16) + (t1h >>> 16) + (c3 >>> 16);
+
+      ah = (c4 << 16) | (c3 & 0xFFFF);
+      al = (c2 << 16) | (c1 & 0xFFFF);
+    }
+
+    c1 = (h0l & 0xFFFF) + (al & 0xFFFF);
+    c2 = (h0l >>> 16) + (al >>> 16) + (c1 >>> 16);
+    c3 = (h0h & 0xFFFF) + (ah & 0xFFFF) + (c2 >>> 16);
+    c4 = (h0h >>> 16) + (ah >>> 16) + (c3 >>> 16);
+
+    this.h0h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h0l = (c2 << 16) | (c1 & 0xFFFF);
+
+    c1 = (h1l & 0xFFFF) + (bl & 0xFFFF);
+    c2 = (h1l >>> 16) + (bl >>> 16) + (c1 >>> 16);
+    c3 = (h1h & 0xFFFF) + (bh & 0xFFFF) + (c2 >>> 16);
+    c4 = (h1h >>> 16) + (bh >>> 16) + (c3 >>> 16);
+
+    this.h1h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h1l = (c2 << 16) | (c1 & 0xFFFF);
+
+    c1 = (h2l & 0xFFFF) + (cl & 0xFFFF);
+    c2 = (h2l >>> 16) + (cl >>> 16) + (c1 >>> 16);
+    c3 = (h2h & 0xFFFF) + (ch & 0xFFFF) + (c2 >>> 16);
+    c4 = (h2h >>> 16) + (ch >>> 16) + (c3 >>> 16);
+
+    this.h2h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h2l = (c2 << 16) | (c1 & 0xFFFF);
+
+    c1 = (h3l & 0xFFFF) + (dl & 0xFFFF);
+    c2 = (h3l >>> 16) + (dl >>> 16) + (c1 >>> 16);
+    c3 = (h3h & 0xFFFF) + (dh & 0xFFFF) + (c2 >>> 16);
+    c4 = (h3h >>> 16) + (dh >>> 16) + (c3 >>> 16);
+
+    this.h3h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h3l = (c2 << 16) | (c1 & 0xFFFF);
+
+    c1 = (h4l & 0xFFFF) + (el & 0xFFFF);
+    c2 = (h4l >>> 16) + (el >>> 16) + (c1 >>> 16);
+    c3 = (h4h & 0xFFFF) + (eh & 0xFFFF) + (c2 >>> 16);
+    c4 = (h4h >>> 16) + (eh >>> 16) + (c3 >>> 16);
+
+    this.h4h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h4l = (c2 << 16) | (c1 & 0xFFFF);
+
+    c1 = (h5l & 0xFFFF) + (fl & 0xFFFF);
+    c2 = (h5l >>> 16) + (fl >>> 16) + (c1 >>> 16);
+    c3 = (h5h & 0xFFFF) + (fh & 0xFFFF) + (c2 >>> 16);
+    c4 = (h5h >>> 16) + (fh >>> 16) + (c3 >>> 16);
+
+    this.h5h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h5l = (c2 << 16) | (c1 & 0xFFFF);
+
+    c1 = (h6l & 0xFFFF) + (gl & 0xFFFF);
+    c2 = (h6l >>> 16) + (gl >>> 16) + (c1 >>> 16);
+    c3 = (h6h & 0xFFFF) + (gh & 0xFFFF) + (c2 >>> 16);
+    c4 = (h6h >>> 16) + (gh >>> 16) + (c3 >>> 16);
+
+    this.h6h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h6l = (c2 << 16) | (c1 & 0xFFFF);
+
+    c1 = (h7l & 0xFFFF) + (hl & 0xFFFF);
+    c2 = (h7l >>> 16) + (hl >>> 16) + (c1 >>> 16);
+    c3 = (h7h & 0xFFFF) + (hh & 0xFFFF) + (c2 >>> 16);
+    c4 = (h7h >>> 16) + (hh >>> 16) + (c3 >>> 16);
+
+    this.h7h = (c4 << 16) | (c3 & 0xFFFF);
+    this.h7l = (c2 << 16) | (c1 & 0xFFFF);
+  };
+
+  Sha512.prototype.hex = function () {
+    this.finalize();
+
+    var h0h = this.h0h, h0l = this.h0l, h1h = this.h1h, h1l = this.h1l,
+      h2h = this.h2h, h2l = this.h2l, h3h = this.h3h, h3l = this.h3l,
+      h4h = this.h4h, h4l = this.h4l, h5h = this.h5h, h5l = this.h5l,
+      h6h = this.h6h, h6l = this.h6l, h7h = this.h7h, h7l = this.h7l,
+      bits = this.bits;
+
+    var hex = HEX_CHARS[(h0h >> 28) & 0x0F] + HEX_CHARS[(h0h >> 24) & 0x0F] +
+      HEX_CHARS[(h0h >> 20) & 0x0F] + HEX_CHARS[(h0h >> 16) & 0x0F] +
+      HEX_CHARS[(h0h >> 12) & 0x0F] + HEX_CHARS[(h0h >> 8) & 0x0F] +
+      HEX_CHARS[(h0h >> 4) & 0x0F] + HEX_CHARS[h0h & 0x0F] +
+      HEX_CHARS[(h0l >> 28) & 0x0F] + HEX_CHARS[(h0l >> 24) & 0x0F] +
+      HEX_CHARS[(h0l >> 20) & 0x0F] + HEX_CHARS[(h0l >> 16) & 0x0F] +
+      HEX_CHARS[(h0l >> 12) & 0x0F] + HEX_CHARS[(h0l >> 8) & 0x0F] +
+      HEX_CHARS[(h0l >> 4) & 0x0F] + HEX_CHARS[h0l & 0x0F] +
+      HEX_CHARS[(h1h >> 28) & 0x0F] + HEX_CHARS[(h1h >> 24) & 0x0F] +
+      HEX_CHARS[(h1h >> 20) & 0x0F] + HEX_CHARS[(h1h >> 16) & 0x0F] +
+      HEX_CHARS[(h1h >> 12) & 0x0F] + HEX_CHARS[(h1h >> 8) & 0x0F] +
+      HEX_CHARS[(h1h >> 4) & 0x0F] + HEX_CHARS[h1h & 0x0F] +
+      HEX_CHARS[(h1l >> 28) & 0x0F] + HEX_CHARS[(h1l >> 24) & 0x0F] +
+      HEX_CHARS[(h1l >> 20) & 0x0F] + HEX_CHARS[(h1l >> 16) & 0x0F] +
+      HEX_CHARS[(h1l >> 12) & 0x0F] + HEX_CHARS[(h1l >> 8) & 0x0F] +
+      HEX_CHARS[(h1l >> 4) & 0x0F] + HEX_CHARS[h1l & 0x0F] +
+      HEX_CHARS[(h2h >> 28) & 0x0F] + HEX_CHARS[(h2h >> 24) & 0x0F] +
+      HEX_CHARS[(h2h >> 20) & 0x0F] + HEX_CHARS[(h2h >> 16) & 0x0F] +
+      HEX_CHARS[(h2h >> 12) & 0x0F] + HEX_CHARS[(h2h >> 8) & 0x0F] +
+      HEX_CHARS[(h2h >> 4) & 0x0F] + HEX_CHARS[h2h & 0x0F] +
+      HEX_CHARS[(h2l >> 28) & 0x0F] + HEX_CHARS[(h2l >> 24) & 0x0F] +
+      HEX_CHARS[(h2l >> 20) & 0x0F] + HEX_CHARS[(h2l >> 16) & 0x0F] +
+      HEX_CHARS[(h2l >> 12) & 0x0F] + HEX_CHARS[(h2l >> 8) & 0x0F] +
+      HEX_CHARS[(h2l >> 4) & 0x0F] + HEX_CHARS[h2l & 0x0F] +
+      HEX_CHARS[(h3h >> 28) & 0x0F] + HEX_CHARS[(h3h >> 24) & 0x0F] +
+      HEX_CHARS[(h3h >> 20) & 0x0F] + HEX_CHARS[(h3h >> 16) & 0x0F] +
+      HEX_CHARS[(h3h >> 12) & 0x0F] + HEX_CHARS[(h3h >> 8) & 0x0F] +
+      HEX_CHARS[(h3h >> 4) & 0x0F] + HEX_CHARS[h3h & 0x0F];
+    if (bits >= 256) {
+      hex += HEX_CHARS[(h3l >> 28) & 0x0F] + HEX_CHARS[(h3l >> 24) & 0x0F] +
+        HEX_CHARS[(h3l >> 20) & 0x0F] + HEX_CHARS[(h3l >> 16) & 0x0F] +
+        HEX_CHARS[(h3l >> 12) & 0x0F] + HEX_CHARS[(h3l >> 8) & 0x0F] +
+        HEX_CHARS[(h3l >> 4) & 0x0F] + HEX_CHARS[h3l & 0x0F];
+    }
+    if (bits >= 384) {
+      hex += HEX_CHARS[(h4h >> 28) & 0x0F] + HEX_CHARS[(h4h >> 24) & 0x0F] +
+        HEX_CHARS[(h4h >> 20) & 0x0F] + HEX_CHARS[(h4h >> 16) & 0x0F] +
+        HEX_CHARS[(h4h >> 12) & 0x0F] + HEX_CHARS[(h4h >> 8) & 0x0F] +
+        HEX_CHARS[(h4h >> 4) & 0x0F] + HEX_CHARS[h4h & 0x0F] +
+        HEX_CHARS[(h4l >> 28) & 0x0F] + HEX_CHARS[(h4l >> 24) & 0x0F] +
+        HEX_CHARS[(h4l >> 20) & 0x0F] + HEX_CHARS[(h4l >> 16) & 0x0F] +
+        HEX_CHARS[(h4l >> 12) & 0x0F] + HEX_CHARS[(h4l >> 8) & 0x0F] +
+        HEX_CHARS[(h4l >> 4) & 0x0F] + HEX_CHARS[h4l & 0x0F] +
+        HEX_CHARS[(h5h >> 28) & 0x0F] + HEX_CHARS[(h5h >> 24) & 0x0F] +
+        HEX_CHARS[(h5h >> 20) & 0x0F] + HEX_CHARS[(h5h >> 16) & 0x0F] +
+        HEX_CHARS[(h5h >> 12) & 0x0F] + HEX_CHARS[(h5h >> 8) & 0x0F] +
+        HEX_CHARS[(h5h >> 4) & 0x0F] + HEX_CHARS[h5h & 0x0F] +
+        HEX_CHARS[(h5l >> 28) & 0x0F] + HEX_CHARS[(h5l >> 24) & 0x0F] +
+        HEX_CHARS[(h5l >> 20) & 0x0F] + HEX_CHARS[(h5l >> 16) & 0x0F] +
+        HEX_CHARS[(h5l >> 12) & 0x0F] + HEX_CHARS[(h5l >> 8) & 0x0F] +
+        HEX_CHARS[(h5l >> 4) & 0x0F] + HEX_CHARS[h5l & 0x0F];
+    }
+    if (bits == 512) {
+      hex += HEX_CHARS[(h6h >> 28) & 0x0F] + HEX_CHARS[(h6h >> 24) & 0x0F] +
+        HEX_CHARS[(h6h >> 20) & 0x0F] + HEX_CHARS[(h6h >> 16) & 0x0F] +
+        HEX_CHARS[(h6h >> 12) & 0x0F] + HEX_CHARS[(h6h >> 8) & 0x0F] +
+        HEX_CHARS[(h6h >> 4) & 0x0F] + HEX_CHARS[h6h & 0x0F] +
+        HEX_CHARS[(h6l >> 28) & 0x0F] + HEX_CHARS[(h6l >> 24) & 0x0F] +
+        HEX_CHARS[(h6l >> 20) & 0x0F] + HEX_CHARS[(h6l >> 16) & 0x0F] +
+        HEX_CHARS[(h6l >> 12) & 0x0F] + HEX_CHARS[(h6l >> 8) & 0x0F] +
+        HEX_CHARS[(h6l >> 4) & 0x0F] + HEX_CHARS[h6l & 0x0F] +
+        HEX_CHARS[(h7h >> 28) & 0x0F] + HEX_CHARS[(h7h >> 24) & 0x0F] +
+        HEX_CHARS[(h7h >> 20) & 0x0F] + HEX_CHARS[(h7h >> 16) & 0x0F] +
+        HEX_CHARS[(h7h >> 12) & 0x0F] + HEX_CHARS[(h7h >> 8) & 0x0F] +
+        HEX_CHARS[(h7h >> 4) & 0x0F] + HEX_CHARS[h7h & 0x0F] +
+        HEX_CHARS[(h7l >> 28) & 0x0F] + HEX_CHARS[(h7l >> 24) & 0x0F] +
+        HEX_CHARS[(h7l >> 20) & 0x0F] + HEX_CHARS[(h7l >> 16) & 0x0F] +
+        HEX_CHARS[(h7l >> 12) & 0x0F] + HEX_CHARS[(h7l >> 8) & 0x0F] +
+        HEX_CHARS[(h7l >> 4) & 0x0F] + HEX_CHARS[h7l & 0x0F];
+    }
+    return hex;
+  };
+
+  Sha512.prototype.toString = Sha512.prototype.hex;
+
+  Sha512.prototype.digest = function () {
+    this.finalize();
+
+    var h0h = this.h0h, h0l = this.h0l, h1h = this.h1h, h1l = this.h1l,
+      h2h = this.h2h, h2l = this.h2l, h3h = this.h3h, h3l = this.h3l,
+      h4h = this.h4h, h4l = this.h4l, h5h = this.h5h, h5l = this.h5l,
+      h6h = this.h6h, h6l = this.h6l, h7h = this.h7h, h7l = this.h7l,
+      bits = this.bits;
+
+    var arr = [
+      (h0h >> 24) & 0xFF, (h0h >> 16) & 0xFF, (h0h >> 8) & 0xFF, h0h & 0xFF,
+      (h0l >> 24) & 0xFF, (h0l >> 16) & 0xFF, (h0l >> 8) & 0xFF, h0l & 0xFF,
+      (h1h >> 24) & 0xFF, (h1h >> 16) & 0xFF, (h1h >> 8) & 0xFF, h1h & 0xFF,
+      (h1l >> 24) & 0xFF, (h1l >> 16) & 0xFF, (h1l >> 8) & 0xFF, h1l & 0xFF,
+      (h2h >> 24) & 0xFF, (h2h >> 16) & 0xFF, (h2h >> 8) & 0xFF, h2h & 0xFF,
+      (h2l >> 24) & 0xFF, (h2l >> 16) & 0xFF, (h2l >> 8) & 0xFF, h2l & 0xFF,
+      (h3h >> 24) & 0xFF, (h3h >> 16) & 0xFF, (h3h >> 8) & 0xFF, h3h & 0xFF
+    ];
+
+    if (bits >= 256) {
+      arr.push((h3l >> 24) & 0xFF, (h3l >> 16) & 0xFF, (h3l >> 8) & 0xFF, h3l & 0xFF);
+    }
+    if (bits >= 384) {
+      arr.push(
+        (h4h >> 24) & 0xFF, (h4h >> 16) & 0xFF, (h4h >> 8) & 0xFF, h4h & 0xFF,
+        (h4l >> 24) & 0xFF, (h4l >> 16) & 0xFF, (h4l >> 8) & 0xFF, h4l & 0xFF,
+        (h5h >> 24) & 0xFF, (h5h >> 16) & 0xFF, (h5h >> 8) & 0xFF, h5h & 0xFF,
+        (h5l >> 24) & 0xFF, (h5l >> 16) & 0xFF, (h5l >> 8) & 0xFF, h5l & 0xFF
+      );
+    }
+    if (bits == 512) {
+      arr.push(
+        (h6h >> 24) & 0xFF, (h6h >> 16) & 0xFF, (h6h >> 8) & 0xFF, h6h & 0xFF,
+        (h6l >> 24) & 0xFF, (h6l >> 16) & 0xFF, (h6l >> 8) & 0xFF, h6l & 0xFF,
+        (h7h >> 24) & 0xFF, (h7h >> 16) & 0xFF, (h7h >> 8) & 0xFF, h7h & 0xFF,
+        (h7l >> 24) & 0xFF, (h7l >> 16) & 0xFF, (h7l >> 8) & 0xFF, h7l & 0xFF
+      );
+    }
+    return arr;
+  };
+
+  Sha512.prototype.array = Sha512.prototype.digest;
+
+  Sha512.prototype.arrayBuffer = function () {
+    this.finalize();
+
+    var bits = this.bits;
+    var buffer = new ArrayBuffer(bits / 8);
+    var dataView = new DataView(buffer);
+    dataView.setUint32(0, this.h0h);
+    dataView.setUint32(4, this.h0l);
+    dataView.setUint32(8, this.h1h);
+    dataView.setUint32(12, this.h1l);
+    dataView.setUint32(16, this.h2h);
+    dataView.setUint32(20, this.h2l);
+    dataView.setUint32(24, this.h3h);
+
+    if (bits >= 256) {
+      dataView.setUint32(28, this.h3l);
+    }
+    if (bits >= 384) {
+      dataView.setUint32(32, this.h4h);
+      dataView.setUint32(36, this.h4l);
+      dataView.setUint32(40, this.h5h);
+      dataView.setUint32(44, this.h5l);
+    }
+    if (bits == 512) {
+      dataView.setUint32(48, this.h6h);
+      dataView.setUint32(52, this.h6l);
+      dataView.setUint32(56, this.h7h);
+      dataView.setUint32(60, this.h7l);
+    }
+    return buffer;
+  };
+
+  Sha512.prototype.clone = function () {
+    var hash = new Sha512(this.bits, false);
+    this.copyTo(hash);
+    return hash;
+  };
+
+  Sha512.prototype.copyTo = function (hash) {
+    var i = 0, attrs = [
+      'h0h', 'h0l', 'h1h', 'h1l', 'h2h', 'h2l', 'h3h', 'h3l', 'h4h', 'h4l', 'h5h', 'h5l', 'h6h', 'h6l', 'h7h', 'h7l',
+      'start', 'bytes', 'hBytes', 'finalized', 'hashed', 'lastByteIndex'
+    ];
+    for (i = 0; i < attrs.length; ++i) {
+      hash[attrs[i]] = this[attrs[i]];
+    }
+    for (i = 0; i < this.blocks.length; ++i) {
+      hash.blocks[i] = this.blocks[i];
+    }
+  };
+
+  function HmacSha512(key, bits, sharedMemory) {
+    var notString, type = typeof key;
+    if (type !== 'string') {
+      if (type === 'object') {
+        if (key === null) {
+          throw new Error(INPUT_ERROR);
+        } else if (ARRAY_BUFFER && key.constructor === ArrayBuffer) {
+          key = new Uint8Array(key);
+        } else if (!Array.isArray(key)) {
+          if (!ARRAY_BUFFER || !ArrayBuffer.isView(key)) {
+            throw new Error(INPUT_ERROR);
+          }
+        }
+      } else {
+        throw new Error(INPUT_ERROR);
+      }
+      notString = true;
+    }
+    var length = key.length;
+    if (!notString) {
+      var bytes = [], length = key.length, index = 0, code;
+      for (var i = 0; i < length; ++i) {
+        code = key.charCodeAt(i);
+        if (code < 0x80) {
+          bytes[index++] = code;
+        } else if (code < 0x800) {
+          bytes[index++] = (0xc0 | (code >> 6));
+          bytes[index++] = (0x80 | (code & 0x3f));
+        } else if (code < 0xd800 || code >= 0xe000) {
+          bytes[index++] = (0xe0 | (code >> 12));
+          bytes[index++] = (0x80 | ((code >> 6) & 0x3f));
+          bytes[index++] = (0x80 | (code & 0x3f));
+        } else {
+          code = 0x10000 + (((code & 0x3ff) << 10) | (key.charCodeAt(++i) & 0x3ff));
+          bytes[index++] = (0xf0 | (code >> 18));
+          bytes[index++] = (0x80 | ((code >> 12) & 0x3f));
+          bytes[index++] = (0x80 | ((code >> 6) & 0x3f));
+          bytes[index++] = (0x80 | (code & 0x3f));
+        }
+      }
+      key = bytes;
+    }
+
+    if (key.length > 128) {
+      key = (new Sha512(bits, true)).update(key).array();
+    }
+
+    var oKeyPad = [], iKeyPad = [];
+    for (var i = 0; i < 128; ++i) {
+      var b = key[i] || 0;
+      oKeyPad[i] = 0x5c ^ b;
+      iKeyPad[i] = 0x36 ^ b;
+    }
+
+    Sha512.call(this, bits, sharedMemory);
+
+    this.update(iKeyPad);
+    this.oKeyPad = oKeyPad;
+    this.inner = true;
+    this.sharedMemory = sharedMemory;
+  }
+  HmacSha512.prototype = new Sha512();
+
+  HmacSha512.prototype.finalize = function () {
+    Sha512.prototype.finalize.call(this);
+    if (this.inner) {
+      this.inner = false;
+      var innerHash = this.array();
+      Sha512.call(this, this.bits, this.sharedMemory);
+      this.update(this.oKeyPad);
+      this.update(innerHash);
+      Sha512.prototype.finalize.call(this);
+    }
+  };
+
+  HmacSha512.prototype.clone = function () {
+    var hash = new HmacSha512([], this.bits, false);
+    this.copyTo(hash);
+    hash.inner = this.inner;
+    for (var i = 0; i < this.oKeyPad.length; ++i) {
+      hash.oKeyPad[i] = this.oKeyPad[i];
+    }
+    return hash;
+  };
+
+  var exports = createMethod(512);
+  exports.sha512 = exports;
+  exports.sha384 = createMethod(384);
+  exports.sha512_256 = createMethod(256);
+  exports.sha512_224 = createMethod(224);
+  exports.sha512.hmac = createHmacMethod(512);
+  exports.sha384.hmac = createHmacMethod(384);
+  exports.sha512_256.hmac = createHmacMethod(256);
+  exports.sha512_224.hmac = createHmacMethod(224);
+
+  if (COMMON_JS) {
+    module.exports = exports;
+  } else {
+    root.sha512 = exports.sha512;
+    root.sha384 = exports.sha384;
+    root.sha512_256 = exports.sha512_256;
+    root.sha512_224 = exports.sha512_224;
+    if (AMD) {
+      !(__WEBPACK_AMD_DEFINE_RESULT__ = (function () {
+        return exports;
+      }).call(exports, __webpack_require__, exports, module),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+    }
+  }
+})();
+
+
+/***/ }),
 
 /***/ 6317:
 /*!****************************************************************!*\
@@ -7,6 +944,7 @@
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "BehaviorSubject": () => (/* binding */ BehaviorSubject)
@@ -48,6 +986,7 @@ class BehaviorSubject extends _Subject__WEBPACK_IMPORTED_MODULE_0__.Subject {
   \**********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "COMPLETE_NOTIFICATION": () => (/* binding */ COMPLETE_NOTIFICATION),
@@ -79,6 +1018,7 @@ function createNotification(kind, value, error) {
   \***********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Observable": () => (/* binding */ Observable)
@@ -192,6 +1132,7 @@ function isSubscriber(value) {
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ReplaySubject": () => (/* binding */ ReplaySubject)
@@ -257,6 +1198,7 @@ class ReplaySubject extends _Subject__WEBPACK_IMPORTED_MODULE_0__.Subject {
   \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Scheduler": () => (/* binding */ Scheduler)
@@ -283,6 +1225,7 @@ Scheduler.now = _scheduler_dateTimestampProvider__WEBPACK_IMPORTED_MODULE_0__.da
   \********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Subject": () => (/* binding */ Subject),
@@ -427,6 +1370,7 @@ class AnonymousSubject extends Subject {
   \***********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Subscriber": () => (/* binding */ Subscriber),
@@ -624,6 +1568,7 @@ const EMPTY_OBSERVER = {
   \*************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Subscription": () => (/* binding */ Subscription),
@@ -761,6 +1706,7 @@ function execTeardown(teardown) {
   \*******************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "config": () => (/* binding */ config)
@@ -782,6 +1728,7 @@ const config = {
   \*********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ConnectableObservable": () => (/* binding */ ConnectableObservable)
@@ -857,6 +1804,7 @@ class ConnectableObservable extends _Observable__WEBPACK_IMPORTED_MODULE_0__.Obs
   \*************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "combineLatest": () => (/* binding */ combineLatest),
@@ -942,6 +1890,7 @@ function maybeSchedule(scheduler, execute, subscription) {
   \******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "concat": () => (/* binding */ concat)
@@ -965,6 +1914,7 @@ function concat(...args) {
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "defer": () => (/* binding */ defer)
@@ -988,6 +1938,7 @@ function defer(observableFactory) {
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "EMPTY": () => (/* binding */ EMPTY),
@@ -1006,12 +1957,74 @@ function emptyScheduled(scheduler) {
 
 /***/ }),
 
+/***/ 1640:
+/*!********************************************************************!*\
+  !*** ./node_modules/rxjs/dist/esm/internal/observable/forkJoin.js ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "forkJoin": () => (/* binding */ forkJoin)
+/* harmony export */ });
+/* harmony import */ var _Observable__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../Observable */ 833);
+/* harmony import */ var _util_argsArgArrayOrObject__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../util/argsArgArrayOrObject */ 5756);
+/* harmony import */ var _innerFrom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./innerFrom */ 4987);
+/* harmony import */ var _util_args__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/args */ 420);
+/* harmony import */ var _operators_OperatorSubscriber__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../operators/OperatorSubscriber */ 3945);
+/* harmony import */ var _util_mapOneOrManyArgs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../util/mapOneOrManyArgs */ 8385);
+/* harmony import */ var _util_createObject__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../util/createObject */ 1054);
+
+
+
+
+
+
+
+function forkJoin(...args) {
+    const resultSelector = (0,_util_args__WEBPACK_IMPORTED_MODULE_0__.popResultSelector)(args);
+    const { args: sources, keys } = (0,_util_argsArgArrayOrObject__WEBPACK_IMPORTED_MODULE_1__.argsArgArrayOrObject)(args);
+    const result = new _Observable__WEBPACK_IMPORTED_MODULE_2__.Observable((subscriber) => {
+        const { length } = sources;
+        if (!length) {
+            subscriber.complete();
+            return;
+        }
+        const values = new Array(length);
+        let remainingCompletions = length;
+        let remainingEmissions = length;
+        for (let sourceIndex = 0; sourceIndex < length; sourceIndex++) {
+            let hasValue = false;
+            (0,_innerFrom__WEBPACK_IMPORTED_MODULE_3__.innerFrom)(sources[sourceIndex]).subscribe((0,_operators_OperatorSubscriber__WEBPACK_IMPORTED_MODULE_4__.createOperatorSubscriber)(subscriber, (value) => {
+                if (!hasValue) {
+                    hasValue = true;
+                    remainingEmissions--;
+                }
+                values[sourceIndex] = value;
+            }, () => remainingCompletions--, undefined, () => {
+                if (!remainingCompletions || !hasValue) {
+                    if (!remainingEmissions) {
+                        subscriber.next(keys ? (0,_util_createObject__WEBPACK_IMPORTED_MODULE_5__.createObject)(keys, values) : values);
+                    }
+                    subscriber.complete();
+                }
+            }));
+        }
+    });
+    return resultSelector ? result.pipe((0,_util_mapOneOrManyArgs__WEBPACK_IMPORTED_MODULE_6__.mapOneOrManyArgs)(resultSelector)) : result;
+}
+
+
+/***/ }),
+
 /***/ 9346:
 /*!****************************************************************!*\
   !*** ./node_modules/rxjs/dist/esm/internal/observable/from.js ***!
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "from": () => (/* binding */ from)
@@ -1033,6 +2046,7 @@ function from(input, scheduler) {
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "fromEvent": () => (/* binding */ fromEvent)
@@ -1104,6 +2118,7 @@ function isEventTarget(target) {
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "innerFrom": () => (/* binding */ innerFrom),
@@ -1262,6 +2277,7 @@ function process(asyncIterable, subscriber) {
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "merge": () => (/* binding */ merge)
@@ -1299,6 +2315,7 @@ function merge(...args) {
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "of": () => (/* binding */ of)
@@ -1315,12 +2332,37 @@ function of(...args) {
 
 /***/ }),
 
+/***/ 5474:
+/*!**********************************************************************!*\
+  !*** ./node_modules/rxjs/dist/esm/internal/observable/throwError.js ***!
+  \**********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "throwError": () => (/* binding */ throwError)
+/* harmony export */ });
+/* harmony import */ var _Observable__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Observable */ 833);
+/* harmony import */ var _util_isFunction__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../util/isFunction */ 2971);
+
+
+function throwError(errorOrErrorFactory, scheduler) {
+    const errorFactory = (0,_util_isFunction__WEBPACK_IMPORTED_MODULE_0__.isFunction)(errorOrErrorFactory) ? errorOrErrorFactory : () => errorOrErrorFactory;
+    const init = (subscriber) => subscriber.error(errorFactory());
+    return new _Observable__WEBPACK_IMPORTED_MODULE_1__.Observable(scheduler ? (subscriber) => scheduler.schedule(init, 0, subscriber) : init);
+}
+
+
+/***/ }),
+
 /***/ 8947:
 /*!*****************************************************************!*\
   !*** ./node_modules/rxjs/dist/esm/internal/observable/timer.js ***!
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "timer": () => (/* binding */ timer)
@@ -1374,6 +2416,7 @@ function timer(dueTime = 0, intervalOrScheduler, scheduler = _scheduler_async__W
   \*****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createOperatorSubscriber": () => (/* binding */ createOperatorSubscriber),
@@ -1445,6 +2488,7 @@ class OperatorSubscriber extends _Subscriber__WEBPACK_IMPORTED_MODULE_0__.Subscr
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "audit": () => (/* binding */ audit)
@@ -1498,6 +2542,7 @@ function audit(durationSelector) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "auditTime": () => (/* binding */ auditTime)
@@ -1520,6 +2565,7 @@ function auditTime(duration, scheduler = _scheduler_async__WEBPACK_IMPORTED_MODU
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "catchError": () => (/* binding */ catchError)
@@ -1563,6 +2609,7 @@ function catchError(selector) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "concatAll": () => (/* binding */ concatAll)
@@ -1582,6 +2629,7 @@ function concatAll() {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "concatMap": () => (/* binding */ concatMap)
@@ -1603,6 +2651,7 @@ function concatMap(project, resultSelector) {
   \***********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "debounceTime": () => (/* binding */ debounceTime)
@@ -1667,6 +2716,7 @@ function debounceTime(dueTime, scheduler = _scheduler_async__WEBPACK_IMPORTED_MO
   \*************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "defaultIfEmpty": () => (/* binding */ defaultIfEmpty)
@@ -1699,6 +2749,7 @@ function defaultIfEmpty(defaultValue) {
   \*******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "distinctUntilChanged": () => (/* binding */ distinctUntilChanged)
@@ -1737,6 +2788,7 @@ function defaultCompare(a, b) {
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "filter": () => (/* binding */ filter)
@@ -1761,6 +2813,7 @@ function filter(predicate, thisArg) {
   \*******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "finalize": () => (/* binding */ finalize)
@@ -1787,6 +2840,7 @@ function finalize(callback) {
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "first": () => (/* binding */ first)
@@ -1817,6 +2871,7 @@ function first(predicate, defaultValue) {
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "last": () => (/* binding */ last)
@@ -1847,6 +2902,7 @@ function last(predicate, defaultValue) {
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "map": () => (/* binding */ map)
@@ -1873,6 +2929,7 @@ function map(project, thisArg) {
   \*******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "mergeAll": () => (/* binding */ mergeAll)
@@ -1894,6 +2951,7 @@ function mergeAll(concurrent = Infinity) {
   \*************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "mergeInternals": () => (/* binding */ mergeInternals)
@@ -1968,6 +3026,7 @@ function mergeInternals(source, subscriber, project, concurrent, onBeforeNext, e
   \*******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "mergeMap": () => (/* binding */ mergeMap)
@@ -2001,6 +3060,7 @@ function mergeMap(project, resultSelector, concurrent = Infinity) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "observeOn": () => (/* binding */ observeOn)
@@ -2026,6 +3086,7 @@ function observeOn(scheduler, delay = 0) {
   \*******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "pairwise": () => (/* binding */ pairwise)
@@ -2056,6 +3117,7 @@ function pairwise() {
   \*******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "refCount": () => (/* binding */ refCount)
@@ -2097,6 +3159,7 @@ function refCount() {
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scan": () => (/* binding */ scan)
@@ -2118,6 +3181,7 @@ function scan(accumulator, seed) {
   \************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scanInternals": () => (/* binding */ scanInternals)
@@ -2154,6 +3218,7 @@ function scanInternals(accumulator, seed, hasSeed, emitOnNext, emitBeforeComplet
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "share": () => (/* binding */ share)
@@ -2247,6 +3312,7 @@ function handleReset(reset, on, ...args) {
   \**********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "shareReplay": () => (/* binding */ shareReplay)
@@ -2285,6 +3351,7 @@ function shareReplay(configOrBufferSize, windowTime, scheduler) {
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "skip": () => (/* binding */ skip)
@@ -2304,6 +3371,7 @@ function skip(count) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "startWith": () => (/* binding */ startWith)
@@ -2330,6 +3398,7 @@ function startWith(...values) {
   \**********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "subscribeOn": () => (/* binding */ subscribeOn)
@@ -2351,6 +3420,7 @@ function subscribeOn(scheduler, delay = 0) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "switchMap": () => (/* binding */ switchMap)
@@ -2391,6 +3461,7 @@ function switchMap(project, resultSelector) {
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "take": () => (/* binding */ take)
@@ -2427,6 +3498,7 @@ function take(count) {
   \*******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "takeLast": () => (/* binding */ takeLast)
@@ -2465,6 +3537,7 @@ function takeLast(count) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "takeUntil": () => (/* binding */ takeUntil)
@@ -2493,6 +3566,7 @@ function takeUntil(notifier) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "takeWhile": () => (/* binding */ takeWhile)
@@ -2521,6 +3595,7 @@ function takeWhile(predicate, inclusive = false) {
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "tap": () => (/* binding */ tap)
@@ -2578,6 +3653,7 @@ function tap(observerOrNext, error, complete) {
   \***********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "throwIfEmpty": () => (/* binding */ throwIfEmpty)
@@ -2610,6 +3686,7 @@ function defaultErrorFactory() {
   \************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scheduleArray": () => (/* binding */ scheduleArray)
@@ -2642,6 +3719,7 @@ function scheduleArray(input, scheduler) {
   \********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scheduleAsyncIterable": () => (/* binding */ scheduleAsyncIterable)
@@ -2679,6 +3757,7 @@ function scheduleAsyncIterable(input, scheduler) {
   \***************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scheduleIterable": () => (/* binding */ scheduleIterable)
@@ -2727,6 +3806,7 @@ function scheduleIterable(input, scheduler) {
   \*****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scheduleObservable": () => (/* binding */ scheduleObservable)
@@ -2750,6 +3830,7 @@ function scheduleObservable(input, scheduler) {
   \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "schedulePromise": () => (/* binding */ schedulePromise)
@@ -2773,6 +3854,7 @@ function schedulePromise(input, scheduler) {
   \*************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scheduleReadableStreamLike": () => (/* binding */ scheduleReadableStreamLike)
@@ -2794,6 +3876,7 @@ function scheduleReadableStreamLike(input, scheduler) {
   \********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "scheduled": () => (/* binding */ scheduled)
@@ -2857,6 +3940,7 @@ function scheduled(input, scheduler) {
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Action": () => (/* binding */ Action)
@@ -2881,6 +3965,7 @@ class Action extends _Subscription__WEBPACK_IMPORTED_MODULE_0__.Subscription {
   \*******************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AnimationFrameAction": () => (/* binding */ AnimationFrameAction)
@@ -2923,6 +4008,7 @@ class AnimationFrameAction extends _AsyncAction__WEBPACK_IMPORTED_MODULE_0__.Asy
   \**********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AnimationFrameScheduler": () => (/* binding */ AnimationFrameScheduler)
@@ -2961,6 +4047,7 @@ class AnimationFrameScheduler extends _AsyncScheduler__WEBPACK_IMPORTED_MODULE_0
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AsapAction": () => (/* binding */ AsapAction)
@@ -3003,6 +4090,7 @@ class AsapAction extends _AsyncAction__WEBPACK_IMPORTED_MODULE_0__.AsyncAction {
   \************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AsapScheduler": () => (/* binding */ AsapScheduler)
@@ -3041,6 +4129,7 @@ class AsapScheduler extends _AsyncScheduler__WEBPACK_IMPORTED_MODULE_0__.AsyncSc
   \**********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AsyncAction": () => (/* binding */ AsyncAction)
@@ -3136,6 +4225,7 @@ class AsyncAction extends _Action__WEBPACK_IMPORTED_MODULE_0__.Action {
   \*************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AsyncScheduler": () => (/* binding */ AsyncScheduler)
@@ -3181,6 +4271,7 @@ class AsyncScheduler extends _Scheduler__WEBPACK_IMPORTED_MODULE_0__.Scheduler {
   \*************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "animationFrameScheduler": () => (/* binding */ animationFrameScheduler),
@@ -3202,6 +4293,7 @@ const animationFrame = animationFrameScheduler;
   \*********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "animationFrameProvider": () => (/* binding */ animationFrameProvider)
@@ -3243,6 +4335,7 @@ const animationFrameProvider = {
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "asapScheduler": () => (/* binding */ asapScheduler),
@@ -3264,6 +4357,7 @@ const asap = asapScheduler;
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "asyncScheduler": () => (/* binding */ asyncScheduler),
@@ -3284,6 +4378,7 @@ const async = asyncScheduler;
   \********************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "dateTimestampProvider": () => (/* binding */ dateTimestampProvider)
@@ -3304,6 +4399,7 @@ const dateTimestampProvider = {
   \****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "immediateProvider": () => (/* binding */ immediateProvider)
@@ -3332,6 +4428,7 @@ const immediateProvider = {
   \***************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "intervalProvider": () => (/* binding */ intervalProvider)
@@ -3357,6 +4454,7 @@ const intervalProvider = {
   \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "timeoutProvider": () => (/* binding */ timeoutProvider)
@@ -3382,6 +4480,7 @@ const timeoutProvider = {
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "getSymbolIterator": () => (/* binding */ getSymbolIterator),
@@ -3404,6 +4503,7 @@ const iterator = getSymbolIterator();
   \******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "observable": () => (/* binding */ observable)
@@ -3419,6 +4519,7 @@ const observable = (() => (typeof Symbol === 'function' && Symbol.observable) ||
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "EmptyError": () => (/* binding */ EmptyError)
@@ -3440,6 +4541,7 @@ const EmptyError = (0,_createErrorClass__WEBPACK_IMPORTED_MODULE_0__.createError
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Immediate": () => (/* binding */ Immediate),
@@ -3484,6 +4586,7 @@ const TestTools = {
   \*****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ObjectUnsubscribedError": () => (/* binding */ ObjectUnsubscribedError)
@@ -3505,6 +4608,7 @@ const ObjectUnsubscribedError = (0,_createErrorClass__WEBPACK_IMPORTED_MODULE_0_
   \*************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "UnsubscriptionError": () => (/* binding */ UnsubscriptionError)
@@ -3530,6 +4634,7 @@ ${errors.map((err, i) => `${i + 1}) ${err.toString()}`).join('\n  ')}`
   \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "popResultSelector": () => (/* binding */ popResultSelector),
@@ -3562,6 +4667,7 @@ function popNumber(args, defaultValue) {
   \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "argsArgArrayOrObject": () => (/* binding */ argsArgArrayOrObject)
@@ -3597,6 +4703,7 @@ function isPOJO(obj) {
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "arrRemove": () => (/* binding */ arrRemove)
@@ -3617,6 +4724,7 @@ function arrRemove(arr, item) {
   \**********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createErrorClass": () => (/* binding */ createErrorClass)
@@ -3641,6 +4749,7 @@ function createErrorClass(createImpl) {
   \******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createObject": () => (/* binding */ createObject)
@@ -3658,6 +4767,7 @@ function createObject(keys, values) {
   \******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "errorContext": () => (/* binding */ errorContext),
@@ -3701,6 +4811,7 @@ function captureError(err) {
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "executeSchedule": () => (/* binding */ executeSchedule)
@@ -3730,6 +4841,7 @@ function executeSchedule(parentSubscription, scheduler, work, delay = 0, repeat 
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "identity": () => (/* binding */ identity)
@@ -3747,6 +4859,7 @@ function identity(x) {
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isArrayLike": () => (/* binding */ isArrayLike)
@@ -3762,6 +4875,7 @@ const isArrayLike = ((x) => x && typeof x.length === 'number' && typeof x !== 'f
   \*********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isAsyncIterable": () => (/* binding */ isAsyncIterable)
@@ -3780,6 +4894,7 @@ function isAsyncIterable(obj) {
   \************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isValidDate": () => (/* binding */ isValidDate)
@@ -3797,6 +4912,7 @@ function isValidDate(value) {
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isFunction": () => (/* binding */ isFunction)
@@ -3814,6 +4930,7 @@ function isFunction(value) {
   \*************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isInteropObservable": () => (/* binding */ isInteropObservable)
@@ -3835,6 +4952,7 @@ function isInteropObservable(input) {
   \****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isIterable": () => (/* binding */ isIterable)
@@ -3856,6 +4974,7 @@ function isIterable(input) {
   \******************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isObservable": () => (/* binding */ isObservable)
@@ -3877,6 +4996,7 @@ function isObservable(obj) {
   \***************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isPromise": () => (/* binding */ isPromise)
@@ -3896,6 +5016,7 @@ function isPromise(value) {
   \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "readableStreamLikeToAsyncGenerator": () => (/* binding */ readableStreamLikeToAsyncGenerator),
@@ -3939,6 +5060,7 @@ function isReadableStreamLike(obj) {
   \*****************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "isScheduler": () => (/* binding */ isScheduler)
@@ -3958,6 +5080,7 @@ function isScheduler(value) {
   \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "hasLift": () => (/* binding */ hasLift),
@@ -3993,6 +5116,7 @@ function operate(init) {
   \**********************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "mapOneOrManyArgs": () => (/* binding */ mapOneOrManyArgs)
@@ -4016,6 +5140,7 @@ function mapOneOrManyArgs(fn) {
   \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "noop": () => (/* binding */ noop)
@@ -4031,6 +5156,7 @@ function noop() { }
   \**********************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "pipe": () => (/* binding */ pipe),
@@ -4062,6 +5188,7 @@ function pipeFromArray(fns) {
   \**************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "reportUnhandledError": () => (/* binding */ reportUnhandledError)
@@ -4091,6 +5218,7 @@ function reportUnhandledError(err) {
   \****************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "createInvalidObservableTypeError": () => (/* binding */ createInvalidObservableTypeError)
@@ -4108,6 +5236,7 @@ function createInvalidObservableTypeError(input) {
   \*****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "__extends": () => (/* binding */ __extends),
@@ -4384,6 +5513,7 @@ function __classPrivateFieldSet(receiver, state, value, kind, f) {
   \******************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AUTO_STYLE": () => (/* binding */ AUTO_STYLE),
@@ -5632,6 +6762,7 @@ const ɵPRE_STYLE = '!';
   \***************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AnimationDriver": () => (/* binding */ AnimationDriver),
@@ -11003,6 +12134,7 @@ class WebAnimationsDriver {
   \*****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "A11yModule": () => (/* binding */ A11yModule),
@@ -14229,6 +15361,7 @@ A11yModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ
   \*****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "BidiModule": () => (/* binding */ BidiModule),
@@ -14527,6 +15660,7 @@ BidiModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ
   \****************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "VERSION": () => (/* binding */ VERSION)
@@ -14571,6 +15705,7 @@ const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.2.3')
   \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "_isNumberValue": () => (/* binding */ _isNumberValue),
@@ -14723,6 +15858,7 @@ function coerceStringArray(value, separator = /\s+/) {
   \************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ArrayDataSource": () => (/* binding */ ArrayDataSource),
@@ -15332,6 +16468,7 @@ const _VIEW_REPEATER_STRATEGY = new _angular_core__WEBPACK_IMPORTED_MODULE_3__.I
   \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "A": () => (/* binding */ A),
@@ -15631,6 +16768,7 @@ function hasModifierKey(event, ...modifiers) {
   \*******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "BreakpointObserver": () => (/* binding */ BreakpointObserver),
@@ -15993,6 +17131,7 @@ const Breakpoints = {
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CdkObserveContent": () => (/* binding */ CdkObserveContent),
@@ -16343,6 +17482,7 @@ ObserversModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0_
   \********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CdkScrollable": () => (/* reexport safe */ _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_0__.CdkScrollable),
@@ -20362,6 +21502,7 @@ FullscreenOverlayContainer.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORT
   \*********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Platform": () => (/* binding */ Platform),
@@ -20812,6 +21953,7 @@ function _isTestEnvironment() {
   \*******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "BasePortalHost": () => (/* binding */ BasePortalHost),
@@ -21693,6 +22835,7 @@ class PortalInjector {
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CdkFixedSizeVirtualScroll": () => (/* binding */ CdkFixedSizeVirtualScroll),
@@ -23666,12 +24809,683 @@ ScrollingModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0_
 
 /***/ }),
 
+/***/ 1307:
+/*!***********************************************************!*\
+  !*** ./node_modules/@angular/cdk/fesm2015/text-field.mjs ***!
+  \***********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "AutofillMonitor": () => (/* binding */ AutofillMonitor),
+/* harmony export */   "CdkAutofill": () => (/* binding */ CdkAutofill),
+/* harmony export */   "CdkTextareaAutosize": () => (/* binding */ CdkTextareaAutosize),
+/* harmony export */   "TextFieldModule": () => (/* binding */ TextFieldModule)
+/* harmony export */ });
+/* harmony import */ var _angular_cdk_platform__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/cdk/platform */ 4390);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ 591);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs */ 3280);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs/operators */ 998);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rxjs/operators */ 8951);
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/common */ 6362);
+
+
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** Options to pass to the animationstart listener. */
+
+const listenerOptions = (0,_angular_cdk_platform__WEBPACK_IMPORTED_MODULE_0__.normalizePassiveListenerOptions)({
+  passive: true
+});
+/**
+ * An injectable service that can be used to monitor the autofill state of an input.
+ * Based on the following blog post:
+ * https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
+ */
+
+class AutofillMonitor {
+  constructor(_platform, _ngZone) {
+    this._platform = _platform;
+    this._ngZone = _ngZone;
+    this._monitoredElements = new Map();
+  }
+
+  monitor(elementOrRef) {
+    if (!this._platform.isBrowser) {
+      return rxjs__WEBPACK_IMPORTED_MODULE_1__.EMPTY;
+    }
+
+    const element = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_2__.coerceElement)(elementOrRef);
+
+    const info = this._monitoredElements.get(element);
+
+    if (info) {
+      return info.subject;
+    }
+
+    const result = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
+    const cssClass = 'cdk-text-field-autofilled';
+
+    const listener = event => {
+      // Animation events fire on initial element render, we check for the presence of the autofill
+      // CSS class to make sure this is a real change in state, not just the initial render before
+      // we fire off events.
+      if (event.animationName === 'cdk-text-field-autofill-start' && !element.classList.contains(cssClass)) {
+        element.classList.add(cssClass);
+
+        this._ngZone.run(() => result.next({
+          target: event.target,
+          isAutofilled: true
+        }));
+      } else if (event.animationName === 'cdk-text-field-autofill-end' && element.classList.contains(cssClass)) {
+        element.classList.remove(cssClass);
+
+        this._ngZone.run(() => result.next({
+          target: event.target,
+          isAutofilled: false
+        }));
+      }
+    };
+
+    this._ngZone.runOutsideAngular(() => {
+      element.addEventListener('animationstart', listener, listenerOptions);
+      element.classList.add('cdk-text-field-autofill-monitored');
+    });
+
+    this._monitoredElements.set(element, {
+      subject: result,
+      unlisten: () => {
+        element.removeEventListener('animationstart', listener, listenerOptions);
+      }
+    });
+
+    return result;
+  }
+
+  stopMonitoring(elementOrRef) {
+    const element = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_2__.coerceElement)(elementOrRef);
+
+    const info = this._monitoredElements.get(element);
+
+    if (info) {
+      info.unlisten();
+      info.subject.complete();
+      element.classList.remove('cdk-text-field-autofill-monitored');
+      element.classList.remove('cdk-text-field-autofilled');
+
+      this._monitoredElements.delete(element);
+    }
+  }
+
+  ngOnDestroy() {
+    this._monitoredElements.forEach((_info, element) => this.stopMonitoring(element));
+  }
+
+}
+
+AutofillMonitor.ɵfac = function AutofillMonitor_Factory(t) {
+  return new (t || AutofillMonitor)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_angular_cdk_platform__WEBPACK_IMPORTED_MODULE_0__.Platform), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.NgZone));
+};
+
+AutofillMonitor.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: AutofillMonitor,
+  factory: AutofillMonitor.ɵfac,
+  providedIn: 'root'
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](AutofillMonitor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable,
+    args: [{
+      providedIn: 'root'
+    }]
+  }], function () {
+    return [{
+      type: _angular_cdk_platform__WEBPACK_IMPORTED_MODULE_0__.Platform
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.NgZone
+    }];
+  }, null);
+})();
+/** A directive that can be used to monitor the autofill state of an input. */
+
+
+class CdkAutofill {
+  constructor(_elementRef, _autofillMonitor) {
+    this._elementRef = _elementRef;
+    this._autofillMonitor = _autofillMonitor;
+    /** Emits when the autofill state of the element changes. */
+
+    this.cdkAutofill = new _angular_core__WEBPACK_IMPORTED_MODULE_4__.EventEmitter();
+  }
+
+  ngOnInit() {
+    this._autofillMonitor.monitor(this._elementRef).subscribe(event => this.cdkAutofill.emit(event));
+  }
+
+  ngOnDestroy() {
+    this._autofillMonitor.stopMonitoring(this._elementRef);
+  }
+
+}
+
+CdkAutofill.ɵfac = function CdkAutofill_Factory(t) {
+  return new (t || CdkAutofill)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](AutofillMonitor));
+};
+
+CdkAutofill.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkAutofill,
+  selectors: [["", "cdkAutofill", ""]],
+  outputs: {
+    cdkAutofill: "cdkAutofill"
+  }
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkAutofill, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: '[cdkAutofill]'
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef
+    }, {
+      type: AutofillMonitor
+    }];
+  }, {
+    cdkAutofill: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Output
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** Directive to automatically resize a textarea to fit its content. */
+
+
+class CdkTextareaAutosize {
+  constructor(_elementRef, _platform, _ngZone,
+  /** @breaking-change 11.0.0 make document required */
+  document) {
+    this._elementRef = _elementRef;
+    this._platform = _platform;
+    this._ngZone = _ngZone;
+    this._destroyed = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
+    this._enabled = true;
+    /**
+     * Value of minRows as of last resize. If the minRows has decreased, the
+     * height of the textarea needs to be recomputed to reflect the new minimum. The maxHeight
+     * does not have the same problem because it does not affect the textarea's scrollHeight.
+     */
+
+    this._previousMinRows = -1;
+    this._isViewInited = false;
+    /** Handles `focus` and `blur` events. */
+
+    this._handleFocusEvent = event => {
+      this._hasFocus = event.type === 'focus';
+    };
+
+    this._document = document;
+    this._textareaElement = this._elementRef.nativeElement;
+  }
+  /** Minimum amount of rows in the textarea. */
+
+
+  get minRows() {
+    return this._minRows;
+  }
+
+  set minRows(value) {
+    this._minRows = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_2__.coerceNumberProperty)(value);
+
+    this._setMinHeight();
+  }
+  /** Maximum amount of rows in the textarea. */
+
+
+  get maxRows() {
+    return this._maxRows;
+  }
+
+  set maxRows(value) {
+    this._maxRows = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_2__.coerceNumberProperty)(value);
+
+    this._setMaxHeight();
+  }
+  /** Whether autosizing is enabled or not */
+
+
+  get enabled() {
+    return this._enabled;
+  }
+
+  set enabled(value) {
+    value = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_2__.coerceBooleanProperty)(value); // Only act if the actual value changed. This specifically helps to not run
+    // resizeToFitContent too early (i.e. before ngAfterViewInit)
+
+    if (this._enabled !== value) {
+      (this._enabled = value) ? this.resizeToFitContent(true) : this.reset();
+    }
+  }
+
+  get placeholder() {
+    return this._textareaElement.placeholder;
+  }
+
+  set placeholder(value) {
+    this._cachedPlaceholderHeight = undefined;
+
+    if (value) {
+      this._textareaElement.setAttribute('placeholder', value);
+    } else {
+      this._textareaElement.removeAttribute('placeholder');
+    }
+
+    this._cacheTextareaPlaceholderHeight();
+  }
+  /** Sets the minimum height of the textarea as determined by minRows. */
+
+
+  _setMinHeight() {
+    const minHeight = this.minRows && this._cachedLineHeight ? `${this.minRows * this._cachedLineHeight}px` : null;
+
+    if (minHeight) {
+      this._textareaElement.style.minHeight = minHeight;
+    }
+  }
+  /** Sets the maximum height of the textarea as determined by maxRows. */
+
+
+  _setMaxHeight() {
+    const maxHeight = this.maxRows && this._cachedLineHeight ? `${this.maxRows * this._cachedLineHeight}px` : null;
+
+    if (maxHeight) {
+      this._textareaElement.style.maxHeight = maxHeight;
+    }
+  }
+
+  ngAfterViewInit() {
+    if (this._platform.isBrowser) {
+      // Remember the height which we started with in case autosizing is disabled
+      this._initialHeight = this._textareaElement.style.height;
+      this.resizeToFitContent();
+
+      this._ngZone.runOutsideAngular(() => {
+        const window = this._getWindow();
+
+        (0,rxjs__WEBPACK_IMPORTED_MODULE_5__.fromEvent)(window, 'resize').pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_6__.auditTime)(16), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_7__.takeUntil)(this._destroyed)).subscribe(() => this.resizeToFitContent(true));
+
+        this._textareaElement.addEventListener('focus', this._handleFocusEvent);
+
+        this._textareaElement.addEventListener('blur', this._handleFocusEvent);
+      });
+
+      this._isViewInited = true;
+      this.resizeToFitContent(true);
+    }
+  }
+
+  ngOnDestroy() {
+    this._textareaElement.removeEventListener('focus', this._handleFocusEvent);
+
+    this._textareaElement.removeEventListener('blur', this._handleFocusEvent);
+
+    this._destroyed.next();
+
+    this._destroyed.complete();
+  }
+  /**
+   * Cache the height of a single-row textarea if it has not already been cached.
+   *
+   * We need to know how large a single "row" of a textarea is in order to apply minRows and
+   * maxRows. For the initial version, we will assume that the height of a single line in the
+   * textarea does not ever change.
+   */
+
+
+  _cacheTextareaLineHeight() {
+    if (this._cachedLineHeight) {
+      return;
+    } // Use a clone element because we have to override some styles.
+
+
+    let textareaClone = this._textareaElement.cloneNode(false);
+
+    textareaClone.rows = 1; // Use `position: absolute` so that this doesn't cause a browser layout and use
+    // `visibility: hidden` so that nothing is rendered. Clear any other styles that
+    // would affect the height.
+
+    textareaClone.style.position = 'absolute';
+    textareaClone.style.visibility = 'hidden';
+    textareaClone.style.border = 'none';
+    textareaClone.style.padding = '0';
+    textareaClone.style.height = '';
+    textareaClone.style.minHeight = '';
+    textareaClone.style.maxHeight = ''; // In Firefox it happens that textarea elements are always bigger than the specified amount
+    // of rows. This is because Firefox tries to add extra space for the horizontal scrollbar.
+    // As a workaround that removes the extra space for the scrollbar, we can just set overflow
+    // to hidden. This ensures that there is no invalid calculation of the line height.
+    // See Firefox bug report: https://bugzilla.mozilla.org/show_bug.cgi?id=33654
+
+    textareaClone.style.overflow = 'hidden';
+
+    this._textareaElement.parentNode.appendChild(textareaClone);
+
+    this._cachedLineHeight = textareaClone.clientHeight;
+    textareaClone.remove(); // Min and max heights have to be re-calculated if the cached line height changes
+
+    this._setMinHeight();
+
+    this._setMaxHeight();
+  }
+
+  _measureScrollHeight() {
+    const element = this._textareaElement;
+    const previousMargin = element.style.marginBottom || '';
+    const isFirefox = this._platform.FIREFOX;
+    const needsMarginFiller = isFirefox && this._hasFocus;
+    const measuringClass = isFirefox ? 'cdk-textarea-autosize-measuring-firefox' : 'cdk-textarea-autosize-measuring'; // In some cases the page might move around while we're measuring the `textarea` on Firefox. We
+    // work around it by assigning a temporary margin with the same height as the `textarea` so that
+    // it occupies the same amount of space. See #23233.
+
+    if (needsMarginFiller) {
+      element.style.marginBottom = `${element.clientHeight}px`;
+    } // Reset the textarea height to auto in order to shrink back to its default size.
+    // Also temporarily force overflow:hidden, so scroll bars do not interfere with calculations.
+
+
+    element.classList.add(measuringClass); // The measuring class includes a 2px padding to workaround an issue with Chrome,
+    // so we account for that extra space here by subtracting 4 (2px top + 2px bottom).
+
+    const scrollHeight = element.scrollHeight - 4;
+    element.classList.remove(measuringClass);
+
+    if (needsMarginFiller) {
+      element.style.marginBottom = previousMargin;
+    }
+
+    return scrollHeight;
+  }
+
+  _cacheTextareaPlaceholderHeight() {
+    if (!this._isViewInited || this._cachedPlaceholderHeight != undefined) {
+      return;
+    }
+
+    if (!this.placeholder) {
+      this._cachedPlaceholderHeight = 0;
+      return;
+    }
+
+    const value = this._textareaElement.value;
+    this._textareaElement.value = this._textareaElement.placeholder;
+    this._cachedPlaceholderHeight = this._measureScrollHeight();
+    this._textareaElement.value = value;
+  }
+
+  ngDoCheck() {
+    if (this._platform.isBrowser) {
+      this.resizeToFitContent();
+    }
+  }
+  /**
+   * Resize the textarea to fit its content.
+   * @param force Whether to force a height recalculation. By default the height will be
+   *    recalculated only if the value changed since the last call.
+   */
+
+
+  resizeToFitContent(force = false) {
+    // If autosizing is disabled, just skip everything else
+    if (!this._enabled) {
+      return;
+    }
+
+    this._cacheTextareaLineHeight();
+
+    this._cacheTextareaPlaceholderHeight(); // If we haven't determined the line-height yet, we know we're still hidden and there's no point
+    // in checking the height of the textarea.
+
+
+    if (!this._cachedLineHeight) {
+      return;
+    }
+
+    const textarea = this._elementRef.nativeElement;
+    const value = textarea.value; // Only resize if the value or minRows have changed since these calculations can be expensive.
+
+    if (!force && this._minRows === this._previousMinRows && value === this._previousValue) {
+      return;
+    }
+
+    const scrollHeight = this._measureScrollHeight();
+
+    const height = Math.max(scrollHeight, this._cachedPlaceholderHeight || 0); // Use the scrollHeight to know how large the textarea *would* be if fit its entire value.
+
+    textarea.style.height = `${height}px`;
+
+    this._ngZone.runOutsideAngular(() => {
+      if (typeof requestAnimationFrame !== 'undefined') {
+        requestAnimationFrame(() => this._scrollToCaretPosition(textarea));
+      } else {
+        setTimeout(() => this._scrollToCaretPosition(textarea));
+      }
+    });
+
+    this._previousValue = value;
+    this._previousMinRows = this._minRows;
+  }
+  /**
+   * Resets the textarea to its original size
+   */
+
+
+  reset() {
+    // Do not try to change the textarea, if the initialHeight has not been determined yet
+    // This might potentially remove styles when reset() is called before ngAfterViewInit
+    if (this._initialHeight !== undefined) {
+      this._textareaElement.style.height = this._initialHeight;
+    }
+  }
+
+  _noopInputHandler() {// no-op handler that ensures we're running change detection on input events.
+  }
+  /** Access injected document if available or fallback to global document reference */
+
+
+  _getDocument() {
+    return this._document || document;
+  }
+  /** Use defaultView of injected document if available or fallback to global window reference */
+
+
+  _getWindow() {
+    const doc = this._getDocument();
+
+    return doc.defaultView || window;
+  }
+  /**
+   * Scrolls a textarea to the caret position. On Firefox resizing the textarea will
+   * prevent it from scrolling to the caret position. We need to re-set the selection
+   * in order for it to scroll to the proper position.
+   */
+
+
+  _scrollToCaretPosition(textarea) {
+    const {
+      selectionStart,
+      selectionEnd
+    } = textarea; // IE will throw an "Unspecified error" if we try to set the selection range after the
+    // element has been removed from the DOM. Assert that the directive hasn't been destroyed
+    // between the time we requested the animation frame and when it was executed.
+    // Also note that we have to assert that the textarea is focused before we set the
+    // selection range. Setting the selection range on a non-focused textarea will cause
+    // it to receive focus on IE and Edge.
+
+    if (!this._destroyed.isStopped && this._hasFocus) {
+      textarea.setSelectionRange(selectionStart, selectionEnd);
+    }
+  }
+
+}
+
+CdkTextareaAutosize.ɵfac = function CdkTextareaAutosize_Factory(t) {
+  return new (t || CdkTextareaAutosize)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_cdk_platform__WEBPACK_IMPORTED_MODULE_0__.Platform), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.NgZone), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_common__WEBPACK_IMPORTED_MODULE_8__.DOCUMENT, 8));
+};
+
+CdkTextareaAutosize.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkTextareaAutosize,
+  selectors: [["textarea", "cdkTextareaAutosize", ""]],
+  hostAttrs: ["rows", "1", 1, "cdk-textarea-autosize"],
+  hostBindings: function CdkTextareaAutosize_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵlistener"]("input", function CdkTextareaAutosize_input_HostBindingHandler() {
+        return ctx._noopInputHandler();
+      });
+    }
+  },
+  inputs: {
+    minRows: ["cdkAutosizeMinRows", "minRows"],
+    maxRows: ["cdkAutosizeMaxRows", "maxRows"],
+    enabled: ["cdkTextareaAutosize", "enabled"],
+    placeholder: "placeholder"
+  },
+  exportAs: ["cdkTextareaAutosize"]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTextareaAutosize, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: 'textarea[cdkTextareaAutosize]',
+      exportAs: 'cdkTextareaAutosize',
+      host: {
+        'class': 'cdk-textarea-autosize',
+        // Textarea elements that have the directive applied should have a single row by default.
+        // Browsers normally show two rows by default and therefore this limits the minRows binding.
+        'rows': '1',
+        '(input)': '_noopInputHandler()'
+      }
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef
+    }, {
+      type: _angular_cdk_platform__WEBPACK_IMPORTED_MODULE_0__.Platform
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.NgZone
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Inject,
+        args: [_angular_common__WEBPACK_IMPORTED_MODULE_8__.DOCUMENT]
+      }]
+    }];
+  }, {
+    minRows: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input,
+      args: ['cdkAutosizeMinRows']
+    }],
+    maxRows: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input,
+      args: ['cdkAutosizeMaxRows']
+    }],
+    enabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input,
+      args: ['cdkTextareaAutosize']
+    }],
+    placeholder: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class TextFieldModule {}
+
+TextFieldModule.ɵfac = function TextFieldModule_Factory(t) {
+  return new (t || TextFieldModule)();
+};
+
+TextFieldModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineNgModule"]({
+  type: TextFieldModule
+});
+TextFieldModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjector"]({});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](TextFieldModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.NgModule,
+    args: [{
+      declarations: [CdkAutofill, CdkTextareaAutosize],
+      exports: [CdkAutofill, CdkTextareaAutosize]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
 /***/ 6362:
 /*!**********************************************************!*\
   !*** ./node_modules/@angular/common/fesm2015/common.mjs ***!
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "APP_BASE_HREF": () => (/* binding */ APP_BASE_HREF),
@@ -30674,12 +32488,2856 @@ class XhrFactory {}
 
 /***/ }),
 
+/***/ 8784:
+/*!********************************************************!*\
+  !*** ./node_modules/@angular/common/fesm2015/http.mjs ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "HTTP_INTERCEPTORS": () => (/* binding */ HTTP_INTERCEPTORS),
+/* harmony export */   "HttpBackend": () => (/* binding */ HttpBackend),
+/* harmony export */   "HttpClient": () => (/* binding */ HttpClient),
+/* harmony export */   "HttpClientJsonpModule": () => (/* binding */ HttpClientJsonpModule),
+/* harmony export */   "HttpClientModule": () => (/* binding */ HttpClientModule),
+/* harmony export */   "HttpClientXsrfModule": () => (/* binding */ HttpClientXsrfModule),
+/* harmony export */   "HttpContext": () => (/* binding */ HttpContext),
+/* harmony export */   "HttpContextToken": () => (/* binding */ HttpContextToken),
+/* harmony export */   "HttpErrorResponse": () => (/* binding */ HttpErrorResponse),
+/* harmony export */   "HttpEventType": () => (/* binding */ HttpEventType),
+/* harmony export */   "HttpHandler": () => (/* binding */ HttpHandler),
+/* harmony export */   "HttpHeaderResponse": () => (/* binding */ HttpHeaderResponse),
+/* harmony export */   "HttpHeaders": () => (/* binding */ HttpHeaders),
+/* harmony export */   "HttpParams": () => (/* binding */ HttpParams),
+/* harmony export */   "HttpRequest": () => (/* binding */ HttpRequest),
+/* harmony export */   "HttpResponse": () => (/* binding */ HttpResponse),
+/* harmony export */   "HttpResponseBase": () => (/* binding */ HttpResponseBase),
+/* harmony export */   "HttpUrlEncodingCodec": () => (/* binding */ HttpUrlEncodingCodec),
+/* harmony export */   "HttpXhrBackend": () => (/* binding */ HttpXhrBackend),
+/* harmony export */   "HttpXsrfTokenExtractor": () => (/* binding */ HttpXsrfTokenExtractor),
+/* harmony export */   "JsonpClientBackend": () => (/* binding */ JsonpClientBackend),
+/* harmony export */   "JsonpInterceptor": () => (/* binding */ JsonpInterceptor),
+/* harmony export */   "XhrFactory": () => (/* binding */ XhrFactory),
+/* harmony export */   "ɵHttpInterceptingHandler": () => (/* binding */ HttpInterceptingHandler)
+/* harmony export */ });
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ 6362);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs */ 745);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs */ 833);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs/operators */ 3853);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ 116);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ 635);
+/**
+ * @license Angular v13.2.3
+ * (c) 2010-2022 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Transforms an `HttpRequest` into a stream of `HttpEvent`s, one of which will likely be a
+ * `HttpResponse`.
+ *
+ * `HttpHandler` is injectable. When injected, the handler instance dispatches requests to the
+ * first interceptor in the chain, which dispatches to the second, etc, eventually reaching the
+ * `HttpBackend`.
+ *
+ * In an `HttpInterceptor`, the `HttpHandler` parameter is the next interceptor in the chain.
+ *
+ * @publicApi
+ */
+
+class HttpHandler {}
+/**
+ * A final `HttpHandler` which will dispatch the request via browser HTTP APIs to a backend.
+ *
+ * Interceptors sit between the `HttpClient` interface and the `HttpBackend`.
+ *
+ * When injected, `HttpBackend` dispatches requests directly to the backend, without going
+ * through the interceptor chain.
+ *
+ * @publicApi
+ */
+
+
+class HttpBackend {}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Represents the header configuration options for an HTTP request.
+ * Instances are immutable. Modifying methods return a cloned
+ * instance with the change. The original object is never changed.
+ *
+ * @publicApi
+ */
+
+
+class HttpHeaders {
+  /**  Constructs a new HTTP header object with the given values.*/
+  constructor(headers) {
+    /**
+     * Internal map of lowercased header names to the normalized
+     * form of the name (the form seen first).
+     */
+    this.normalizedNames = new Map();
+    /**
+     * Queued updates to be materialized the next initialization.
+     */
+
+    this.lazyUpdate = null;
+
+    if (!headers) {
+      this.headers = new Map();
+    } else if (typeof headers === 'string') {
+      this.lazyInit = () => {
+        this.headers = new Map();
+        headers.split('\n').forEach(line => {
+          const index = line.indexOf(':');
+
+          if (index > 0) {
+            const name = line.slice(0, index);
+            const key = name.toLowerCase();
+            const value = line.slice(index + 1).trim();
+            this.maybeSetNormalizedName(name, key);
+
+            if (this.headers.has(key)) {
+              this.headers.get(key).push(value);
+            } else {
+              this.headers.set(key, [value]);
+            }
+          }
+        });
+      };
+    } else {
+      this.lazyInit = () => {
+        this.headers = new Map();
+        Object.keys(headers).forEach(name => {
+          let values = headers[name];
+          const key = name.toLowerCase();
+
+          if (typeof values === 'string') {
+            values = [values];
+          }
+
+          if (values.length > 0) {
+            this.headers.set(key, values);
+            this.maybeSetNormalizedName(name, key);
+          }
+        });
+      };
+    }
+  }
+  /**
+   * Checks for existence of a given header.
+   *
+   * @param name The header name to check for existence.
+   *
+   * @returns True if the header exists, false otherwise.
+   */
+
+
+  has(name) {
+    this.init();
+    return this.headers.has(name.toLowerCase());
+  }
+  /**
+   * Retrieves the first value of a given header.
+   *
+   * @param name The header name.
+   *
+   * @returns The value string if the header exists, null otherwise
+   */
+
+
+  get(name) {
+    this.init();
+    const values = this.headers.get(name.toLowerCase());
+    return values && values.length > 0 ? values[0] : null;
+  }
+  /**
+   * Retrieves the names of the headers.
+   *
+   * @returns A list of header names.
+   */
+
+
+  keys() {
+    this.init();
+    return Array.from(this.normalizedNames.values());
+  }
+  /**
+   * Retrieves a list of values for a given header.
+   *
+   * @param name The header name from which to retrieve values.
+   *
+   * @returns A string of values if the header exists, null otherwise.
+   */
+
+
+  getAll(name) {
+    this.init();
+    return this.headers.get(name.toLowerCase()) || null;
+  }
+  /**
+   * Appends a new value to the existing set of values for a header
+   * and returns them in a clone of the original instance.
+   *
+   * @param name The header name for which to append the values.
+   * @param value The value to append.
+   *
+   * @returns A clone of the HTTP headers object with the value appended to the given header.
+   */
+
+
+  append(name, value) {
+    return this.clone({
+      name,
+      value,
+      op: 'a'
+    });
+  }
+  /**
+   * Sets or modifies a value for a given header in a clone of the original instance.
+   * If the header already exists, its value is replaced with the given value
+   * in the returned object.
+   *
+   * @param name The header name.
+   * @param value The value or values to set or overide for the given header.
+   *
+   * @returns A clone of the HTTP headers object with the newly set header value.
+   */
+
+
+  set(name, value) {
+    return this.clone({
+      name,
+      value,
+      op: 's'
+    });
+  }
+  /**
+   * Deletes values for a given header in a clone of the original instance.
+   *
+   * @param name The header name.
+   * @param value The value or values to delete for the given header.
+   *
+   * @returns A clone of the HTTP headers object with the given value deleted.
+   */
+
+
+  delete(name, value) {
+    return this.clone({
+      name,
+      value,
+      op: 'd'
+    });
+  }
+
+  maybeSetNormalizedName(name, lcName) {
+    if (!this.normalizedNames.has(lcName)) {
+      this.normalizedNames.set(lcName, name);
+    }
+  }
+
+  init() {
+    if (!!this.lazyInit) {
+      if (this.lazyInit instanceof HttpHeaders) {
+        this.copyFrom(this.lazyInit);
+      } else {
+        this.lazyInit();
+      }
+
+      this.lazyInit = null;
+
+      if (!!this.lazyUpdate) {
+        this.lazyUpdate.forEach(update => this.applyUpdate(update));
+        this.lazyUpdate = null;
+      }
+    }
+  }
+
+  copyFrom(other) {
+    other.init();
+    Array.from(other.headers.keys()).forEach(key => {
+      this.headers.set(key, other.headers.get(key));
+      this.normalizedNames.set(key, other.normalizedNames.get(key));
+    });
+  }
+
+  clone(update) {
+    const clone = new HttpHeaders();
+    clone.lazyInit = !!this.lazyInit && this.lazyInit instanceof HttpHeaders ? this.lazyInit : this;
+    clone.lazyUpdate = (this.lazyUpdate || []).concat([update]);
+    return clone;
+  }
+
+  applyUpdate(update) {
+    const key = update.name.toLowerCase();
+
+    switch (update.op) {
+      case 'a':
+      case 's':
+        let value = update.value;
+
+        if (typeof value === 'string') {
+          value = [value];
+        }
+
+        if (value.length === 0) {
+          return;
+        }
+
+        this.maybeSetNormalizedName(update.name, key);
+        const base = (update.op === 'a' ? this.headers.get(key) : undefined) || [];
+        base.push(...value);
+        this.headers.set(key, base);
+        break;
+
+      case 'd':
+        const toDelete = update.value;
+
+        if (!toDelete) {
+          this.headers.delete(key);
+          this.normalizedNames.delete(key);
+        } else {
+          let existing = this.headers.get(key);
+
+          if (!existing) {
+            return;
+          }
+
+          existing = existing.filter(value => toDelete.indexOf(value) === -1);
+
+          if (existing.length === 0) {
+            this.headers.delete(key);
+            this.normalizedNames.delete(key);
+          } else {
+            this.headers.set(key, existing);
+          }
+        }
+
+        break;
+    }
+  }
+  /**
+   * @internal
+   */
+
+
+  forEach(fn) {
+    this.init();
+    Array.from(this.normalizedNames.keys()).forEach(key => fn(this.normalizedNames.get(key), this.headers.get(key)));
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Provides encoding and decoding of URL parameter and query-string values.
+ *
+ * Serializes and parses URL parameter keys and values to encode and decode them.
+ * If you pass URL query parameters without encoding,
+ * the query parameters can be misinterpreted at the receiving end.
+ *
+ *
+ * @publicApi
+ */
+
+
+class HttpUrlEncodingCodec {
+  /**
+   * Encodes a key name for a URL parameter or query-string.
+   * @param key The key name.
+   * @returns The encoded key name.
+   */
+  encodeKey(key) {
+    return standardEncoding(key);
+  }
+  /**
+   * Encodes the value of a URL parameter or query-string.
+   * @param value The value.
+   * @returns The encoded value.
+   */
+
+
+  encodeValue(value) {
+    return standardEncoding(value);
+  }
+  /**
+   * Decodes an encoded URL parameter or query-string key.
+   * @param key The encoded key name.
+   * @returns The decoded key name.
+   */
+
+
+  decodeKey(key) {
+    return decodeURIComponent(key);
+  }
+  /**
+   * Decodes an encoded URL parameter or query-string value.
+   * @param value The encoded value.
+   * @returns The decoded value.
+   */
+
+
+  decodeValue(value) {
+    return decodeURIComponent(value);
+  }
+
+}
+
+function paramParser(rawParams, codec) {
+  const map = new Map();
+
+  if (rawParams.length > 0) {
+    // The `window.location.search` can be used while creating an instance of the `HttpParams` class
+    // (e.g. `new HttpParams({ fromString: window.location.search })`). The `window.location.search`
+    // may start with the `?` char, so we strip it if it's present.
+    const params = rawParams.replace(/^\?/, '').split('&');
+    params.forEach(param => {
+      const eqIdx = param.indexOf('=');
+      const [key, val] = eqIdx == -1 ? [codec.decodeKey(param), ''] : [codec.decodeKey(param.slice(0, eqIdx)), codec.decodeValue(param.slice(eqIdx + 1))];
+      const list = map.get(key) || [];
+      list.push(val);
+      map.set(key, list);
+    });
+  }
+
+  return map;
+}
+/**
+ * Encode input string with standard encodeURIComponent and then un-encode specific characters.
+ */
+
+
+const STANDARD_ENCODING_REGEX = /%(\d[a-f0-9])/gi;
+const STANDARD_ENCODING_REPLACEMENTS = {
+  '40': '@',
+  '3A': ':',
+  '24': '$',
+  '2C': ',',
+  '3B': ';',
+  '2B': '+',
+  '3D': '=',
+  '3F': '?',
+  '2F': '/'
+};
+
+function standardEncoding(v) {
+  return encodeURIComponent(v).replace(STANDARD_ENCODING_REGEX, (s, t) => {
+    var _a;
+
+    return (_a = STANDARD_ENCODING_REPLACEMENTS[t]) !== null && _a !== void 0 ? _a : s;
+  });
+}
+
+function valueToString(value) {
+  return `${value}`;
+}
+/**
+ * An HTTP request/response body that represents serialized parameters,
+ * per the MIME type `application/x-www-form-urlencoded`.
+ *
+ * This class is immutable; all mutation operations return a new instance.
+ *
+ * @publicApi
+ */
+
+
+class HttpParams {
+  constructor(options = {}) {
+    this.updates = null;
+    this.cloneFrom = null;
+    this.encoder = options.encoder || new HttpUrlEncodingCodec();
+
+    if (!!options.fromString) {
+      if (!!options.fromObject) {
+        throw new Error(`Cannot specify both fromString and fromObject.`);
+      }
+
+      this.map = paramParser(options.fromString, this.encoder);
+    } else if (!!options.fromObject) {
+      this.map = new Map();
+      Object.keys(options.fromObject).forEach(key => {
+        const value = options.fromObject[key];
+        this.map.set(key, Array.isArray(value) ? value : [value]);
+      });
+    } else {
+      this.map = null;
+    }
+  }
+  /**
+   * Reports whether the body includes one or more values for a given parameter.
+   * @param param The parameter name.
+   * @returns True if the parameter has one or more values,
+   * false if it has no value or is not present.
+   */
+
+
+  has(param) {
+    this.init();
+    return this.map.has(param);
+  }
+  /**
+   * Retrieves the first value for a parameter.
+   * @param param The parameter name.
+   * @returns The first value of the given parameter,
+   * or `null` if the parameter is not present.
+   */
+
+
+  get(param) {
+    this.init();
+    const res = this.map.get(param);
+    return !!res ? res[0] : null;
+  }
+  /**
+   * Retrieves all values for a  parameter.
+   * @param param The parameter name.
+   * @returns All values in a string array,
+   * or `null` if the parameter not present.
+   */
+
+
+  getAll(param) {
+    this.init();
+    return this.map.get(param) || null;
+  }
+  /**
+   * Retrieves all the parameters for this body.
+   * @returns The parameter names in a string array.
+   */
+
+
+  keys() {
+    this.init();
+    return Array.from(this.map.keys());
+  }
+  /**
+   * Appends a new value to existing values for a parameter.
+   * @param param The parameter name.
+   * @param value The new value to add.
+   * @return A new body with the appended value.
+   */
+
+
+  append(param, value) {
+    return this.clone({
+      param,
+      value,
+      op: 'a'
+    });
+  }
+  /**
+   * Constructs a new body with appended values for the given parameter name.
+   * @param params parameters and values
+   * @return A new body with the new value.
+   */
+
+
+  appendAll(params) {
+    const updates = [];
+    Object.keys(params).forEach(param => {
+      const value = params[param];
+
+      if (Array.isArray(value)) {
+        value.forEach(_value => {
+          updates.push({
+            param,
+            value: _value,
+            op: 'a'
+          });
+        });
+      } else {
+        updates.push({
+          param,
+          value: value,
+          op: 'a'
+        });
+      }
+    });
+    return this.clone(updates);
+  }
+  /**
+   * Replaces the value for a parameter.
+   * @param param The parameter name.
+   * @param value The new value.
+   * @return A new body with the new value.
+   */
+
+
+  set(param, value) {
+    return this.clone({
+      param,
+      value,
+      op: 's'
+    });
+  }
+  /**
+   * Removes a given value or all values from a parameter.
+   * @param param The parameter name.
+   * @param value The value to remove, if provided.
+   * @return A new body with the given value removed, or with all values
+   * removed if no value is specified.
+   */
+
+
+  delete(param, value) {
+    return this.clone({
+      param,
+      value,
+      op: 'd'
+    });
+  }
+  /**
+   * Serializes the body to an encoded string, where key-value pairs (separated by `=`) are
+   * separated by `&`s.
+   */
+
+
+  toString() {
+    this.init();
+    return this.keys().map(key => {
+      const eKey = this.encoder.encodeKey(key); // `a: ['1']` produces `'a=1'`
+      // `b: []` produces `''`
+      // `c: ['1', '2']` produces `'c=1&c=2'`
+
+      return this.map.get(key).map(value => eKey + '=' + this.encoder.encodeValue(value)).join('&');
+    }) // filter out empty values because `b: []` produces `''`
+    // which results in `a=1&&c=1&c=2` instead of `a=1&c=1&c=2` if we don't
+    .filter(param => param !== '').join('&');
+  }
+
+  clone(update) {
+    const clone = new HttpParams({
+      encoder: this.encoder
+    });
+    clone.cloneFrom = this.cloneFrom || this;
+    clone.updates = (this.updates || []).concat(update);
+    return clone;
+  }
+
+  init() {
+    if (this.map === null) {
+      this.map = new Map();
+    }
+
+    if (this.cloneFrom !== null) {
+      this.cloneFrom.init();
+      this.cloneFrom.keys().forEach(key => this.map.set(key, this.cloneFrom.map.get(key)));
+      this.updates.forEach(update => {
+        switch (update.op) {
+          case 'a':
+          case 's':
+            const base = (update.op === 'a' ? this.map.get(update.param) : undefined) || [];
+            base.push(valueToString(update.value));
+            this.map.set(update.param, base);
+            break;
+
+          case 'd':
+            if (update.value !== undefined) {
+              let base = this.map.get(update.param) || [];
+              const idx = base.indexOf(valueToString(update.value));
+
+              if (idx !== -1) {
+                base.splice(idx, 1);
+              }
+
+              if (base.length > 0) {
+                this.map.set(update.param, base);
+              } else {
+                this.map.delete(update.param);
+              }
+            } else {
+              this.map.delete(update.param);
+              break;
+            }
+
+        }
+      });
+      this.cloneFrom = this.updates = null;
+    }
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * A token used to manipulate and access values stored in `HttpContext`.
+ *
+ * @publicApi
+ */
+
+
+class HttpContextToken {
+  constructor(defaultValue) {
+    this.defaultValue = defaultValue;
+  }
+
+}
+/**
+ * Http context stores arbitrary user defined values and ensures type safety without
+ * actually knowing the types. It is backed by a `Map` and guarantees that keys do not clash.
+ *
+ * This context is mutable and is shared between cloned requests unless explicitly specified.
+ *
+ * @usageNotes
+ *
+ * ### Usage Example
+ *
+ * ```typescript
+ * // inside cache.interceptors.ts
+ * export const IS_CACHE_ENABLED = new HttpContextToken<boolean>(() => false);
+ *
+ * export class CacheInterceptor implements HttpInterceptor {
+ *
+ *   intercept(req: HttpRequest<any>, delegate: HttpHandler): Observable<HttpEvent<any>> {
+ *     if (req.context.get(IS_CACHE_ENABLED) === true) {
+ *       return ...;
+ *     }
+ *     return delegate.handle(req);
+ *   }
+ * }
+ *
+ * // inside a service
+ *
+ * this.httpClient.get('/api/weather', {
+ *   context: new HttpContext().set(IS_CACHE_ENABLED, true)
+ * }).subscribe(...);
+ * ```
+ *
+ * @publicApi
+ */
+
+
+class HttpContext {
+  constructor() {
+    this.map = new Map();
+  }
+  /**
+   * Store a value in the context. If a value is already present it will be overwritten.
+   *
+   * @param token The reference to an instance of `HttpContextToken`.
+   * @param value The value to store.
+   *
+   * @returns A reference to itself for easy chaining.
+   */
+
+
+  set(token, value) {
+    this.map.set(token, value);
+    return this;
+  }
+  /**
+   * Retrieve the value associated with the given token.
+   *
+   * @param token The reference to an instance of `HttpContextToken`.
+   *
+   * @returns The stored value or default if one is defined.
+   */
+
+
+  get(token) {
+    if (!this.map.has(token)) {
+      this.map.set(token, token.defaultValue());
+    }
+
+    return this.map.get(token);
+  }
+  /**
+   * Delete the value associated with the given token.
+   *
+   * @param token The reference to an instance of `HttpContextToken`.
+   *
+   * @returns A reference to itself for easy chaining.
+   */
+
+
+  delete(token) {
+    this.map.delete(token);
+    return this;
+  }
+  /**
+   * Checks for existence of a given token.
+   *
+   * @param token The reference to an instance of `HttpContextToken`.
+   *
+   * @returns True if the token exists, false otherwise.
+   */
+
+
+  has(token) {
+    return this.map.has(token);
+  }
+  /**
+   * @returns a list of tokens currently stored in the context.
+   */
+
+
+  keys() {
+    return this.map.keys();
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Determine whether the given HTTP method may include a body.
+ */
+
+
+function mightHaveBody(method) {
+  switch (method) {
+    case 'DELETE':
+    case 'GET':
+    case 'HEAD':
+    case 'OPTIONS':
+    case 'JSONP':
+      return false;
+
+    default:
+      return true;
+  }
+}
+/**
+ * Safely assert whether the given value is an ArrayBuffer.
+ *
+ * In some execution environments ArrayBuffer is not defined.
+ */
+
+
+function isArrayBuffer(value) {
+  return typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer;
+}
+/**
+ * Safely assert whether the given value is a Blob.
+ *
+ * In some execution environments Blob is not defined.
+ */
+
+
+function isBlob(value) {
+  return typeof Blob !== 'undefined' && value instanceof Blob;
+}
+/**
+ * Safely assert whether the given value is a FormData instance.
+ *
+ * In some execution environments FormData is not defined.
+ */
+
+
+function isFormData(value) {
+  return typeof FormData !== 'undefined' && value instanceof FormData;
+}
+/**
+ * Safely assert whether the given value is a URLSearchParams instance.
+ *
+ * In some execution environments URLSearchParams is not defined.
+ */
+
+
+function isUrlSearchParams(value) {
+  return typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams;
+}
+/**
+ * An outgoing HTTP request with an optional typed body.
+ *
+ * `HttpRequest` represents an outgoing request, including URL, method,
+ * headers, body, and other request configuration options. Instances should be
+ * assumed to be immutable. To modify a `HttpRequest`, the `clone`
+ * method should be used.
+ *
+ * @publicApi
+ */
+
+
+class HttpRequest {
+  constructor(method, url, third, fourth) {
+    this.url = url;
+    /**
+     * The request body, or `null` if one isn't set.
+     *
+     * Bodies are not enforced to be immutable, as they can include a reference to any
+     * user-defined data type. However, interceptors should take care to preserve
+     * idempotence by treating them as such.
+     */
+
+    this.body = null;
+    /**
+     * Whether this request should be made in a way that exposes progress events.
+     *
+     * Progress events are expensive (change detection runs on each event) and so
+     * they should only be requested if the consumer intends to monitor them.
+     */
+
+    this.reportProgress = false;
+    /**
+     * Whether this request should be sent with outgoing credentials (cookies).
+     */
+
+    this.withCredentials = false;
+    /**
+     * The expected response type of the server.
+     *
+     * This is used to parse the response appropriately before returning it to
+     * the requestee.
+     */
+
+    this.responseType = 'json';
+    this.method = method.toUpperCase(); // Next, need to figure out which argument holds the HttpRequestInit
+    // options, if any.
+
+    let options; // Check whether a body argument is expected. The only valid way to omit
+    // the body argument is to use a known no-body method like GET.
+
+    if (mightHaveBody(this.method) || !!fourth) {
+      // Body is the third argument, options are the fourth.
+      this.body = third !== undefined ? third : null;
+      options = fourth;
+    } else {
+      // No body required, options are the third argument. The body stays null.
+      options = third;
+    } // If options have been passed, interpret them.
+
+
+    if (options) {
+      // Normalize reportProgress and withCredentials.
+      this.reportProgress = !!options.reportProgress;
+      this.withCredentials = !!options.withCredentials; // Override default response type of 'json' if one is provided.
+
+      if (!!options.responseType) {
+        this.responseType = options.responseType;
+      } // Override headers if they're provided.
+
+
+      if (!!options.headers) {
+        this.headers = options.headers;
+      }
+
+      if (!!options.context) {
+        this.context = options.context;
+      }
+
+      if (!!options.params) {
+        this.params = options.params;
+      }
+    } // If no headers have been passed in, construct a new HttpHeaders instance.
+
+
+    if (!this.headers) {
+      this.headers = new HttpHeaders();
+    } // If no context have been passed in, construct a new HttpContext instance.
+
+
+    if (!this.context) {
+      this.context = new HttpContext();
+    } // If no parameters have been passed in, construct a new HttpUrlEncodedParams instance.
+
+
+    if (!this.params) {
+      this.params = new HttpParams();
+      this.urlWithParams = url;
+    } else {
+      // Encode the parameters to a string in preparation for inclusion in the URL.
+      const params = this.params.toString();
+
+      if (params.length === 0) {
+        // No parameters, the visible URL is just the URL given at creation time.
+        this.urlWithParams = url;
+      } else {
+        // Does the URL already have query parameters? Look for '?'.
+        const qIdx = url.indexOf('?'); // There are 3 cases to handle:
+        // 1) No existing parameters -> append '?' followed by params.
+        // 2) '?' exists and is followed by existing query string ->
+        //    append '&' followed by params.
+        // 3) '?' exists at the end of the url -> append params directly.
+        // This basically amounts to determining the character, if any, with
+        // which to join the URL and parameters.
+
+        const sep = qIdx === -1 ? '?' : qIdx < url.length - 1 ? '&' : '';
+        this.urlWithParams = url + sep + params;
+      }
+    }
+  }
+  /**
+   * Transform the free-form body into a serialized format suitable for
+   * transmission to the server.
+   */
+
+
+  serializeBody() {
+    // If no body is present, no need to serialize it.
+    if (this.body === null) {
+      return null;
+    } // Check whether the body is already in a serialized form. If so,
+    // it can just be returned directly.
+
+
+    if (isArrayBuffer(this.body) || isBlob(this.body) || isFormData(this.body) || isUrlSearchParams(this.body) || typeof this.body === 'string') {
+      return this.body;
+    } // Check whether the body is an instance of HttpUrlEncodedParams.
+
+
+    if (this.body instanceof HttpParams) {
+      return this.body.toString();
+    } // Check whether the body is an object or array, and serialize with JSON if so.
+
+
+    if (typeof this.body === 'object' || typeof this.body === 'boolean' || Array.isArray(this.body)) {
+      return JSON.stringify(this.body);
+    } // Fall back on toString() for everything else.
+
+
+    return this.body.toString();
+  }
+  /**
+   * Examine the body and attempt to infer an appropriate MIME type
+   * for it.
+   *
+   * If no such type can be inferred, this method will return `null`.
+   */
+
+
+  detectContentTypeHeader() {
+    // An empty body has no content type.
+    if (this.body === null) {
+      return null;
+    } // FormData bodies rely on the browser's content type assignment.
+
+
+    if (isFormData(this.body)) {
+      return null;
+    } // Blobs usually have their own content type. If it doesn't, then
+    // no type can be inferred.
+
+
+    if (isBlob(this.body)) {
+      return this.body.type || null;
+    } // Array buffers have unknown contents and thus no type can be inferred.
+
+
+    if (isArrayBuffer(this.body)) {
+      return null;
+    } // Technically, strings could be a form of JSON data, but it's safe enough
+    // to assume they're plain strings.
+
+
+    if (typeof this.body === 'string') {
+      return 'text/plain';
+    } // `HttpUrlEncodedParams` has its own content-type.
+
+
+    if (this.body instanceof HttpParams) {
+      return 'application/x-www-form-urlencoded;charset=UTF-8';
+    } // Arrays, objects, boolean and numbers will be encoded as JSON.
+
+
+    if (typeof this.body === 'object' || typeof this.body === 'number' || typeof this.body === 'boolean') {
+      return 'application/json';
+    } // No type could be inferred.
+
+
+    return null;
+  }
+
+  clone(update = {}) {
+    var _a; // For method, url, and responseType, take the current value unless
+    // it is overridden in the update hash.
+
+
+    const method = update.method || this.method;
+    const url = update.url || this.url;
+    const responseType = update.responseType || this.responseType; // The body is somewhat special - a `null` value in update.body means
+    // whatever current body is present is being overridden with an empty
+    // body, whereas an `undefined` value in update.body implies no
+    // override.
+
+    const body = update.body !== undefined ? update.body : this.body; // Carefully handle the boolean options to differentiate between
+    // `false` and `undefined` in the update args.
+
+    const withCredentials = update.withCredentials !== undefined ? update.withCredentials : this.withCredentials;
+    const reportProgress = update.reportProgress !== undefined ? update.reportProgress : this.reportProgress; // Headers and params may be appended to if `setHeaders` or
+    // `setParams` are used.
+
+    let headers = update.headers || this.headers;
+    let params = update.params || this.params; // Pass on context if needed
+
+    const context = (_a = update.context) !== null && _a !== void 0 ? _a : this.context; // Check whether the caller has asked to add headers.
+
+    if (update.setHeaders !== undefined) {
+      // Set every requested header.
+      headers = Object.keys(update.setHeaders).reduce((headers, name) => headers.set(name, update.setHeaders[name]), headers);
+    } // Check whether the caller has asked to set params.
+
+
+    if (update.setParams) {
+      // Set every requested param.
+      params = Object.keys(update.setParams).reduce((params, param) => params.set(param, update.setParams[param]), params);
+    } // Finally, construct the new HttpRequest using the pieces from above.
+
+
+    return new HttpRequest(method, url, body, {
+      params,
+      headers,
+      context,
+      reportProgress,
+      responseType,
+      withCredentials
+    });
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Type enumeration for the different kinds of `HttpEvent`.
+ *
+ * @publicApi
+ */
+
+
+var HttpEventType;
+
+(function (HttpEventType) {
+  /**
+   * The request was sent out over the wire.
+   */
+  HttpEventType[HttpEventType["Sent"] = 0] = "Sent";
+  /**
+   * An upload progress event was received.
+   */
+
+  HttpEventType[HttpEventType["UploadProgress"] = 1] = "UploadProgress";
+  /**
+   * The response status code and headers were received.
+   */
+
+  HttpEventType[HttpEventType["ResponseHeader"] = 2] = "ResponseHeader";
+  /**
+   * A download progress event was received.
+   */
+
+  HttpEventType[HttpEventType["DownloadProgress"] = 3] = "DownloadProgress";
+  /**
+   * The full response including the body was received.
+   */
+
+  HttpEventType[HttpEventType["Response"] = 4] = "Response";
+  /**
+   * A custom event from an interceptor or a backend.
+   */
+
+  HttpEventType[HttpEventType["User"] = 5] = "User";
+})(HttpEventType || (HttpEventType = {}));
+/**
+ * Base class for both `HttpResponse` and `HttpHeaderResponse`.
+ *
+ * @publicApi
+ */
+
+
+class HttpResponseBase {
+  /**
+   * Super-constructor for all responses.
+   *
+   * The single parameter accepted is an initialization hash. Any properties
+   * of the response passed there will override the default values.
+   */
+  constructor(init, defaultStatus = 200
+  /* Ok */
+  , defaultStatusText = 'OK') {
+    // If the hash has values passed, use them to initialize the response.
+    // Otherwise use the default values.
+    this.headers = init.headers || new HttpHeaders();
+    this.status = init.status !== undefined ? init.status : defaultStatus;
+    this.statusText = init.statusText || defaultStatusText;
+    this.url = init.url || null; // Cache the ok value to avoid defining a getter.
+
+    this.ok = this.status >= 200 && this.status < 300;
+  }
+
+}
+/**
+ * A partial HTTP response which only includes the status and header data,
+ * but no response body.
+ *
+ * `HttpHeaderResponse` is a `HttpEvent` available on the response
+ * event stream, only when progress events are requested.
+ *
+ * @publicApi
+ */
+
+
+class HttpHeaderResponse extends HttpResponseBase {
+  /**
+   * Create a new `HttpHeaderResponse` with the given parameters.
+   */
+  constructor(init = {}) {
+    super(init);
+    this.type = HttpEventType.ResponseHeader;
+  }
+  /**
+   * Copy this `HttpHeaderResponse`, overriding its contents with the
+   * given parameter hash.
+   */
+
+
+  clone(update = {}) {
+    // Perform a straightforward initialization of the new HttpHeaderResponse,
+    // overriding the current parameters with new ones if given.
+    return new HttpHeaderResponse({
+      headers: update.headers || this.headers,
+      status: update.status !== undefined ? update.status : this.status,
+      statusText: update.statusText || this.statusText,
+      url: update.url || this.url || undefined
+    });
+  }
+
+}
+/**
+ * A full HTTP response, including a typed response body (which may be `null`
+ * if one was not returned).
+ *
+ * `HttpResponse` is a `HttpEvent` available on the response event
+ * stream.
+ *
+ * @publicApi
+ */
+
+
+class HttpResponse extends HttpResponseBase {
+  /**
+   * Construct a new `HttpResponse`.
+   */
+  constructor(init = {}) {
+    super(init);
+    this.type = HttpEventType.Response;
+    this.body = init.body !== undefined ? init.body : null;
+  }
+
+  clone(update = {}) {
+    return new HttpResponse({
+      body: update.body !== undefined ? update.body : this.body,
+      headers: update.headers || this.headers,
+      status: update.status !== undefined ? update.status : this.status,
+      statusText: update.statusText || this.statusText,
+      url: update.url || this.url || undefined
+    });
+  }
+
+}
+/**
+ * A response that represents an error or failure, either from a
+ * non-successful HTTP status, an error while executing the request,
+ * or some other failure which occurred during the parsing of the response.
+ *
+ * Any error returned on the `Observable` response stream will be
+ * wrapped in an `HttpErrorResponse` to provide additional context about
+ * the state of the HTTP layer when the error occurred. The error property
+ * will contain either a wrapped Error object or the error response returned
+ * from the server.
+ *
+ * @publicApi
+ */
+
+
+class HttpErrorResponse extends HttpResponseBase {
+  constructor(init) {
+    // Initialize with a default status of 0 / Unknown Error.
+    super(init, 0, 'Unknown Error');
+    this.name = 'HttpErrorResponse';
+    /**
+     * Errors are never okay, even when the status code is in the 2xx success range.
+     */
+
+    this.ok = false; // If the response was successful, then this was a parse error. Otherwise, it was
+    // a protocol-level failure of some sort. Either the request failed in transit
+    // or the server returned an unsuccessful status code.
+
+    if (this.status >= 200 && this.status < 300) {
+      this.message = `Http failure during parsing for ${init.url || '(unknown url)'}`;
+    } else {
+      this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${init.statusText}`;
+    }
+
+    this.error = init.error || null;
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Constructs an instance of `HttpRequestOptions<T>` from a source `HttpMethodOptions` and
+ * the given `body`. This function clones the object and adds the body.
+ *
+ * Note that the `responseType` *options* value is a String that identifies the
+ * single data type of the response.
+ * A single overload version of the method handles each response type.
+ * The value of `responseType` cannot be a union, as the combined signature could imply.
+ *
+ */
+
+
+function addBody(options, body) {
+  return {
+    body,
+    headers: options.headers,
+    context: options.context,
+    observe: options.observe,
+    params: options.params,
+    reportProgress: options.reportProgress,
+    responseType: options.responseType,
+    withCredentials: options.withCredentials
+  };
+}
+/**
+ * Performs HTTP requests.
+ * This service is available as an injectable class, with methods to perform HTTP requests.
+ * Each request method has multiple signatures, and the return type varies based on
+ * the signature that is called (mainly the values of `observe` and `responseType`).
+ *
+ * Note that the `responseType` *options* value is a String that identifies the
+ * single data type of the response.
+ * A single overload version of the method handles each response type.
+ * The value of `responseType` cannot be a union, as the combined signature could imply.
+
+ *
+ * @usageNotes
+ * Sample HTTP requests for the [Tour of Heroes](/tutorial/toh-pt0) application.
+ *
+ * ### HTTP Request Example
+ *
+ * ```
+ *  // GET heroes whose name contains search term
+ * searchHeroes(term: string): observable<Hero[]>{
+ *
+ *  const params = new HttpParams({fromString: 'name=term'});
+ *    return this.httpClient.request('GET', this.heroesUrl, {responseType:'json', params});
+ * }
+ * ```
+ *
+ * Alternatively, the parameter string can be used without invoking HttpParams
+ * by directly joining to the URL.
+ * ```
+ * this.httpClient.request('GET', this.heroesUrl + '?' + 'name=term', {responseType:'json'});
+ * ```
+ *
+ *
+ * ### JSONP Example
+ * ```
+ * requestJsonp(url, callback = 'callback') {
+ *  return this.httpClient.jsonp(this.heroesURL, callback);
+ * }
+ * ```
+ *
+ * ### PATCH Example
+ * ```
+ * // PATCH one of the heroes' name
+ * patchHero (id: number, heroName: string): Observable<{}> {
+ * const url = `${this.heroesUrl}/${id}`;   // PATCH api/heroes/42
+ *  return this.httpClient.patch(url, {name: heroName}, httpOptions)
+ *    .pipe(catchError(this.handleError('patchHero')));
+ * }
+ * ```
+ *
+ * @see [HTTP Guide](guide/http)
+ * @see [HTTP Request](api/common/http/HttpRequest)
+ *
+ * @publicApi
+ */
+
+
+class HttpClient {
+  constructor(handler) {
+    this.handler = handler;
+  }
+  /**
+   * Constructs an observable for a generic HTTP request that, when subscribed,
+   * fires the request through the chain of registered interceptors and on to the
+   * server.
+   *
+   * You can pass an `HttpRequest` directly as the only parameter. In this case,
+   * the call returns an observable of the raw `HttpEvent` stream.
+   *
+   * Alternatively you can pass an HTTP method as the first parameter,
+   * a URL string as the second, and an options hash containing the request body as the third.
+   * See `addBody()`. In this case, the specified `responseType` and `observe` options determine the
+   * type of returned observable.
+   *   * The `responseType` value determines how a successful response body is parsed.
+   *   * If `responseType` is the default `json`, you can pass a type interface for the resulting
+   * object as a type parameter to the call.
+   *
+   * The `observe` value determines the return type, according to what you are interested in
+   * observing.
+   *   * An `observe` value of events returns an observable of the raw `HttpEvent` stream, including
+   * progress events by default.
+   *   * An `observe` value of response returns an observable of `HttpResponse<T>`,
+   * where the `T` parameter depends on the `responseType` and any optionally provided type
+   * parameter.
+   *   * An `observe` value of body returns an observable of `<T>` with the same `T` body type.
+   *
+   */
+
+
+  request(first, url, options = {}) {
+    let req; // First, check whether the primary argument is an instance of `HttpRequest`.
+
+    if (first instanceof HttpRequest) {
+      // It is. The other arguments must be undefined (per the signatures) and can be
+      // ignored.
+      req = first;
+    } else {
+      // It's a string, so it represents a URL. Construct a request based on it,
+      // and incorporate the remaining arguments (assuming `GET` unless a method is
+      // provided.
+      // Figure out the headers.
+      let headers = undefined;
+
+      if (options.headers instanceof HttpHeaders) {
+        headers = options.headers;
+      } else {
+        headers = new HttpHeaders(options.headers);
+      } // Sort out parameters.
+
+
+      let params = undefined;
+
+      if (!!options.params) {
+        if (options.params instanceof HttpParams) {
+          params = options.params;
+        } else {
+          params = new HttpParams({
+            fromObject: options.params
+          });
+        }
+      } // Construct the request.
+
+
+      req = new HttpRequest(first, url, options.body !== undefined ? options.body : null, {
+        headers,
+        context: options.context,
+        params,
+        reportProgress: options.reportProgress,
+        // By default, JSON is assumed to be returned for all calls.
+        responseType: options.responseType || 'json',
+        withCredentials: options.withCredentials
+      });
+    } // Start with an Observable.of() the initial request, and run the handler (which
+    // includes all interceptors) inside a concatMap(). This way, the handler runs
+    // inside an Observable chain, which causes interceptors to be re-run on every
+    // subscription (this also makes retries re-run the handler, including interceptors).
+
+
+    const events$ = (0,rxjs__WEBPACK_IMPORTED_MODULE_0__.of)(req).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_1__.concatMap)(req => this.handler.handle(req))); // If coming via the API signature which accepts a previously constructed HttpRequest,
+    // the only option is to get the event stream. Otherwise, return the event stream if
+    // that is what was requested.
+
+    if (first instanceof HttpRequest || options.observe === 'events') {
+      return events$;
+    } // The requested stream contains either the full response or the body. In either
+    // case, the first step is to filter the event stream to extract a stream of
+    // responses(s).
+
+
+    const res$ = events$.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.filter)(event => event instanceof HttpResponse)); // Decide which stream to return.
+
+    switch (options.observe || 'body') {
+      case 'body':
+        // The requested stream is the body. Map the response stream to the response
+        // body. This could be done more simply, but a misbehaving interceptor might
+        // transform the response body into a different format and ignore the requested
+        // responseType. Guard against this by validating that the response is of the
+        // requested type.
+        switch (req.responseType) {
+          case 'arraybuffer':
+            return res$.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(res => {
+              // Validate that the body is an ArrayBuffer.
+              if (res.body !== null && !(res.body instanceof ArrayBuffer)) {
+                throw new Error('Response is not an ArrayBuffer.');
+              }
+
+              return res.body;
+            }));
+
+          case 'blob':
+            return res$.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(res => {
+              // Validate that the body is a Blob.
+              if (res.body !== null && !(res.body instanceof Blob)) {
+                throw new Error('Response is not a Blob.');
+              }
+
+              return res.body;
+            }));
+
+          case 'text':
+            return res$.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(res => {
+              // Validate that the body is a string.
+              if (res.body !== null && typeof res.body !== 'string') {
+                throw new Error('Response is not a string.');
+              }
+
+              return res.body;
+            }));
+
+          case 'json':
+          default:
+            // No validation needed for JSON responses, as they can be of any type.
+            return res$.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(res => res.body));
+        }
+
+      case 'response':
+        // The response stream was requested directly, so return it.
+        return res$;
+
+      default:
+        // Guard against new future observe types being added.
+        throw new Error(`Unreachable: unhandled observe type ${options.observe}}`);
+    }
+  }
+  /**
+   * Constructs an observable that, when subscribed, causes the configured
+   * `DELETE` request to execute on the server. See the individual overloads for
+   * details on the return type.
+   *
+   * @param url     The endpoint URL.
+   * @param options The HTTP options to send with the request.
+   *
+   */
+
+
+  delete(url, options = {}) {
+    return this.request('DELETE', url, options);
+  }
+  /**
+   * Constructs an observable that, when subscribed, causes the configured
+   * `GET` request to execute on the server. See the individual overloads for
+   * details on the return type.
+   */
+
+
+  get(url, options = {}) {
+    return this.request('GET', url, options);
+  }
+  /**
+   * Constructs an observable that, when subscribed, causes the configured
+   * `HEAD` request to execute on the server. The `HEAD` method returns
+   * meta information about the resource without transferring the
+   * resource itself. See the individual overloads for
+   * details on the return type.
+   */
+
+
+  head(url, options = {}) {
+    return this.request('HEAD', url, options);
+  }
+  /**
+   * Constructs an `Observable` that, when subscribed, causes a request with the special method
+   * `JSONP` to be dispatched via the interceptor pipeline.
+   * The [JSONP pattern](https://en.wikipedia.org/wiki/JSONP) works around limitations of certain
+   * API endpoints that don't support newer,
+   * and preferable [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) protocol.
+   * JSONP treats the endpoint API as a JavaScript file and tricks the browser to process the
+   * requests even if the API endpoint is not located on the same domain (origin) as the client-side
+   * application making the request.
+   * The endpoint API must support JSONP callback for JSONP requests to work.
+   * The resource API returns the JSON response wrapped in a callback function.
+   * You can pass the callback function name as one of the query parameters.
+   * Note that JSONP requests can only be used with `GET` requests.
+   *
+   * @param url The resource URL.
+   * @param callbackParam The callback function name.
+   *
+   */
+
+
+  jsonp(url, callbackParam) {
+    return this.request('JSONP', url, {
+      params: new HttpParams().append(callbackParam, 'JSONP_CALLBACK'),
+      observe: 'body',
+      responseType: 'json'
+    });
+  }
+  /**
+   * Constructs an `Observable` that, when subscribed, causes the configured
+   * `OPTIONS` request to execute on the server. This method allows the client
+   * to determine the supported HTTP methods and other capabilities of an endpoint,
+   * without implying a resource action. See the individual overloads for
+   * details on the return type.
+   */
+
+
+  options(url, options = {}) {
+    return this.request('OPTIONS', url, options);
+  }
+  /**
+   * Constructs an observable that, when subscribed, causes the configured
+   * `PATCH` request to execute on the server. See the individual overloads for
+   * details on the return type.
+   */
+
+
+  patch(url, body, options = {}) {
+    return this.request('PATCH', url, addBody(options, body));
+  }
+  /**
+   * Constructs an observable that, when subscribed, causes the configured
+   * `POST` request to execute on the server. The server responds with the location of
+   * the replaced resource. See the individual overloads for
+   * details on the return type.
+   */
+
+
+  post(url, body, options = {}) {
+    return this.request('POST', url, addBody(options, body));
+  }
+  /**
+   * Constructs an observable that, when subscribed, causes the configured
+   * `PUT` request to execute on the server. The `PUT` method replaces an existing resource
+   * with a new set of values.
+   * See the individual overloads for details on the return type.
+   */
+
+
+  put(url, body, options = {}) {
+    return this.request('PUT', url, addBody(options, body));
+  }
+
+}
+
+HttpClient.ɵfac = function HttpClient_Factory(t) {
+  return new (t || HttpClient)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](HttpHandler));
+};
+
+HttpClient.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: HttpClient,
+  factory: HttpClient.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpClient, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], function () {
+    return [{
+      type: HttpHandler
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * `HttpHandler` which applies an `HttpInterceptor` to an `HttpRequest`.
+ *
+ *
+ */
+
+
+class HttpInterceptorHandler {
+  constructor(next, interceptor) {
+    this.next = next;
+    this.interceptor = interceptor;
+  }
+
+  handle(req) {
+    return this.interceptor.intercept(req, this.next);
+  }
+
+}
+/**
+ * A multi-provider token that represents the array of registered
+ * `HttpInterceptor` objects.
+ *
+ * @publicApi
+ */
+
+
+const HTTP_INTERCEPTORS = new _angular_core__WEBPACK_IMPORTED_MODULE_4__.InjectionToken('HTTP_INTERCEPTORS');
+
+class NoopInterceptor {
+  intercept(req, next) {
+    return next.handle(req);
+  }
+
+}
+
+NoopInterceptor.ɵfac = function NoopInterceptor_Factory(t) {
+  return new (t || NoopInterceptor)();
+};
+
+NoopInterceptor.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: NoopInterceptor,
+  factory: NoopInterceptor.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](NoopInterceptor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// Every request made through JSONP needs a callback name that's unique across the
+// whole page. Each request is assigned an id and the callback name is constructed
+// from that. The next id to be assigned is tracked in a global variable here that
+// is shared among all applications on the page.
+
+
+let nextRequestId = 0; // Error text given when a JSONP script is injected, but doesn't invoke the callback
+// passed in its URL.
+
+const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.'; // Error text given when a request is passed to the JsonpClientBackend that doesn't
+// have a request method JSONP.
+
+const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use JSONP request method.';
+const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json response type.';
+/**
+ * DI token/abstract type representing a map of JSONP callbacks.
+ *
+ * In the browser, this should always be the `window` object.
+ *
+ *
+ */
+
+class JsonpCallbackContext {}
+/**
+ * Processes an `HttpRequest` with the JSONP method,
+ * by performing JSONP style requests.
+ * @see `HttpHandler`
+ * @see `HttpXhrBackend`
+ *
+ * @publicApi
+ */
+
+
+class JsonpClientBackend {
+  constructor(callbackMap, document) {
+    this.callbackMap = callbackMap;
+    this.document = document;
+    /**
+     * A resolved promise that can be used to schedule microtasks in the event handlers.
+     */
+
+    this.resolvedPromise = Promise.resolve();
+  }
+  /**
+   * Get the name of the next callback method, by incrementing the global `nextRequestId`.
+   */
+
+
+  nextCallback() {
+    return `ng_jsonp_callback_${nextRequestId++}`;
+  }
+  /**
+   * Processes a JSONP request and returns an event stream of the results.
+   * @param req The request object.
+   * @returns An observable of the response events.
+   *
+   */
+
+
+  handle(req) {
+    // Firstly, check both the method and response type. If either doesn't match
+    // then the request was improperly routed here and cannot be handled.
+    if (req.method !== 'JSONP') {
+      throw new Error(JSONP_ERR_WRONG_METHOD);
+    } else if (req.responseType !== 'json') {
+      throw new Error(JSONP_ERR_WRONG_RESPONSE_TYPE);
+    } // Everything else happens inside the Observable boundary.
+
+
+    return new rxjs__WEBPACK_IMPORTED_MODULE_5__.Observable(observer => {
+      // The first step to make a request is to generate the callback name, and replace the
+      // callback placeholder in the URL with the name. Care has to be taken here to ensure
+      // a trailing &, if matched, gets inserted back into the URL in the correct place.
+      const callback = this.nextCallback();
+      const url = req.urlWithParams.replace(/=JSONP_CALLBACK(&|$)/, `=${callback}$1`); // Construct the <script> tag and point it at the URL.
+
+      const node = this.document.createElement('script');
+      node.src = url; // A JSONP request requires waiting for multiple callbacks. These variables
+      // are closed over and track state across those callbacks.
+      // The response object, if one has been received, or null otherwise.
+
+      let body = null; // Whether the response callback has been called.
+
+      let finished = false; // Whether the request has been cancelled (and thus any other callbacks)
+      // should be ignored.
+
+      let cancelled = false; // Set the response callback in this.callbackMap (which will be the window
+      // object in the browser. The script being loaded via the <script> tag will
+      // eventually call this callback.
+
+      this.callbackMap[callback] = data => {
+        // Data has been received from the JSONP script. Firstly, delete this callback.
+        delete this.callbackMap[callback]; // Next, make sure the request wasn't cancelled in the meantime.
+
+        if (cancelled) {
+          return;
+        } // Set state to indicate data was received.
+
+
+        body = data;
+        finished = true;
+      }; // cleanup() is a utility closure that removes the <script> from the page and
+      // the response callback from the window. This logic is used in both the
+      // success, error, and cancellation paths, so it's extracted out for convenience.
+
+
+      const cleanup = () => {
+        // Remove the <script> tag if it's still on the page.
+        if (node.parentNode) {
+          node.parentNode.removeChild(node);
+        } // Remove the response callback from the callbackMap (window object in the
+        // browser).
+
+
+        delete this.callbackMap[callback];
+      }; // onLoad() is the success callback which runs after the response callback
+      // if the JSONP script loads successfully. The event itself is unimportant.
+      // If something went wrong, onLoad() may run without the response callback
+      // having been invoked.
+
+
+      const onLoad = event => {
+        // Do nothing if the request has been cancelled.
+        if (cancelled) {
+          return;
+        } // We wrap it in an extra Promise, to ensure the microtask
+        // is scheduled after the loaded endpoint has executed any potential microtask itself,
+        // which is not guaranteed in Internet Explorer and EdgeHTML. See issue #39496
+
+
+        this.resolvedPromise.then(() => {
+          // Cleanup the page.
+          cleanup(); // Check whether the response callback has run.
+
+          if (!finished) {
+            // It hasn't, something went wrong with the request. Return an error via
+            // the Observable error path. All JSONP errors have status 0.
+            observer.error(new HttpErrorResponse({
+              url,
+              status: 0,
+              statusText: 'JSONP Error',
+              error: new Error(JSONP_ERR_NO_CALLBACK)
+            }));
+            return;
+          } // Success. body either contains the response body or null if none was
+          // returned.
+
+
+          observer.next(new HttpResponse({
+            body,
+            status: 200
+            /* Ok */
+            ,
+            statusText: 'OK',
+            url
+          })); // Complete the stream, the response is over.
+
+          observer.complete();
+        });
+      }; // onError() is the error callback, which runs if the script returned generates
+      // a Javascript error. It emits the error via the Observable error channel as
+      // a HttpErrorResponse.
+
+
+      const onError = error => {
+        // If the request was already cancelled, no need to emit anything.
+        if (cancelled) {
+          return;
+        }
+
+        cleanup(); // Wrap the error in a HttpErrorResponse.
+
+        observer.error(new HttpErrorResponse({
+          error,
+          status: 0,
+          statusText: 'JSONP Error',
+          url
+        }));
+      }; // Subscribe to both the success (load) and error events on the <script> tag,
+      // and add it to the page.
+
+
+      node.addEventListener('load', onLoad);
+      node.addEventListener('error', onError);
+      this.document.body.appendChild(node); // The request has now been successfully sent.
+
+      observer.next({
+        type: HttpEventType.Sent
+      }); // Cancellation handler.
+
+      return () => {
+        // Track the cancellation so event listeners won't do anything even if already scheduled.
+        cancelled = true; // Remove the event listeners so they won't run if the events later fire.
+
+        node.removeEventListener('load', onLoad);
+        node.removeEventListener('error', onError); // And finally, clean up the page.
+
+        cleanup();
+      };
+    });
+  }
+
+}
+
+JsonpClientBackend.ɵfac = function JsonpClientBackend_Factory(t) {
+  return new (t || JsonpClientBackend)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](JsonpCallbackContext), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_angular_common__WEBPACK_IMPORTED_MODULE_6__.DOCUMENT));
+};
+
+JsonpClientBackend.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: JsonpClientBackend,
+  factory: JsonpClientBackend.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](JsonpClientBackend, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], function () {
+    return [{
+      type: JsonpCallbackContext
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Inject,
+        args: [_angular_common__WEBPACK_IMPORTED_MODULE_6__.DOCUMENT]
+      }]
+    }];
+  }, null);
+})();
+/**
+ * Identifies requests with the method JSONP and
+ * shifts them to the `JsonpClientBackend`.
+ *
+ * @see `HttpInterceptor`
+ *
+ * @publicApi
+ */
+
+
+class JsonpInterceptor {
+  constructor(jsonp) {
+    this.jsonp = jsonp;
+  }
+  /**
+   * Identifies and handles a given JSONP request.
+   * @param req The outgoing request object to handle.
+   * @param next The next interceptor in the chain, or the backend
+   * if no interceptors remain in the chain.
+   * @returns An observable of the event stream.
+   */
+
+
+  intercept(req, next) {
+    if (req.method === 'JSONP') {
+      return this.jsonp.handle(req);
+    } // Fall through for normal HTTP requests.
+
+
+    return next.handle(req);
+  }
+
+}
+
+JsonpInterceptor.ɵfac = function JsonpInterceptor_Factory(t) {
+  return new (t || JsonpInterceptor)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](JsonpClientBackend));
+};
+
+JsonpInterceptor.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: JsonpInterceptor,
+  factory: JsonpInterceptor.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](JsonpInterceptor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], function () {
+    return [{
+      type: JsonpClientBackend
+    }];
+  }, null);
+})();
+
+const XSSI_PREFIX = /^\)\]\}',?\n/;
+/**
+ * Determine an appropriate URL for the response, by checking either
+ * XMLHttpRequest.responseURL or the X-Request-URL header.
+ */
+
+function getResponseUrl(xhr) {
+  if ('responseURL' in xhr && xhr.responseURL) {
+    return xhr.responseURL;
+  }
+
+  if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+    return xhr.getResponseHeader('X-Request-URL');
+  }
+
+  return null;
+}
+/**
+ * Uses `XMLHttpRequest` to send requests to a backend server.
+ * @see `HttpHandler`
+ * @see `JsonpClientBackend`
+ *
+ * @publicApi
+ */
+
+
+class HttpXhrBackend {
+  constructor(xhrFactory) {
+    this.xhrFactory = xhrFactory;
+  }
+  /**
+   * Processes a request and returns a stream of response events.
+   * @param req The request object.
+   * @returns An observable of the response events.
+   */
+
+
+  handle(req) {
+    // Quick check to give a better error message when a user attempts to use
+    // HttpClient.jsonp() without installing the HttpClientJsonpModule
+    if (req.method === 'JSONP') {
+      throw new Error(`Attempted to construct Jsonp request without HttpClientJsonpModule installed.`);
+    } // Everything happens on Observable subscription.
+
+
+    return new rxjs__WEBPACK_IMPORTED_MODULE_5__.Observable(observer => {
+      // Start by setting up the XHR object with request method, URL, and withCredentials flag.
+      const xhr = this.xhrFactory.build();
+      xhr.open(req.method, req.urlWithParams);
+
+      if (!!req.withCredentials) {
+        xhr.withCredentials = true;
+      } // Add all the requested headers.
+
+
+      req.headers.forEach((name, values) => xhr.setRequestHeader(name, values.join(','))); // Add an Accept header if one isn't present already.
+
+      if (!req.headers.has('Accept')) {
+        xhr.setRequestHeader('Accept', 'application/json, text/plain, */*');
+      } // Auto-detect the Content-Type header if one isn't present already.
+
+
+      if (!req.headers.has('Content-Type')) {
+        const detectedType = req.detectContentTypeHeader(); // Sometimes Content-Type detection fails.
+
+        if (detectedType !== null) {
+          xhr.setRequestHeader('Content-Type', detectedType);
+        }
+      } // Set the responseType if one was requested.
+
+
+      if (req.responseType) {
+        const responseType = req.responseType.toLowerCase(); // JSON responses need to be processed as text. This is because if the server
+        // returns an XSSI-prefixed JSON response, the browser will fail to parse it,
+        // xhr.response will be null, and xhr.responseText cannot be accessed to
+        // retrieve the prefixed JSON data in order to strip the prefix. Thus, all JSON
+        // is parsed by first requesting text and then applying JSON.parse.
+
+        xhr.responseType = responseType !== 'json' ? responseType : 'text';
+      } // Serialize the request body if one is present. If not, this will be set to null.
+
+
+      const reqBody = req.serializeBody(); // If progress events are enabled, response headers will be delivered
+      // in two events - the HttpHeaderResponse event and the full HttpResponse
+      // event. However, since response headers don't change in between these
+      // two events, it doesn't make sense to parse them twice. So headerResponse
+      // caches the data extracted from the response whenever it's first parsed,
+      // to ensure parsing isn't duplicated.
+
+      let headerResponse = null; // partialFromXhr extracts the HttpHeaderResponse from the current XMLHttpRequest
+      // state, and memoizes it into headerResponse.
+
+      const partialFromXhr = () => {
+        if (headerResponse !== null) {
+          return headerResponse;
+        }
+
+        const statusText = xhr.statusText || 'OK'; // Parse headers from XMLHttpRequest - this step is lazy.
+
+        const headers = new HttpHeaders(xhr.getAllResponseHeaders()); // Read the response URL from the XMLHttpResponse instance and fall back on the
+        // request URL.
+
+        const url = getResponseUrl(xhr) || req.url; // Construct the HttpHeaderResponse and memoize it.
+
+        headerResponse = new HttpHeaderResponse({
+          headers,
+          status: xhr.status,
+          statusText,
+          url
+        });
+        return headerResponse;
+      }; // Next, a few closures are defined for the various events which XMLHttpRequest can
+      // emit. This allows them to be unregistered as event listeners later.
+      // First up is the load event, which represents a response being fully available.
+
+
+      const onLoad = () => {
+        // Read response state from the memoized partial data.
+        let {
+          headers,
+          status,
+          statusText,
+          url
+        } = partialFromXhr(); // The body will be read out if present.
+
+        let body = null;
+
+        if (status !== 204
+        /* NoContent */
+        ) {
+          // Use XMLHttpRequest.response if set, responseText otherwise.
+          body = typeof xhr.response === 'undefined' ? xhr.responseText : xhr.response;
+        } // Normalize another potential bug (this one comes from CORS).
+
+
+        if (status === 0) {
+          status = !!body ? 200
+          /* Ok */
+          : 0;
+        } // ok determines whether the response will be transmitted on the event or
+        // error channel. Unsuccessful status codes (not 2xx) will always be errors,
+        // but a successful status code can still result in an error if the user
+        // asked for JSON data and the body cannot be parsed as such.
+
+
+        let ok = status >= 200 && status < 300; // Check whether the body needs to be parsed as JSON (in many cases the browser
+        // will have done that already).
+
+        if (req.responseType === 'json' && typeof body === 'string') {
+          // Save the original body, before attempting XSSI prefix stripping.
+          const originalBody = body;
+          body = body.replace(XSSI_PREFIX, '');
+
+          try {
+            // Attempt the parse. If it fails, a parse error should be delivered to the user.
+            body = body !== '' ? JSON.parse(body) : null;
+          } catch (error) {
+            // Since the JSON.parse failed, it's reasonable to assume this might not have been a
+            // JSON response. Restore the original body (including any XSSI prefix) to deliver
+            // a better error response.
+            body = originalBody; // If this was an error request to begin with, leave it as a string, it probably
+            // just isn't JSON. Otherwise, deliver the parsing error to the user.
+
+            if (ok) {
+              // Even though the response status was 2xx, this is still an error.
+              ok = false; // The parse error contains the text of the body that failed to parse.
+
+              body = {
+                error,
+                text: body
+              };
+            }
+          }
+        }
+
+        if (ok) {
+          // A successful response is delivered on the event stream.
+          observer.next(new HttpResponse({
+            body,
+            headers,
+            status,
+            statusText,
+            url: url || undefined
+          })); // The full body has been received and delivered, no further events
+          // are possible. This request is complete.
+
+          observer.complete();
+        } else {
+          // An unsuccessful request is delivered on the error channel.
+          observer.error(new HttpErrorResponse({
+            // The error in this case is the response body (error from the server).
+            error: body,
+            headers,
+            status,
+            statusText,
+            url: url || undefined
+          }));
+        }
+      }; // The onError callback is called when something goes wrong at the network level.
+      // Connection timeout, DNS error, offline, etc. These are actual errors, and are
+      // transmitted on the error channel.
+
+
+      const onError = error => {
+        const {
+          url
+        } = partialFromXhr();
+        const res = new HttpErrorResponse({
+          error,
+          status: xhr.status || 0,
+          statusText: xhr.statusText || 'Unknown Error',
+          url: url || undefined
+        });
+        observer.error(res);
+      }; // The sentHeaders flag tracks whether the HttpResponseHeaders event
+      // has been sent on the stream. This is necessary to track if progress
+      // is enabled since the event will be sent on only the first download
+      // progerss event.
+
+
+      let sentHeaders = false; // The download progress event handler, which is only registered if
+      // progress events are enabled.
+
+      const onDownProgress = event => {
+        // Send the HttpResponseHeaders event if it hasn't been sent already.
+        if (!sentHeaders) {
+          observer.next(partialFromXhr());
+          sentHeaders = true;
+        } // Start building the download progress event to deliver on the response
+        // event stream.
+
+
+        let progressEvent = {
+          type: HttpEventType.DownloadProgress,
+          loaded: event.loaded
+        }; // Set the total number of bytes in the event if it's available.
+
+        if (event.lengthComputable) {
+          progressEvent.total = event.total;
+        } // If the request was for text content and a partial response is
+        // available on XMLHttpRequest, include it in the progress event
+        // to allow for streaming reads.
+
+
+        if (req.responseType === 'text' && !!xhr.responseText) {
+          progressEvent.partialText = xhr.responseText;
+        } // Finally, fire the event.
+
+
+        observer.next(progressEvent);
+      }; // The upload progress event handler, which is only registered if
+      // progress events are enabled.
+
+
+      const onUpProgress = event => {
+        // Upload progress events are simpler. Begin building the progress
+        // event.
+        let progress = {
+          type: HttpEventType.UploadProgress,
+          loaded: event.loaded
+        }; // If the total number of bytes being uploaded is available, include
+        // it.
+
+        if (event.lengthComputable) {
+          progress.total = event.total;
+        } // Send the event.
+
+
+        observer.next(progress);
+      }; // By default, register for load and error events.
+
+
+      xhr.addEventListener('load', onLoad);
+      xhr.addEventListener('error', onError);
+      xhr.addEventListener('timeout', onError);
+      xhr.addEventListener('abort', onError); // Progress events are only enabled if requested.
+
+      if (req.reportProgress) {
+        // Download progress is always enabled if requested.
+        xhr.addEventListener('progress', onDownProgress); // Upload progress depends on whether there is a body to upload.
+
+        if (reqBody !== null && xhr.upload) {
+          xhr.upload.addEventListener('progress', onUpProgress);
+        }
+      } // Fire the request, and notify the event stream that it was fired.
+
+
+      xhr.send(reqBody);
+      observer.next({
+        type: HttpEventType.Sent
+      }); // This is the return from the Observable function, which is the
+      // request cancellation handler.
+
+      return () => {
+        // On a cancellation, remove all registered event listeners.
+        xhr.removeEventListener('error', onError);
+        xhr.removeEventListener('abort', onError);
+        xhr.removeEventListener('load', onLoad);
+        xhr.removeEventListener('timeout', onError);
+
+        if (req.reportProgress) {
+          xhr.removeEventListener('progress', onDownProgress);
+
+          if (reqBody !== null && xhr.upload) {
+            xhr.upload.removeEventListener('progress', onUpProgress);
+          }
+        } // Finally, abort the in-flight request.
+
+
+        if (xhr.readyState !== xhr.DONE) {
+          xhr.abort();
+        }
+      };
+    });
+  }
+
+}
+
+HttpXhrBackend.ɵfac = function HttpXhrBackend_Factory(t) {
+  return new (t || HttpXhrBackend)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_angular_common__WEBPACK_IMPORTED_MODULE_6__.XhrFactory));
+};
+
+HttpXhrBackend.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: HttpXhrBackend,
+  factory: HttpXhrBackend.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpXhrBackend, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], function () {
+    return [{
+      type: _angular_common__WEBPACK_IMPORTED_MODULE_6__.XhrFactory
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const XSRF_COOKIE_NAME = new _angular_core__WEBPACK_IMPORTED_MODULE_4__.InjectionToken('XSRF_COOKIE_NAME');
+const XSRF_HEADER_NAME = new _angular_core__WEBPACK_IMPORTED_MODULE_4__.InjectionToken('XSRF_HEADER_NAME');
+/**
+ * Retrieves the current XSRF token to use with the next outgoing request.
+ *
+ * @publicApi
+ */
+
+class HttpXsrfTokenExtractor {}
+/**
+ * `HttpXsrfTokenExtractor` which retrieves the token from a cookie.
+ */
+
+
+class HttpXsrfCookieExtractor {
+  constructor(doc, platform, cookieName) {
+    this.doc = doc;
+    this.platform = platform;
+    this.cookieName = cookieName;
+    this.lastCookieString = '';
+    this.lastToken = null;
+    /**
+     * @internal for testing
+     */
+
+    this.parseCount = 0;
+  }
+
+  getToken() {
+    if (this.platform === 'server') {
+      return null;
+    }
+
+    const cookieString = this.doc.cookie || '';
+
+    if (cookieString !== this.lastCookieString) {
+      this.parseCount++;
+      this.lastToken = (0,_angular_common__WEBPACK_IMPORTED_MODULE_6__["ɵparseCookieValue"])(cookieString, this.cookieName);
+      this.lastCookieString = cookieString;
+    }
+
+    return this.lastToken;
+  }
+
+}
+
+HttpXsrfCookieExtractor.ɵfac = function HttpXsrfCookieExtractor_Factory(t) {
+  return new (t || HttpXsrfCookieExtractor)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_angular_common__WEBPACK_IMPORTED_MODULE_6__.DOCUMENT), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.PLATFORM_ID), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](XSRF_COOKIE_NAME));
+};
+
+HttpXsrfCookieExtractor.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: HttpXsrfCookieExtractor,
+  factory: HttpXsrfCookieExtractor.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpXsrfCookieExtractor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], function () {
+    return [{
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Inject,
+        args: [_angular_common__WEBPACK_IMPORTED_MODULE_6__.DOCUMENT]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Inject,
+        args: [_angular_core__WEBPACK_IMPORTED_MODULE_4__.PLATFORM_ID]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Inject,
+        args: [XSRF_COOKIE_NAME]
+      }]
+    }];
+  }, null);
+})();
+/**
+ * `HttpInterceptor` which adds an XSRF token to eligible outgoing requests.
+ */
+
+
+class HttpXsrfInterceptor {
+  constructor(tokenService, headerName) {
+    this.tokenService = tokenService;
+    this.headerName = headerName;
+  }
+
+  intercept(req, next) {
+    const lcUrl = req.url.toLowerCase(); // Skip both non-mutating requests and absolute URLs.
+    // Non-mutating requests don't require a token, and absolute URLs require special handling
+    // anyway as the cookie set
+    // on our origin is not the same as the token expected by another origin.
+
+    if (req.method === 'GET' || req.method === 'HEAD' || lcUrl.startsWith('http://') || lcUrl.startsWith('https://')) {
+      return next.handle(req);
+    }
+
+    const token = this.tokenService.getToken(); // Be careful not to overwrite an existing header of the same name.
+
+    if (token !== null && !req.headers.has(this.headerName)) {
+      req = req.clone({
+        headers: req.headers.set(this.headerName, token)
+      });
+    }
+
+    return next.handle(req);
+  }
+
+}
+
+HttpXsrfInterceptor.ɵfac = function HttpXsrfInterceptor_Factory(t) {
+  return new (t || HttpXsrfInterceptor)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](HttpXsrfTokenExtractor), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](XSRF_HEADER_NAME));
+};
+
+HttpXsrfInterceptor.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: HttpXsrfInterceptor,
+  factory: HttpXsrfInterceptor.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpXsrfInterceptor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], function () {
+    return [{
+      type: HttpXsrfTokenExtractor
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Inject,
+        args: [XSRF_HEADER_NAME]
+      }]
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * An injectable `HttpHandler` that applies multiple interceptors
+ * to a request before passing it to the given `HttpBackend`.
+ *
+ * The interceptors are loaded lazily from the injector, to allow
+ * interceptors to themselves inject classes depending indirectly
+ * on `HttpInterceptingHandler` itself.
+ * @see `HttpInterceptor`
+ */
+
+
+class HttpInterceptingHandler {
+  constructor(backend, injector) {
+    this.backend = backend;
+    this.injector = injector;
+    this.chain = null;
+  }
+
+  handle(req) {
+    if (this.chain === null) {
+      const interceptors = this.injector.get(HTTP_INTERCEPTORS, []);
+      this.chain = interceptors.reduceRight((next, interceptor) => new HttpInterceptorHandler(next, interceptor), this.backend);
+    }
+
+    return this.chain.handle(req);
+  }
+
+}
+
+HttpInterceptingHandler.ɵfac = function HttpInterceptingHandler_Factory(t) {
+  return new (t || HttpInterceptingHandler)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](HttpBackend), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.Injector));
+};
+
+HttpInterceptingHandler.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({
+  token: HttpInterceptingHandler,
+  factory: HttpInterceptingHandler.ɵfac
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpInterceptingHandler, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injectable
+  }], function () {
+    return [{
+      type: HttpBackend
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Injector
+    }];
+  }, null);
+})();
+/**
+ * Constructs an `HttpHandler` that applies interceptors
+ * to a request before passing it to the given `HttpBackend`.
+ *
+ * Use as a factory function within `HttpClientModule`.
+ *
+ *
+ */
+
+
+function interceptingHandler(backend, interceptors = []) {
+  if (!interceptors) {
+    return backend;
+  }
+
+  return interceptors.reduceRight((next, interceptor) => new HttpInterceptorHandler(next, interceptor), backend);
+}
+/**
+ * Factory function that determines where to store JSONP callbacks.
+ *
+ * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
+ * in test environments. In that case, callbacks are stored on an anonymous object instead.
+ *
+ *
+ */
+
+
+function jsonpCallbackContext() {
+  if (typeof window === 'object') {
+    return window;
+  }
+
+  return {};
+}
+/**
+ * Configures XSRF protection support for outgoing requests.
+ *
+ * For a server that supports a cookie-based XSRF protection system,
+ * use directly to configure XSRF protection with the correct
+ * cookie and header names.
+ *
+ * If no names are supplied, the default cookie name is `XSRF-TOKEN`
+ * and the default header name is `X-XSRF-TOKEN`.
+ *
+ * @publicApi
+ */
+
+
+class HttpClientXsrfModule {
+  /**
+   * Disable the default XSRF protection.
+   */
+  static disable() {
+    return {
+      ngModule: HttpClientXsrfModule,
+      providers: [{
+        provide: HttpXsrfInterceptor,
+        useClass: NoopInterceptor
+      }]
+    };
+  }
+  /**
+   * Configure XSRF protection.
+   * @param options An object that can specify either or both
+   * cookie name or header name.
+   * - Cookie name default is `XSRF-TOKEN`.
+   * - Header name default is `X-XSRF-TOKEN`.
+   *
+   */
+
+
+  static withOptions(options = {}) {
+    return {
+      ngModule: HttpClientXsrfModule,
+      providers: [options.cookieName ? {
+        provide: XSRF_COOKIE_NAME,
+        useValue: options.cookieName
+      } : [], options.headerName ? {
+        provide: XSRF_HEADER_NAME,
+        useValue: options.headerName
+      } : []]
+    };
+  }
+
+}
+
+HttpClientXsrfModule.ɵfac = function HttpClientXsrfModule_Factory(t) {
+  return new (t || HttpClientXsrfModule)();
+};
+
+HttpClientXsrfModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineNgModule"]({
+  type: HttpClientXsrfModule
+});
+HttpClientXsrfModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjector"]({
+  providers: [HttpXsrfInterceptor, {
+    provide: HTTP_INTERCEPTORS,
+    useExisting: HttpXsrfInterceptor,
+    multi: true
+  }, {
+    provide: HttpXsrfTokenExtractor,
+    useClass: HttpXsrfCookieExtractor
+  }, {
+    provide: XSRF_COOKIE_NAME,
+    useValue: 'XSRF-TOKEN'
+  }, {
+    provide: XSRF_HEADER_NAME,
+    useValue: 'X-XSRF-TOKEN'
+  }]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpClientXsrfModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.NgModule,
+    args: [{
+      providers: [HttpXsrfInterceptor, {
+        provide: HTTP_INTERCEPTORS,
+        useExisting: HttpXsrfInterceptor,
+        multi: true
+      }, {
+        provide: HttpXsrfTokenExtractor,
+        useClass: HttpXsrfCookieExtractor
+      }, {
+        provide: XSRF_COOKIE_NAME,
+        useValue: 'XSRF-TOKEN'
+      }, {
+        provide: XSRF_HEADER_NAME,
+        useValue: 'X-XSRF-TOKEN'
+      }]
+    }]
+  }], null, null);
+})();
+/**
+ * Configures the [dependency injector](guide/glossary#injector) for `HttpClient`
+ * with supporting services for XSRF. Automatically imported by `HttpClientModule`.
+ *
+ * You can add interceptors to the chain behind `HttpClient` by binding them to the
+ * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
+ *
+ * @publicApi
+ */
+
+
+class HttpClientModule {}
+
+HttpClientModule.ɵfac = function HttpClientModule_Factory(t) {
+  return new (t || HttpClientModule)();
+};
+
+HttpClientModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineNgModule"]({
+  type: HttpClientModule
+});
+HttpClientModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjector"]({
+  providers: [HttpClient, {
+    provide: HttpHandler,
+    useClass: HttpInterceptingHandler
+  }, HttpXhrBackend, {
+    provide: HttpBackend,
+    useExisting: HttpXhrBackend
+  }],
+  imports: [[HttpClientXsrfModule.withOptions({
+    cookieName: 'XSRF-TOKEN',
+    headerName: 'X-XSRF-TOKEN'
+  })]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpClientModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.NgModule,
+    args: [{
+      /**
+       * Optional configuration for XSRF protection.
+       */
+      imports: [HttpClientXsrfModule.withOptions({
+        cookieName: 'XSRF-TOKEN',
+        headerName: 'X-XSRF-TOKEN'
+      })],
+
+      /**
+       * Configures the [dependency injector](guide/glossary#injector) where it is imported
+       * with supporting services for HTTP communications.
+       */
+      providers: [HttpClient, {
+        provide: HttpHandler,
+        useClass: HttpInterceptingHandler
+      }, HttpXhrBackend, {
+        provide: HttpBackend,
+        useExisting: HttpXhrBackend
+      }]
+    }]
+  }], null, null);
+})();
+/**
+ * Configures the [dependency injector](guide/glossary#injector) for `HttpClient`
+ * with supporting services for JSONP.
+ * Without this module, Jsonp requests reach the backend
+ * with method JSONP, where they are rejected.
+ *
+ * You can add interceptors to the chain behind `HttpClient` by binding them to the
+ * multiprovider for built-in [DI token](guide/glossary#di-token) `HTTP_INTERCEPTORS`.
+ *
+ * @publicApi
+ */
+
+
+class HttpClientJsonpModule {}
+
+HttpClientJsonpModule.ɵfac = function HttpClientJsonpModule_Factory(t) {
+  return new (t || HttpClientJsonpModule)();
+};
+
+HttpClientJsonpModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineNgModule"]({
+  type: HttpClientJsonpModule
+});
+HttpClientJsonpModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjector"]({
+  providers: [JsonpClientBackend, {
+    provide: JsonpCallbackContext,
+    useFactory: jsonpCallbackContext
+  }, {
+    provide: HTTP_INTERCEPTORS,
+    useClass: JsonpInterceptor,
+    multi: true
+  }]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](HttpClientJsonpModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.NgModule,
+    args: [{
+      providers: [JsonpClientBackend, {
+        provide: JsonpCallbackContext,
+        useFactory: jsonpCallbackContext
+      }, {
+        provide: HTTP_INTERCEPTORS,
+        useClass: JsonpInterceptor,
+        multi: true
+      }]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * A wrapper around the `XMLHttpRequest` constructor.
+ *
+ * @publicApi
+ * @see `XhrFactory`
+ * @deprecated
+ * `XhrFactory` has moved, please import `XhrFactory` from `@angular/common` instead.
+ */
+
+
+const XhrFactory = _angular_common__WEBPACK_IMPORTED_MODULE_6__.XhrFactory;
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+/***/ }),
+
 /***/ 3184:
 /*!******************************************************!*\
   !*** ./node_modules/@angular/core/fesm2015/core.mjs ***!
   \******************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ANALYZE_FOR_ENTRY_COMPONENTS": () => (/* binding */ ANALYZE_FOR_ENTRY_COMPONENTS),
@@ -59822,12 +64480,9773 @@ if (typeof ngDevMode !== 'undefined' && ngDevMode) {
 
 /***/ }),
 
+/***/ 587:
+/*!********************************************************!*\
+  !*** ./node_modules/@angular/forms/fesm2015/forms.mjs ***!
+  \********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "AbstractControl": () => (/* binding */ AbstractControl),
+/* harmony export */   "AbstractControlDirective": () => (/* binding */ AbstractControlDirective),
+/* harmony export */   "AbstractFormGroupDirective": () => (/* binding */ AbstractFormGroupDirective),
+/* harmony export */   "COMPOSITION_BUFFER_MODE": () => (/* binding */ COMPOSITION_BUFFER_MODE),
+/* harmony export */   "CheckboxControlValueAccessor": () => (/* binding */ CheckboxControlValueAccessor),
+/* harmony export */   "CheckboxRequiredValidator": () => (/* binding */ CheckboxRequiredValidator),
+/* harmony export */   "ControlContainer": () => (/* binding */ ControlContainer),
+/* harmony export */   "DefaultValueAccessor": () => (/* binding */ DefaultValueAccessor),
+/* harmony export */   "EmailValidator": () => (/* binding */ EmailValidator),
+/* harmony export */   "FormArray": () => (/* binding */ FormArray),
+/* harmony export */   "FormArrayName": () => (/* binding */ FormArrayName),
+/* harmony export */   "FormBuilder": () => (/* binding */ FormBuilder),
+/* harmony export */   "FormControl": () => (/* binding */ FormControl),
+/* harmony export */   "FormControlDirective": () => (/* binding */ FormControlDirective),
+/* harmony export */   "FormControlName": () => (/* binding */ FormControlName),
+/* harmony export */   "FormGroup": () => (/* binding */ FormGroup),
+/* harmony export */   "FormGroupDirective": () => (/* binding */ FormGroupDirective),
+/* harmony export */   "FormGroupName": () => (/* binding */ FormGroupName),
+/* harmony export */   "FormsModule": () => (/* binding */ FormsModule),
+/* harmony export */   "MaxLengthValidator": () => (/* binding */ MaxLengthValidator),
+/* harmony export */   "MaxValidator": () => (/* binding */ MaxValidator),
+/* harmony export */   "MinLengthValidator": () => (/* binding */ MinLengthValidator),
+/* harmony export */   "MinValidator": () => (/* binding */ MinValidator),
+/* harmony export */   "NG_ASYNC_VALIDATORS": () => (/* binding */ NG_ASYNC_VALIDATORS),
+/* harmony export */   "NG_VALIDATORS": () => (/* binding */ NG_VALIDATORS),
+/* harmony export */   "NG_VALUE_ACCESSOR": () => (/* binding */ NG_VALUE_ACCESSOR),
+/* harmony export */   "NgControl": () => (/* binding */ NgControl),
+/* harmony export */   "NgControlStatus": () => (/* binding */ NgControlStatus),
+/* harmony export */   "NgControlStatusGroup": () => (/* binding */ NgControlStatusGroup),
+/* harmony export */   "NgForm": () => (/* binding */ NgForm),
+/* harmony export */   "NgModel": () => (/* binding */ NgModel),
+/* harmony export */   "NgModelGroup": () => (/* binding */ NgModelGroup),
+/* harmony export */   "NgSelectOption": () => (/* binding */ NgSelectOption),
+/* harmony export */   "NumberValueAccessor": () => (/* binding */ NumberValueAccessor),
+/* harmony export */   "PatternValidator": () => (/* binding */ PatternValidator),
+/* harmony export */   "RadioControlValueAccessor": () => (/* binding */ RadioControlValueAccessor),
+/* harmony export */   "RangeValueAccessor": () => (/* binding */ RangeValueAccessor),
+/* harmony export */   "ReactiveFormsModule": () => (/* binding */ ReactiveFormsModule),
+/* harmony export */   "RequiredValidator": () => (/* binding */ RequiredValidator),
+/* harmony export */   "SelectControlValueAccessor": () => (/* binding */ SelectControlValueAccessor),
+/* harmony export */   "SelectMultipleControlValueAccessor": () => (/* binding */ SelectMultipleControlValueAccessor),
+/* harmony export */   "VERSION": () => (/* binding */ VERSION),
+/* harmony export */   "Validators": () => (/* binding */ Validators),
+/* harmony export */   "ɵInternalFormsSharedModule": () => (/* binding */ ɵInternalFormsSharedModule),
+/* harmony export */   "ɵNgNoValidate": () => (/* binding */ ɵNgNoValidate),
+/* harmony export */   "ɵNgSelectMultipleOption": () => (/* binding */ ɵNgSelectMultipleOption)
+/* harmony export */ });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/common */ 6362);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 9346);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 1640);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs/operators */ 635);
+/**
+ * @license Angular v13.2.3
+ * (c) 2010-2022 Google LLC. https://angular.io/
+ * License: MIT
+ */
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Base class for all ControlValueAccessor classes defined in Forms package.
+ * Contains common logic and utility functions.
+ *
+ * Note: this is an *internal-only* class and should not be extended or used directly in
+ * applications code.
+ */
+
+class BaseControlValueAccessor {
+  constructor(_renderer, _elementRef) {
+    this._renderer = _renderer;
+    this._elementRef = _elementRef;
+    /**
+     * The registered callback function called when a change or input event occurs on the input
+     * element.
+     * @nodoc
+     */
+
+    this.onChange = _ => {};
+    /**
+     * The registered callback function called when a blur event occurs on the input element.
+     * @nodoc
+     */
+
+
+    this.onTouched = () => {};
+  }
+  /**
+   * Helper method that sets a property on a target element using the current Renderer
+   * implementation.
+   * @nodoc
+   */
+
+
+  setProperty(key, value) {
+    this._renderer.setProperty(this._elementRef.nativeElement, key, value);
+  }
+  /**
+   * Registers a function called when the control is touched.
+   * @nodoc
+   */
+
+
+  registerOnTouched(fn) {
+    this.onTouched = fn;
+  }
+  /**
+   * Registers a function called when the control value changes.
+   * @nodoc
+   */
+
+
+  registerOnChange(fn) {
+    this.onChange = fn;
+  }
+  /**
+   * Sets the "disabled" property on the range input element.
+   * @nodoc
+   */
+
+
+  setDisabledState(isDisabled) {
+    this.setProperty('disabled', isDisabled);
+  }
+
+}
+
+BaseControlValueAccessor.ɵfac = function BaseControlValueAccessor_Factory(t) {
+  return new (t || BaseControlValueAccessor)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef));
+};
+
+BaseControlValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: BaseControlValueAccessor
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](BaseControlValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }];
+  }, null);
+})();
+/**
+ * Base class for all built-in ControlValueAccessor classes (except DefaultValueAccessor, which is
+ * used in case no other CVAs can be found). We use this class to distinguish between default CVA,
+ * built-in CVAs and custom CVAs, so that Forms logic can recognize built-in CVAs and treat custom
+ * ones with higher priority (when both built-in and custom CVAs are present).
+ *
+ * Note: this is an *internal-only* class and should not be extended or used directly in
+ * applications code.
+ */
+
+
+class BuiltInControlValueAccessor extends BaseControlValueAccessor {}
+
+BuiltInControlValueAccessor.ɵfac = /* @__PURE__ */function () {
+  let ɵBuiltInControlValueAccessor_BaseFactory;
+  return function BuiltInControlValueAccessor_Factory(t) {
+    return (ɵBuiltInControlValueAccessor_BaseFactory || (ɵBuiltInControlValueAccessor_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](BuiltInControlValueAccessor)))(t || BuiltInControlValueAccessor);
+  };
+}();
+
+BuiltInControlValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: BuiltInControlValueAccessor,
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](BuiltInControlValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive
+  }], null, null);
+})();
+/**
+ * Used to provide a `ControlValueAccessor` for form controls.
+ *
+ * See `DefaultValueAccessor` for how to implement one.
+ *
+ * @publicApi
+ */
+
+
+const NG_VALUE_ACCESSOR = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('NgValueAccessor');
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+const CHECKBOX_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => CheckboxControlValueAccessor),
+  multi: true
+};
+/**
+ * @description
+ * A `ControlValueAccessor` for writing a value and listening to changes on a checkbox input
+ * element.
+ *
+ * @usageNotes
+ *
+ * ### Using a checkbox with a reactive form.
+ *
+ * The following example shows how to use a checkbox with a reactive form.
+ *
+ * ```ts
+ * const rememberLoginControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <input type="checkbox" [formControl]="rememberLoginControl">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class CheckboxControlValueAccessor extends BuiltInControlValueAccessor {
+  /**
+   * Sets the "checked" property on the input element.
+   * @nodoc
+   */
+  writeValue(value) {
+    this.setProperty('checked', value);
+  }
+
+}
+
+CheckboxControlValueAccessor.ɵfac = /* @__PURE__ */function () {
+  let ɵCheckboxControlValueAccessor_BaseFactory;
+  return function CheckboxControlValueAccessor_Factory(t) {
+    return (ɵCheckboxControlValueAccessor_BaseFactory || (ɵCheckboxControlValueAccessor_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](CheckboxControlValueAccessor)))(t || CheckboxControlValueAccessor);
+  };
+}();
+
+CheckboxControlValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: CheckboxControlValueAccessor,
+  selectors: [["input", "type", "checkbox", "formControlName", ""], ["input", "type", "checkbox", "formControl", ""], ["input", "type", "checkbox", "ngModel", ""]],
+  hostBindings: function CheckboxControlValueAccessor_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function CheckboxControlValueAccessor_change_HostBindingHandler($event) {
+        return ctx.onChange($event.target.checked);
+      })("blur", function CheckboxControlValueAccessor_blur_HostBindingHandler() {
+        return ctx.onTouched();
+      });
+    }
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([CHECKBOX_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](CheckboxControlValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]',
+      host: {
+        '(change)': 'onChange($event.target.checked)',
+        '(blur)': 'onTouched()'
+      },
+      providers: [CHECKBOX_VALUE_ACCESSOR]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const DEFAULT_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => DefaultValueAccessor),
+  multi: true
+};
+/**
+ * We must check whether the agent is Android because composition events
+ * behave differently between iOS and Android.
+ */
+
+function _isAndroid() {
+  const userAgent = (0,_angular_common__WEBPACK_IMPORTED_MODULE_1__["ɵgetDOM"])() ? (0,_angular_common__WEBPACK_IMPORTED_MODULE_1__["ɵgetDOM"])().getUserAgent() : '';
+  return /android (\d+)/.test(userAgent.toLowerCase());
+}
+/**
+ * @description
+ * Provide this token to control if form directives buffer IME input until
+ * the "compositionend" event occurs.
+ * @publicApi
+ */
+
+
+const COMPOSITION_BUFFER_MODE = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('CompositionEventMode');
+/**
+ * The default `ControlValueAccessor` for writing a value and listening to changes on input
+ * elements. The accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
+ *
+ * {@searchKeywords ngDefaultControl}
+ *
+ * @usageNotes
+ *
+ * ### Using the default value accessor
+ *
+ * The following example shows how to use an input element that activates the default value accessor
+ * (in this case, a text field).
+ *
+ * ```ts
+ * const firstNameControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <input type="text" [formControl]="firstNameControl">
+ * ```
+ *
+ * This value accessor is used by default for `<input type="text">` and `<textarea>` elements, but
+ * you could also use it for custom components that have similar behavior and do not require special
+ * processing. In order to attach the default value accessor to a custom element, add the
+ * `ngDefaultControl` attribute as shown below.
+ *
+ * ```
+ * <custom-input-component ngDefaultControl [(ngModel)]="value"></custom-input-component>
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class DefaultValueAccessor extends BaseControlValueAccessor {
+  constructor(renderer, elementRef, _compositionMode) {
+    super(renderer, elementRef);
+    this._compositionMode = _compositionMode;
+    /** Whether the user is creating a composition string (IME events). */
+
+    this._composing = false;
+
+    if (this._compositionMode == null) {
+      this._compositionMode = !_isAndroid();
+    }
+  }
+  /**
+   * Sets the "value" property on the input element.
+   * @nodoc
+   */
+
+
+  writeValue(value) {
+    const normalizedValue = value == null ? '' : value;
+    this.setProperty('value', normalizedValue);
+  }
+  /** @internal */
+
+
+  _handleInput(value) {
+    if (!this._compositionMode || this._compositionMode && !this._composing) {
+      this.onChange(value);
+    }
+  }
+  /** @internal */
+
+
+  _compositionStart() {
+    this._composing = true;
+  }
+  /** @internal */
+
+
+  _compositionEnd(value) {
+    this._composing = false;
+    this._compositionMode && this.onChange(value);
+  }
+
+}
+
+DefaultValueAccessor.ɵfac = function DefaultValueAccessor_Factory(t) {
+  return new (t || DefaultValueAccessor)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](COMPOSITION_BUFFER_MODE, 8));
+};
+
+DefaultValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: DefaultValueAccessor,
+  selectors: [["input", "formControlName", "", 3, "type", "checkbox"], ["textarea", "formControlName", ""], ["input", "formControl", "", 3, "type", "checkbox"], ["textarea", "formControl", ""], ["input", "ngModel", "", 3, "type", "checkbox"], ["textarea", "ngModel", ""], ["", "ngDefaultControl", ""]],
+  hostBindings: function DefaultValueAccessor_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("input", function DefaultValueAccessor_input_HostBindingHandler($event) {
+        return ctx._handleInput($event.target.value);
+      })("blur", function DefaultValueAccessor_blur_HostBindingHandler() {
+        return ctx.onTouched();
+      })("compositionstart", function DefaultValueAccessor_compositionstart_HostBindingHandler() {
+        return ctx._compositionStart();
+      })("compositionend", function DefaultValueAccessor_compositionend_HostBindingHandler($event) {
+        return ctx._compositionEnd($event.target.value);
+      });
+    }
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([DEFAULT_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](DefaultValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input:not([type=checkbox])[formControlName],textarea[formControlName],input:not([type=checkbox])[formControl],textarea[formControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
+      // TODO: vsavkin replace the above selector with the one below it once
+      // https://github.com/angular/angular/issues/3011 is implemented
+      // selector: '[ngModel],[formControl],[formControlName]',
+      host: {
+        '(input)': '$any(this)._handleInput($event.target.value)',
+        '(blur)': 'onTouched()',
+        '(compositionstart)': '$any(this)._compositionStart()',
+        '(compositionend)': '$any(this)._compositionEnd($event.target.value)'
+      },
+      providers: [DEFAULT_VALUE_ACCESSOR]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [COMPOSITION_BUFFER_MODE]
+      }]
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+function isEmptyInputValue(value) {
+  // we don't check for string here so it also works with arrays
+  return value == null || value.length === 0;
+}
+
+function hasValidLength(value) {
+  // non-strict comparison is intentional, to check for both `null` and `undefined` values
+  return value != null && typeof value.length === 'number';
+}
+/**
+ * @description
+ * An `InjectionToken` for registering additional synchronous validators used with
+ * `AbstractControl`s.
+ *
+ * @see `NG_ASYNC_VALIDATORS`
+ *
+ * @usageNotes
+ *
+ * ### Providing a custom validator
+ *
+ * The following example registers a custom validator directive. Adding the validator to the
+ * existing collection of validators requires the `multi: true` option.
+ *
+ * ```typescript
+ * @Directive({
+ *   selector: '[customValidator]',
+ *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
+ * })
+ * class CustomValidatorDirective implements Validator {
+ *   validate(control: AbstractControl): ValidationErrors | null {
+ *     return { 'custom': true };
+ *   }
+ * }
+ * ```
+ *
+ * @publicApi
+ */
+
+
+const NG_VALIDATORS = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('NgValidators');
+/**
+ * @description
+ * An `InjectionToken` for registering additional asynchronous validators used with
+ * `AbstractControl`s.
+ *
+ * @see `NG_VALIDATORS`
+ *
+ * @usageNotes
+ *
+ * ### Provide a custom async validator directive
+ *
+ * The following example implements the `AsyncValidator` interface to create an
+ * async validator directive with a custom error key.
+ *
+ * ```typescript
+ * @Directive({
+ *   selector: '[customAsyncValidator]',
+ *   providers: [{provide: NG_ASYNC_VALIDATORS, useExisting: CustomAsyncValidatorDirective, multi:
+ * true}]
+ * })
+ * class CustomAsyncValidatorDirective implements AsyncValidator {
+ *   validate(control: AbstractControl): Promise<ValidationErrors|null> {
+ *     return Promise.resolve({'custom': true});
+ *   }
+ * }
+ * ```
+ *
+ * @publicApi
+ */
+
+const NG_ASYNC_VALIDATORS = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('NgAsyncValidators');
+/**
+ * A regular expression that matches valid e-mail addresses.
+ *
+ * At a high level, this regexp matches e-mail addresses of the format `local-part@tld`, where:
+ * - `local-part` consists of one or more of the allowed characters (alphanumeric and some
+ *   punctuation symbols).
+ * - `local-part` cannot begin or end with a period (`.`).
+ * - `local-part` cannot be longer than 64 characters.
+ * - `tld` consists of one or more `labels` separated by periods (`.`). For example `localhost` or
+ *   `foo.com`.
+ * - A `label` consists of one or more of the allowed characters (alphanumeric, dashes (`-`) and
+ *   periods (`.`)).
+ * - A `label` cannot begin or end with a dash (`-`) or a period (`.`).
+ * - A `label` cannot be longer than 63 characters.
+ * - The whole address cannot be longer than 254 characters.
+ *
+ * ## Implementation background
+ *
+ * This regexp was ported over from AngularJS (see there for git history):
+ * https://github.com/angular/angular.js/blob/c133ef836/src/ng/directive/input.js#L27
+ * It is based on the
+ * [WHATWG version](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) with
+ * some enhancements to incorporate more RFC rules (such as rules related to domain names and the
+ * lengths of different parts of the address). The main differences from the WHATWG version are:
+ *   - Disallow `local-part` to begin or end with a period (`.`).
+ *   - Disallow `local-part` length to exceed 64 characters.
+ *   - Disallow total address length to exceed 254 characters.
+ *
+ * See [this commit](https://github.com/angular/angular.js/commit/f3f5cf72e) for more details.
+ */
+
+const EMAIL_REGEXP = /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+/**
+ * @description
+ * Provides a set of built-in validators that can be used by form controls.
+ *
+ * A validator is a function that processes a `FormControl` or collection of
+ * controls and returns an error map or null. A null map means that validation has passed.
+ *
+ * @see [Form Validation](/guide/form-validation)
+ *
+ * @publicApi
+ */
+
+class Validators {
+  /**
+   * @description
+   * Validator that requires the control's value to be greater than or equal to the provided number.
+   *
+   * @usageNotes
+   *
+   * ### Validate against a minimum of 3
+   *
+   * ```typescript
+   * const control = new FormControl(2, Validators.min(3));
+   *
+   * console.log(control.errors); // {min: {min: 3, actual: 2}}
+   * ```
+   *
+   * @returns A validator function that returns an error map with the
+   * `min` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+  static min(min) {
+    return minValidator(min);
+  }
+  /**
+   * @description
+   * Validator that requires the control's value to be less than or equal to the provided number.
+   *
+   * @usageNotes
+   *
+   * ### Validate against a maximum of 15
+   *
+   * ```typescript
+   * const control = new FormControl(16, Validators.max(15));
+   *
+   * console.log(control.errors); // {max: {max: 15, actual: 16}}
+   * ```
+   *
+   * @returns A validator function that returns an error map with the
+   * `max` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static max(max) {
+    return maxValidator(max);
+  }
+  /**
+   * @description
+   * Validator that requires the control have a non-empty value.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field is non-empty
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.required);
+   *
+   * console.log(control.errors); // {required: true}
+   * ```
+   *
+   * @returns An error map with the `required` property
+   * if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static required(control) {
+    return requiredValidator(control);
+  }
+  /**
+   * @description
+   * Validator that requires the control's value be true. This validator is commonly
+   * used for required checkboxes.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field value is true
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.requiredTrue);
+   *
+   * console.log(control.errors); // {required: true}
+   * ```
+   *
+   * @returns An error map that contains the `required` property
+   * set to `true` if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static requiredTrue(control) {
+    return requiredTrueValidator(control);
+  }
+  /**
+   * @description
+   * Validator that requires the control's value pass an email validation test.
+   *
+   * Tests the value using a [regular
+   * expression](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
+   * pattern suitable for common usecases. The pattern is based on the definition of a valid email
+   * address in the [WHATWG HTML
+   * specification](https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address) with
+   * some enhancements to incorporate more RFC rules (such as rules related to domain names and the
+   * lengths of different parts of the address).
+   *
+   * The differences from the WHATWG version include:
+   * - Disallow `local-part` (the part before the `@` symbol) to begin or end with a period (`.`).
+   * - Disallow `local-part` to be longer than 64 characters.
+   * - Disallow the whole address to be longer than 254 characters.
+   *
+   * If this pattern does not satisfy your business needs, you can use `Validators.pattern()` to
+   * validate the value against a different pattern.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field matches a valid email pattern
+   *
+   * ```typescript
+   * const control = new FormControl('bad@', Validators.email);
+   *
+   * console.log(control.errors); // {email: true}
+   * ```
+   *
+   * @returns An error map with the `email` property
+   * if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static email(control) {
+    return emailValidator(control);
+  }
+  /**
+   * @description
+   * Validator that requires the length of the control's value to be greater than or equal
+   * to the provided minimum length. This validator is also provided by default if you use the
+   * the HTML5 `minlength` attribute. Note that the `minLength` validator is intended to be used
+   * only for types that have a numeric `length` property, such as strings or arrays. The
+   * `minLength` validator logic is also not invoked for values when their `length` property is 0
+   * (for example in case of an empty string or an empty array), to support optional controls. You
+   * can use the standard `required` validator if empty values should not be considered valid.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field has a minimum of 3 characters
+   *
+   * ```typescript
+   * const control = new FormControl('ng', Validators.minLength(3));
+   *
+   * console.log(control.errors); // {minlength: {requiredLength: 3, actualLength: 2}}
+   * ```
+   *
+   * ```html
+   * <input minlength="5">
+   * ```
+   *
+   * @returns A validator function that returns an error map with the
+   * `minlength` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static minLength(minLength) {
+    return minLengthValidator(minLength);
+  }
+  /**
+   * @description
+   * Validator that requires the length of the control's value to be less than or equal
+   * to the provided maximum length. This validator is also provided by default if you use the
+   * the HTML5 `maxlength` attribute. Note that the `maxLength` validator is intended to be used
+   * only for types that have a numeric `length` property, such as strings or arrays.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field has maximum of 5 characters
+   *
+   * ```typescript
+   * const control = new FormControl('Angular', Validators.maxLength(5));
+   *
+   * console.log(control.errors); // {maxlength: {requiredLength: 5, actualLength: 7}}
+   * ```
+   *
+   * ```html
+   * <input maxlength="5">
+   * ```
+   *
+   * @returns A validator function that returns an error map with the
+   * `maxlength` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static maxLength(maxLength) {
+    return maxLengthValidator(maxLength);
+  }
+  /**
+   * @description
+   * Validator that requires the control's value to match a regex pattern. This validator is also
+   * provided by default if you use the HTML5 `pattern` attribute.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field only contains letters or spaces
+   *
+   * ```typescript
+   * const control = new FormControl('1', Validators.pattern('[a-zA-Z ]*'));
+   *
+   * console.log(control.errors); // {pattern: {requiredPattern: '^[a-zA-Z ]*$', actualValue: '1'}}
+   * ```
+   *
+   * ```html
+   * <input pattern="[a-zA-Z ]*">
+   * ```
+   *
+   * ### Pattern matching with the global or sticky flag
+   *
+   * `RegExp` objects created with the `g` or `y` flags that are passed into `Validators.pattern`
+   * can produce different results on the same input when validations are run consecutively. This is
+   * due to how the behavior of `RegExp.prototype.test` is
+   * specified in [ECMA-262](https://tc39.es/ecma262/#sec-regexpbuiltinexec)
+   * (`RegExp` preserves the index of the last match when the global or sticky flag is used).
+   * Due to this behavior, it is recommended that when using
+   * `Validators.pattern` you **do not** pass in a `RegExp` object with either the global or sticky
+   * flag enabled.
+   *
+   * ```typescript
+   * // Not recommended (since the `g` flag is used)
+   * const controlOne = new FormControl('1', Validators.pattern(/foo/g));
+   *
+   * // Good
+   * const controlTwo = new FormControl('1', Validators.pattern(/foo/));
+   * ```
+   *
+   * @param pattern A regular expression to be used as is to test the values, or a string.
+   * If a string is passed, the `^` character is prepended and the `$` character is
+   * appended to the provided string (if not already present), and the resulting regular
+   * expression is used to test the values.
+   *
+   * @returns A validator function that returns an error map with the
+   * `pattern` property if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static pattern(pattern) {
+    return patternValidator(pattern);
+  }
+  /**
+   * @description
+   * Validator that performs no operation.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static nullValidator(control) {
+    return nullValidator(control);
+  }
+
+  static compose(validators) {
+    return compose(validators);
+  }
+  /**
+   * @description
+   * Compose multiple async validators into a single function that returns the union
+   * of the individual error objects for the provided control.
+   *
+   * @returns A validator function that returns an error map with the
+   * merged error objects of the async validators if the validation check fails, otherwise `null`.
+   *
+   * @see `updateValueAndValidity()`
+   *
+   */
+
+
+  static composeAsync(validators) {
+    return composeAsync(validators);
+  }
+
+}
+/**
+ * Validator that requires the control's value to be greater than or equal to the provided number.
+ * See `Validators.min` for additional information.
+ */
+
+
+function minValidator(min) {
+  return control => {
+    if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
+      return null; // don't validate empty values to allow optional controls
+    }
+
+    const value = parseFloat(control.value); // Controls with NaN values after parsing should be treated as not having a
+    // minimum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-min
+
+    return !isNaN(value) && value < min ? {
+      'min': {
+        'min': min,
+        'actual': control.value
+      }
+    } : null;
+  };
+}
+/**
+ * Validator that requires the control's value to be less than or equal to the provided number.
+ * See `Validators.max` for additional information.
+ */
+
+
+function maxValidator(max) {
+  return control => {
+    if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
+      return null; // don't validate empty values to allow optional controls
+    }
+
+    const value = parseFloat(control.value); // Controls with NaN values after parsing should be treated as not having a
+    // maximum, per the HTML forms spec: https://www.w3.org/TR/html5/forms.html#attr-input-max
+
+    return !isNaN(value) && value > max ? {
+      'max': {
+        'max': max,
+        'actual': control.value
+      }
+    } : null;
+  };
+}
+/**
+ * Validator that requires the control have a non-empty value.
+ * See `Validators.required` for additional information.
+ */
+
+
+function requiredValidator(control) {
+  return isEmptyInputValue(control.value) ? {
+    'required': true
+  } : null;
+}
+/**
+ * Validator that requires the control's value be true. This validator is commonly
+ * used for required checkboxes.
+ * See `Validators.requiredTrue` for additional information.
+ */
+
+
+function requiredTrueValidator(control) {
+  return control.value === true ? null : {
+    'required': true
+  };
+}
+/**
+ * Validator that requires the control's value pass an email validation test.
+ * See `Validators.email` for additional information.
+ */
+
+
+function emailValidator(control) {
+  if (isEmptyInputValue(control.value)) {
+    return null; // don't validate empty values to allow optional controls
+  }
+
+  return EMAIL_REGEXP.test(control.value) ? null : {
+    'email': true
+  };
+}
+/**
+ * Validator that requires the length of the control's value to be greater than or equal
+ * to the provided minimum length. See `Validators.minLength` for additional information.
+ */
+
+
+function minLengthValidator(minLength) {
+  return control => {
+    if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
+      // don't validate empty values to allow optional controls
+      // don't validate values without `length` property
+      return null;
+    }
+
+    return control.value.length < minLength ? {
+      'minlength': {
+        'requiredLength': minLength,
+        'actualLength': control.value.length
+      }
+    } : null;
+  };
+}
+/**
+ * Validator that requires the length of the control's value to be less than or equal
+ * to the provided maximum length. See `Validators.maxLength` for additional information.
+ */
+
+
+function maxLengthValidator(maxLength) {
+  return control => {
+    return hasValidLength(control.value) && control.value.length > maxLength ? {
+      'maxlength': {
+        'requiredLength': maxLength,
+        'actualLength': control.value.length
+      }
+    } : null;
+  };
+}
+/**
+ * Validator that requires the control's value to match a regex pattern.
+ * See `Validators.pattern` for additional information.
+ */
+
+
+function patternValidator(pattern) {
+  if (!pattern) return nullValidator;
+  let regex;
+  let regexStr;
+
+  if (typeof pattern === 'string') {
+    regexStr = '';
+    if (pattern.charAt(0) !== '^') regexStr += '^';
+    regexStr += pattern;
+    if (pattern.charAt(pattern.length - 1) !== '$') regexStr += '$';
+    regex = new RegExp(regexStr);
+  } else {
+    regexStr = pattern.toString();
+    regex = pattern;
+  }
+
+  return control => {
+    if (isEmptyInputValue(control.value)) {
+      return null; // don't validate empty values to allow optional controls
+    }
+
+    const value = control.value;
+    return regex.test(value) ? null : {
+      'pattern': {
+        'requiredPattern': regexStr,
+        'actualValue': value
+      }
+    };
+  };
+}
+/**
+ * Function that has `ValidatorFn` shape, but performs no operation.
+ */
+
+
+function nullValidator(control) {
+  return null;
+}
+
+function isPresent(o) {
+  return o != null;
+}
+
+function toObservable(r) {
+  const obs = (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵisPromise"])(r) ? (0,rxjs__WEBPACK_IMPORTED_MODULE_2__.from)(r) : r;
+
+  if (!(0,_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵisObservable"])(obs) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    throw new Error(`Expected validator to return Promise or Observable.`);
+  }
+
+  return obs;
+}
+
+function mergeErrors(arrayOfErrors) {
+  let res = {}; // Not using Array.reduce here due to a Chrome 80 bug
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+
+  arrayOfErrors.forEach(errors => {
+    res = errors != null ? Object.assign(Object.assign({}, res), errors) : res;
+  });
+  return Object.keys(res).length === 0 ? null : res;
+}
+
+function executeValidators(control, validators) {
+  return validators.map(validator => validator(control));
+}
+
+function isValidatorFn(validator) {
+  return !validator.validate;
+}
+/**
+ * Given the list of validators that may contain both functions as well as classes, return the list
+ * of validator functions (convert validator classes into validator functions). This is needed to
+ * have consistent structure in validators list before composing them.
+ *
+ * @param validators The set of validators that may contain validators both in plain function form
+ *     as well as represented as a validator class.
+ */
+
+
+function normalizeValidators(validators) {
+  return validators.map(validator => {
+    return isValidatorFn(validator) ? validator : c => validator.validate(c);
+  });
+}
+/**
+ * Merges synchronous validators into a single validator function.
+ * See `Validators.compose` for additional information.
+ */
+
+
+function compose(validators) {
+  if (!validators) return null;
+  const presentValidators = validators.filter(isPresent);
+  if (presentValidators.length == 0) return null;
+  return function (control) {
+    return mergeErrors(executeValidators(control, presentValidators));
+  };
+}
+/**
+ * Accepts a list of validators of different possible shapes (`Validator` and `ValidatorFn`),
+ * normalizes the list (converts everything to `ValidatorFn`) and merges them into a single
+ * validator function.
+ */
+
+
+function composeValidators(validators) {
+  return validators != null ? compose(normalizeValidators(validators)) : null;
+}
+/**
+ * Merges asynchronous validators into a single validator function.
+ * See `Validators.composeAsync` for additional information.
+ */
+
+
+function composeAsync(validators) {
+  if (!validators) return null;
+  const presentValidators = validators.filter(isPresent);
+  if (presentValidators.length == 0) return null;
+  return function (control) {
+    const observables = executeValidators(control, presentValidators).map(toObservable);
+    return (0,rxjs__WEBPACK_IMPORTED_MODULE_3__.forkJoin)(observables).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_4__.map)(mergeErrors));
+  };
+}
+/**
+ * Accepts a list of async validators of different possible shapes (`AsyncValidator` and
+ * `AsyncValidatorFn`), normalizes the list (converts everything to `AsyncValidatorFn`) and merges
+ * them into a single validator function.
+ */
+
+
+function composeAsyncValidators(validators) {
+  return validators != null ? composeAsync(normalizeValidators(validators)) : null;
+}
+/**
+ * Merges raw control validators with a given directive validator and returns the combined list of
+ * validators as an array.
+ */
+
+
+function mergeValidators(controlValidators, dirValidator) {
+  if (controlValidators === null) return [dirValidator];
+  return Array.isArray(controlValidators) ? [...controlValidators, dirValidator] : [controlValidators, dirValidator];
+}
+/**
+ * Retrieves the list of raw synchronous validators attached to a given control.
+ */
+
+
+function getControlValidators(control) {
+  return control._rawValidators;
+}
+/**
+ * Retrieves the list of raw asynchronous validators attached to a given control.
+ */
+
+
+function getControlAsyncValidators(control) {
+  return control._rawAsyncValidators;
+}
+/**
+ * Accepts a singleton validator, an array, or null, and returns an array type with the provided
+ * validators.
+ *
+ * @param validators A validator, validators, or null.
+ * @returns A validators array.
+ */
+
+
+function makeValidatorsArray(validators) {
+  if (!validators) return [];
+  return Array.isArray(validators) ? validators : [validators];
+}
+/**
+ * Determines whether a validator or validators array has a given validator.
+ *
+ * @param validators The validator or validators to compare against.
+ * @param validator The validator to check.
+ * @returns Whether the validator is present.
+ */
+
+
+function hasValidator(validators, validator) {
+  return Array.isArray(validators) ? validators.includes(validator) : validators === validator;
+}
+/**
+ * Combines two arrays of validators into one. If duplicates are provided, only one will be added.
+ *
+ * @param validators The new validators.
+ * @param currentValidators The base array of currrent validators.
+ * @returns An array of validators.
+ */
+
+
+function addValidators(validators, currentValidators) {
+  const current = makeValidatorsArray(currentValidators);
+  const validatorsToAdd = makeValidatorsArray(validators);
+  validatorsToAdd.forEach(v => {
+    // Note: if there are duplicate entries in the new validators array,
+    // only the first one would be added to the current list of validarors.
+    // Duplicate ones would be ignored since `hasValidator` would detect
+    // the presence of a validator function and we update the current list in place.
+    if (!hasValidator(current, v)) {
+      current.push(v);
+    }
+  });
+  return current;
+}
+
+function removeValidators(validators, currentValidators) {
+  return makeValidatorsArray(currentValidators).filter(v => !hasValidator(validators, v));
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @description
+ * Base class for control directives.
+ *
+ * This class is only used internally in the `ReactiveFormsModule` and the `FormsModule`.
+ *
+ * @publicApi
+ */
+
+
+class AbstractControlDirective {
+  constructor() {
+    /**
+     * Set of synchronous validators as they were provided while calling `setValidators` function.
+     * @internal
+     */
+    this._rawValidators = [];
+    /**
+     * Set of asynchronous validators as they were provided while calling `setAsyncValidators`
+     * function.
+     * @internal
+     */
+
+    this._rawAsyncValidators = [];
+    /*
+     * The set of callbacks to be invoked when directive instance is being destroyed.
+     */
+
+    this._onDestroyCallbacks = [];
+  }
+  /**
+   * @description
+   * Reports the value of the control if it is present, otherwise null.
+   */
+
+
+  get value() {
+    return this.control ? this.control.value : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is valid. A control is considered valid if no
+   * validation errors exist with the current value.
+   * If the control is not present, null is returned.
+   */
+
+
+  get valid() {
+    return this.control ? this.control.valid : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is invalid, meaning that an error exists in the input value.
+   * If the control is not present, null is returned.
+   */
+
+
+  get invalid() {
+    return this.control ? this.control.invalid : null;
+  }
+  /**
+   * @description
+   * Reports whether a control is pending, meaning that that async validation is occurring and
+   * errors are not yet available for the input value. If the control is not present, null is
+   * returned.
+   */
+
+
+  get pending() {
+    return this.control ? this.control.pending : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is disabled, meaning that the control is disabled
+   * in the UI and is exempt from validation checks and excluded from aggregate
+   * values of ancestor controls. If the control is not present, null is returned.
+   */
+
+
+  get disabled() {
+    return this.control ? this.control.disabled : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is enabled, meaning that the control is included in ancestor
+   * calculations of validity or value. If the control is not present, null is returned.
+   */
+
+
+  get enabled() {
+    return this.control ? this.control.enabled : null;
+  }
+  /**
+   * @description
+   * Reports the control's validation errors. If the control is not present, null is returned.
+   */
+
+
+  get errors() {
+    return this.control ? this.control.errors : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is pristine, meaning that the user has not yet changed
+   * the value in the UI. If the control is not present, null is returned.
+   */
+
+
+  get pristine() {
+    return this.control ? this.control.pristine : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is dirty, meaning that the user has changed
+   * the value in the UI. If the control is not present, null is returned.
+   */
+
+
+  get dirty() {
+    return this.control ? this.control.dirty : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is touched, meaning that the user has triggered
+   * a `blur` event on it. If the control is not present, null is returned.
+   */
+
+
+  get touched() {
+    return this.control ? this.control.touched : null;
+  }
+  /**
+   * @description
+   * Reports the validation status of the control. Possible values include:
+   * 'VALID', 'INVALID', 'DISABLED', and 'PENDING'.
+   * If the control is not present, null is returned.
+   */
+
+
+  get status() {
+    return this.control ? this.control.status : null;
+  }
+  /**
+   * @description
+   * Reports whether the control is untouched, meaning that the user has not yet triggered
+   * a `blur` event on it. If the control is not present, null is returned.
+   */
+
+
+  get untouched() {
+    return this.control ? this.control.untouched : null;
+  }
+  /**
+   * @description
+   * Returns a multicasting observable that emits a validation status whenever it is
+   * calculated for the control. If the control is not present, null is returned.
+   */
+
+
+  get statusChanges() {
+    return this.control ? this.control.statusChanges : null;
+  }
+  /**
+   * @description
+   * Returns a multicasting observable of value changes for the control that emits every time the
+   * value of the control changes in the UI or programmatically.
+   * If the control is not present, null is returned.
+   */
+
+
+  get valueChanges() {
+    return this.control ? this.control.valueChanges : null;
+  }
+  /**
+   * @description
+   * Returns an array that represents the path from the top-level form to this control.
+   * Each index is the string name of the control on that level.
+   */
+
+
+  get path() {
+    return null;
+  }
+  /**
+   * Sets synchronous validators for this directive.
+   * @internal
+   */
+
+
+  _setValidators(validators) {
+    this._rawValidators = validators || [];
+    this._composedValidatorFn = composeValidators(this._rawValidators);
+  }
+  /**
+   * Sets asynchronous validators for this directive.
+   * @internal
+   */
+
+
+  _setAsyncValidators(validators) {
+    this._rawAsyncValidators = validators || [];
+    this._composedAsyncValidatorFn = composeAsyncValidators(this._rawAsyncValidators);
+  }
+  /**
+   * @description
+   * Synchronous validator function composed of all the synchronous validators registered with this
+   * directive.
+   */
+
+
+  get validator() {
+    return this._composedValidatorFn || null;
+  }
+  /**
+   * @description
+   * Asynchronous validator function composed of all the asynchronous validators registered with
+   * this directive.
+   */
+
+
+  get asyncValidator() {
+    return this._composedAsyncValidatorFn || null;
+  }
+  /**
+   * Internal function to register callbacks that should be invoked
+   * when directive instance is being destroyed.
+   * @internal
+   */
+
+
+  _registerOnDestroy(fn) {
+    this._onDestroyCallbacks.push(fn);
+  }
+  /**
+   * Internal function to invoke all registered "on destroy" callbacks.
+   * Note: calling this function also clears the list of callbacks.
+   * @internal
+   */
+
+
+  _invokeOnDestroyCallbacks() {
+    this._onDestroyCallbacks.forEach(fn => fn());
+
+    this._onDestroyCallbacks = [];
+  }
+  /**
+   * @description
+   * Resets the control with the provided value if the control is present.
+   */
+
+
+  reset(value = undefined) {
+    if (this.control) this.control.reset(value);
+  }
+  /**
+   * @description
+   * Reports whether the control with the given path has the error specified.
+   *
+   * @param errorCode The code of the error to check
+   * @param path A list of control names that designates how to move from the current control
+   * to the control that should be queried for errors.
+   *
+   * @usageNotes
+   * For example, for the following `FormGroup`:
+   *
+   * ```
+   * form = new FormGroup({
+   *   address: new FormGroup({ street: new FormControl() })
+   * });
+   * ```
+   *
+   * The path to the 'street' control from the root form would be 'address' -> 'street'.
+   *
+   * It can be provided to this method in one of two formats:
+   *
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
+   *
+   * If no path is given, this method checks for the error on the current control.
+   *
+   * @returns whether the given error is present in the control at the given path.
+   *
+   * If the control is not present, false is returned.
+   */
+
+
+  hasError(errorCode, path) {
+    return this.control ? this.control.hasError(errorCode, path) : false;
+  }
+  /**
+   * @description
+   * Reports error data for the control with the given path.
+   *
+   * @param errorCode The code of the error to check
+   * @param path A list of control names that designates how to move from the current control
+   * to the control that should be queried for errors.
+   *
+   * @usageNotes
+   * For example, for the following `FormGroup`:
+   *
+   * ```
+   * form = new FormGroup({
+   *   address: new FormGroup({ street: new FormControl() })
+   * });
+   * ```
+   *
+   * The path to the 'street' control from the root form would be 'address' -> 'street'.
+   *
+   * It can be provided to this method in one of two formats:
+   *
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
+   *
+   * @returns error data for that particular error. If the control or error is not present,
+   * null is returned.
+   */
+
+
+  getError(errorCode, path) {
+    return this.control ? this.control.getError(errorCode, path) : null;
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @description
+ * A base class that all `FormControl`-based directives extend. It binds a `FormControl`
+ * object to a DOM element.
+ *
+ * @publicApi
+ */
+
+
+class NgControl extends AbstractControlDirective {
+  constructor() {
+    super(...arguments);
+    /**
+     * @description
+     * The parent form for the control.
+     *
+     * @internal
+     */
+
+    this._parent = null;
+    /**
+     * @description
+     * The name for the control
+     */
+
+    this.name = null;
+    /**
+     * @description
+     * The value accessor for the control
+     */
+
+    this.valueAccessor = null;
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @description
+ * A base class for directives that contain multiple registered instances of `NgControl`.
+ * Only used by the forms module.
+ *
+ * @publicApi
+ */
+
+
+class ControlContainer extends AbstractControlDirective {
+  /**
+   * @description
+   * The top-level form directive for the control.
+   */
+  get formDirective() {
+    return null;
+  }
+  /**
+   * @description
+   * The path to this group.
+   */
+
+
+  get path() {
+    return null;
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class AbstractControlStatus {
+  constructor(cd) {
+    this._cd = cd;
+  }
+
+  is(status) {
+    var _a, _b, _c; // Currently with ViewEngine (in AOT mode) it's not possible to use private methods in host
+    // bindings.
+    // TODO: once ViewEngine is removed, this function should be refactored:
+    //  - make the `is` method `protected`, so it's not accessible publicly
+    //  - move the `submitted` status logic to the `NgControlStatusGroup` class
+    //    and make it `private` or `protected` too.
+
+
+    if (status === 'submitted') {
+      // We check for the `submitted` field from `NgForm` and `FormGroupDirective` classes, but
+      // we avoid instanceof checks to prevent non-tree-shakable references to those types.
+      return !!((_a = this._cd) === null || _a === void 0 ? void 0 : _a.submitted);
+    }
+
+    return !!((_c = (_b = this._cd) === null || _b === void 0 ? void 0 : _b.control) === null || _c === void 0 ? void 0 : _c[status]);
+  }
+
+}
+
+const ngControlStatusHost = {
+  '[class.ng-untouched]': 'is("untouched")',
+  '[class.ng-touched]': 'is("touched")',
+  '[class.ng-pristine]': 'is("pristine")',
+  '[class.ng-dirty]': 'is("dirty")',
+  '[class.ng-valid]': 'is("valid")',
+  '[class.ng-invalid]': 'is("invalid")',
+  '[class.ng-pending]': 'is("pending")'
+};
+const ngGroupStatusHost = {
+  '[class.ng-untouched]': 'is("untouched")',
+  '[class.ng-touched]': 'is("touched")',
+  '[class.ng-pristine]': 'is("pristine")',
+  '[class.ng-dirty]': 'is("dirty")',
+  '[class.ng-valid]': 'is("valid")',
+  '[class.ng-invalid]': 'is("invalid")',
+  '[class.ng-pending]': 'is("pending")',
+  '[class.ng-submitted]': 'is("submitted")'
+};
+/**
+ * @description
+ * Directive automatically applied to Angular form controls that sets CSS classes
+ * based on control status.
+ *
+ * @usageNotes
+ *
+ * ### CSS classes applied
+ *
+ * The following classes are applied as the properties become true:
+ *
+ * * ng-valid
+ * * ng-invalid
+ * * ng-pending
+ * * ng-pristine
+ * * ng-dirty
+ * * ng-untouched
+ * * ng-touched
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class NgControlStatus extends AbstractControlStatus {
+  constructor(cd) {
+    super(cd);
+  }
+
+}
+
+NgControlStatus.ɵfac = function NgControlStatus_Factory(t) {
+  return new (t || NgControlStatus)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NgControl, 2));
+};
+
+NgControlStatus.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: NgControlStatus,
+  selectors: [["", "formControlName", ""], ["", "ngModel", ""], ["", "formControl", ""]],
+  hostVars: 14,
+  hostBindings: function NgControlStatus_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("ng-untouched", ctx.is("untouched"))("ng-touched", ctx.is("touched"))("ng-pristine", ctx.is("pristine"))("ng-dirty", ctx.is("dirty"))("ng-valid", ctx.is("valid"))("ng-invalid", ctx.is("invalid"))("ng-pending", ctx.is("pending"));
+    }
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NgControlStatus, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[formControlName],[ngModel],[formControl]',
+      host: ngControlStatusHost
+    }]
+  }], function () {
+    return [{
+      type: NgControl,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }]
+    }];
+  }, null);
+})();
+/**
+ * @description
+ * Directive automatically applied to Angular form groups that sets CSS classes
+ * based on control status (valid/invalid/dirty/etc). On groups, this includes the additional
+ * class ng-submitted.
+ *
+ * @see `NgControlStatus`
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class NgControlStatusGroup extends AbstractControlStatus {
+  constructor(cd) {
+    super(cd);
+  }
+
+}
+
+NgControlStatusGroup.ɵfac = function NgControlStatusGroup_Factory(t) {
+  return new (t || NgControlStatusGroup)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ControlContainer, 10));
+};
+
+NgControlStatusGroup.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: NgControlStatusGroup,
+  selectors: [["", "formGroupName", ""], ["", "formArrayName", ""], ["", "ngModelGroup", ""], ["", "formGroup", ""], ["form", 3, "ngNoForm", ""], ["", "ngForm", ""]],
+  hostVars: 16,
+  hostBindings: function NgControlStatusGroup_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("ng-untouched", ctx.is("untouched"))("ng-touched", ctx.is("touched"))("ng-pristine", ctx.is("pristine"))("ng-dirty", ctx.is("dirty"))("ng-valid", ctx.is("valid"))("ng-invalid", ctx.is("invalid"))("ng-pending", ctx.is("pending"))("ng-submitted", ctx.is("submitted"));
+    }
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NgControlStatusGroup, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[formGroupName],[formArrayName],[ngModelGroup],[formGroup],form:not([ngNoForm]),[ngForm]',
+      host: ngGroupStatusHost
+    }]
+  }], function () {
+    return [{
+      type: ControlContainer,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }]
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const formControlNameExample = `
+  <div [formGroup]="myGroup">
+    <input formControlName="firstName">
+  </div>
+
+  In your class:
+
+  this.myGroup = new FormGroup({
+      firstName: new FormControl()
+  });`;
+const formGroupNameExample = `
+  <div [formGroup]="myGroup">
+      <div formGroupName="person">
+        <input formControlName="firstName">
+      </div>
+  </div>
+
+  In your class:
+
+  this.myGroup = new FormGroup({
+      person: new FormGroup({ firstName: new FormControl() })
+  });`;
+const formArrayNameExample = `
+  <div [formGroup]="myGroup">
+    <div formArrayName="cities">
+      <div *ngFor="let city of cityArray.controls; index as i">
+        <input [formControlName]="i">
+      </div>
+    </div>
+  </div>
+
+  In your class:
+
+  this.cityArray = new FormArray([new FormControl('SF')]);
+  this.myGroup = new FormGroup({
+    cities: this.cityArray
+  });`;
+const ngModelGroupExample = `
+  <form>
+      <div ngModelGroup="person">
+        <input [(ngModel)]="person.name" name="firstName">
+      </div>
+  </form>`;
+const ngModelWithFormGroupExample = `
+  <div [formGroup]="myGroup">
+      <input formControlName="firstName">
+      <input [(ngModel)]="showMoreControls" [ngModelOptions]="{standalone: true}">
+  </div>
+`;
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+function controlParentException() {
+  return new Error(`formControlName must be used with a parent formGroup directive.  You'll want to add a formGroup
+      directive and pass it an existing FormGroup instance (you can create one in your class).
+
+    Example:
+
+    ${formControlNameExample}`);
+}
+
+function ngModelGroupException() {
+  return new Error(`formControlName cannot be used with an ngModelGroup parent. It is only compatible with parents
+      that also have a "form" prefix: formGroupName, formArrayName, or formGroup.
+
+      Option 1:  Update the parent to be formGroupName (reactive form strategy)
+
+      ${formGroupNameExample}
+
+      Option 2: Use ngModel instead of formControlName (template-driven strategy)
+
+      ${ngModelGroupExample}`);
+}
+
+function missingFormException() {
+  return new Error(`formGroup expects a FormGroup instance. Please pass one in.
+
+      Example:
+
+      ${formControlNameExample}`);
+}
+
+function groupParentException() {
+  return new Error(`formGroupName must be used with a parent formGroup directive.  You'll want to add a formGroup
+    directive and pass it an existing FormGroup instance (you can create one in your class).
+
+    Example:
+
+    ${formGroupNameExample}`);
+}
+
+function arrayParentException() {
+  return new Error(`formArrayName must be used with a parent formGroup directive.  You'll want to add a formGroup
+      directive and pass it an existing FormGroup instance (you can create one in your class).
+
+      Example:
+
+      ${formArrayNameExample}`);
+}
+
+const disabledAttrWarning = `
+  It looks like you're using the disabled attribute with a reactive form directive. If you set disabled to true
+  when you set up this control in your component class, the disabled attribute will actually be set in the DOM for
+  you. We recommend using this approach to avoid 'changed after checked' errors.
+
+  Example:
+  form = new FormGroup({
+    first: new FormControl({value: 'Nancy', disabled: true}, Validators.required),
+    last: new FormControl('Drew', Validators.required)
+  });
+`;
+
+function ngModelWarning(directiveName) {
+  return `
+  It looks like you're using ngModel on the same form field as ${directiveName}.
+  Support for using the ngModel input property and ngModelChange event with
+  reactive form directives has been deprecated in Angular v6 and will be removed
+  in a future version of Angular.
+
+  For more information on this, see our API docs here:
+  https://angular.io/api/forms/${directiveName === 'formControl' ? 'FormControlDirective' : 'FormControlName'}#use-with-ngmodel
+  `;
+}
+
+function describeKey(isFormGroup, key) {
+  return isFormGroup ? `with name: '${key}'` : `at index: ${key}`;
+}
+
+function noControlsError(isFormGroup) {
+  return `
+    There are no form controls registered with this ${isFormGroup ? 'group' : 'array'} yet. If you're using ngModel,
+    you may want to check next tick (e.g. use setTimeout).
+  `;
+}
+
+function missingControlError(isFormGroup, key) {
+  return `Cannot find form control ${describeKey(isFormGroup, key)}`;
+}
+
+function missingControlValueError(isFormGroup, key) {
+  return `Must supply a value for form control ${describeKey(isFormGroup, key)}`;
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+function controlPath(name, parent) {
+  return [...parent.path, name];
+}
+/**
+ * Links a Form control and a Form directive by setting up callbacks (such as `onChange`) on both
+ * instances. This function is typically invoked when form directive is being initialized.
+ *
+ * @param control Form control instance that should be linked.
+ * @param dir Directive that should be linked with a given control.
+ */
+
+
+function setUpControl(control, dir) {
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    if (!control) _throwError(dir, 'Cannot find control with');
+    if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
+  }
+
+  setUpValidators(control, dir);
+  dir.valueAccessor.writeValue(control.value);
+  setUpViewChangePipeline(control, dir);
+  setUpModelChangePipeline(control, dir);
+  setUpBlurPipeline(control, dir);
+  setUpDisabledChangeHandler(control, dir);
+}
+/**
+ * Reverts configuration performed by the `setUpControl` control function.
+ * Effectively disconnects form control with a given form directive.
+ * This function is typically invoked when corresponding form directive is being destroyed.
+ *
+ * @param control Form control which should be cleaned up.
+ * @param dir Directive that should be disconnected from a given control.
+ * @param validateControlPresenceOnChange Flag that indicates whether onChange handler should
+ *     contain asserts to verify that it's not called once directive is destroyed. We need this flag
+ *     to avoid potentially breaking changes caused by better control cleanup introduced in #39235.
+ */
+
+
+function cleanUpControl(control, dir, validateControlPresenceOnChange = true) {
+  const noop = () => {
+    if (validateControlPresenceOnChange && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      _noControlError(dir);
+    }
+  }; // The `valueAccessor` field is typically defined on FromControl and FormControlName directive
+  // instances and there is a logic in `selectValueAccessor` function that throws if it's not the
+  // case. We still check the presence of `valueAccessor` before invoking its methods to make sure
+  // that cleanup works correctly if app code or tests are setup to ignore the error thrown from
+  // `selectValueAccessor`. See https://github.com/angular/angular/issues/40521.
+
+
+  if (dir.valueAccessor) {
+    dir.valueAccessor.registerOnChange(noop);
+    dir.valueAccessor.registerOnTouched(noop);
+  }
+
+  cleanUpValidators(control, dir);
+
+  if (control) {
+    dir._invokeOnDestroyCallbacks();
+
+    control._registerOnCollectionChange(() => {});
+  }
+}
+
+function registerOnValidatorChange(validators, onChange) {
+  validators.forEach(validator => {
+    if (validator.registerOnValidatorChange) validator.registerOnValidatorChange(onChange);
+  });
+}
+/**
+ * Sets up disabled change handler function on a given form control if ControlValueAccessor
+ * associated with a given directive instance supports the `setDisabledState` call.
+ *
+ * @param control Form control where disabled change handler should be setup.
+ * @param dir Corresponding directive instance associated with this control.
+ */
+
+
+function setUpDisabledChangeHandler(control, dir) {
+  if (dir.valueAccessor.setDisabledState) {
+    const onDisabledChange = isDisabled => {
+      dir.valueAccessor.setDisabledState(isDisabled);
+    };
+
+    control.registerOnDisabledChange(onDisabledChange); // Register a callback function to cleanup disabled change handler
+    // from a control instance when a directive is destroyed.
+
+    dir._registerOnDestroy(() => {
+      control._unregisterOnDisabledChange(onDisabledChange);
+    });
+  }
+}
+/**
+ * Sets up sync and async directive validators on provided form control.
+ * This function merges validators from the directive into the validators of the control.
+ *
+ * @param control Form control where directive validators should be setup.
+ * @param dir Directive instance that contains validators to be setup.
+ */
+
+
+function setUpValidators(control, dir) {
+  const validators = getControlValidators(control);
+
+  if (dir.validator !== null) {
+    control.setValidators(mergeValidators(validators, dir.validator));
+  } else if (typeof validators === 'function') {
+    // If sync validators are represented by a single validator function, we force the
+    // `Validators.compose` call to happen by executing the `setValidators` function with
+    // an array that contains that function. We need this to avoid possible discrepancies in
+    // validators behavior, so sync validators are always processed by the `Validators.compose`.
+    // Note: we should consider moving this logic inside the `setValidators` function itself, so we
+    // have consistent behavior on AbstractControl API level. The same applies to the async
+    // validators logic below.
+    control.setValidators([validators]);
+  }
+
+  const asyncValidators = getControlAsyncValidators(control);
+
+  if (dir.asyncValidator !== null) {
+    control.setAsyncValidators(mergeValidators(asyncValidators, dir.asyncValidator));
+  } else if (typeof asyncValidators === 'function') {
+    control.setAsyncValidators([asyncValidators]);
+  } // Re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
+
+
+  const onValidatorChange = () => control.updateValueAndValidity();
+
+  registerOnValidatorChange(dir._rawValidators, onValidatorChange);
+  registerOnValidatorChange(dir._rawAsyncValidators, onValidatorChange);
+}
+/**
+ * Cleans up sync and async directive validators on provided form control.
+ * This function reverts the setup performed by the `setUpValidators` function, i.e.
+ * removes directive-specific validators from a given control instance.
+ *
+ * @param control Form control from where directive validators should be removed.
+ * @param dir Directive instance that contains validators to be removed.
+ * @returns true if a control was updated as a result of this action.
+ */
+
+
+function cleanUpValidators(control, dir) {
+  let isControlUpdated = false;
+
+  if (control !== null) {
+    if (dir.validator !== null) {
+      const validators = getControlValidators(control);
+
+      if (Array.isArray(validators) && validators.length > 0) {
+        // Filter out directive validator function.
+        const updatedValidators = validators.filter(validator => validator !== dir.validator);
+
+        if (updatedValidators.length !== validators.length) {
+          isControlUpdated = true;
+          control.setValidators(updatedValidators);
+        }
+      }
+    }
+
+    if (dir.asyncValidator !== null) {
+      const asyncValidators = getControlAsyncValidators(control);
+
+      if (Array.isArray(asyncValidators) && asyncValidators.length > 0) {
+        // Filter out directive async validator function.
+        const updatedAsyncValidators = asyncValidators.filter(asyncValidator => asyncValidator !== dir.asyncValidator);
+
+        if (updatedAsyncValidators.length !== asyncValidators.length) {
+          isControlUpdated = true;
+          control.setAsyncValidators(updatedAsyncValidators);
+        }
+      }
+    }
+  } // Clear onValidatorChange callbacks by providing a noop function.
+
+
+  const noop = () => {};
+
+  registerOnValidatorChange(dir._rawValidators, noop);
+  registerOnValidatorChange(dir._rawAsyncValidators, noop);
+  return isControlUpdated;
+}
+
+function setUpViewChangePipeline(control, dir) {
+  dir.valueAccessor.registerOnChange(newValue => {
+    control._pendingValue = newValue;
+    control._pendingChange = true;
+    control._pendingDirty = true;
+    if (control.updateOn === 'change') updateControl(control, dir);
+  });
+}
+
+function setUpBlurPipeline(control, dir) {
+  dir.valueAccessor.registerOnTouched(() => {
+    control._pendingTouched = true;
+    if (control.updateOn === 'blur' && control._pendingChange) updateControl(control, dir);
+    if (control.updateOn !== 'submit') control.markAsTouched();
+  });
+}
+
+function updateControl(control, dir) {
+  if (control._pendingDirty) control.markAsDirty();
+  control.setValue(control._pendingValue, {
+    emitModelToViewChange: false
+  });
+  dir.viewToModelUpdate(control._pendingValue);
+  control._pendingChange = false;
+}
+
+function setUpModelChangePipeline(control, dir) {
+  const onChange = (newValue, emitModelEvent) => {
+    // control -> view
+    dir.valueAccessor.writeValue(newValue); // control -> ngModel
+
+    if (emitModelEvent) dir.viewToModelUpdate(newValue);
+  };
+
+  control.registerOnChange(onChange); // Register a callback function to cleanup onChange handler
+  // from a control instance when a directive is destroyed.
+
+  dir._registerOnDestroy(() => {
+    control._unregisterOnChange(onChange);
+  });
+}
+/**
+ * Links a FormGroup or FormArray instance and corresponding Form directive by setting up validators
+ * present in the view.
+ *
+ * @param control FormGroup or FormArray instance that should be linked.
+ * @param dir Directive that provides view validators.
+ */
+
+
+function setUpFormContainer(control, dir) {
+  if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode)) _throwError(dir, 'Cannot find control with');
+  setUpValidators(control, dir);
+}
+/**
+ * Reverts the setup performed by the `setUpFormContainer` function.
+ *
+ * @param control FormGroup or FormArray instance that should be cleaned up.
+ * @param dir Directive that provided view validators.
+ * @returns true if a control was updated as a result of this action.
+ */
+
+
+function cleanUpFormContainer(control, dir) {
+  return cleanUpValidators(control, dir);
+}
+
+function _noControlError(dir) {
+  return _throwError(dir, 'There is no FormControl instance attached to form control element with');
+}
+
+function _throwError(dir, message) {
+  let messageEnd;
+
+  if (dir.path.length > 1) {
+    messageEnd = `path: '${dir.path.join(' -> ')}'`;
+  } else if (dir.path[0]) {
+    messageEnd = `name: '${dir.path}'`;
+  } else {
+    messageEnd = 'unspecified name attribute';
+  }
+
+  throw new Error(`${message} ${messageEnd}`);
+}
+
+function isPropertyUpdated(changes, viewModel) {
+  if (!changes.hasOwnProperty('model')) return false;
+  const change = changes['model'];
+  if (change.isFirstChange()) return true;
+  return !Object.is(viewModel, change.currentValue);
+}
+
+function isBuiltInAccessor(valueAccessor) {
+  // Check if a given value accessor is an instance of a class that directly extends
+  // `BuiltInControlValueAccessor` one.
+  return Object.getPrototypeOf(valueAccessor.constructor) === BuiltInControlValueAccessor;
+}
+
+function syncPendingControls(form, directives) {
+  form._syncPendingControls();
+
+  directives.forEach(dir => {
+    const control = dir.control;
+
+    if (control.updateOn === 'submit' && control._pendingChange) {
+      dir.viewToModelUpdate(control._pendingValue);
+      control._pendingChange = false;
+    }
+  });
+} // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
+
+
+function selectValueAccessor(dir, valueAccessors) {
+  if (!valueAccessors) return null;
+  if (!Array.isArray(valueAccessors) && (typeof ngDevMode === 'undefined' || ngDevMode)) _throwError(dir, 'Value accessor was not provided as an array for form control with');
+  let defaultAccessor = undefined;
+  let builtinAccessor = undefined;
+  let customAccessor = undefined;
+  valueAccessors.forEach(v => {
+    if (v.constructor === DefaultValueAccessor) {
+      defaultAccessor = v;
+    } else if (isBuiltInAccessor(v)) {
+      if (builtinAccessor && (typeof ngDevMode === 'undefined' || ngDevMode)) _throwError(dir, 'More than one built-in value accessor matches form control with');
+      builtinAccessor = v;
+    } else {
+      if (customAccessor && (typeof ngDevMode === 'undefined' || ngDevMode)) _throwError(dir, 'More than one custom value accessor matches form control with');
+      customAccessor = v;
+    }
+  });
+  if (customAccessor) return customAccessor;
+  if (builtinAccessor) return builtinAccessor;
+  if (defaultAccessor) return defaultAccessor;
+
+  if (typeof ngDevMode === 'undefined' || ngDevMode) {
+    _throwError(dir, 'No valid value accessor for form control with');
+  }
+
+  return null;
+}
+
+function removeListItem(list, el) {
+  const index = list.indexOf(el);
+  if (index > -1) list.splice(index, 1);
+} // TODO(kara): remove after deprecation period
+
+
+function _ngModelWarning(name, type, instance, warningConfig) {
+  if (warningConfig === 'never') return;
+
+  if ((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce || warningConfig === 'always' && !instance._ngModelWarningSent) {
+    console.warn(ngModelWarning(name));
+    type._ngModelWarningSentOnce = true;
+    instance._ngModelWarningSent = true;
+  }
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
+/**
+ * Reports that a FormControl is valid, meaning that no errors exist in the input value.
+ *
+ * @see `status`
+ */
+
+const VALID = 'VALID';
+/**
+ * Reports that a FormControl is invalid, meaning that an error exists in the input value.
+ *
+ * @see `status`
+ */
+
+const INVALID = 'INVALID';
+/**
+ * Reports that a FormControl is pending, meaning that that async validation is occurring and
+ * errors are not yet available for the input value.
+ *
+ * @see `markAsPending`
+ * @see `status`
+ */
+
+const PENDING = 'PENDING';
+/**
+ * Reports that a FormControl is disabled, meaning that the control is exempt from ancestor
+ * calculations of validity or value.
+ *
+ * @see `markAsDisabled`
+ * @see `status`
+ */
+
+const DISABLED = 'DISABLED';
+
+function _find(control, path, delimiter) {
+  if (path == null) return null;
+
+  if (!Array.isArray(path)) {
+    path = path.split(delimiter);
+  }
+
+  if (Array.isArray(path) && path.length === 0) return null; // Not using Array.reduce here due to a Chrome 80 bug
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1049982
+
+  let controlToFind = control;
+  path.forEach(name => {
+    if (isFormGroup(controlToFind)) {
+      controlToFind = controlToFind.controls.hasOwnProperty(name) ? controlToFind.controls[name] : null;
+    } else if (isFormArray(controlToFind)) {
+      controlToFind = controlToFind.at(name) || null;
+    } else {
+      controlToFind = null;
+    }
+  });
+  return controlToFind;
+}
+/**
+ * Gets validators from either an options object or given validators.
+ */
+
+
+function pickValidators(validatorOrOpts) {
+  return (isOptionsObj(validatorOrOpts) ? validatorOrOpts.validators : validatorOrOpts) || null;
+}
+/**
+ * Creates validator function by combining provided validators.
+ */
+
+
+function coerceToValidator(validator) {
+  return Array.isArray(validator) ? composeValidators(validator) : validator || null;
+}
+/**
+ * Gets async validators from either an options object or given validators.
+ */
+
+
+function pickAsyncValidators(asyncValidator, validatorOrOpts) {
+  return (isOptionsObj(validatorOrOpts) ? validatorOrOpts.asyncValidators : asyncValidator) || null;
+}
+/**
+ * Creates async validator function by combining provided async validators.
+ */
+
+
+function coerceToAsyncValidator(asyncValidator) {
+  return Array.isArray(asyncValidator) ? composeAsyncValidators(asyncValidator) : asyncValidator || null;
+}
+
+function isOptionsObj(validatorOrOpts) {
+  return validatorOrOpts != null && !Array.isArray(validatorOrOpts) && typeof validatorOrOpts === 'object';
+}
+
+const isFormControl = control => control instanceof FormControl;
+
+const isFormGroup = control => control instanceof FormGroup;
+
+const isFormArray = control => control instanceof FormArray;
+
+function getRawValue(control) {
+  return isFormControl(control) ? control.value : control.getRawValue();
+}
+
+function assertControlPresent(parent, key) {
+  const isGroup = isFormGroup(parent);
+  const controls = parent.controls;
+  const collection = isGroup ? Object.keys(controls) : controls;
+
+  if (!collection.length) {
+    throw new _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵRuntimeError"](1000
+    /* NO_CONTROLS */
+    , NG_DEV_MODE ? noControlsError(isGroup) : '');
+  }
+
+  if (!controls[key]) {
+    throw new _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵRuntimeError"](1001
+    /* MISSING_CONTROL */
+    , NG_DEV_MODE ? missingControlError(isGroup, key) : '');
+  }
+}
+
+function assertAllValuesPresent(control, value) {
+  const isGroup = isFormGroup(control);
+
+  control._forEachChild((_, key) => {
+    if (value[key] === undefined) {
+      throw new _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵRuntimeError"](1002
+      /* MISSING_CONTROL_VALUE */
+      , NG_DEV_MODE ? missingControlValueError(isGroup, key) : '');
+    }
+  });
+}
+/**
+ * This is the base class for `FormControl`, `FormGroup`, and `FormArray`.
+ *
+ * It provides some of the shared behavior that all controls and groups of controls have, like
+ * running validators, calculating status, and resetting state. It also defines the properties
+ * that are shared between all sub-classes, like `value`, `valid`, and `dirty`. It shouldn't be
+ * instantiated directly.
+ *
+ * @see [Forms Guide](/guide/forms)
+ * @see [Reactive Forms Guide](/guide/reactive-forms)
+ * @see [Dynamic Forms Guide](/guide/dynamic-form)
+ *
+ * @publicApi
+ */
+
+
+class AbstractControl {
+  /**
+   * Initialize the AbstractControl instance.
+   *
+   * @param validators The function or array of functions that is used to determine the validity of
+   *     this control synchronously.
+   * @param asyncValidators The function or array of functions that is used to determine validity of
+   *     this control asynchronously.
+   */
+  constructor(validators, asyncValidators) {
+    /** @internal */
+    this._pendingDirty = false;
+    /**
+     * Indicates that a control has its own pending asynchronous validation in progress.
+     *
+     * @internal
+     */
+
+    this._hasOwnPendingAsyncValidator = false;
+    /** @internal */
+
+    this._pendingTouched = false;
+    /** @internal */
+
+    this._onCollectionChange = () => {};
+
+    this._parent = null;
+    /**
+     * A control is `pristine` if the user has not yet changed
+     * the value in the UI.
+     *
+     * @returns True if the user has not yet changed the value in the UI; compare `dirty`.
+     * Programmatic changes to a control's value do not mark it dirty.
+     */
+
+    this.pristine = true;
+    /**
+     * True if the control is marked as `touched`.
+     *
+     * A control is marked `touched` once the user has triggered
+     * a `blur` event on it.
+     */
+
+    this.touched = false;
+    /** @internal */
+
+    this._onDisabledChange = [];
+    this._rawValidators = validators;
+    this._rawAsyncValidators = asyncValidators;
+    this._composedValidatorFn = coerceToValidator(this._rawValidators);
+    this._composedAsyncValidatorFn = coerceToAsyncValidator(this._rawAsyncValidators);
+  }
+  /**
+   * Returns the function that is used to determine the validity of this control synchronously.
+   * If multiple validators have been added, this will be a single composed function.
+   * See `Validators.compose()` for additional information.
+   */
+
+
+  get validator() {
+    return this._composedValidatorFn;
+  }
+
+  set validator(validatorFn) {
+    this._rawValidators = this._composedValidatorFn = validatorFn;
+  }
+  /**
+   * Returns the function that is used to determine the validity of this control asynchronously.
+   * If multiple validators have been added, this will be a single composed function.
+   * See `Validators.compose()` for additional information.
+   */
+
+
+  get asyncValidator() {
+    return this._composedAsyncValidatorFn;
+  }
+
+  set asyncValidator(asyncValidatorFn) {
+    this._rawAsyncValidators = this._composedAsyncValidatorFn = asyncValidatorFn;
+  }
+  /**
+   * The parent control.
+   */
+
+
+  get parent() {
+    return this._parent;
+  }
+  /**
+   * A control is `valid` when its `status` is `VALID`.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @returns True if the control has passed all of its validation tests,
+   * false otherwise.
+   */
+
+
+  get valid() {
+    return this.status === VALID;
+  }
+  /**
+   * A control is `invalid` when its `status` is `INVALID`.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @returns True if this control has failed one or more of its validation checks,
+   * false otherwise.
+   */
+
+
+  get invalid() {
+    return this.status === INVALID;
+  }
+  /**
+   * A control is `pending` when its `status` is `PENDING`.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @returns True if this control is in the process of conducting a validation check,
+   * false otherwise.
+   */
+
+
+  get pending() {
+    return this.status == PENDING;
+  }
+  /**
+   * A control is `disabled` when its `status` is `DISABLED`.
+   *
+   * Disabled controls are exempt from validation checks and
+   * are not included in the aggregate value of their ancestor
+   * controls.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @returns True if the control is disabled, false otherwise.
+   */
+
+
+  get disabled() {
+    return this.status === DISABLED;
+  }
+  /**
+   * A control is `enabled` as long as its `status` is not `DISABLED`.
+   *
+   * @returns True if the control has any status other than 'DISABLED',
+   * false if the status is 'DISABLED'.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   */
+
+
+  get enabled() {
+    return this.status !== DISABLED;
+  }
+  /**
+   * A control is `dirty` if the user has changed the value
+   * in the UI.
+   *
+   * @returns True if the user has changed the value of this control in the UI; compare `pristine`.
+   * Programmatic changes to a control's value do not mark it dirty.
+   */
+
+
+  get dirty() {
+    return !this.pristine;
+  }
+  /**
+   * True if the control has not been marked as touched
+   *
+   * A control is `untouched` if the user has not yet triggered
+   * a `blur` event on it.
+   */
+
+
+  get untouched() {
+    return !this.touched;
+  }
+  /**
+   * Reports the update strategy of the `AbstractControl` (meaning
+   * the event on which the control updates itself).
+   * Possible values: `'change'` | `'blur'` | `'submit'`
+   * Default value: `'change'`
+   */
+
+
+  get updateOn() {
+    return this._updateOn ? this._updateOn : this.parent ? this.parent.updateOn : 'change';
+  }
+  /**
+   * Sets the synchronous validators that are active on this control.  Calling
+   * this overwrites any existing synchronous validators.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   * If you want to add a new validator without affecting existing ones, consider
+   * using `addValidators()` method instead.
+   */
+
+
+  setValidators(validators) {
+    this._rawValidators = validators;
+    this._composedValidatorFn = coerceToValidator(validators);
+  }
+  /**
+   * Sets the asynchronous validators that are active on this control. Calling this
+   * overwrites any existing asynchronous validators.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   * If you want to add a new validator without affecting existing ones, consider
+   * using `addAsyncValidators()` method instead.
+   */
+
+
+  setAsyncValidators(validators) {
+    this._rawAsyncValidators = validators;
+    this._composedAsyncValidatorFn = coerceToAsyncValidator(validators);
+  }
+  /**
+   * Add a synchronous validator or validators to this control, without affecting other validators.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   * Adding a validator that already exists will have no effect. If duplicate validator functions
+   * are present in the `validators` array, only the first instance would be added to a form
+   * control.
+   *
+   * @param validators The new validator function or functions to add to this control.
+   */
+
+
+  addValidators(validators) {
+    this.setValidators(addValidators(validators, this._rawValidators));
+  }
+  /**
+   * Add an asynchronous validator or validators to this control, without affecting other
+   * validators.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   * Adding a validator that already exists will have no effect.
+   *
+   * @param validators The new asynchronous validator function or functions to add to this control.
+   */
+
+
+  addAsyncValidators(validators) {
+    this.setAsyncValidators(addValidators(validators, this._rawAsyncValidators));
+  }
+  /**
+   * Remove a synchronous validator from this control, without affecting other validators.
+   * Validators are compared by function reference; you must pass a reference to the exact same
+   * validator function as the one that was originally set. If a provided validator is not found,
+   * it is ignored.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   * @param validators The validator or validators to remove.
+   */
+
+
+  removeValidators(validators) {
+    this.setValidators(removeValidators(validators, this._rawValidators));
+  }
+  /**
+   * Remove an asynchronous validator from this control, without affecting other validators.
+   * Validators are compared by function reference; you must pass a reference to the exact same
+   * validator function as the one that was originally set. If a provided validator is not found, it
+   * is ignored.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   * @param validators The asynchronous validator or validators to remove.
+   */
+
+
+  removeAsyncValidators(validators) {
+    this.setAsyncValidators(removeValidators(validators, this._rawAsyncValidators));
+  }
+  /**
+   * Check whether a synchronous validator function is present on this control. The provided
+   * validator must be a reference to the exact same function that was provided.
+   *
+   * @param validator The validator to check for presence. Compared by function reference.
+   * @returns Whether the provided validator was found on this control.
+   */
+
+
+  hasValidator(validator) {
+    return hasValidator(this._rawValidators, validator);
+  }
+  /**
+   * Check whether an asynchronous validator function is present on this control. The provided
+   * validator must be a reference to the exact same function that was provided.
+   *
+   * @param validator The asynchronous validator to check for presence. Compared by function
+   *     reference.
+   * @returns Whether the provided asynchronous validator was found on this control.
+   */
+
+
+  hasAsyncValidator(validator) {
+    return hasValidator(this._rawAsyncValidators, validator);
+  }
+  /**
+   * Empties out the synchronous validator list.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   */
+
+
+  clearValidators() {
+    this.validator = null;
+  }
+  /**
+   * Empties out the async validator list.
+   *
+   * When you add or remove a validator at run time, you must call
+   * `updateValueAndValidity()` for the new validation to take effect.
+   *
+   */
+
+
+  clearAsyncValidators() {
+    this.asyncValidator = null;
+  }
+  /**
+   * Marks the control as `touched`. A control is touched by focus and
+   * blur events that do not change the value.
+   *
+   * @see `markAsUntouched()`
+   * @see `markAsDirty()`
+   * @see `markAsPristine()`
+   *
+   * @param opts Configuration options that determine how the control propagates changes
+   * and emits events after marking is applied.
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   */
+
+
+  markAsTouched(opts = {}) {
+    this.touched = true;
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent.markAsTouched(opts);
+    }
+  }
+  /**
+   * Marks the control and all its descendant controls as `touched`.
+   * @see `markAsTouched()`
+   */
+
+
+  markAllAsTouched() {
+    this.markAsTouched({
+      onlySelf: true
+    });
+
+    this._forEachChild(control => control.markAllAsTouched());
+  }
+  /**
+   * Marks the control as `untouched`.
+   *
+   * If the control has any children, also marks all children as `untouched`
+   * and recalculates the `touched` status of all parent controls.
+   *
+   * @see `markAsTouched()`
+   * @see `markAsDirty()`
+   * @see `markAsPristine()`
+   *
+   * @param opts Configuration options that determine how the control propagates changes
+   * and emits events after the marking is applied.
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   */
+
+
+  markAsUntouched(opts = {}) {
+    this.touched = false;
+    this._pendingTouched = false;
+
+    this._forEachChild(control => {
+      control.markAsUntouched({
+        onlySelf: true
+      });
+    });
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updateTouched(opts);
+    }
+  }
+  /**
+   * Marks the control as `dirty`. A control becomes dirty when
+   * the control's value is changed through the UI; compare `markAsTouched`.
+   *
+   * @see `markAsTouched()`
+   * @see `markAsUntouched()`
+   * @see `markAsPristine()`
+   *
+   * @param opts Configuration options that determine how the control propagates changes
+   * and emits events after marking is applied.
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   */
+
+
+  markAsDirty(opts = {}) {
+    this.pristine = false;
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent.markAsDirty(opts);
+    }
+  }
+  /**
+   * Marks the control as `pristine`.
+   *
+   * If the control has any children, marks all children as `pristine`,
+   * and recalculates the `pristine` status of all parent
+   * controls.
+   *
+   * @see `markAsTouched()`
+   * @see `markAsUntouched()`
+   * @see `markAsDirty()`
+   *
+   * @param opts Configuration options that determine how the control emits events after
+   * marking is applied.
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   */
+
+
+  markAsPristine(opts = {}) {
+    this.pristine = true;
+    this._pendingDirty = false;
+
+    this._forEachChild(control => {
+      control.markAsPristine({
+        onlySelf: true
+      });
+    });
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updatePristine(opts);
+    }
+  }
+  /**
+   * Marks the control as `pending`.
+   *
+   * A control is pending while the control performs async validation.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @param opts Configuration options that determine how the control propagates changes and
+   * emits events after marking is applied.
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), the `statusChanges`
+   * observable emits an event with the latest status the control is marked pending.
+   * When false, no events are emitted.
+   *
+   */
+
+
+  markAsPending(opts = {}) {
+    this.status = PENDING;
+
+    if (opts.emitEvent !== false) {
+      this.statusChanges.emit(this.status);
+    }
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent.markAsPending(opts);
+    }
+  }
+  /**
+   * Disables the control. This means the control is exempt from validation checks and
+   * excluded from the aggregate value of any parent. Its status is `DISABLED`.
+   *
+   * If the control has children, all children are also disabled.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @param opts Configuration options that determine how the control propagates
+   * changes and emits events after the control is disabled.
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is disabled.
+   * When false, no events are emitted.
+   */
+
+
+  disable(opts = {}) {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
+    this.status = DISABLED;
+    this.errors = null;
+
+    this._forEachChild(control => {
+      control.disable(Object.assign(Object.assign({}, opts), {
+        onlySelf: true
+      }));
+    });
+
+    this._updateValue();
+
+    if (opts.emitEvent !== false) {
+      this.valueChanges.emit(this.value);
+      this.statusChanges.emit(this.status);
+    }
+
+    this._updateAncestors(Object.assign(Object.assign({}, opts), {
+      skipPristineCheck
+    }));
+
+    this._onDisabledChange.forEach(changeFn => changeFn(true));
+  }
+  /**
+   * Enables the control. This means the control is included in validation checks and
+   * the aggregate value of its parent. Its status recalculates based on its value and
+   * its validators.
+   *
+   * By default, if the control has children, all children are enabled.
+   *
+   * @see {@link AbstractControl.status}
+   *
+   * @param opts Configure options that control how the control propagates changes and
+   * emits events when marked as untouched
+   * * `onlySelf`: When true, mark only this control. When false or not supplied,
+   * marks all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is enabled.
+   * When false, no events are emitted.
+   */
+
+
+  enable(opts = {}) {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
+    this.status = VALID;
+
+    this._forEachChild(control => {
+      control.enable(Object.assign(Object.assign({}, opts), {
+        onlySelf: true
+      }));
+    });
+
+    this.updateValueAndValidity({
+      onlySelf: true,
+      emitEvent: opts.emitEvent
+    });
+
+    this._updateAncestors(Object.assign(Object.assign({}, opts), {
+      skipPristineCheck
+    }));
+
+    this._onDisabledChange.forEach(changeFn => changeFn(false));
+  }
+
+  _updateAncestors(opts) {
+    if (this._parent && !opts.onlySelf) {
+      this._parent.updateValueAndValidity(opts);
+
+      if (!opts.skipPristineCheck) {
+        this._parent._updatePristine();
+      }
+
+      this._parent._updateTouched();
+    }
+  }
+  /**
+   * @param parent Sets the parent of the control
+   */
+
+
+  setParent(parent) {
+    this._parent = parent;
+  }
+  /**
+   * Recalculates the value and validation status of the control.
+   *
+   * By default, it also updates the value and validity of its ancestors.
+   *
+   * @param opts Configuration options determine how the control propagates changes and emits events
+   * after updates and validity checks are applied.
+   * * `onlySelf`: When true, only update this control. When false or not supplied,
+   * update all direct ancestors. Default is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is updated.
+   * When false, no events are emitted.
+   */
+
+
+  updateValueAndValidity(opts = {}) {
+    this._setInitialStatus();
+
+    this._updateValue();
+
+    if (this.enabled) {
+      this._cancelExistingSubscription();
+
+      this.errors = this._runValidator();
+      this.status = this._calculateStatus();
+
+      if (this.status === VALID || this.status === PENDING) {
+        this._runAsyncValidator(opts.emitEvent);
+      }
+    }
+
+    if (opts.emitEvent !== false) {
+      this.valueChanges.emit(this.value);
+      this.statusChanges.emit(this.status);
+    }
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent.updateValueAndValidity(opts);
+    }
+  }
+  /** @internal */
+
+
+  _updateTreeValidity(opts = {
+    emitEvent: true
+  }) {
+    this._forEachChild(ctrl => ctrl._updateTreeValidity(opts));
+
+    this.updateValueAndValidity({
+      onlySelf: true,
+      emitEvent: opts.emitEvent
+    });
+  }
+
+  _setInitialStatus() {
+    this.status = this._allControlsDisabled() ? DISABLED : VALID;
+  }
+
+  _runValidator() {
+    return this.validator ? this.validator(this) : null;
+  }
+
+  _runAsyncValidator(emitEvent) {
+    if (this.asyncValidator) {
+      this.status = PENDING;
+      this._hasOwnPendingAsyncValidator = true;
+      const obs = toObservable(this.asyncValidator(this));
+      this._asyncValidationSubscription = obs.subscribe(errors => {
+        this._hasOwnPendingAsyncValidator = false; // This will trigger the recalculation of the validation status, which depends on
+        // the state of the asynchronous validation (whether it is in progress or not). So, it is
+        // necessary that we have updated the `_hasOwnPendingAsyncValidator` boolean flag first.
+
+        this.setErrors(errors, {
+          emitEvent
+        });
+      });
+    }
+  }
+
+  _cancelExistingSubscription() {
+    if (this._asyncValidationSubscription) {
+      this._asyncValidationSubscription.unsubscribe();
+
+      this._hasOwnPendingAsyncValidator = false;
+    }
+  }
+  /**
+   * Sets errors on a form control when running validations manually, rather than automatically.
+   *
+   * Calling `setErrors` also updates the validity of the parent control.
+   *
+   * @usageNotes
+   *
+   * ### Manually set the errors for a control
+   *
+   * ```
+   * const login = new FormControl('someLogin');
+   * login.setErrors({
+   *   notUnique: true
+   * });
+   *
+   * expect(login.valid).toEqual(false);
+   * expect(login.errors).toEqual({ notUnique: true });
+   *
+   * login.setValue('someOtherLogin');
+   *
+   * expect(login.valid).toEqual(true);
+   * ```
+   */
+
+
+  setErrors(errors, opts = {}) {
+    this.errors = errors;
+
+    this._updateControlsErrors(opts.emitEvent !== false);
+  }
+  /**
+   * Retrieves a child control given the control's name or path.
+   *
+   * @param path A dot-delimited string or array of string/number values that define the path to the
+   * control.
+   *
+   * @usageNotes
+   * ### Retrieve a nested control
+   *
+   * For example, to get a `name` control nested within a `person` sub-group:
+   *
+   * * `this.form.get('person.name');`
+   *
+   * -OR-
+   *
+   * * `this.form.get(['person', 'name']);`
+   *
+   * ### Retrieve a control in a FormArray
+   *
+   * When accessing an element inside a FormArray, you can use an element index.
+   * For example, to get a `price` control from the first element in an `items` array you can use:
+   *
+   * * `this.form.get('items.0.price');`
+   *
+   * -OR-
+   *
+   * * `this.form.get(['items', 0, 'price']);`
+   */
+
+
+  get(path) {
+    return _find(this, path, '.');
+  }
+  /**
+   * @description
+   * Reports error data for the control with the given path.
+   *
+   * @param errorCode The code of the error to check
+   * @param path A list of control names that designates how to move from the current control
+   * to the control that should be queried for errors.
+   *
+   * @usageNotes
+   * For example, for the following `FormGroup`:
+   *
+   * ```
+   * form = new FormGroup({
+   *   address: new FormGroup({ street: new FormControl() })
+   * });
+   * ```
+   *
+   * The path to the 'street' control from the root form would be 'address' -> 'street'.
+   *
+   * It can be provided to this method in one of two formats:
+   *
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
+   *
+   * @returns error data for that particular error. If the control or error is not present,
+   * null is returned.
+   */
+
+
+  getError(errorCode, path) {
+    const control = path ? this.get(path) : this;
+    return control && control.errors ? control.errors[errorCode] : null;
+  }
+  /**
+   * @description
+   * Reports whether the control with the given path has the error specified.
+   *
+   * @param errorCode The code of the error to check
+   * @param path A list of control names that designates how to move from the current control
+   * to the control that should be queried for errors.
+   *
+   * @usageNotes
+   * For example, for the following `FormGroup`:
+   *
+   * ```
+   * form = new FormGroup({
+   *   address: new FormGroup({ street: new FormControl() })
+   * });
+   * ```
+   *
+   * The path to the 'street' control from the root form would be 'address' -> 'street'.
+   *
+   * It can be provided to this method in one of two formats:
+   *
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
+   *
+   * If no path is given, this method checks for the error on the current control.
+   *
+   * @returns whether the given error is present in the control at the given path.
+   *
+   * If the control is not present, false is returned.
+   */
+
+
+  hasError(errorCode, path) {
+    return !!this.getError(errorCode, path);
+  }
+  /**
+   * Retrieves the top-level ancestor of this control.
+   */
+
+
+  get root() {
+    let x = this;
+
+    while (x._parent) {
+      x = x._parent;
+    }
+
+    return x;
+  }
+  /** @internal */
+
+
+  _updateControlsErrors(emitEvent) {
+    this.status = this._calculateStatus();
+
+    if (emitEvent) {
+      this.statusChanges.emit(this.status);
+    }
+
+    if (this._parent) {
+      this._parent._updateControlsErrors(emitEvent);
+    }
+  }
+  /** @internal */
+
+
+  _initObservables() {
+    this.valueChanges = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+    this.statusChanges = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+  }
+
+  _calculateStatus() {
+    if (this._allControlsDisabled()) return DISABLED;
+    if (this.errors) return INVALID;
+    if (this._hasOwnPendingAsyncValidator || this._anyControlsHaveStatus(PENDING)) return PENDING;
+    if (this._anyControlsHaveStatus(INVALID)) return INVALID;
+    return VALID;
+  }
+  /** @internal */
+
+
+  _anyControlsHaveStatus(status) {
+    return this._anyControls(control => control.status === status);
+  }
+  /** @internal */
+
+
+  _anyControlsDirty() {
+    return this._anyControls(control => control.dirty);
+  }
+  /** @internal */
+
+
+  _anyControlsTouched() {
+    return this._anyControls(control => control.touched);
+  }
+  /** @internal */
+
+
+  _updatePristine(opts = {}) {
+    this.pristine = !this._anyControlsDirty();
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updatePristine(opts);
+    }
+  }
+  /** @internal */
+
+
+  _updateTouched(opts = {}) {
+    this.touched = this._anyControlsTouched();
+
+    if (this._parent && !opts.onlySelf) {
+      this._parent._updateTouched(opts);
+    }
+  }
+  /** @internal */
+
+
+  _isBoxedValue(formState) {
+    return typeof formState === 'object' && formState !== null && Object.keys(formState).length === 2 && 'value' in formState && 'disabled' in formState;
+  }
+  /** @internal */
+
+
+  _registerOnCollectionChange(fn) {
+    this._onCollectionChange = fn;
+  }
+  /** @internal */
+
+
+  _setUpdateStrategy(opts) {
+    if (isOptionsObj(opts) && opts.updateOn != null) {
+      this._updateOn = opts.updateOn;
+    }
+  }
+  /**
+   * Check to see if parent has been marked artificially dirty.
+   *
+   * @internal
+   */
+
+
+  _parentMarkedDirty(onlySelf) {
+    const parentDirty = this._parent && this._parent.dirty;
+    return !onlySelf && !!parentDirty && !this._parent._anyControlsDirty();
+  }
+
+}
+/**
+ * Tracks the value and validation status of an individual form control.
+ *
+ * This is one of the three fundamental building blocks of Angular forms, along with
+ * `FormGroup` and `FormArray`. It extends the `AbstractControl` class that
+ * implements most of the base functionality for accessing the value, validation status,
+ * user interactions and events. See [usage examples below](#usage-notes).
+ *
+ * @see `AbstractControl`
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see [Usage Notes](#usage-notes)
+ *
+ * @usageNotes
+ *
+ * ### Initializing Form Controls
+ *
+ * Instantiate a `FormControl`, with an initial value.
+ *
+ * ```ts
+ * const control = new FormControl('some value');
+ * console.log(control.value);     // 'some value'
+ *```
+ *
+ * The following example initializes the control with a form state object. The `value`
+ * and `disabled` keys are required in this case.
+ *
+ * ```ts
+ * const control = new FormControl({ value: 'n/a', disabled: true });
+ * console.log(control.value);     // 'n/a'
+ * console.log(control.status);    // 'DISABLED'
+ * ```
+ *
+ * The following example initializes the control with a synchronous validator.
+ *
+ * ```ts
+ * const control = new FormControl('', Validators.required);
+ * console.log(control.value);      // ''
+ * console.log(control.status);     // 'INVALID'
+ * ```
+ *
+ * The following example initializes the control using an options object.
+ *
+ * ```ts
+ * const control = new FormControl('', {
+ *    validators: Validators.required,
+ *    asyncValidators: myAsyncValidator
+ * });
+ * ```
+ *
+ * ### Configure the control to update on a blur event
+ *
+ * Set the `updateOn` option to `'blur'` to update on the blur `event`.
+ *
+ * ```ts
+ * const control = new FormControl('', { updateOn: 'blur' });
+ * ```
+ *
+ * ### Configure the control to update on a submit event
+ *
+ * Set the `updateOn` option to `'submit'` to update on a submit `event`.
+ *
+ * ```ts
+ * const control = new FormControl('', { updateOn: 'submit' });
+ * ```
+ *
+ * ### Reset the control back to an initial value
+ *
+ * You reset to a specific form state by passing through a standalone
+ * value or a form state object that contains both a value and a disabled state
+ * (these are the only two properties that cannot be calculated).
+ *
+ * ```ts
+ * const control = new FormControl('Nancy');
+ *
+ * console.log(control.value); // 'Nancy'
+ *
+ * control.reset('Drew');
+ *
+ * console.log(control.value); // 'Drew'
+ * ```
+ *
+ * ### Reset the control back to an initial value and disabled
+ *
+ * ```
+ * const control = new FormControl('Nancy');
+ *
+ * console.log(control.value); // 'Nancy'
+ * console.log(control.status); // 'VALID'
+ *
+ * control.reset({ value: 'Drew', disabled: true });
+ *
+ * console.log(control.value); // 'Drew'
+ * console.log(control.status); // 'DISABLED'
+ * ```
+ *
+ * @publicApi
+ */
+
+
+class FormControl extends AbstractControl {
+  /**
+   * Creates a new `FormControl` instance.
+   *
+   * @param formState Initializes the control with an initial value,
+   * or an object that defines the initial value and disabled state.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains validation functions
+   * and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator functions
+   *
+   */
+  constructor(formState = null, validatorOrOpts, asyncValidator) {
+    super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
+    /**
+     * The default value of this FormControl, used whenever the control is reset without an explicit
+     * value. See {@link FormControlOptions#initialValueIsDefault} for more information on configuring
+     * a default value.
+     * @publicApi
+     */
+
+    this.defaultValue = null;
+    /** @internal */
+
+    this._onChange = [];
+    /** @internal */
+
+    this._pendingChange = false;
+
+    this._applyFormState(formState);
+
+    this._setUpdateStrategy(validatorOrOpts);
+
+    this._initObservables();
+
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`.
+      // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
+      // to `true` to allow that during the control creation process.
+      emitEvent: !!this.asyncValidator
+    });
+
+    if (isOptionsObj(validatorOrOpts) && validatorOrOpts.initialValueIsDefault) {
+      if (this._isBoxedValue(formState)) {
+        this.defaultValue = formState.value;
+      } else {
+        this.defaultValue = formState;
+      }
+    }
+  }
+  /**
+   * Sets a new value for the form control.
+   *
+   * @param value The new value for the control.
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events when the value changes.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
+   * updateValueAndValidity} method.
+   *
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
+   * false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
+   * * `emitModelToViewChange`: When true or not supplied  (the default), each change triggers an
+   * `onChange` event to
+   * update the view.
+   * * `emitViewToModelChange`: When true or not supplied (the default), each change triggers an
+   * `ngModelChange`
+   * event to update the model.
+   *
+   */
+
+
+  setValue(value, options = {}) {
+    this.value = this._pendingValue = value;
+
+    if (this._onChange.length && options.emitModelToViewChange !== false) {
+      this._onChange.forEach(changeFn => changeFn(this.value, options.emitViewToModelChange !== false));
+    }
+
+    this.updateValueAndValidity(options);
+  }
+  /**
+   * Patches the value of a control.
+   *
+   * This function is functionally the same as {@link FormControl#setValue setValue} at this level.
+   * It exists for symmetry with {@link FormGroup#patchValue patchValue} on `FormGroups` and
+   * `FormArrays`, where it does behave differently.
+   *
+   * @see `setValue` for options
+   */
+
+
+  patchValue(value, options = {}) {
+    this.setValue(value, options);
+  }
+  /**
+   * Resets the form control, marking it `pristine` and `untouched`, and resetting
+   * the value. The new value will be the provided value (if passed), `null`, or the initial value
+   * if `initialValueIsDefault` was set in the constructor via {@link FormControlOptions}.
+   *
+   * ```ts
+   * // By default, the control will reset to null.
+   * const dog = new FormControl('spot');
+   * dog.reset(); // dog.value is null
+   *
+   * // If this flag is set, the control will instead reset to the initial value.
+   * const cat = new FormControl('tabby', {initialValueIsDefault: true});
+   * cat.reset(); // cat.value is "tabby"
+   *
+   * // A value passed to reset always takes precedence.
+   * const fish = new FormControl('finn', {initialValueIsDefault: true});
+   * fish.reset('bubble'); // fish.value is "bubble"
+   * ```
+   *
+   * @param formState Resets the control with an initial value,
+   * or an object that defines the initial value and disabled state.
+   *
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events after the value changes.
+   *
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
+   * false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is reset.
+   * When false, no events are emitted.
+   *
+   */
+
+
+  reset(formState = this.defaultValue, options = {}) {
+    this._applyFormState(formState);
+
+    this.markAsPristine(options);
+    this.markAsUntouched(options);
+    this.setValue(this.value, options);
+    this._pendingChange = false;
+  }
+  /**
+   * @internal
+   */
+
+
+  _updateValue() {}
+  /**
+   * @internal
+   */
+
+
+  _anyControls(condition) {
+    return false;
+  }
+  /**
+   * @internal
+   */
+
+
+  _allControlsDisabled() {
+    return this.disabled;
+  }
+  /**
+   * Register a listener for change events.
+   *
+   * @param fn The method that is called when the value changes
+   */
+
+
+  registerOnChange(fn) {
+    this._onChange.push(fn);
+  }
+  /**
+   * Internal function to unregister a change events listener.
+   * @internal
+   */
+
+
+  _unregisterOnChange(fn) {
+    removeListItem(this._onChange, fn);
+  }
+  /**
+   * Register a listener for disabled events.
+   *
+   * @param fn The method that is called when the disabled status changes.
+   */
+
+
+  registerOnDisabledChange(fn) {
+    this._onDisabledChange.push(fn);
+  }
+  /**
+   * Internal function to unregister a disabled event listener.
+   * @internal
+   */
+
+
+  _unregisterOnDisabledChange(fn) {
+    removeListItem(this._onDisabledChange, fn);
+  }
+  /**
+   * @internal
+   */
+
+
+  _forEachChild(cb) {}
+  /** @internal */
+
+
+  _syncPendingControls() {
+    if (this.updateOn === 'submit') {
+      if (this._pendingDirty) this.markAsDirty();
+      if (this._pendingTouched) this.markAsTouched();
+
+      if (this._pendingChange) {
+        this.setValue(this._pendingValue, {
+          onlySelf: true,
+          emitModelToViewChange: false
+        });
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  _applyFormState(formState) {
+    if (this._isBoxedValue(formState)) {
+      this.value = this._pendingValue = formState.value;
+      formState.disabled ? this.disable({
+        onlySelf: true,
+        emitEvent: false
+      }) : this.enable({
+        onlySelf: true,
+        emitEvent: false
+      });
+    } else {
+      this.value = this._pendingValue = formState;
+    }
+  }
+
+}
+/**
+ * Tracks the value and validity state of a group of `FormControl` instances.
+ *
+ * A `FormGroup` aggregates the values of each child `FormControl` into one object,
+ * with each control name as the key.  It calculates its status by reducing the status values
+ * of its children. For example, if one of the controls in a group is invalid, the entire
+ * group becomes invalid.
+ *
+ * `FormGroup` is one of the three fundamental building blocks used to define forms in Angular,
+ * along with `FormControl` and `FormArray`.
+ *
+ * When instantiating a `FormGroup`, pass in a collection of child controls as the first
+ * argument. The key for each child registers the name for the control.
+ *
+ * @usageNotes
+ *
+ * ### Create a form group with 2 controls
+ *
+ * ```
+ * const form = new FormGroup({
+ *   first: new FormControl('Nancy', Validators.minLength(2)),
+ *   last: new FormControl('Drew'),
+ * });
+ *
+ * console.log(form.value);   // {first: 'Nancy', last; 'Drew'}
+ * console.log(form.status);  // 'VALID'
+ * ```
+ *
+ * ### Create a form group with a group-level validator
+ *
+ * You include group-level validators as the second arg, or group-level async
+ * validators as the third arg. These come in handy when you want to perform validation
+ * that considers the value of more than one child control.
+ *
+ * ```
+ * const form = new FormGroup({
+ *   password: new FormControl('', Validators.minLength(2)),
+ *   passwordConfirm: new FormControl('', Validators.minLength(2)),
+ * }, passwordMatchValidator);
+ *
+ *
+ * function passwordMatchValidator(g: FormGroup) {
+ *    return g.get('password').value === g.get('passwordConfirm').value
+ *       ? null : {'mismatch': true};
+ * }
+ * ```
+ *
+ * Like `FormControl` instances, you choose to pass in
+ * validators and async validators as part of an options object.
+ *
+ * ```
+ * const form = new FormGroup({
+ *   password: new FormControl('')
+ *   passwordConfirm: new FormControl('')
+ * }, { validators: passwordMatchValidator, asyncValidators: otherValidator });
+ * ```
+ *
+ * ### Set the updateOn property for all controls in a form group
+ *
+ * The options object is used to set a default value for each child
+ * control's `updateOn` property. If you set `updateOn` to `'blur'` at the
+ * group level, all child controls default to 'blur', unless the child
+ * has explicitly specified a different `updateOn` value.
+ *
+ * ```ts
+ * const c = new FormGroup({
+ *   one: new FormControl()
+ * }, { updateOn: 'blur' });
+ * ```
+ *
+ * @publicApi
+ */
+
+
+class FormGroup extends AbstractControl {
+  /**
+   * Creates a new `FormGroup` instance.
+   *
+   * @param controls A collection of child controls. The key for each child is the name
+   * under which it is registered.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains validation functions
+   * and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator functions
+   *
+   */
+  constructor(controls, validatorOrOpts, asyncValidator) {
+    super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
+    this.controls = controls;
+
+    this._initObservables();
+
+    this._setUpdateStrategy(validatorOrOpts);
+
+    this._setUpControls();
+
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`. The status should be broadcasted via the `statusChanges` observable,
+      // so we set `emitEvent` to `true` to allow that during the control creation process.
+      emitEvent: !!this.asyncValidator
+    });
+  }
+  /**
+   * Registers a control with the group's list of controls.
+   *
+   * This method does not update the value or validity of the control.
+   * Use {@link FormGroup#addControl addControl} instead.
+   *
+   * @param name The control name to register in the collection
+   * @param control Provides the control for the given name
+   */
+
+
+  registerControl(name, control) {
+    if (this.controls[name]) return this.controls[name];
+    this.controls[name] = control;
+    control.setParent(this);
+
+    control._registerOnCollectionChange(this._onCollectionChange);
+
+    return control;
+  }
+  /**
+   * Add a control to this group.
+   *
+   * If a control with a given name already exists, it would *not* be replaced with a new one.
+   * If you want to replace an existing control, use the {@link FormGroup#setControl setControl}
+   * method instead. This method also updates the value and validity of the control.
+   *
+   * @param name The control name to add to the collection
+   * @param control Provides the control for the given name
+   * @param options Specifies whether this FormGroup instance should emit events after a new
+   *     control is added.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * added. When false, no events are emitted.
+   */
+
+
+  addControl(name, control, options = {}) {
+    this.registerControl(name, control);
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+
+    this._onCollectionChange();
+  }
+  /**
+   * Remove a control from this group.
+   *
+   * This method also updates the value and validity of the control.
+   *
+   * @param name The control name to remove from the collection
+   * @param options Specifies whether this FormGroup instance should emit events after a
+   *     control is removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * removed. When false, no events are emitted.
+   */
+
+
+  removeControl(name, options = {}) {
+    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
+    delete this.controls[name];
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+
+    this._onCollectionChange();
+  }
+  /**
+   * Replace an existing control.
+   *
+   * If a control with a given name does not exist in this `FormGroup`, it will be added.
+   *
+   * @param name The control name to replace in the collection
+   * @param control Provides the control for the given name
+   * @param options Specifies whether this FormGroup instance should emit events after an
+   *     existing control is replaced.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * replaced with a new one. When false, no events are emitted.
+   */
+
+
+  setControl(name, control, options = {}) {
+    if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
+    delete this.controls[name];
+    if (control) this.registerControl(name, control);
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+
+    this._onCollectionChange();
+  }
+  /**
+   * Check whether there is an enabled control with the given name in the group.
+   *
+   * Reports false for disabled controls. If you'd like to check for existence in the group
+   * only, use {@link AbstractControl#get get} instead.
+   *
+   * @param controlName The control name to check for existence in the collection
+   *
+   * @returns false for disabled controls, true otherwise.
+   */
+
+
+  contains(controlName) {
+    return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;
+  }
+  /**
+   * Sets the value of the `FormGroup`. It accepts an object that matches
+   * the structure of the group, with control names as keys.
+   *
+   * @usageNotes
+   * ### Set the complete value for the form group
+   *
+   * ```
+   * const form = new FormGroup({
+   *   first: new FormControl(),
+   *   last: new FormControl()
+   * });
+   *
+   * console.log(form.value);   // {first: null, last: null}
+   *
+   * form.setValue({first: 'Nancy', last: 'Drew'});
+   * console.log(form.value);   // {first: 'Nancy', last: 'Drew'}
+   * ```
+   *
+   * @throws When strict checks fail, such as setting the value of a control
+   * that doesn't exist or if you exclude a value of a control that does exist.
+   *
+   * @param value The new value for the control that matches the structure of the group.
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events after the value changes.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
+   * updateValueAndValidity} method.
+   *
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
+   * false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
+   */
+
+
+  setValue(value, options = {}) {
+    assertAllValuesPresent(this, value);
+    Object.keys(value).forEach(name => {
+      assertControlPresent(this, name);
+      this.controls[name].setValue(value[name], {
+        onlySelf: true,
+        emitEvent: options.emitEvent
+      });
+    });
+    this.updateValueAndValidity(options);
+  }
+  /**
+   * Patches the value of the `FormGroup`. It accepts an object with control
+   * names as keys, and does its best to match the values to the correct controls
+   * in the group.
+   *
+   * It accepts both super-sets and sub-sets of the group without throwing an error.
+   *
+   * @usageNotes
+   * ### Patch the value for a form group
+   *
+   * ```
+   * const form = new FormGroup({
+   *    first: new FormControl(),
+   *    last: new FormControl()
+   * });
+   * console.log(form.value);   // {first: null, last: null}
+   *
+   * form.patchValue({first: 'Nancy'});
+   * console.log(form.value);   // {first: 'Nancy', last: null}
+   * ```
+   *
+   * @param value The object that matches the structure of the group.
+   * @param options Configuration options that determine how the control propagates changes and
+   * emits events after the value is patched.
+   * * `onlySelf`: When true, each change only affects this control and not its parent. Default is
+   * true.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control value
+   * is updated. When false, no events are emitted. The configuration options are passed to
+   * the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
+   */
+
+
+  patchValue(value, options = {}) {
+    // Even though the `value` argument type doesn't allow `null` and `undefined` values, the
+    // `patchValue` can be called recursively and inner data structures might have these values, so
+    // we just ignore such cases when a field containing FormGroup instance receives `null` or
+    // `undefined` as a value.
+    if (value == null
+    /* both `null` and `undefined` */
+    ) return;
+    Object.keys(value).forEach(name => {
+      if (this.controls[name]) {
+        this.controls[name].patchValue(value[name], {
+          onlySelf: true,
+          emitEvent: options.emitEvent
+        });
+      }
+    });
+    this.updateValueAndValidity(options);
+  }
+  /**
+   * Resets the `FormGroup`, marks all descendants `pristine` and `untouched` and sets
+   * the value of all descendants to null.
+   *
+   * You reset to a specific form state by passing in a map of states
+   * that matches the structure of your form, with control names as keys. The state
+   * is a standalone value or a form state object with both a value and a disabled
+   * status.
+   *
+   * @param value Resets the control with an initial value,
+   * or an object that defines the initial value and disabled state.
+   *
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events when the group is reset.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
+   * false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is reset.
+   * When false, no events are emitted.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
+   * updateValueAndValidity} method.
+   *
+   * @usageNotes
+   *
+   * ### Reset the form group values
+   *
+   * ```ts
+   * const form = new FormGroup({
+   *   first: new FormControl('first name'),
+   *   last: new FormControl('last name')
+   * });
+   *
+   * console.log(form.value);  // {first: 'first name', last: 'last name'}
+   *
+   * form.reset({ first: 'name', last: 'last name' });
+   *
+   * console.log(form.value);  // {first: 'name', last: 'last name'}
+   * ```
+   *
+   * ### Reset the form group values and disabled status
+   *
+   * ```
+   * const form = new FormGroup({
+   *   first: new FormControl('first name'),
+   *   last: new FormControl('last name')
+   * });
+   *
+   * form.reset({
+   *   first: {value: 'name', disabled: true},
+   *   last: 'last'
+   * });
+   *
+   * console.log(form.value);  // {last: 'last'}
+   * console.log(form.get('first').status);  // 'DISABLED'
+   * ```
+   */
+
+
+  reset(value = {}, options = {}) {
+    this._forEachChild((control, name) => {
+      control.reset(value[name], {
+        onlySelf: true,
+        emitEvent: options.emitEvent
+      });
+    });
+
+    this._updatePristine(options);
+
+    this._updateTouched(options);
+
+    this.updateValueAndValidity(options);
+  }
+  /**
+   * The aggregate value of the `FormGroup`, including any disabled controls.
+   *
+   * Retrieves all values regardless of disabled status.
+   * The `value` property is the best way to get the value of the group, because
+   * it excludes disabled controls in the `FormGroup`.
+   */
+
+
+  getRawValue() {
+    return this._reduceChildren({}, (acc, control, name) => {
+      acc[name] = getRawValue(control);
+      return acc;
+    });
+  }
+  /** @internal */
+
+
+  _syncPendingControls() {
+    let subtreeUpdated = this._reduceChildren(false, (updated, child) => {
+      return child._syncPendingControls() ? true : updated;
+    });
+
+    if (subtreeUpdated) this.updateValueAndValidity({
+      onlySelf: true
+    });
+    return subtreeUpdated;
+  }
+  /** @internal */
+
+
+  _forEachChild(cb) {
+    Object.keys(this.controls).forEach(key => {
+      // The list of controls can change (for ex. controls might be removed) while the loop
+      // is running (as a result of invoking Forms API in `valueChanges` subscription), so we
+      // have to null check before invoking the callback.
+      const control = this.controls[key];
+      control && cb(control, key);
+    });
+  }
+  /** @internal */
+
+
+  _setUpControls() {
+    this._forEachChild(control => {
+      control.setParent(this);
+
+      control._registerOnCollectionChange(this._onCollectionChange);
+    });
+  }
+  /** @internal */
+
+
+  _updateValue() {
+    this.value = this._reduceValue();
+  }
+  /** @internal */
+
+
+  _anyControls(condition) {
+    for (const controlName of Object.keys(this.controls)) {
+      const control = this.controls[controlName];
+
+      if (this.contains(controlName) && condition(control)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+  /** @internal */
+
+
+  _reduceValue() {
+    return this._reduceChildren({}, (acc, control, name) => {
+      if (control.enabled || this.disabled) {
+        acc[name] = control.value;
+      }
+
+      return acc;
+    });
+  }
+  /** @internal */
+
+
+  _reduceChildren(initValue, fn) {
+    let res = initValue;
+
+    this._forEachChild((control, name) => {
+      res = fn(res, control, name);
+    });
+
+    return res;
+  }
+  /** @internal */
+
+
+  _allControlsDisabled() {
+    for (const controlName of Object.keys(this.controls)) {
+      if (this.controls[controlName].enabled) {
+        return false;
+      }
+    }
+
+    return Object.keys(this.controls).length > 0 || this.disabled;
+  }
+
+}
+/**
+ * Tracks the value and validity state of an array of `FormControl`,
+ * `FormGroup` or `FormArray` instances.
+ *
+ * A `FormArray` aggregates the values of each child `FormControl` into an array.
+ * It calculates its status by reducing the status values of its children. For example, if one of
+ * the controls in a `FormArray` is invalid, the entire array becomes invalid.
+ *
+ * `FormArray` is one of the three fundamental building blocks used to define forms in Angular,
+ * along with `FormControl` and `FormGroup`.
+ *
+ * @usageNotes
+ *
+ * ### Create an array of form controls
+ *
+ * ```
+ * const arr = new FormArray([
+ *   new FormControl('Nancy', Validators.minLength(2)),
+ *   new FormControl('Drew'),
+ * ]);
+ *
+ * console.log(arr.value);   // ['Nancy', 'Drew']
+ * console.log(arr.status);  // 'VALID'
+ * ```
+ *
+ * ### Create a form array with array-level validators
+ *
+ * You include array-level validators and async validators. These come in handy
+ * when you want to perform validation that considers the value of more than one child
+ * control.
+ *
+ * The two types of validators are passed in separately as the second and third arg
+ * respectively, or together as part of an options object.
+ *
+ * ```
+ * const arr = new FormArray([
+ *   new FormControl('Nancy'),
+ *   new FormControl('Drew')
+ * ], {validators: myValidator, asyncValidators: myAsyncValidator});
+ * ```
+ *
+ * ### Set the updateOn property for all controls in a form array
+ *
+ * The options object is used to set a default value for each child
+ * control's `updateOn` property. If you set `updateOn` to `'blur'` at the
+ * array level, all child controls default to 'blur', unless the child
+ * has explicitly specified a different `updateOn` value.
+ *
+ * ```ts
+ * const arr = new FormArray([
+ *    new FormControl()
+ * ], {updateOn: 'blur'});
+ * ```
+ *
+ * ### Adding or removing controls from a form array
+ *
+ * To change the controls in the array, use the `push`, `insert`, `removeAt` or `clear` methods
+ * in `FormArray` itself. These methods ensure the controls are properly tracked in the
+ * form's hierarchy. Do not modify the array of `AbstractControl`s used to instantiate
+ * the `FormArray` directly, as that result in strange and unexpected behavior such
+ * as broken change detection.
+ *
+ * @publicApi
+ */
+
+
+class FormArray extends AbstractControl {
+  /**
+   * Creates a new `FormArray` instance.
+   *
+   * @param controls An array of child controls. Each child control is given an index
+   * where it is registered.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains validation functions
+   * and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator functions
+   *
+   */
+  constructor(controls, validatorOrOpts, asyncValidator) {
+    super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
+    this.controls = controls;
+
+    this._initObservables();
+
+    this._setUpdateStrategy(validatorOrOpts);
+
+    this._setUpControls();
+
+    this.updateValueAndValidity({
+      onlySelf: true,
+      // If `asyncValidator` is present, it will trigger control status change from `PENDING` to
+      // `VALID` or `INVALID`.
+      // The status should be broadcasted via the `statusChanges` observable, so we set `emitEvent`
+      // to `true` to allow that during the control creation process.
+      emitEvent: !!this.asyncValidator
+    });
+  }
+  /**
+   * Get the `AbstractControl` at the given `index` in the array.
+   *
+   * @param index Index in the array to retrieve the control
+   */
+
+
+  at(index) {
+    return this.controls[index];
+  }
+  /**
+   * Insert a new `AbstractControl` at the end of the array.
+   *
+   * @param control Form control to be inserted
+   * @param options Specifies whether this FormArray instance should emit events after a new
+   *     control is added.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * inserted. When false, no events are emitted.
+   */
+
+
+  push(control, options = {}) {
+    this.controls.push(control);
+
+    this._registerControl(control);
+
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+
+    this._onCollectionChange();
+  }
+  /**
+   * Insert a new `AbstractControl` at the given `index` in the array.
+   *
+   * @param index Index in the array to insert the control
+   * @param control Form control to be inserted
+   * @param options Specifies whether this FormArray instance should emit events after a new
+   *     control is inserted.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * inserted. When false, no events are emitted.
+   */
+
+
+  insert(index, control, options = {}) {
+    this.controls.splice(index, 0, control);
+
+    this._registerControl(control);
+
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+  }
+  /**
+   * Remove the control at the given `index` in the array.
+   *
+   * @param index Index in the array to remove the control
+   * @param options Specifies whether this FormArray instance should emit events after a
+   *     control is removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * removed. When false, no events are emitted.
+   */
+
+
+  removeAt(index, options = {}) {
+    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
+    this.controls.splice(index, 1);
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+  }
+  /**
+   * Replace an existing control.
+   *
+   * @param index Index in the array to replace the control
+   * @param control The `AbstractControl` control to replace the existing control
+   * @param options Specifies whether this FormArray instance should emit events after an
+   *     existing control is replaced with a new one.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * replaced with a new one. When false, no events are emitted.
+   */
+
+
+  setControl(index, control, options = {}) {
+    if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
+    this.controls.splice(index, 1);
+
+    if (control) {
+      this.controls.splice(index, 0, control);
+
+      this._registerControl(control);
+    }
+
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+
+    this._onCollectionChange();
+  }
+  /**
+   * Length of the control array.
+   */
+
+
+  get length() {
+    return this.controls.length;
+  }
+  /**
+   * Sets the value of the `FormArray`. It accepts an array that matches
+   * the structure of the control.
+   *
+   * This method performs strict checks, and throws an error if you try
+   * to set the value of a control that doesn't exist or if you exclude the
+   * value of a control.
+   *
+   * @usageNotes
+   * ### Set the values for the controls in the form array
+   *
+   * ```
+   * const arr = new FormArray([
+   *   new FormControl(),
+   *   new FormControl()
+   * ]);
+   * console.log(arr.value);   // [null, null]
+   *
+   * arr.setValue(['Nancy', 'Drew']);
+   * console.log(arr.value);   // ['Nancy', 'Drew']
+   * ```
+   *
+   * @param value Array of values for the controls
+   * @param options Configure options that determine how the control propagates changes and
+   * emits events after the value changes
+   *
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
+   * updateValueAndValidity} method.
+   */
+
+
+  setValue(value, options = {}) {
+    assertAllValuesPresent(this, value);
+    value.forEach((newValue, index) => {
+      assertControlPresent(this, index);
+      this.at(index).setValue(newValue, {
+        onlySelf: true,
+        emitEvent: options.emitEvent
+      });
+    });
+    this.updateValueAndValidity(options);
+  }
+  /**
+   * Patches the value of the `FormArray`. It accepts an array that matches the
+   * structure of the control, and does its best to match the values to the correct
+   * controls in the group.
+   *
+   * It accepts both super-sets and sub-sets of the array without throwing an error.
+   *
+   * @usageNotes
+   * ### Patch the values for controls in a form array
+   *
+   * ```
+   * const arr = new FormArray([
+   *    new FormControl(),
+   *    new FormControl()
+   * ]);
+   * console.log(arr.value);   // [null, null]
+   *
+   * arr.patchValue(['Nancy']);
+   * console.log(arr.value);   // ['Nancy', null]
+   * ```
+   *
+   * @param value Array of latest values for the controls
+   * @param options Configure options that determine how the control propagates changes and
+   * emits events after the value changes
+   *
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control value
+   * is updated. When false, no events are emitted. The configuration options are passed to
+   * the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
+   */
+
+
+  patchValue(value, options = {}) {
+    // Even though the `value` argument type doesn't allow `null` and `undefined` values, the
+    // `patchValue` can be called recursively and inner data structures might have these values, so
+    // we just ignore such cases when a field containing FormArray instance receives `null` or
+    // `undefined` as a value.
+    if (value == null
+    /* both `null` and `undefined` */
+    ) return;
+    value.forEach((newValue, index) => {
+      if (this.at(index)) {
+        this.at(index).patchValue(newValue, {
+          onlySelf: true,
+          emitEvent: options.emitEvent
+        });
+      }
+    });
+    this.updateValueAndValidity(options);
+  }
+  /**
+   * Resets the `FormArray` and all descendants are marked `pristine` and `untouched`, and the
+   * value of all descendants to null or null maps.
+   *
+   * You reset to a specific form state by passing in an array of states
+   * that matches the structure of the control. The state is a standalone value
+   * or a form state object with both a value and a disabled status.
+   *
+   * @usageNotes
+   * ### Reset the values in a form array
+   *
+   * ```ts
+   * const arr = new FormArray([
+   *    new FormControl(),
+   *    new FormControl()
+   * ]);
+   * arr.reset(['name', 'last name']);
+   *
+   * console.log(arr.value);  // ['name', 'last name']
+   * ```
+   *
+   * ### Reset the values in a form array and the disabled status for the first control
+   *
+   * ```
+   * arr.reset([
+   *   {value: 'name', disabled: true},
+   *   'last'
+   * ]);
+   *
+   * console.log(arr.value);  // ['last']
+   * console.log(arr.at(0).status);  // 'DISABLED'
+   * ```
+   *
+   * @param value Array of values for the controls
+   * @param options Configure options that determine how the control propagates changes and
+   * emits events after the value changes
+   *
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is reset.
+   * When false, no events are emitted.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
+   * updateValueAndValidity} method.
+   */
+
+
+  reset(value = [], options = {}) {
+    this._forEachChild((control, index) => {
+      control.reset(value[index], {
+        onlySelf: true,
+        emitEvent: options.emitEvent
+      });
+    });
+
+    this._updatePristine(options);
+
+    this._updateTouched(options);
+
+    this.updateValueAndValidity(options);
+  }
+  /**
+   * The aggregate value of the array, including any disabled controls.
+   *
+   * Reports all values regardless of disabled status.
+   * For enabled controls only, the `value` property is the best way to get the value of the array.
+   */
+
+
+  getRawValue() {
+    return this.controls.map(control => getRawValue(control));
+  }
+  /**
+   * Remove all controls in the `FormArray`.
+   *
+   * @param options Specifies whether this FormArray instance should emit events after all
+   *     controls are removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when all controls
+   * in this FormArray instance are removed. When false, no events are emitted.
+   *
+   * @usageNotes
+   * ### Remove all elements from a FormArray
+   *
+   * ```ts
+   * const arr = new FormArray([
+   *    new FormControl(),
+   *    new FormControl()
+   * ]);
+   * console.log(arr.length);  // 2
+   *
+   * arr.clear();
+   * console.log(arr.length);  // 0
+   * ```
+   *
+   * It's a simpler and more efficient alternative to removing all elements one by one:
+   *
+   * ```ts
+   * const arr = new FormArray([
+   *    new FormControl(),
+   *    new FormControl()
+   * ]);
+   *
+   * while (arr.length) {
+   *    arr.removeAt(0);
+   * }
+   * ```
+   */
+
+
+  clear(options = {}) {
+    if (this.controls.length < 1) return;
+
+    this._forEachChild(control => control._registerOnCollectionChange(() => {}));
+
+    this.controls.splice(0);
+    this.updateValueAndValidity({
+      emitEvent: options.emitEvent
+    });
+  }
+  /** @internal */
+
+
+  _syncPendingControls() {
+    let subtreeUpdated = this.controls.reduce((updated, child) => {
+      return child._syncPendingControls() ? true : updated;
+    }, false);
+    if (subtreeUpdated) this.updateValueAndValidity({
+      onlySelf: true
+    });
+    return subtreeUpdated;
+  }
+  /** @internal */
+
+
+  _forEachChild(cb) {
+    this.controls.forEach((control, index) => {
+      cb(control, index);
+    });
+  }
+  /** @internal */
+
+
+  _updateValue() {
+    this.value = this.controls.filter(control => control.enabled || this.disabled).map(control => control.value);
+  }
+  /** @internal */
+
+
+  _anyControls(condition) {
+    return this.controls.some(control => control.enabled && condition(control));
+  }
+  /** @internal */
+
+
+  _setUpControls() {
+    this._forEachChild(control => this._registerControl(control));
+  }
+  /** @internal */
+
+
+  _allControlsDisabled() {
+    for (const control of this.controls) {
+      if (control.enabled) return false;
+    }
+
+    return this.controls.length > 0 || this.disabled;
+  }
+
+  _registerControl(control) {
+    control.setParent(this);
+
+    control._registerOnCollectionChange(this._onCollectionChange);
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const formDirectiveProvider$1 = {
+  provide: ControlContainer,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => NgForm)
+};
+
+const resolvedPromise$1 = (() => Promise.resolve(null))();
+/**
+ * @description
+ * Creates a top-level `FormGroup` instance and binds it to a form
+ * to track aggregate form value and validation status.
+ *
+ * As soon as you import the `FormsModule`, this directive becomes active by default on
+ * all `<form>` tags.  You don't need to add a special selector.
+ *
+ * You optionally export the directive into a local template variable using `ngForm` as the key
+ * (ex: `#myForm="ngForm"`). This is optional, but useful.  Many properties from the underlying
+ * `FormGroup` instance are duplicated on the directive itself, so a reference to it
+ * gives you access to the aggregate value and validity status of the form, as well as
+ * user interaction properties like `dirty` and `touched`.
+ *
+ * To register child controls with the form, use `NgModel` with a `name`
+ * attribute. You may use `NgModelGroup` to create sub-groups within the form.
+ *
+ * If necessary, listen to the directive's `ngSubmit` event to be notified when the user has
+ * triggered a form submission. The `ngSubmit` event emits the original form
+ * submission event.
+ *
+ * In template driven forms, all `<form>` tags are automatically tagged as `NgForm`.
+ * To import the `FormsModule` but skip its usage in some forms,
+ * for example, to use native HTML5 validation, add the `ngNoForm` and the `<form>`
+ * tags won't create an `NgForm` directive. In reactive forms, using `ngNoForm` is
+ * unnecessary because the `<form>` tags are inert. In that case, you would
+ * refrain from using the `formGroup` directive.
+ *
+ * @usageNotes
+ *
+ * ### Listening for form submission
+ *
+ * The following example shows how to capture the form values from the "ngSubmit" event.
+ *
+ * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
+ *
+ * ### Setting the update options
+ *
+ * The following example shows you how to change the "updateOn" option from its default using
+ * ngFormOptions.
+ *
+ * ```html
+ * <form [ngFormOptions]="{updateOn: 'blur'}">
+ *    <input name="one" ngModel>  <!-- this ngModel will update on blur -->
+ * </form>
+ * ```
+ *
+ * ### Native DOM validation UI
+ *
+ * In order to prevent the native DOM form validation UI from interfering with Angular's form
+ * validation, Angular automatically adds the `novalidate` attribute on any `<form>` whenever
+ * `FormModule` or `ReactiveFormModule` are imported into the application.
+ * If you want to explicitly enable native DOM validation UI with Angular forms, you can add the
+ * `ngNativeValidate` attribute to the `<form>` element:
+ *
+ * ```html
+ * <form ngNativeValidate>
+ *   ...
+ * </form>
+ * ```
+ *
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class NgForm extends ControlContainer {
+  constructor(validators, asyncValidators) {
+    super();
+    /**
+     * @description
+     * Returns whether the form submission has been triggered.
+     */
+
+    this.submitted = false;
+    this._directives = new Set();
+    /**
+     * @description
+     * Event emitter for the "ngSubmit" event
+     */
+
+    this.ngSubmit = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+    this.form = new FormGroup({}, composeValidators(validators), composeAsyncValidators(asyncValidators));
+  }
+  /** @nodoc */
+
+
+  ngAfterViewInit() {
+    this._setUpdateStrategy();
+  }
+  /**
+   * @description
+   * The directive instance.
+   */
+
+
+  get formDirective() {
+    return this;
+  }
+  /**
+   * @description
+   * The internal `FormGroup` instance.
+   */
+
+
+  get control() {
+    return this.form;
+  }
+  /**
+   * @description
+   * Returns an array representing the path to this group. Because this directive
+   * always lives at the top level of a form, it is always an empty array.
+   */
+
+
+  get path() {
+    return [];
+  }
+  /**
+   * @description
+   * Returns a map of the controls in this group.
+   */
+
+
+  get controls() {
+    return this.form.controls;
+  }
+  /**
+   * @description
+   * Method that sets up the control directive in this group, re-calculates its value
+   * and validity, and adds the instance to the internal list of directives.
+   *
+   * @param dir The `NgModel` directive instance.
+   */
+
+
+  addControl(dir) {
+    resolvedPromise$1.then(() => {
+      const container = this._findContainer(dir.path);
+
+      dir.control = container.registerControl(dir.name, dir.control);
+      setUpControl(dir.control, dir);
+      dir.control.updateValueAndValidity({
+        emitEvent: false
+      });
+
+      this._directives.add(dir);
+    });
+  }
+  /**
+   * @description
+   * Retrieves the `FormControl` instance from the provided `NgModel` directive.
+   *
+   * @param dir The `NgModel` directive instance.
+   */
+
+
+  getControl(dir) {
+    return this.form.get(dir.path);
+  }
+  /**
+   * @description
+   * Removes the `NgModel` instance from the internal list of directives
+   *
+   * @param dir The `NgModel` directive instance.
+   */
+
+
+  removeControl(dir) {
+    resolvedPromise$1.then(() => {
+      const container = this._findContainer(dir.path);
+
+      if (container) {
+        container.removeControl(dir.name);
+      }
+
+      this._directives.delete(dir);
+    });
+  }
+  /**
+   * @description
+   * Adds a new `NgModelGroup` directive instance to the form.
+   *
+   * @param dir The `NgModelGroup` directive instance.
+   */
+
+
+  addFormGroup(dir) {
+    resolvedPromise$1.then(() => {
+      const container = this._findContainer(dir.path);
+
+      const group = new FormGroup({});
+      setUpFormContainer(group, dir);
+      container.registerControl(dir.name, group);
+      group.updateValueAndValidity({
+        emitEvent: false
+      });
+    });
+  }
+  /**
+   * @description
+   * Removes the `NgModelGroup` directive instance from the form.
+   *
+   * @param dir The `NgModelGroup` directive instance.
+   */
+
+
+  removeFormGroup(dir) {
+    resolvedPromise$1.then(() => {
+      const container = this._findContainer(dir.path);
+
+      if (container) {
+        container.removeControl(dir.name);
+      }
+    });
+  }
+  /**
+   * @description
+   * Retrieves the `FormGroup` for a provided `NgModelGroup` directive instance
+   *
+   * @param dir The `NgModelGroup` directive instance.
+   */
+
+
+  getFormGroup(dir) {
+    return this.form.get(dir.path);
+  }
+  /**
+   * Sets the new value for the provided `NgControl` directive.
+   *
+   * @param dir The `NgControl` directive instance.
+   * @param value The new value for the directive's control.
+   */
+
+
+  updateModel(dir, value) {
+    resolvedPromise$1.then(() => {
+      const ctrl = this.form.get(dir.path);
+      ctrl.setValue(value);
+    });
+  }
+  /**
+   * @description
+   * Sets the value for this `FormGroup`.
+   *
+   * @param value The new value
+   */
+
+
+  setValue(value) {
+    this.control.setValue(value);
+  }
+  /**
+   * @description
+   * Method called when the "submit" event is triggered on the form.
+   * Triggers the `ngSubmit` emitter to emit the "submit" event as its payload.
+   *
+   * @param $event The "submit" event object
+   */
+
+
+  onSubmit($event) {
+    this.submitted = true;
+    syncPendingControls(this.form, this._directives);
+    this.ngSubmit.emit($event);
+    return false;
+  }
+  /**
+   * @description
+   * Method called when the "reset" event is triggered on the form.
+   */
+
+
+  onReset() {
+    this.resetForm();
+  }
+  /**
+   * @description
+   * Resets the form to an initial value and resets its submitted status.
+   *
+   * @param value The new value for the form.
+   */
+
+
+  resetForm(value = undefined) {
+    this.form.reset(value);
+    this.submitted = false;
+  }
+
+  _setUpdateStrategy() {
+    if (this.options && this.options.updateOn != null) {
+      this.form._updateOn = this.options.updateOn;
+    }
+  }
+
+  _findContainer(path) {
+    path.pop();
+    return path.length ? this.form.get(path) : this.form;
+  }
+
+}
+
+NgForm.ɵfac = function NgForm_Factory(t) {
+  return new (t || NgForm)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10));
+};
+
+NgForm.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: NgForm,
+  selectors: [["form", 3, "ngNoForm", "", 3, "formGroup", ""], ["ng-form"], ["", "ngForm", ""]],
+  hostBindings: function NgForm_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("submit", function NgForm_submit_HostBindingHandler($event) {
+        return ctx.onSubmit($event);
+      })("reset", function NgForm_reset_HostBindingHandler() {
+        return ctx.onReset();
+      });
+    }
+  },
+  inputs: {
+    options: ["ngFormOptions", "options"]
+  },
+  outputs: {
+    ngSubmit: "ngSubmit"
+  },
+  exportAs: ["ngForm"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([formDirectiveProvider$1]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NgForm, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'form:not([ngNoForm]):not([formGroup]),ng-form,[ngForm]',
+      providers: [formDirectiveProvider$1],
+      host: {
+        '(submit)': 'onSubmit($event)',
+        '(reset)': 'onReset()'
+      },
+      outputs: ['ngSubmit'],
+      exportAs: 'ngForm'
+    }]
+  }], function () {
+    return [{
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }];
+  }, {
+    options: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngFormOptions']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @description
+ * A base class for code shared between the `NgModelGroup` and `FormGroupName` directives.
+ *
+ * @publicApi
+ */
+
+
+class AbstractFormGroupDirective extends ControlContainer {
+  /** @nodoc */
+  ngOnInit() {
+    this._checkParentType(); // Register the group with its parent group.
+
+
+    this.formDirective.addFormGroup(this);
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    if (this.formDirective) {
+      // Remove the group from its parent group.
+      this.formDirective.removeFormGroup(this);
+    }
+  }
+  /**
+   * @description
+   * The `FormGroup` bound to this directive.
+   */
+
+
+  get control() {
+    return this.formDirective.getFormGroup(this);
+  }
+  /**
+   * @description
+   * The path to this group from the top-level directive.
+   */
+
+
+  get path() {
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+  }
+  /**
+   * @description
+   * The top-level directive for this group if present, otherwise null.
+   */
+
+
+  get formDirective() {
+    return this._parent ? this._parent.formDirective : null;
+  }
+  /** @internal */
+
+
+  _checkParentType() {}
+
+}
+
+AbstractFormGroupDirective.ɵfac = /* @__PURE__ */function () {
+  let ɵAbstractFormGroupDirective_BaseFactory;
+  return function AbstractFormGroupDirective_Factory(t) {
+    return (ɵAbstractFormGroupDirective_BaseFactory || (ɵAbstractFormGroupDirective_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](AbstractFormGroupDirective)))(t || AbstractFormGroupDirective);
+  };
+}();
+
+AbstractFormGroupDirective.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: AbstractFormGroupDirective,
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AbstractFormGroupDirective, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+function modelParentException() {
+  return new Error(`
+    ngModel cannot be used to register form controls with a parent formGroup directive.  Try using
+    formGroup's partner directive "formControlName" instead.  Example:
+
+    ${formControlNameExample}
+
+    Or, if you'd like to avoid registering this form control, indicate that it's standalone in ngModelOptions:
+
+    Example:
+
+    ${ngModelWithFormGroupExample}`);
+}
+
+function formGroupNameException() {
+  return new Error(`
+    ngModel cannot be used to register form controls with a parent formGroupName or formArrayName directive.
+
+    Option 1: Use formControlName instead of ngModel (reactive strategy):
+
+    ${formGroupNameExample}
+
+    Option 2:  Update ngModel's parent be ngModelGroup (template-driven strategy):
+
+    ${ngModelGroupExample}`);
+}
+
+function missingNameException() {
+  return new Error(`If ngModel is used within a form tag, either the name attribute must be set or the form
+    control must be defined as 'standalone' in ngModelOptions.
+
+    Example 1: <input [(ngModel)]="person.firstName" name="first">
+    Example 2: <input [(ngModel)]="person.firstName" [ngModelOptions]="{standalone: true}">`);
+}
+
+function modelGroupParentException() {
+  return new Error(`
+    ngModelGroup cannot be used with a parent formGroup directive.
+
+    Option 1: Use formGroupName instead of ngModelGroup (reactive strategy):
+
+    ${formGroupNameExample}
+
+    Option 2:  Use a regular form tag instead of the formGroup directive (template-driven strategy):
+
+    ${ngModelGroupExample}`);
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const modelGroupProvider = {
+  provide: ControlContainer,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => NgModelGroup)
+};
+/**
+ * @description
+ * Creates and binds a `FormGroup` instance to a DOM element.
+ *
+ * This directive can only be used as a child of `NgForm` (within `<form>` tags).
+ *
+ * Use this directive to validate a sub-group of your form separately from the
+ * rest of your form, or if some values in your domain model make more sense
+ * to consume together in a nested object.
+ *
+ * Provide a name for the sub-group and it will become the key
+ * for the sub-group in the form's full value. If you need direct access, export the directive into
+ * a local template variable using `ngModelGroup` (ex: `#myGroup="ngModelGroup"`).
+ *
+ * @usageNotes
+ *
+ * ### Consuming controls in a grouping
+ *
+ * The following example shows you how to combine controls together in a sub-group
+ * of the form.
+ *
+ * {@example forms/ts/ngModelGroup/ng_model_group_example.ts region='Component'}
+ *
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class NgModelGroup extends AbstractFormGroupDirective {
+  constructor(parent, validators, asyncValidators) {
+    super();
+    this._parent = parent;
+
+    this._setValidators(validators);
+
+    this._setAsyncValidators(asyncValidators);
+  }
+  /** @internal */
+
+
+  _checkParentType() {
+    if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw modelGroupParentException();
+    }
+  }
+
+}
+
+NgModelGroup.ɵfac = function NgModelGroup_Factory(t) {
+  return new (t || NgModelGroup)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ControlContainer, 5), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10));
+};
+
+NgModelGroup.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: NgModelGroup,
+  selectors: [["", "ngModelGroup", ""]],
+  inputs: {
+    name: ["ngModelGroup", "name"]
+  },
+  exportAs: ["ngModelGroup"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([modelGroupProvider]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NgModelGroup, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[ngModelGroup]',
+      providers: [modelGroupProvider],
+      exportAs: 'ngModelGroup'
+    }]
+  }], function () {
+    return [{
+      type: ControlContainer,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Host
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.SkipSelf
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }];
+  }, {
+    name: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngModelGroup']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const formControlBinding$1 = {
+  provide: NgControl,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => NgModel)
+};
+/**
+ * `ngModel` forces an additional change detection run when its inputs change:
+ * E.g.:
+ * ```
+ * <div>{{myModel.valid}}</div>
+ * <input [(ngModel)]="myValue" #myModel="ngModel">
+ * ```
+ * I.e. `ngModel` can export itself on the element and then be used in the template.
+ * Normally, this would result in expressions before the `input` that use the exported directive
+ * to have an old value as they have been
+ * dirty checked before. As this is a very common case for `ngModel`, we added this second change
+ * detection run.
+ *
+ * Notes:
+ * - this is just one extra run no matter how many `ngModel`s have been changed.
+ * - this is a general problem when using `exportAs` for directives!
+ */
+
+const resolvedPromise = (() => Promise.resolve(null))();
+/**
+ * @description
+ * Creates a `FormControl` instance from a domain model and binds it
+ * to a form control element.
+ *
+ * The `FormControl` instance tracks the value, user interaction, and
+ * validation status of the control and keeps the view synced with the model. If used
+ * within a parent form, the directive also registers itself with the form as a child
+ * control.
+ *
+ * This directive is used by itself or as part of a larger form. Use the
+ * `ngModel` selector to activate it.
+ *
+ * It accepts a domain model as an optional `Input`. If you have a one-way binding
+ * to `ngModel` with `[]` syntax, changing the domain model's value in the component
+ * class sets the value in the view. If you have a two-way binding with `[()]` syntax
+ * (also known as 'banana-in-a-box syntax'), the value in the UI always syncs back to
+ * the domain model in your class.
+ *
+ * To inspect the properties of the associated `FormControl` (like the validity state),
+ * export the directive into a local template variable using `ngModel` as the key (ex:
+ * `#myVar="ngModel"`). You can then access the control using the directive's `control` property.
+ * However, the most commonly used properties (like `valid` and `dirty`) also exist on the control
+ * for direct access. See a full list of properties directly available in
+ * `AbstractControlDirective`.
+ *
+ * @see `RadioControlValueAccessor`
+ * @see `SelectControlValueAccessor`
+ *
+ * @usageNotes
+ *
+ * ### Using ngModel on a standalone control
+ *
+ * The following examples show a simple standalone control using `ngModel`:
+ *
+ * {@example forms/ts/simpleNgModel/simple_ng_model_example.ts region='Component'}
+ *
+ * When using the `ngModel` within `<form>` tags, you'll also need to supply a `name` attribute
+ * so that the control can be registered with the parent form under that name.
+ *
+ * In the context of a parent form, it's often unnecessary to include one-way or two-way binding,
+ * as the parent form syncs the value for you. You access its properties by exporting it into a
+ * local template variable using `ngForm` such as (`#f="ngForm"`). Use the variable where
+ * needed on form submission.
+ *
+ * If you do need to populate initial values into your form, using a one-way binding for
+ * `ngModel` tends to be sufficient as long as you use the exported form's value rather
+ * than the domain model's value on submit.
+ *
+ * ### Using ngModel within a form
+ *
+ * The following example shows controls using `ngModel` within a form:
+ *
+ * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
+ *
+ * ### Using a standalone ngModel within a group
+ *
+ * The following example shows you how to use a standalone ngModel control
+ * within a form. This controls the display of the form, but doesn't contain form data.
+ *
+ * ```html
+ * <form>
+ *   <input name="login" ngModel placeholder="Login">
+ *   <input type="checkbox" ngModel [ngModelOptions]="{standalone: true}"> Show more options?
+ * </form>
+ * <!-- form value: {login: ''} -->
+ * ```
+ *
+ * ### Setting the ngModel `name` attribute through options
+ *
+ * The following example shows you an alternate way to set the name attribute. Here,
+ * an attribute identified as name is used within a custom form control component. To still be able
+ * to specify the NgModel's name, you must specify it using the `ngModelOptions` input instead.
+ *
+ * ```html
+ * <form>
+ *   <my-custom-form-control name="Nancy" ngModel [ngModelOptions]="{name: 'user'}">
+ *   </my-custom-form-control>
+ * </form>
+ * <!-- form value: {user: ''} -->
+ * ```
+ *
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class NgModel extends NgControl {
+  constructor(parent, validators, asyncValidators, valueAccessors, _changeDetectorRef) {
+    super();
+    this._changeDetectorRef = _changeDetectorRef;
+    this.control = new FormControl();
+    /** @internal */
+
+    this._registered = false;
+    /**
+     * @description
+     * Event emitter for producing the `ngModelChange` event after
+     * the view model updates.
+     */
+
+    this.update = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+    this._parent = parent;
+
+    this._setValidators(validators);
+
+    this._setAsyncValidators(asyncValidators);
+
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
+  /** @nodoc */
+
+
+  ngOnChanges(changes) {
+    this._checkForErrors();
+
+    if (!this._registered || 'name' in changes) {
+      if (this._registered) {
+        this._checkName();
+
+        if (this.formDirective) {
+          // We can't call `formDirective.removeControl(this)`, because the `name` has already been
+          // changed. We also can't reset the name temporarily since the logic in `removeControl`
+          // is inside a promise and it won't run immediately. We work around it by giving it an
+          // object with the same shape instead.
+          const oldName = changes['name'].previousValue;
+          this.formDirective.removeControl({
+            name: oldName,
+            path: this._getPath(oldName)
+          });
+        }
+      }
+
+      this._setUpControl();
+    }
+
+    if ('isDisabled' in changes) {
+      this._updateDisabled(changes);
+    }
+
+    if (isPropertyUpdated(changes, this.viewModel)) {
+      this._updateValue(this.model);
+
+      this.viewModel = this.model;
+    }
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    this.formDirective && this.formDirective.removeControl(this);
+  }
+  /**
+   * @description
+   * Returns an array that represents the path from the top-level form to this control.
+   * Each index is the string name of the control on that level.
+   */
+
+
+  get path() {
+    return this._getPath(this.name);
+  }
+  /**
+   * @description
+   * The top-level directive for this control if present, otherwise null.
+   */
+
+
+  get formDirective() {
+    return this._parent ? this._parent.formDirective : null;
+  }
+  /**
+   * @description
+   * Sets the new value for the view model and emits an `ngModelChange` event.
+   *
+   * @param newValue The new value emitted by `ngModelChange`.
+   */
+
+
+  viewToModelUpdate(newValue) {
+    this.viewModel = newValue;
+    this.update.emit(newValue);
+  }
+
+  _setUpControl() {
+    this._setUpdateStrategy();
+
+    this._isStandalone() ? this._setUpStandalone() : this.formDirective.addControl(this);
+    this._registered = true;
+  }
+
+  _setUpdateStrategy() {
+    if (this.options && this.options.updateOn != null) {
+      this.control._updateOn = this.options.updateOn;
+    }
+  }
+
+  _isStandalone() {
+    return !this._parent || !!(this.options && this.options.standalone);
+  }
+
+  _setUpStandalone() {
+    setUpControl(this.control, this);
+    this.control.updateValueAndValidity({
+      emitEvent: false
+    });
+  }
+
+  _checkForErrors() {
+    if (!this._isStandalone()) {
+      this._checkParentType();
+    }
+
+    this._checkName();
+  }
+
+  _checkParentType() {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!(this._parent instanceof NgModelGroup) && this._parent instanceof AbstractFormGroupDirective) {
+        throw formGroupNameException();
+      } else if (!(this._parent instanceof NgModelGroup) && !(this._parent instanceof NgForm)) {
+        throw modelParentException();
+      }
+    }
+  }
+
+  _checkName() {
+    if (this.options && this.options.name) this.name = this.options.name;
+
+    if (!this._isStandalone() && !this.name && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw missingNameException();
+    }
+  }
+
+  _updateValue(value) {
+    resolvedPromise.then(() => {
+      var _a;
+
+      this.control.setValue(value, {
+        emitViewToModelChange: false
+      });
+      (_a = this._changeDetectorRef) === null || _a === void 0 ? void 0 : _a.markForCheck();
+    });
+  }
+
+  _updateDisabled(changes) {
+    const disabledValue = changes['isDisabled'].currentValue;
+    const isDisabled = disabledValue === '' || disabledValue && disabledValue !== 'false';
+    resolvedPromise.then(() => {
+      var _a;
+
+      if (isDisabled && !this.control.disabled) {
+        this.control.disable();
+      } else if (!isDisabled && this.control.disabled) {
+        this.control.enable();
+      }
+
+      (_a = this._changeDetectorRef) === null || _a === void 0 ? void 0 : _a.markForCheck();
+    });
+  }
+
+  _getPath(controlName) {
+    return this._parent ? controlPath(controlName, this._parent) : [controlName];
+  }
+
+}
+
+NgModel.ɵfac = function NgModel_Factory(t) {
+  return new (t || NgModel)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ControlContainer, 9), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALUE_ACCESSOR, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef, 8));
+};
+
+NgModel.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: NgModel,
+  selectors: [["", "ngModel", "", 3, "formControlName", "", 3, "formControl", ""]],
+  inputs: {
+    name: "name",
+    isDisabled: ["disabled", "isDisabled"],
+    model: ["ngModel", "model"],
+    options: ["ngModelOptions", "options"]
+  },
+  outputs: {
+    update: "ngModelChange"
+  },
+  exportAs: ["ngModel"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([formControlBinding$1]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NgModel, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[ngModel]:not([formControlName]):not([formControl])',
+      providers: [formControlBinding$1],
+      exportAs: 'ngModel'
+    }]
+  }], function () {
+    return [{
+      type: ControlContainer,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Host
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALUE_ACCESSOR]
+      }]
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [_angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef]
+      }]
+    }];
+  }, {
+    name: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    isDisabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['disabled']
+    }],
+    model: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngModel']
+    }],
+    options: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngModelOptions']
+    }],
+    update: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Output,
+      args: ['ngModelChange']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @description
+ *
+ * Adds `novalidate` attribute to all forms by default.
+ *
+ * `novalidate` is used to disable browser's native form validation.
+ *
+ * If you want to use native validation with Angular forms, just add `ngNativeValidate` attribute:
+ *
+ * ```
+ * <form ngNativeValidate></form>
+ * ```
+ *
+ * @publicApi
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ */
+
+
+class ɵNgNoValidate {}
+
+ɵNgNoValidate.ɵfac = function ɵNgNoValidate_Factory(t) {
+  return new (t || ɵNgNoValidate)();
+};
+
+ɵNgNoValidate.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: ɵNgNoValidate,
+  selectors: [["form", 3, "ngNoForm", "", 3, "ngNativeValidate", ""]],
+  hostAttrs: ["novalidate", ""]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ɵNgNoValidate, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'form:not([ngNoForm]):not([ngNativeValidate])',
+      host: {
+        'novalidate': ''
+      }
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const NUMBER_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => NumberValueAccessor),
+  multi: true
+};
+/**
+ * @description
+ * The `ControlValueAccessor` for writing a number value and listening to number input changes.
+ * The value accessor is used by the `FormControlDirective`, `FormControlName`, and `NgModel`
+ * directives.
+ *
+ * @usageNotes
+ *
+ * ### Using a number input with a reactive form.
+ *
+ * The following example shows how to use a number input with a reactive form.
+ *
+ * ```ts
+ * const totalCountControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <input type="number" [formControl]="totalCountControl">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class NumberValueAccessor extends BuiltInControlValueAccessor {
+  /**
+   * Sets the "value" property on the input element.
+   * @nodoc
+   */
+  writeValue(value) {
+    // The value needs to be normalized for IE9, otherwise it is set to 'null' when null
+    const normalizedValue = value == null ? '' : value;
+    this.setProperty('value', normalizedValue);
+  }
+  /**
+   * Registers a function called when the control value changes.
+   * @nodoc
+   */
+
+
+  registerOnChange(fn) {
+    this.onChange = value => {
+      fn(value == '' ? null : parseFloat(value));
+    };
+  }
+
+}
+
+NumberValueAccessor.ɵfac = /* @__PURE__ */function () {
+  let ɵNumberValueAccessor_BaseFactory;
+  return function NumberValueAccessor_Factory(t) {
+    return (ɵNumberValueAccessor_BaseFactory || (ɵNumberValueAccessor_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](NumberValueAccessor)))(t || NumberValueAccessor);
+  };
+}();
+
+NumberValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: NumberValueAccessor,
+  selectors: [["input", "type", "number", "formControlName", ""], ["input", "type", "number", "formControl", ""], ["input", "type", "number", "ngModel", ""]],
+  hostBindings: function NumberValueAccessor_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("input", function NumberValueAccessor_input_HostBindingHandler($event) {
+        return ctx.onChange($event.target.value);
+      })("blur", function NumberValueAccessor_blur_HostBindingHandler() {
+        return ctx.onTouched();
+      });
+    }
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([NUMBER_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NumberValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input[type=number][formControlName],input[type=number][formControl],input[type=number][ngModel]',
+      host: {
+        '(input)': 'onChange($event.target.value)',
+        '(blur)': 'onTouched()'
+      },
+      providers: [NUMBER_VALUE_ACCESSOR]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const RADIO_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => RadioControlValueAccessor),
+  multi: true
+};
+
+function throwNameError() {
+  throw new Error(`
+      If you define both a name and a formControlName attribute on your radio button, their values
+      must match. Ex: <input type="radio" formControlName="food" name="food">
+    `);
+}
+/**
+ * Internal-only NgModule that works as a host for the `RadioControlRegistry` tree-shakable
+ * provider. Note: the `InternalFormsSharedModule` can not be used here directly, since it's
+ * declared *after* the `RadioControlRegistry` class and the `providedIn` doesn't support
+ * `forwardRef` logic.
+ */
+
+
+class RadioControlRegistryModule {}
+
+RadioControlRegistryModule.ɵfac = function RadioControlRegistryModule_Factory(t) {
+  return new (t || RadioControlRegistryModule)();
+};
+
+RadioControlRegistryModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: RadioControlRegistryModule
+});
+RadioControlRegistryModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](RadioControlRegistryModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule
+  }], null, null);
+})();
+/**
+ * @description
+ * Class used by Angular to track radio buttons. For internal use only.
+ */
+
+
+class RadioControlRegistry {
+  constructor() {
+    this._accessors = [];
+  }
+  /**
+   * @description
+   * Adds a control to the internal registry. For internal use only.
+   */
+
+
+  add(control, accessor) {
+    this._accessors.push([control, accessor]);
+  }
+  /**
+   * @description
+   * Removes a control from the internal registry. For internal use only.
+   */
+
+
+  remove(accessor) {
+    for (let i = this._accessors.length - 1; i >= 0; --i) {
+      if (this._accessors[i][1] === accessor) {
+        this._accessors.splice(i, 1);
+
+        return;
+      }
+    }
+  }
+  /**
+   * @description
+   * Selects a radio button. For internal use only.
+   */
+
+
+  select(accessor) {
+    this._accessors.forEach(c => {
+      if (this._isSameGroup(c, accessor) && c[1] !== accessor) {
+        c[1].fireUncheck(accessor.value);
+      }
+    });
+  }
+
+  _isSameGroup(controlPair, accessor) {
+    if (!controlPair[0].control) return false;
+    return controlPair[0]._parent === accessor._control._parent && controlPair[1].name === accessor.name;
+  }
+
+}
+
+RadioControlRegistry.ɵfac = function RadioControlRegistry_Factory(t) {
+  return new (t || RadioControlRegistry)();
+};
+
+RadioControlRegistry.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
+  token: RadioControlRegistry,
+  factory: RadioControlRegistry.ɵfac,
+  providedIn: RadioControlRegistryModule
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](RadioControlRegistry, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Injectable,
+    args: [{
+      providedIn: RadioControlRegistryModule
+    }]
+  }], null, null);
+})();
+/**
+ * @description
+ * The `ControlValueAccessor` for writing radio control values and listening to radio control
+ * changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
+ *
+ * @usageNotes
+ *
+ * ### Using radio buttons with reactive form directives
+ *
+ * The follow example shows how to use radio buttons in a reactive form. When using radio buttons in
+ * a reactive form, radio buttons in the same group should have the same `formControlName`.
+ * Providing a `name` attribute is optional.
+ *
+ * {@example forms/ts/reactiveRadioButtons/reactive_radio_button_example.ts region='Reactive'}
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class RadioControlValueAccessor extends BuiltInControlValueAccessor {
+  constructor(renderer, elementRef, _registry, _injector) {
+    super(renderer, elementRef);
+    this._registry = _registry;
+    this._injector = _injector;
+    /**
+     * The registered callback function called when a change event occurs on the input element.
+     * Note: we declare `onChange` here (also used as host listener) as a function with no arguments
+     * to override the `onChange` function (which expects 1 argument) in the parent
+     * `BaseControlValueAccessor` class.
+     * @nodoc
+     */
+
+    this.onChange = () => {};
+  }
+  /** @nodoc */
+
+
+  ngOnInit() {
+    this._control = this._injector.get(NgControl);
+
+    this._checkName();
+
+    this._registry.add(this._control, this);
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    this._registry.remove(this);
+  }
+  /**
+   * Sets the "checked" property value on the radio input element.
+   * @nodoc
+   */
+
+
+  writeValue(value) {
+    this._state = value === this.value;
+    this.setProperty('checked', this._state);
+  }
+  /**
+   * Registers a function called when the control value changes.
+   * @nodoc
+   */
+
+
+  registerOnChange(fn) {
+    this._fn = fn;
+
+    this.onChange = () => {
+      fn(this.value);
+
+      this._registry.select(this);
+    };
+  }
+  /**
+   * Sets the "value" on the radio input element and unchecks it.
+   *
+   * @param value
+   */
+
+
+  fireUncheck(value) {
+    this.writeValue(value);
+  }
+
+  _checkName() {
+    if (this.name && this.formControlName && this.name !== this.formControlName && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throwNameError();
+    }
+
+    if (!this.name && this.formControlName) this.name = this.formControlName;
+  }
+
+}
+
+RadioControlValueAccessor.ɵfac = function RadioControlValueAccessor_Factory(t) {
+  return new (t || RadioControlValueAccessor)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](RadioControlRegistry), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.Injector));
+};
+
+RadioControlValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: RadioControlValueAccessor,
+  selectors: [["input", "type", "radio", "formControlName", ""], ["input", "type", "radio", "formControl", ""], ["input", "type", "radio", "ngModel", ""]],
+  hostBindings: function RadioControlValueAccessor_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function RadioControlValueAccessor_change_HostBindingHandler() {
+        return ctx.onChange();
+      })("blur", function RadioControlValueAccessor_blur_HostBindingHandler() {
+        return ctx.onTouched();
+      });
+    }
+  },
+  inputs: {
+    name: "name",
+    formControlName: "formControlName",
+    value: "value"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([RADIO_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](RadioControlValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input[type=radio][formControlName],input[type=radio][formControl],input[type=radio][ngModel]',
+      host: {
+        '(change)': 'onChange()',
+        '(blur)': 'onTouched()'
+      },
+      providers: [RADIO_VALUE_ACCESSOR]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: RadioControlRegistry
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Injector
+    }];
+  }, {
+    name: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    formControlName: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    value: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const RANGE_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => RangeValueAccessor),
+  multi: true
+};
+/**
+ * @description
+ * The `ControlValueAccessor` for writing a range value and listening to range input changes.
+ * The value accessor is used by the `FormControlDirective`, `FormControlName`, and  `NgModel`
+ * directives.
+ *
+ * @usageNotes
+ *
+ * ### Using a range input with a reactive form
+ *
+ * The following example shows how to use a range input with a reactive form.
+ *
+ * ```ts
+ * const ageControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <input type="range" [formControl]="ageControl">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class RangeValueAccessor extends BuiltInControlValueAccessor {
+  /**
+   * Sets the "value" property on the input element.
+   * @nodoc
+   */
+  writeValue(value) {
+    this.setProperty('value', parseFloat(value));
+  }
+  /**
+   * Registers a function called when the control value changes.
+   * @nodoc
+   */
+
+
+  registerOnChange(fn) {
+    this.onChange = value => {
+      fn(value == '' ? null : parseFloat(value));
+    };
+  }
+
+}
+
+RangeValueAccessor.ɵfac = /* @__PURE__ */function () {
+  let ɵRangeValueAccessor_BaseFactory;
+  return function RangeValueAccessor_Factory(t) {
+    return (ɵRangeValueAccessor_BaseFactory || (ɵRangeValueAccessor_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](RangeValueAccessor)))(t || RangeValueAccessor);
+  };
+}();
+
+RangeValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: RangeValueAccessor,
+  selectors: [["input", "type", "range", "formControlName", ""], ["input", "type", "range", "formControl", ""], ["input", "type", "range", "ngModel", ""]],
+  hostBindings: function RangeValueAccessor_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function RangeValueAccessor_change_HostBindingHandler($event) {
+        return ctx.onChange($event.target.value);
+      })("input", function RangeValueAccessor_input_HostBindingHandler($event) {
+        return ctx.onChange($event.target.value);
+      })("blur", function RangeValueAccessor_blur_HostBindingHandler() {
+        return ctx.onTouched();
+      });
+    }
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([RANGE_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](RangeValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input[type=range][formControlName],input[type=range][formControl],input[type=range][ngModel]',
+      host: {
+        '(change)': 'onChange($event.target.value)',
+        '(input)': 'onChange($event.target.value)',
+        '(blur)': 'onTouched()'
+      },
+      providers: [RANGE_VALUE_ACCESSOR]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Token to provide to turn off the ngModel warning on formControl and formControlName.
+ */
+
+
+const NG_MODEL_WITH_FORM_CONTROL_WARNING = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('NgModelWithFormControlWarning');
+const formControlBinding = {
+  provide: NgControl,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => FormControlDirective)
+};
+/**
+ * @description
+ * Synchronizes a standalone `FormControl` instance to a form control element.
+ *
+ * Note that support for using the `ngModel` input property and `ngModelChange` event with reactive
+ * form directives was deprecated in Angular v6 and is scheduled for removal in
+ * a future version of Angular.
+ * For details, see [Deprecated features](guide/deprecations#ngmodel-with-reactive-forms).
+ *
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see `FormControl`
+ * @see `AbstractControl`
+ *
+ * @usageNotes
+ *
+ * The following example shows how to register a standalone control and set its value.
+ *
+ * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
+ *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
+ */
+
+class FormControlDirective extends NgControl {
+  constructor(validators, asyncValidators, valueAccessors, _ngModelWarningConfig) {
+    super();
+    this._ngModelWarningConfig = _ngModelWarningConfig;
+    /** @deprecated as of v6 */
+
+    this.update = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+    /**
+     * @description
+     * Instance property used to track whether an ngModel warning has been sent out for this
+     * particular `FormControlDirective` instance. Used to support warning config of "always".
+     *
+     * @internal
+     */
+
+    this._ngModelWarningSent = false;
+
+    this._setValidators(validators);
+
+    this._setAsyncValidators(asyncValidators);
+
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
+  /**
+   * @description
+   * Triggers a warning in dev mode that this input should not be used with reactive forms.
+   */
+
+
+  set isDisabled(isDisabled) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.warn(disabledAttrWarning);
+    }
+  }
+  /** @nodoc */
+
+
+  ngOnChanges(changes) {
+    if (this._isControlChanged(changes)) {
+      const previousForm = changes['form'].previousValue;
+
+      if (previousForm) {
+        cleanUpControl(previousForm, this,
+        /* validateControlPresenceOnChange */
+        false);
+      }
+
+      setUpControl(this.form, this);
+
+      if (this.control.disabled && this.valueAccessor.setDisabledState) {
+        this.valueAccessor.setDisabledState(true);
+      }
+
+      this.form.updateValueAndValidity({
+        emitEvent: false
+      });
+    }
+
+    if (isPropertyUpdated(changes, this.viewModel)) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        _ngModelWarning('formControl', FormControlDirective, this, this._ngModelWarningConfig);
+      }
+
+      this.form.setValue(this.model);
+      this.viewModel = this.model;
+    }
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    if (this.form) {
+      cleanUpControl(this.form, this,
+      /* validateControlPresenceOnChange */
+      false);
+    }
+  }
+  /**
+   * @description
+   * Returns an array that represents the path from the top-level form to this control.
+   * Each index is the string name of the control on that level.
+   */
+
+
+  get path() {
+    return [];
+  }
+  /**
+   * @description
+   * The `FormControl` bound to this directive.
+   */
+
+
+  get control() {
+    return this.form;
+  }
+  /**
+   * @description
+   * Sets the new value for the view model and emits an `ngModelChange` event.
+   *
+   * @param newValue The new value for the view model.
+   */
+
+
+  viewToModelUpdate(newValue) {
+    this.viewModel = newValue;
+    this.update.emit(newValue);
+  }
+
+  _isControlChanged(changes) {
+    return changes.hasOwnProperty('form');
+  }
+
+}
+/**
+ * @description
+ * Static property used to track whether any ngModel warnings have been sent across
+ * all instances of FormControlDirective. Used to support warning config of "once".
+ *
+ * @internal
+ */
+
+
+FormControlDirective._ngModelWarningSentOnce = false;
+
+FormControlDirective.ɵfac = function FormControlDirective_Factory(t) {
+  return new (t || FormControlDirective)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALUE_ACCESSOR, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_MODEL_WITH_FORM_CONTROL_WARNING, 8));
+};
+
+FormControlDirective.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: FormControlDirective,
+  selectors: [["", "formControl", ""]],
+  inputs: {
+    form: ["formControl", "form"],
+    isDisabled: ["disabled", "isDisabled"],
+    model: ["ngModel", "model"]
+  },
+  outputs: {
+    update: "ngModelChange"
+  },
+  exportAs: ["ngForm"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([formControlBinding]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](FormControlDirective, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[formControl]',
+      providers: [formControlBinding],
+      exportAs: 'ngForm'
+    }]
+  }], function () {
+    return [{
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALUE_ACCESSOR]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_MODEL_WITH_FORM_CONTROL_WARNING]
+      }]
+    }];
+  }, {
+    form: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['formControl']
+    }],
+    isDisabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['disabled']
+    }],
+    model: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngModel']
+    }],
+    update: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Output,
+      args: ['ngModelChange']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const formDirectiveProvider = {
+  provide: ControlContainer,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => FormGroupDirective)
+};
+/**
+ * @description
+ *
+ * Binds an existing `FormGroup` to a DOM element.
+ *
+ * This directive accepts an existing `FormGroup` instance. It will then use this
+ * `FormGroup` instance to match any child `FormControl`, `FormGroup`,
+ * and `FormArray` instances to child `FormControlName`, `FormGroupName`,
+ * and `FormArrayName` directives.
+ *
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see `AbstractControl`
+ *
+ * @usageNotes
+ * ### Register Form Group
+ *
+ * The following example registers a `FormGroup` with first name and last name controls,
+ * and listens for the *ngSubmit* event when the button is clicked.
+ *
+ * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
+ *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
+ */
+
+class FormGroupDirective extends ControlContainer {
+  constructor(validators, asyncValidators) {
+    super();
+    this.validators = validators;
+    this.asyncValidators = asyncValidators;
+    /**
+     * @description
+     * Reports whether the form submission has been triggered.
+     */
+
+    this.submitted = false;
+    /**
+     * Callback that should be invoked when controls in FormGroup or FormArray collection change
+     * (added or removed). This callback triggers corresponding DOM updates.
+     */
+
+    this._onCollectionChange = () => this._updateDomValue();
+    /**
+     * @description
+     * Tracks the list of added `FormControlName` instances
+     */
+
+
+    this.directives = [];
+    /**
+     * @description
+     * Tracks the `FormGroup` bound to this directive.
+     */
+
+    this.form = null;
+    /**
+     * @description
+     * Emits an event when the form submission has been triggered.
+     */
+
+    this.ngSubmit = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+
+    this._setValidators(validators);
+
+    this._setAsyncValidators(asyncValidators);
+  }
+  /** @nodoc */
+
+
+  ngOnChanges(changes) {
+    this._checkFormPresent();
+
+    if (changes.hasOwnProperty('form')) {
+      this._updateValidators();
+
+      this._updateDomValue();
+
+      this._updateRegistrations();
+
+      this._oldForm = this.form;
+    }
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    if (this.form) {
+      cleanUpValidators(this.form, this); // Currently the `onCollectionChange` callback is rewritten each time the
+      // `_registerOnCollectionChange` function is invoked. The implication is that cleanup should
+      // happen *only* when the `onCollectionChange` callback was set by this directive instance.
+      // Otherwise it might cause overriding a callback of some other directive instances. We should
+      // consider updating this logic later to make it similar to how `onChange` callbacks are
+      // handled, see https://github.com/angular/angular/issues/39732 for additional info.
+
+      if (this.form._onCollectionChange === this._onCollectionChange) {
+        this.form._registerOnCollectionChange(() => {});
+      }
+    }
+  }
+  /**
+   * @description
+   * Returns this directive's instance.
+   */
+
+
+  get formDirective() {
+    return this;
+  }
+  /**
+   * @description
+   * Returns the `FormGroup` bound to this directive.
+   */
+
+
+  get control() {
+    return this.form;
+  }
+  /**
+   * @description
+   * Returns an array representing the path to this group. Because this directive
+   * always lives at the top level of a form, it always an empty array.
+   */
+
+
+  get path() {
+    return [];
+  }
+  /**
+   * @description
+   * Method that sets up the control directive in this group, re-calculates its value
+   * and validity, and adds the instance to the internal list of directives.
+   *
+   * @param dir The `FormControlName` directive instance.
+   */
+
+
+  addControl(dir) {
+    const ctrl = this.form.get(dir.path);
+    setUpControl(ctrl, dir);
+    ctrl.updateValueAndValidity({
+      emitEvent: false
+    });
+    this.directives.push(dir);
+    return ctrl;
+  }
+  /**
+   * @description
+   * Retrieves the `FormControl` instance from the provided `FormControlName` directive
+   *
+   * @param dir The `FormControlName` directive instance.
+   */
+
+
+  getControl(dir) {
+    return this.form.get(dir.path);
+  }
+  /**
+   * @description
+   * Removes the `FormControlName` instance from the internal list of directives
+   *
+   * @param dir The `FormControlName` directive instance.
+   */
+
+
+  removeControl(dir) {
+    cleanUpControl(dir.control || null, dir,
+    /* validateControlPresenceOnChange */
+    false);
+    removeListItem(this.directives, dir);
+  }
+  /**
+   * Adds a new `FormGroupName` directive instance to the form.
+   *
+   * @param dir The `FormGroupName` directive instance.
+   */
+
+
+  addFormGroup(dir) {
+    this._setUpFormContainer(dir);
+  }
+  /**
+   * Performs the necessary cleanup when a `FormGroupName` directive instance is removed from the
+   * view.
+   *
+   * @param dir The `FormGroupName` directive instance.
+   */
+
+
+  removeFormGroup(dir) {
+    this._cleanUpFormContainer(dir);
+  }
+  /**
+   * @description
+   * Retrieves the `FormGroup` for a provided `FormGroupName` directive instance
+   *
+   * @param dir The `FormGroupName` directive instance.
+   */
+
+
+  getFormGroup(dir) {
+    return this.form.get(dir.path);
+  }
+  /**
+   * Performs the necessary setup when a `FormArrayName` directive instance is added to the view.
+   *
+   * @param dir The `FormArrayName` directive instance.
+   */
+
+
+  addFormArray(dir) {
+    this._setUpFormContainer(dir);
+  }
+  /**
+   * Performs the necessary cleanup when a `FormArrayName` directive instance is removed from the
+   * view.
+   *
+   * @param dir The `FormArrayName` directive instance.
+   */
+
+
+  removeFormArray(dir) {
+    this._cleanUpFormContainer(dir);
+  }
+  /**
+   * @description
+   * Retrieves the `FormArray` for a provided `FormArrayName` directive instance.
+   *
+   * @param dir The `FormArrayName` directive instance.
+   */
+
+
+  getFormArray(dir) {
+    return this.form.get(dir.path);
+  }
+  /**
+   * Sets the new value for the provided `FormControlName` directive.
+   *
+   * @param dir The `FormControlName` directive instance.
+   * @param value The new value for the directive's control.
+   */
+
+
+  updateModel(dir, value) {
+    const ctrl = this.form.get(dir.path);
+    ctrl.setValue(value);
+  }
+  /**
+   * @description
+   * Method called with the "submit" event is triggered on the form.
+   * Triggers the `ngSubmit` emitter to emit the "submit" event as its payload.
+   *
+   * @param $event The "submit" event object
+   */
+
+
+  onSubmit($event) {
+    this.submitted = true;
+    syncPendingControls(this.form, this.directives);
+    this.ngSubmit.emit($event);
+    return false;
+  }
+  /**
+   * @description
+   * Method called when the "reset" event is triggered on the form.
+   */
+
+
+  onReset() {
+    this.resetForm();
+  }
+  /**
+   * @description
+   * Resets the form to an initial value and resets its submitted status.
+   *
+   * @param value The new value for the form.
+   */
+
+
+  resetForm(value = undefined) {
+    this.form.reset(value);
+    this.submitted = false;
+  }
+  /** @internal */
+
+
+  _updateDomValue() {
+    this.directives.forEach(dir => {
+      const oldCtrl = dir.control;
+      const newCtrl = this.form.get(dir.path);
+
+      if (oldCtrl !== newCtrl) {
+        // Note: the value of the `dir.control` may not be defined, for example when it's a first
+        // `FormControl` that is added to a `FormGroup` instance (via `addControl` call).
+        cleanUpControl(oldCtrl || null, dir); // Check whether new control at the same location inside the corresponding `FormGroup` is an
+        // instance of `FormControl` and perform control setup only if that's the case.
+        // Note: we don't need to clear the list of directives (`this.directives`) here, it would be
+        // taken care of in the `removeControl` method invoked when corresponding `formControlName`
+        // directive instance is being removed (invoked from `FormControlName.ngOnDestroy`).
+
+        if (isFormControl(newCtrl)) {
+          setUpControl(newCtrl, dir);
+          dir.control = newCtrl;
+        }
+      }
+    });
+
+    this.form._updateTreeValidity({
+      emitEvent: false
+    });
+  }
+
+  _setUpFormContainer(dir) {
+    const ctrl = this.form.get(dir.path);
+    setUpFormContainer(ctrl, dir); // NOTE: this operation looks unnecessary in case no new validators were added in
+    // `setUpFormContainer` call. Consider updating this code to match the logic in
+    // `_cleanUpFormContainer` function.
+
+    ctrl.updateValueAndValidity({
+      emitEvent: false
+    });
+  }
+
+  _cleanUpFormContainer(dir) {
+    if (this.form) {
+      const ctrl = this.form.get(dir.path);
+
+      if (ctrl) {
+        const isControlUpdated = cleanUpFormContainer(ctrl, dir);
+
+        if (isControlUpdated) {
+          // Run validity check only in case a control was updated (i.e. view validators were
+          // removed) as removing view validators might cause validity to change.
+          ctrl.updateValueAndValidity({
+            emitEvent: false
+          });
+        }
+      }
+    }
+  }
+
+  _updateRegistrations() {
+    this.form._registerOnCollectionChange(this._onCollectionChange);
+
+    if (this._oldForm) {
+      this._oldForm._registerOnCollectionChange(() => {});
+    }
+  }
+
+  _updateValidators() {
+    setUpValidators(this.form, this);
+
+    if (this._oldForm) {
+      cleanUpValidators(this._oldForm, this);
+    }
+  }
+
+  _checkFormPresent() {
+    if (!this.form && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw missingFormException();
+    }
+  }
+
+}
+
+FormGroupDirective.ɵfac = function FormGroupDirective_Factory(t) {
+  return new (t || FormGroupDirective)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10));
+};
+
+FormGroupDirective.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: FormGroupDirective,
+  selectors: [["", "formGroup", ""]],
+  hostBindings: function FormGroupDirective_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("submit", function FormGroupDirective_submit_HostBindingHandler($event) {
+        return ctx.onSubmit($event);
+      })("reset", function FormGroupDirective_reset_HostBindingHandler() {
+        return ctx.onReset();
+      });
+    }
+  },
+  inputs: {
+    form: ["formGroup", "form"]
+  },
+  outputs: {
+    ngSubmit: "ngSubmit"
+  },
+  exportAs: ["ngForm"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([formDirectiveProvider]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](FormGroupDirective, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[formGroup]',
+      providers: [formDirectiveProvider],
+      host: {
+        '(submit)': 'onSubmit($event)',
+        '(reset)': 'onReset()'
+      },
+      exportAs: 'ngForm'
+    }]
+  }], function () {
+    return [{
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }];
+  }, {
+    form: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['formGroup']
+    }],
+    ngSubmit: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Output
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const formGroupNameProvider = {
+  provide: ControlContainer,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => FormGroupName)
+};
+/**
+ * @description
+ *
+ * Syncs a nested `FormGroup` to a DOM element.
+ *
+ * This directive can only be used with a parent `FormGroupDirective`.
+ *
+ * It accepts the string name of the nested `FormGroup` to link, and
+ * looks for a `FormGroup` registered with that name in the parent
+ * `FormGroup` instance you passed into `FormGroupDirective`.
+ *
+ * Use nested form groups to validate a sub-group of a
+ * form separately from the rest or to group the values of certain
+ * controls into their own nested object.
+ *
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ *
+ * @usageNotes
+ *
+ * ### Access the group by name
+ *
+ * The following example uses the `AbstractControl.get` method to access the
+ * associated `FormGroup`
+ *
+ * ```ts
+ *   this.form.get('name');
+ * ```
+ *
+ * ### Access individual controls in the group
+ *
+ * The following example uses the `AbstractControl.get` method to access
+ * individual controls within the group using dot syntax.
+ *
+ * ```ts
+ *   this.form.get('name.first');
+ * ```
+ *
+ * ### Register a nested `FormGroup`.
+ *
+ * The following example registers a nested *name* `FormGroup` within an existing `FormGroup`,
+ * and provides methods to retrieve the nested `FormGroup` and individual controls.
+ *
+ * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}
+ *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
+ */
+
+class FormGroupName extends AbstractFormGroupDirective {
+  constructor(parent, validators, asyncValidators) {
+    super();
+    this._parent = parent;
+
+    this._setValidators(validators);
+
+    this._setAsyncValidators(asyncValidators);
+  }
+  /** @internal */
+
+
+  _checkParentType() {
+    if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw groupParentException();
+    }
+  }
+
+}
+
+FormGroupName.ɵfac = function FormGroupName_Factory(t) {
+  return new (t || FormGroupName)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ControlContainer, 13), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10));
+};
+
+FormGroupName.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: FormGroupName,
+  selectors: [["", "formGroupName", ""]],
+  inputs: {
+    name: ["formGroupName", "name"]
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([formGroupNameProvider]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](FormGroupName, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[formGroupName]',
+      providers: [formGroupNameProvider]
+    }]
+  }], function () {
+    return [{
+      type: ControlContainer,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Host
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.SkipSelf
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }];
+  }, {
+    name: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['formGroupName']
+    }]
+  });
+})();
+
+const formArrayNameProvider = {
+  provide: ControlContainer,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => FormArrayName)
+};
+/**
+ * @description
+ *
+ * Syncs a nested `FormArray` to a DOM element.
+ *
+ * This directive is designed to be used with a parent `FormGroupDirective` (selector:
+ * `[formGroup]`).
+ *
+ * It accepts the string name of the nested `FormArray` you want to link, and
+ * will look for a `FormArray` registered with that name in the parent
+ * `FormGroup` instance you passed into `FormGroupDirective`.
+ *
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see `AbstractControl`
+ *
+ * @usageNotes
+ *
+ * ### Example
+ *
+ * {@example forms/ts/nestedFormArray/nested_form_array_example.ts region='Component'}
+ *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
+ */
+
+class FormArrayName extends ControlContainer {
+  constructor(parent, validators, asyncValidators) {
+    super();
+    this._parent = parent;
+
+    this._setValidators(validators);
+
+    this._setAsyncValidators(asyncValidators);
+  }
+  /**
+   * A lifecycle method called when the directive's inputs are initialized. For internal use only.
+   * @throws If the directive does not have a valid parent.
+   * @nodoc
+   */
+
+
+  ngOnInit() {
+    this._checkParentType();
+
+    this.formDirective.addFormArray(this);
+  }
+  /**
+   * A lifecycle method called before the directive's instance is destroyed. For internal use only.
+   * @nodoc
+   */
+
+
+  ngOnDestroy() {
+    if (this.formDirective) {
+      this.formDirective.removeFormArray(this);
+    }
+  }
+  /**
+   * @description
+   * The `FormArray` bound to this directive.
+   */
+
+
+  get control() {
+    return this.formDirective.getFormArray(this);
+  }
+  /**
+   * @description
+   * The top-level directive for this group if present, otherwise null.
+   */
+
+
+  get formDirective() {
+    return this._parent ? this._parent.formDirective : null;
+  }
+  /**
+   * @description
+   * Returns an array that represents the path from the top-level form to this control.
+   * Each index is the string name of the control on that level.
+   */
+
+
+  get path() {
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+  }
+
+  _checkParentType() {
+    if (_hasInvalidParent(this._parent) && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw arrayParentException();
+    }
+  }
+
+}
+
+FormArrayName.ɵfac = function FormArrayName_Factory(t) {
+  return new (t || FormArrayName)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ControlContainer, 13), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10));
+};
+
+FormArrayName.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: FormArrayName,
+  selectors: [["", "formArrayName", ""]],
+  inputs: {
+    name: ["formArrayName", "name"]
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([formArrayNameProvider]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](FormArrayName, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[formArrayName]',
+      providers: [formArrayNameProvider]
+    }]
+  }], function () {
+    return [{
+      type: ControlContainer,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Host
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.SkipSelf
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }];
+  }, {
+    name: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['formArrayName']
+    }]
+  });
+})();
+
+function _hasInvalidParent(parent) {
+  return !(parent instanceof FormGroupName) && !(parent instanceof FormGroupDirective) && !(parent instanceof FormArrayName);
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const controlNameBinding = {
+  provide: NgControl,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => FormControlName)
+};
+/**
+ * @description
+ * Syncs a `FormControl` in an existing `FormGroup` to a form control
+ * element by name.
+ *
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see `FormControl`
+ * @see `AbstractControl`
+ *
+ * @usageNotes
+ *
+ * ### Register `FormControl` within a group
+ *
+ * The following example shows how to register multiple form controls within a form group
+ * and set their value.
+ *
+ * {@example forms/ts/simpleFormGroup/simple_form_group_example.ts region='Component'}
+ *
+ * To see `formControlName` examples with different form control types, see:
+ *
+ * * Radio buttons: `RadioControlValueAccessor`
+ * * Selects: `SelectControlValueAccessor`
+ *
+ * ### Use with ngModel is deprecated
+ *
+ * Support for using the `ngModel` input property and `ngModelChange` event with reactive
+ * form directives has been deprecated in Angular v6 and is scheduled for removal in
+ * a future version of Angular.
+ *
+ * For details, see [Deprecated features](guide/deprecations#ngmodel-with-reactive-forms).
+ *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
+ */
+
+class FormControlName extends NgControl {
+  constructor(parent, validators, asyncValidators, valueAccessors, _ngModelWarningConfig) {
+    super();
+    this._ngModelWarningConfig = _ngModelWarningConfig;
+    this._added = false;
+    /** @deprecated as of v6 */
+
+    this.update = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+    /**
+     * @description
+     * Instance property used to track whether an ngModel warning has been sent out for this
+     * particular FormControlName instance. Used to support warning config of "always".
+     *
+     * @internal
+     */
+
+    this._ngModelWarningSent = false;
+    this._parent = parent;
+
+    this._setValidators(validators);
+
+    this._setAsyncValidators(asyncValidators);
+
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
+  }
+  /**
+   * @description
+   * Triggers a warning in dev mode that this input should not be used with reactive forms.
+   */
+
+
+  set isDisabled(isDisabled) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      console.warn(disabledAttrWarning);
+    }
+  }
+  /** @nodoc */
+
+
+  ngOnChanges(changes) {
+    if (!this._added) this._setUpControl();
+
+    if (isPropertyUpdated(changes, this.viewModel)) {
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        _ngModelWarning('formControlName', FormControlName, this, this._ngModelWarningConfig);
+      }
+
+      this.viewModel = this.model;
+      this.formDirective.updateModel(this, this.model);
+    }
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    if (this.formDirective) {
+      this.formDirective.removeControl(this);
+    }
+  }
+  /**
+   * @description
+   * Sets the new value for the view model and emits an `ngModelChange` event.
+   *
+   * @param newValue The new value for the view model.
+   */
+
+
+  viewToModelUpdate(newValue) {
+    this.viewModel = newValue;
+    this.update.emit(newValue);
+  }
+  /**
+   * @description
+   * Returns an array that represents the path from the top-level form to this control.
+   * Each index is the string name of the control on that level.
+   */
+
+
+  get path() {
+    return controlPath(this.name == null ? this.name : this.name.toString(), this._parent);
+  }
+  /**
+   * @description
+   * The top-level directive for this group if present, otherwise null.
+   */
+
+
+  get formDirective() {
+    return this._parent ? this._parent.formDirective : null;
+  }
+
+  _checkParentType() {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      if (!(this._parent instanceof FormGroupName) && this._parent instanceof AbstractFormGroupDirective) {
+        throw ngModelGroupException();
+      } else if (!(this._parent instanceof FormGroupName) && !(this._parent instanceof FormGroupDirective) && !(this._parent instanceof FormArrayName)) {
+        throw controlParentException();
+      }
+    }
+  }
+
+  _setUpControl() {
+    this._checkParentType();
+
+    this.control = this.formDirective.addControl(this);
+
+    if (this.control.disabled && this.valueAccessor.setDisabledState) {
+      this.valueAccessor.setDisabledState(true);
+    }
+
+    this._added = true;
+  }
+
+}
+/**
+ * @description
+ * Static property used to track whether any ngModel warnings have been sent across
+ * all instances of FormControlName. Used to support warning config of "once".
+ *
+ * @internal
+ */
+
+
+FormControlName._ngModelWarningSentOnce = false;
+
+FormControlName.ɵfac = function FormControlName_Factory(t) {
+  return new (t || FormControlName)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ControlContainer, 13), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_ASYNC_VALIDATORS, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_VALUE_ACCESSOR, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](NG_MODEL_WITH_FORM_CONTROL_WARNING, 8));
+};
+
+FormControlName.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: FormControlName,
+  selectors: [["", "formControlName", ""]],
+  inputs: {
+    name: ["formControlName", "name"],
+    isDisabled: ["disabled", "isDisabled"],
+    model: ["ngModel", "model"]
+  },
+  outputs: {
+    update: "ngModelChange"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([controlNameBinding]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](FormControlName, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[formControlName]',
+      providers: [controlNameBinding]
+    }]
+  }], function () {
+    return [{
+      type: ControlContainer,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Host
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.SkipSelf
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_ASYNC_VALIDATORS]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_VALUE_ACCESSOR]
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [NG_MODEL_WITH_FORM_CONTROL_WARNING]
+      }]
+    }];
+  }, {
+    name: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['formControlName']
+    }],
+    isDisabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['disabled']
+    }],
+    model: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngModel']
+    }],
+    update: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Output,
+      args: ['ngModelChange']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const SELECT_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => SelectControlValueAccessor),
+  multi: true
+};
+
+function _buildValueString$1(id, value) {
+  if (id == null) return `${value}`;
+  if (value && typeof value === 'object') value = 'Object';
+  return `${id}: ${value}`.slice(0, 50);
+}
+
+function _extractId$1(valueString) {
+  return valueString.split(':')[0];
+}
+/**
+ * @description
+ * The `ControlValueAccessor` for writing select control values and listening to select control
+ * changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
+ *
+ * @usageNotes
+ *
+ * ### Using select controls in a reactive form
+ *
+ * The following examples show how to use a select control in a reactive form.
+ *
+ * {@example forms/ts/reactiveSelectControl/reactive_select_control_example.ts region='Component'}
+ *
+ * ### Using select controls in a template-driven form
+ *
+ * To use a select in a template-driven form, simply add an `ngModel` and a `name`
+ * attribute to the main `<select>` tag.
+ *
+ * {@example forms/ts/selectControl/select_control_example.ts region='Component'}
+ *
+ * ### Customizing option selection
+ *
+ * Angular uses object identity to select option. It's possible for the identities of items
+ * to change while the data does not. This can happen, for example, if the items are produced
+ * from an RPC to the server, and that RPC is re-run. Even if the data hasn't changed, the
+ * second response will produce objects with different identities.
+ *
+ * To customize the default option comparison algorithm, `<select>` supports `compareWith` input.
+ * `compareWith` takes a **function** which has two arguments: `option1` and `option2`.
+ * If `compareWith` is given, Angular selects option by the return value of the function.
+ *
+ * ```ts
+ * const selectedCountriesControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <select [compareWith]="compareFn"  [formControl]="selectedCountriesControl">
+ *     <option *ngFor="let country of countries" [ngValue]="country">
+ *         {{country.name}}
+ *     </option>
+ * </select>
+ *
+ * compareFn(c1: Country, c2: Country): boolean {
+ *     return c1 && c2 ? c1.id === c2.id : c1 === c2;
+ * }
+ * ```
+ *
+ * **Note:** We listen to the 'change' event because 'input' events aren't fired
+ * for selects in IE, see:
+ * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event#browser_compatibility
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class SelectControlValueAccessor extends BuiltInControlValueAccessor {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this._optionMap = new Map();
+    /** @internal */
+
+    this._idCounter = 0;
+    this._compareWith = Object.is;
+  }
+  /**
+   * @description
+   * Tracks the option comparison algorithm for tracking identities when
+   * checking for changes.
+   */
+
+
+  set compareWith(fn) {
+    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
+    }
+
+    this._compareWith = fn;
+  }
+  /**
+   * Sets the "value" property on the select element.
+   * @nodoc
+   */
+
+
+  writeValue(value) {
+    this.value = value;
+
+    const id = this._getOptionId(value);
+
+    const valueString = _buildValueString$1(id, value);
+
+    this.setProperty('value', valueString);
+  }
+  /**
+   * Registers a function called when the control value changes.
+   * @nodoc
+   */
+
+
+  registerOnChange(fn) {
+    this.onChange = valueString => {
+      this.value = this._getOptionValue(valueString);
+      fn(this.value);
+    };
+  }
+  /** @internal */
+
+
+  _registerOption() {
+    return (this._idCounter++).toString();
+  }
+  /** @internal */
+
+
+  _getOptionId(value) {
+    for (const id of Array.from(this._optionMap.keys())) {
+      if (this._compareWith(this._optionMap.get(id), value)) return id;
+    }
+
+    return null;
+  }
+  /** @internal */
+
+
+  _getOptionValue(valueString) {
+    const id = _extractId$1(valueString);
+
+    return this._optionMap.has(id) ? this._optionMap.get(id) : valueString;
+  }
+
+}
+
+SelectControlValueAccessor.ɵfac = /* @__PURE__ */function () {
+  let ɵSelectControlValueAccessor_BaseFactory;
+  return function SelectControlValueAccessor_Factory(t) {
+    return (ɵSelectControlValueAccessor_BaseFactory || (ɵSelectControlValueAccessor_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](SelectControlValueAccessor)))(t || SelectControlValueAccessor);
+  };
+}();
+
+SelectControlValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: SelectControlValueAccessor,
+  selectors: [["select", "formControlName", "", 3, "multiple", ""], ["select", "formControl", "", 3, "multiple", ""], ["select", "ngModel", "", 3, "multiple", ""]],
+  hostBindings: function SelectControlValueAccessor_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function SelectControlValueAccessor_change_HostBindingHandler($event) {
+        return ctx.onChange($event.target.value);
+      })("blur", function SelectControlValueAccessor_blur_HostBindingHandler() {
+        return ctx.onTouched();
+      });
+    }
+  },
+  inputs: {
+    compareWith: "compareWith"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([SELECT_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SelectControlValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'select:not([multiple])[formControlName],select:not([multiple])[formControl],select:not([multiple])[ngModel]',
+      host: {
+        '(change)': 'onChange($event.target.value)',
+        '(blur)': 'onTouched()'
+      },
+      providers: [SELECT_VALUE_ACCESSOR]
+    }]
+  }], null, {
+    compareWith: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @description
+ * Marks `<option>` as dynamic, so Angular can be notified when options change.
+ *
+ * @see `SelectControlValueAccessor`
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class NgSelectOption {
+  constructor(_element, _renderer, _select) {
+    this._element = _element;
+    this._renderer = _renderer;
+    this._select = _select;
+    if (this._select) this.id = this._select._registerOption();
+  }
+  /**
+   * @description
+   * Tracks the value bound to the option element. Unlike the value binding,
+   * ngValue supports binding to objects.
+   */
+
+
+  set ngValue(value) {
+    if (this._select == null) return;
+
+    this._select._optionMap.set(this.id, value);
+
+    this._setElementValue(_buildValueString$1(this.id, value));
+
+    this._select.writeValue(this._select.value);
+  }
+  /**
+   * @description
+   * Tracks simple string values bound to the option element.
+   * For objects, use the `ngValue` input binding.
+   */
+
+
+  set value(value) {
+    this._setElementValue(value);
+
+    if (this._select) this._select.writeValue(this._select.value);
+  }
+  /** @internal */
+
+
+  _setElementValue(value) {
+    this._renderer.setProperty(this._element.nativeElement, 'value', value);
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    if (this._select) {
+      this._select._optionMap.delete(this.id);
+
+      this._select.writeValue(this._select.value);
+    }
+  }
+
+}
+
+NgSelectOption.ɵfac = function NgSelectOption_Factory(t) {
+  return new (t || NgSelectOption)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](SelectControlValueAccessor, 9));
+};
+
+NgSelectOption.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: NgSelectOption,
+  selectors: [["option"]],
+  inputs: {
+    ngValue: "ngValue",
+    value: "value"
+  }
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](NgSelectOption, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'option'
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2
+    }, {
+      type: SelectControlValueAccessor,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Host
+      }]
+    }];
+  }, {
+    ngValue: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngValue']
+    }],
+    value: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['value']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const SELECT_MULTIPLE_VALUE_ACCESSOR = {
+  provide: NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => SelectMultipleControlValueAccessor),
+  multi: true
+};
+
+function _buildValueString(id, value) {
+  if (id == null) return `${value}`;
+  if (typeof value === 'string') value = `'${value}'`;
+  if (value && typeof value === 'object') value = 'Object';
+  return `${id}: ${value}`.slice(0, 50);
+}
+
+function _extractId(valueString) {
+  return valueString.split(':')[0];
+}
+/** Mock interface for HTMLCollection */
+
+
+class HTMLCollection {}
+/**
+ * @description
+ * The `ControlValueAccessor` for writing multi-select control values and listening to multi-select
+ * control changes. The value accessor is used by the `FormControlDirective`, `FormControlName`, and
+ * `NgModel` directives.
+ *
+ * @see `SelectControlValueAccessor`
+ *
+ * @usageNotes
+ *
+ * ### Using a multi-select control
+ *
+ * The follow example shows you how to use a multi-select control with a reactive form.
+ *
+ * ```ts
+ * const countryControl = new FormControl();
+ * ```
+ *
+ * ```
+ * <select multiple name="countries" [formControl]="countryControl">
+ *   <option *ngFor="let country of countries" [ngValue]="country">
+ *     {{ country.name }}
+ *   </option>
+ * </select>
+ * ```
+ *
+ * ### Customizing option selection
+ *
+ * To customize the default option comparison algorithm, `<select>` supports `compareWith` input.
+ * See the `SelectControlValueAccessor` for usage.
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this._optionMap = new Map();
+    /** @internal */
+
+    this._idCounter = 0;
+    this._compareWith = Object.is;
+  }
+  /**
+   * @description
+   * Tracks the option comparison algorithm for tracking identities when
+   * checking for changes.
+   */
+
+
+  set compareWith(fn) {
+    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
+    }
+
+    this._compareWith = fn;
+  }
+  /**
+   * Sets the "value" property on one or of more of the select's options.
+   * @nodoc
+   */
+
+
+  writeValue(value) {
+    this.value = value;
+    let optionSelectedStateSetter;
+
+    if (Array.isArray(value)) {
+      // convert values to ids
+      const ids = value.map(v => this._getOptionId(v));
+
+      optionSelectedStateSetter = (opt, o) => {
+        opt._setSelected(ids.indexOf(o.toString()) > -1);
+      };
+    } else {
+      optionSelectedStateSetter = (opt, o) => {
+        opt._setSelected(false);
+      };
+    }
+
+    this._optionMap.forEach(optionSelectedStateSetter);
+  }
+  /**
+   * Registers a function called when the control value changes
+   * and writes an array of the selected options.
+   * @nodoc
+   */
+
+
+  registerOnChange(fn) {
+    this.onChange = element => {
+      const selected = [];
+      const selectedOptions = element.selectedOptions;
+
+      if (selectedOptions !== undefined) {
+        const options = selectedOptions;
+
+        for (let i = 0; i < options.length; i++) {
+          const opt = options[i];
+
+          const val = this._getOptionValue(opt.value);
+
+          selected.push(val);
+        }
+      } // Degrade to use `options` when `selectedOptions` property is not available.
+      // Note: the `selectedOptions` is available in all supported browsers, but the Domino lib
+      // doesn't have it currently, see https://github.com/fgnass/domino/issues/177.
+      else {
+        const options = element.options;
+
+        for (let i = 0; i < options.length; i++) {
+          const opt = options[i];
+
+          if (opt.selected) {
+            const val = this._getOptionValue(opt.value);
+
+            selected.push(val);
+          }
+        }
+      }
+
+      this.value = selected;
+      fn(selected);
+    };
+  }
+  /** @internal */
+
+
+  _registerOption(value) {
+    const id = (this._idCounter++).toString();
+
+    this._optionMap.set(id, value);
+
+    return id;
+  }
+  /** @internal */
+
+
+  _getOptionId(value) {
+    for (const id of Array.from(this._optionMap.keys())) {
+      if (this._compareWith(this._optionMap.get(id)._value, value)) return id;
+    }
+
+    return null;
+  }
+  /** @internal */
+
+
+  _getOptionValue(valueString) {
+    const id = _extractId(valueString);
+
+    return this._optionMap.has(id) ? this._optionMap.get(id)._value : valueString;
+  }
+
+}
+
+SelectMultipleControlValueAccessor.ɵfac = /* @__PURE__ */function () {
+  let ɵSelectMultipleControlValueAccessor_BaseFactory;
+  return function SelectMultipleControlValueAccessor_Factory(t) {
+    return (ɵSelectMultipleControlValueAccessor_BaseFactory || (ɵSelectMultipleControlValueAccessor_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](SelectMultipleControlValueAccessor)))(t || SelectMultipleControlValueAccessor);
+  };
+}();
+
+SelectMultipleControlValueAccessor.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: SelectMultipleControlValueAccessor,
+  selectors: [["select", "multiple", "", "formControlName", ""], ["select", "multiple", "", "formControl", ""], ["select", "multiple", "", "ngModel", ""]],
+  hostBindings: function SelectMultipleControlValueAccessor_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function SelectMultipleControlValueAccessor_change_HostBindingHandler($event) {
+        return ctx.onChange($event.target);
+      })("blur", function SelectMultipleControlValueAccessor_blur_HostBindingHandler() {
+        return ctx.onTouched();
+      });
+    }
+  },
+  inputs: {
+    compareWith: "compareWith"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([SELECT_MULTIPLE_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SelectMultipleControlValueAccessor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'select[multiple][formControlName],select[multiple][formControl],select[multiple][ngModel]',
+      host: {
+        '(change)': 'onChange($event.target)',
+        '(blur)': 'onTouched()'
+      },
+      providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
+    }]
+  }], null, {
+    compareWith: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @description
+ * Marks `<option>` as dynamic, so Angular can be notified when options change.
+ *
+ * @see `SelectMultipleControlValueAccessor`
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+
+class ɵNgSelectMultipleOption {
+  constructor(_element, _renderer, _select) {
+    this._element = _element;
+    this._renderer = _renderer;
+    this._select = _select;
+
+    if (this._select) {
+      this.id = this._select._registerOption(this);
+    }
+  }
+  /**
+   * @description
+   * Tracks the value bound to the option element. Unlike the value binding,
+   * ngValue supports binding to objects.
+   */
+
+
+  set ngValue(value) {
+    if (this._select == null) return;
+    this._value = value;
+
+    this._setElementValue(_buildValueString(this.id, value));
+
+    this._select.writeValue(this._select.value);
+  }
+  /**
+   * @description
+   * Tracks simple string values bound to the option element.
+   * For objects, use the `ngValue` input binding.
+   */
+
+
+  set value(value) {
+    if (this._select) {
+      this._value = value;
+
+      this._setElementValue(_buildValueString(this.id, value));
+
+      this._select.writeValue(this._select.value);
+    } else {
+      this._setElementValue(value);
+    }
+  }
+  /** @internal */
+
+
+  _setElementValue(value) {
+    this._renderer.setProperty(this._element.nativeElement, 'value', value);
+  }
+  /** @internal */
+
+
+  _setSelected(selected) {
+    this._renderer.setProperty(this._element.nativeElement, 'selected', selected);
+  }
+  /** @nodoc */
+
+
+  ngOnDestroy() {
+    if (this._select) {
+      this._select._optionMap.delete(this.id);
+
+      this._select.writeValue(this._select.value);
+    }
+  }
+
+}
+
+ɵNgSelectMultipleOption.ɵfac = function ɵNgSelectMultipleOption_Factory(t) {
+  return new (t || ɵNgSelectMultipleOption)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](SelectMultipleControlValueAccessor, 9));
+};
+
+ɵNgSelectMultipleOption.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: ɵNgSelectMultipleOption,
+  selectors: [["option"]],
+  inputs: {
+    ngValue: "ngValue",
+    value: "value"
+  }
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ɵNgSelectMultipleOption, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'option'
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Renderer2
+    }, {
+      type: SelectMultipleControlValueAccessor,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Host
+      }]
+    }];
+  }, {
+    ngValue: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['ngValue']
+    }],
+    value: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['value']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Method that updates string to integer if not already a number
+ *
+ * @param value The value to convert to integer.
+ * @returns value of parameter converted to number or integer.
+ */
+
+
+function toInteger(value) {
+  return typeof value === 'number' ? value : parseInt(value, 10);
+}
+/**
+ * Method that converts null, false or 'false' string to boolean.
+ *
+ * @param value input value.
+ * @returns value of parameter converted to boolean.
+ */
+
+
+function toBoolean(input) {
+  return input != null && input !== false && `${input}` !== 'false';
+}
+/**
+ * Method that ensures that provided value is a float (and converts it to float if needed).
+ *
+ * @param value The value to convert to float.
+ * @returns value of parameter converted to number or float.
+ */
+
+
+function toFloat(value) {
+  return typeof value === 'number' ? value : parseFloat(value);
+}
+/**
+ * A base class for Validator-based Directives. The class contains common logic shared across such
+ * Directives.
+ *
+ * For internal use only, this class is not intended for use outside of the Forms package.
+ */
+
+
+class AbstractValidatorDirective {
+  constructor() {
+    this._validator = nullValidator;
+  }
+  /** @nodoc */
+
+
+  ngOnChanges(changes) {
+    if (this.inputName in changes) {
+      const input = this.normalizeInput(changes[this.inputName].currentValue);
+      this._enabled = this.enabled(input);
+      this._validator = this._enabled ? this.createValidator(input) : nullValidator;
+
+      if (this._onChange) {
+        this._onChange();
+      }
+    }
+  }
+  /** @nodoc */
+
+
+  validate(control) {
+    return this._validator(control);
+  }
+  /** @nodoc */
+
+
+  registerOnValidatorChange(fn) {
+    this._onChange = fn;
+  }
+  /**
+   * @description
+   * Determines whether this validator should be active or not based on an input.
+   * Base class implementation checks whether an input is defined (if the value is different from
+   * `null` and `undefined`). Validator classes that extend this base class can override this
+   * function with the logic specific to a particular validator directive.
+   */
+
+
+  enabled(input) {
+    return input != null
+    /* both `null` and `undefined` */
+    ;
+  }
+
+}
+
+AbstractValidatorDirective.ɵfac = function AbstractValidatorDirective_Factory(t) {
+  return new (t || AbstractValidatorDirective)();
+};
+
+AbstractValidatorDirective.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: AbstractValidatorDirective,
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AbstractValidatorDirective, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive
+  }], null, null);
+})();
+/**
+ * @description
+ * Provider which adds `MaxValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+
+const MAX_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => MaxValidator),
+  multi: true
+};
+/**
+ * A directive which installs the {@link MaxValidator} for any `formControlName`,
+ * `formControl`, or control with `ngModel` that also has a `max` attribute.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a max validator
+ *
+ * The following example shows how to add a max validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```html
+ * <input type="number" ngModel max="4">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class MaxValidator extends AbstractValidatorDirective {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.inputName = 'max';
+    /** @internal */
+
+    this.normalizeInput = input => toFloat(input);
+    /** @internal */
+
+
+    this.createValidator = max => maxValidator(max);
+  }
+
+}
+
+MaxValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵMaxValidator_BaseFactory;
+  return function MaxValidator_Factory(t) {
+    return (ɵMaxValidator_BaseFactory || (ɵMaxValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](MaxValidator)))(t || MaxValidator);
+  };
+}();
+
+MaxValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MaxValidator,
+  selectors: [["input", "type", "number", "max", "", "formControlName", ""], ["input", "type", "number", "max", "", "formControl", ""], ["input", "type", "number", "max", "", "ngModel", ""]],
+  hostVars: 1,
+  hostBindings: function MaxValidator_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("max", ctx._enabled ? ctx.max : null);
+    }
+  },
+  inputs: {
+    max: "max"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([MAX_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MaxValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input[type=number][max][formControlName],input[type=number][max][formControl],input[type=number][max][ngModel]',
+      providers: [MAX_VALIDATOR],
+      host: {
+        '[attr.max]': '_enabled ? max : null'
+      }
+    }]
+  }], null, {
+    max: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @description
+ * Provider which adds `MinValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+
+const MIN_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => MinValidator),
+  multi: true
+};
+/**
+ * A directive which installs the {@link MinValidator} for any `formControlName`,
+ * `formControl`, or control with `ngModel` that also has a `min` attribute.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a min validator
+ *
+ * The following example shows how to add a min validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```html
+ * <input type="number" ngModel min="4">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class MinValidator extends AbstractValidatorDirective {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.inputName = 'min';
+    /** @internal */
+
+    this.normalizeInput = input => toFloat(input);
+    /** @internal */
+
+
+    this.createValidator = min => minValidator(min);
+  }
+
+}
+
+MinValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵMinValidator_BaseFactory;
+  return function MinValidator_Factory(t) {
+    return (ɵMinValidator_BaseFactory || (ɵMinValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](MinValidator)))(t || MinValidator);
+  };
+}();
+
+MinValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MinValidator,
+  selectors: [["input", "type", "number", "min", "", "formControlName", ""], ["input", "type", "number", "min", "", "formControl", ""], ["input", "type", "number", "min", "", "ngModel", ""]],
+  hostVars: 1,
+  hostBindings: function MinValidator_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("min", ctx._enabled ? ctx.min : null);
+    }
+  },
+  inputs: {
+    min: "min"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([MIN_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MinValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input[type=number][min][formControlName],input[type=number][min][formControl],input[type=number][min][ngModel]',
+      providers: [MIN_VALIDATOR],
+      host: {
+        '[attr.min]': '_enabled ? min : null'
+      }
+    }]
+  }], null, {
+    min: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @description
+ * Provider which adds `RequiredValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+
+const REQUIRED_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => RequiredValidator),
+  multi: true
+};
+/**
+ * @description
+ * Provider which adds `CheckboxRequiredValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+const CHECKBOX_REQUIRED_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => CheckboxRequiredValidator),
+  multi: true
+};
+/**
+ * @description
+ * A directive that adds the `required` validator to any controls marked with the
+ * `required` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a required validator using template-driven forms
+ *
+ * ```
+ * <input name="fullName" ngModel required>
+ * ```
+ *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
+ * @publicApi
+ */
+
+class RequiredValidator extends AbstractValidatorDirective {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.inputName = 'required';
+    /** @internal */
+
+    this.normalizeInput = input => toBoolean(input);
+    /** @internal */
+
+
+    this.createValidator = input => requiredValidator;
+  }
+  /** @nodoc */
+
+
+  enabled(input) {
+    return input;
+  }
+
+}
+
+RequiredValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵRequiredValidator_BaseFactory;
+  return function RequiredValidator_Factory(t) {
+    return (ɵRequiredValidator_BaseFactory || (ɵRequiredValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](RequiredValidator)))(t || RequiredValidator);
+  };
+}();
+
+RequiredValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: RequiredValidator,
+  selectors: [["", "required", "", "formControlName", "", 3, "type", "checkbox"], ["", "required", "", "formControl", "", 3, "type", "checkbox"], ["", "required", "", "ngModel", "", 3, "type", "checkbox"]],
+  hostVars: 1,
+  hostBindings: function RequiredValidator_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("required", ctx._enabled ? "" : null);
+    }
+  },
+  inputs: {
+    required: "required"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([REQUIRED_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](RequiredValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: ':not([type=checkbox])[required][formControlName],:not([type=checkbox])[required][formControl],:not([type=checkbox])[required][ngModel]',
+      providers: [REQUIRED_VALIDATOR],
+      host: {
+        '[attr.required]': '_enabled ? "" : null'
+      }
+    }]
+  }], null, {
+    required: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * A Directive that adds the `required` validator to checkbox controls marked with the
+ * `required` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a required checkbox validator using template-driven forms
+ *
+ * The following example shows how to add a checkbox required validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```
+ * <input type="checkbox" name="active" ngModel required>
+ * ```
+ *
+ * @publicApi
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
+ */
+
+
+class CheckboxRequiredValidator extends RequiredValidator {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.createValidator = input => requiredTrueValidator;
+  }
+
+}
+
+CheckboxRequiredValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵCheckboxRequiredValidator_BaseFactory;
+  return function CheckboxRequiredValidator_Factory(t) {
+    return (ɵCheckboxRequiredValidator_BaseFactory || (ɵCheckboxRequiredValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](CheckboxRequiredValidator)))(t || CheckboxRequiredValidator);
+  };
+}();
+
+CheckboxRequiredValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: CheckboxRequiredValidator,
+  selectors: [["input", "type", "checkbox", "required", "", "formControlName", ""], ["input", "type", "checkbox", "required", "", "formControl", ""], ["input", "type", "checkbox", "required", "", "ngModel", ""]],
+  hostVars: 1,
+  hostBindings: function CheckboxRequiredValidator_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("required", ctx._enabled ? "" : null);
+    }
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([CHECKBOX_REQUIRED_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](CheckboxRequiredValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'input[type=checkbox][required][formControlName],input[type=checkbox][required][formControl],input[type=checkbox][required][ngModel]',
+      providers: [CHECKBOX_REQUIRED_VALIDATOR],
+      host: {
+        '[attr.required]': '_enabled ? "" : null'
+      }
+    }]
+  }], null, null);
+})();
+/**
+ * @description
+ * Provider which adds `EmailValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+
+const EMAIL_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => EmailValidator),
+  multi: true
+};
+/**
+ * A directive that adds the `email` validator to controls marked with the
+ * `email` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
+ *
+ * The email validation is based on the WHATWG HTML specification with some enhancements to
+ * incorporate more RFC rules. More information can be found on the [Validators.email
+ * page](api/forms/Validators#email).
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding an email validator
+ *
+ * The following example shows how to add an email validator to an input attached to an ngModel
+ * binding.
+ *
+ * ```
+ * <input type="email" name="email" ngModel email>
+ * <input type="email" name="email" ngModel email="true">
+ * <input type="email" name="email" ngModel [email]="true">
+ * ```
+ *
+ * @publicApi
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
+ */
+
+class EmailValidator extends AbstractValidatorDirective {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.inputName = 'email';
+    /** @internal */
+
+    this.normalizeInput = input => // Avoid TSLint requirement to omit semicolon, see
+    // https://github.com/palantir/tslint/issues/1476
+    // tslint:disable-next-line:semicolon
+    input === '' || input === true || input === 'true';
+    /** @internal */
+
+
+    this.createValidator = input => emailValidator;
+  }
+  /** @nodoc */
+
+
+  enabled(input) {
+    return input;
+  }
+
+}
+
+EmailValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵEmailValidator_BaseFactory;
+  return function EmailValidator_Factory(t) {
+    return (ɵEmailValidator_BaseFactory || (ɵEmailValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](EmailValidator)))(t || EmailValidator);
+  };
+}();
+
+EmailValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: EmailValidator,
+  selectors: [["", "email", "", "formControlName", ""], ["", "email", "", "formControl", ""], ["", "email", "", "ngModel", ""]],
+  inputs: {
+    email: "email"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([EMAIL_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](EmailValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[email][formControlName],[email][formControl],[email][ngModel]',
+      providers: [EMAIL_VALIDATOR]
+    }]
+  }], null, {
+    email: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @description
+ * Provider which adds `MinLengthValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+
+const MIN_LENGTH_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => MinLengthValidator),
+  multi: true
+};
+/**
+ * A directive that adds minimum length validation to controls marked with the
+ * `minlength` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a minimum length validator
+ *
+ * The following example shows how to add a minimum length validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```html
+ * <input name="firstName" ngModel minlength="4">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class MinLengthValidator extends AbstractValidatorDirective {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.inputName = 'minlength';
+    /** @internal */
+
+    this.normalizeInput = input => toInteger(input);
+    /** @internal */
+
+
+    this.createValidator = minlength => minLengthValidator(minlength);
+  }
+
+}
+
+MinLengthValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵMinLengthValidator_BaseFactory;
+  return function MinLengthValidator_Factory(t) {
+    return (ɵMinLengthValidator_BaseFactory || (ɵMinLengthValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](MinLengthValidator)))(t || MinLengthValidator);
+  };
+}();
+
+MinLengthValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MinLengthValidator,
+  selectors: [["", "minlength", "", "formControlName", ""], ["", "minlength", "", "formControl", ""], ["", "minlength", "", "ngModel", ""]],
+  hostVars: 1,
+  hostBindings: function MinLengthValidator_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("minlength", ctx._enabled ? ctx.minlength : null);
+    }
+  },
+  inputs: {
+    minlength: "minlength"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([MIN_LENGTH_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MinLengthValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
+      providers: [MIN_LENGTH_VALIDATOR],
+      host: {
+        '[attr.minlength]': '_enabled ? minlength : null'
+      }
+    }]
+  }], null, {
+    minlength: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @description
+ * Provider which adds `MaxLengthValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+
+const MAX_LENGTH_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => MaxLengthValidator),
+  multi: true
+};
+/**
+ * A directive that adds max length validation to controls marked with the
+ * `maxlength` attribute. The directive is provided with the `NG_VALIDATORS` multi-provider list.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a maximum length validator
+ *
+ * The following example shows how to add a maximum length validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```html
+ * <input name="firstName" ngModel maxlength="25">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class MaxLengthValidator extends AbstractValidatorDirective {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.inputName = 'maxlength';
+    /** @internal */
+
+    this.normalizeInput = input => toInteger(input);
+    /** @internal */
+
+
+    this.createValidator = maxlength => maxLengthValidator(maxlength);
+  }
+
+}
+
+MaxLengthValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵMaxLengthValidator_BaseFactory;
+  return function MaxLengthValidator_Factory(t) {
+    return (ɵMaxLengthValidator_BaseFactory || (ɵMaxLengthValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](MaxLengthValidator)))(t || MaxLengthValidator);
+  };
+}();
+
+MaxLengthValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MaxLengthValidator,
+  selectors: [["", "maxlength", "", "formControlName", ""], ["", "maxlength", "", "formControl", ""], ["", "maxlength", "", "ngModel", ""]],
+  hostVars: 1,
+  hostBindings: function MaxLengthValidator_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("maxlength", ctx._enabled ? ctx.maxlength : null);
+    }
+  },
+  inputs: {
+    maxlength: "maxlength"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([MAX_LENGTH_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MaxLengthValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
+      providers: [MAX_LENGTH_VALIDATOR],
+      host: {
+        '[attr.maxlength]': '_enabled ? maxlength : null'
+      }
+    }]
+  }], null, {
+    maxlength: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @description
+ * Provider which adds `PatternValidator` to the `NG_VALIDATORS` multi-provider list.
+ */
+
+
+const PATTERN_VALIDATOR = {
+  provide: NG_VALIDATORS,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => PatternValidator),
+  multi: true
+};
+/**
+ * @description
+ * A directive that adds regex pattern validation to controls marked with the
+ * `pattern` attribute. The regex must match the entire control value.
+ * The directive is provided with the `NG_VALIDATORS` multi-provider list.
+ *
+ * @see [Form Validation](guide/form-validation)
+ *
+ * @usageNotes
+ *
+ * ### Adding a pattern validator
+ *
+ * The following example shows how to add a pattern validator to an input attached to an
+ * ngModel binding.
+ *
+ * ```html
+ * <input name="firstName" ngModel pattern="[a-zA-Z ]*">
+ * ```
+ *
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
+ * @publicApi
+ */
+
+class PatternValidator extends AbstractValidatorDirective {
+  constructor() {
+    super(...arguments);
+    /** @internal */
+
+    this.inputName = 'pattern';
+    /** @internal */
+
+    this.normalizeInput = input => input;
+    /** @internal */
+
+
+    this.createValidator = input => patternValidator(input);
+  }
+
+}
+
+PatternValidator.ɵfac = /* @__PURE__ */function () {
+  let ɵPatternValidator_BaseFactory;
+  return function PatternValidator_Factory(t) {
+    return (ɵPatternValidator_BaseFactory || (ɵPatternValidator_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](PatternValidator)))(t || PatternValidator);
+  };
+}();
+
+PatternValidator.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: PatternValidator,
+  selectors: [["", "pattern", "", "formControlName", ""], ["", "pattern", "", "formControl", ""], ["", "pattern", "", "ngModel", ""]],
+  hostVars: 1,
+  hostBindings: function PatternValidator_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("pattern", ctx._enabled ? ctx.pattern : null);
+    }
+  },
+  inputs: {
+    pattern: "pattern"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([PATTERN_VALIDATOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](PatternValidator, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',
+      providers: [PATTERN_VALIDATOR],
+      host: {
+        '[attr.pattern]': '_enabled ? pattern : null'
+      }
+    }]
+  }], null, {
+    pattern: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const SHARED_FORM_DIRECTIVES = [ɵNgNoValidate, NgSelectOption, ɵNgSelectMultipleOption, DefaultValueAccessor, NumberValueAccessor, RangeValueAccessor, CheckboxControlValueAccessor, SelectControlValueAccessor, SelectMultipleControlValueAccessor, RadioControlValueAccessor, NgControlStatus, NgControlStatusGroup, RequiredValidator, MinLengthValidator, MaxLengthValidator, PatternValidator, CheckboxRequiredValidator, EmailValidator, MinValidator, MaxValidator];
+const TEMPLATE_DRIVEN_DIRECTIVES = [NgModel, NgModelGroup, NgForm];
+const REACTIVE_DRIVEN_DIRECTIVES = [FormControlDirective, FormGroupDirective, FormControlName, FormGroupName, FormArrayName];
+/**
+ * Internal module used for sharing directives between FormsModule and ReactiveFormsModule
+ */
+
+class ɵInternalFormsSharedModule {}
+
+ɵInternalFormsSharedModule.ɵfac = function ɵInternalFormsSharedModule_Factory(t) {
+  return new (t || ɵInternalFormsSharedModule)();
+};
+
+ɵInternalFormsSharedModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: ɵInternalFormsSharedModule
+});
+ɵInternalFormsSharedModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({
+  imports: [[RadioControlRegistryModule]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ɵInternalFormsSharedModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule,
+    args: [{
+      declarations: SHARED_FORM_DIRECTIVES,
+      imports: [RadioControlRegistryModule],
+      exports: SHARED_FORM_DIRECTIVES
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Exports the required providers and directives for template-driven forms,
+ * making them available for import by NgModules that import this module.
+ *
+ * Providers associated with this module:
+ * * `RadioControlRegistry`
+ *
+ * @see [Forms Overview](/guide/forms-overview)
+ * @see [Template-driven Forms Guide](/guide/forms)
+ *
+ * @publicApi
+ */
+
+
+class FormsModule {}
+
+FormsModule.ɵfac = function FormsModule_Factory(t) {
+  return new (t || FormsModule)();
+};
+
+FormsModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: FormsModule
+});
+FormsModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({
+  imports: [ɵInternalFormsSharedModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](FormsModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule,
+    args: [{
+      declarations: TEMPLATE_DRIVEN_DIRECTIVES,
+      exports: [ɵInternalFormsSharedModule, TEMPLATE_DRIVEN_DIRECTIVES]
+    }]
+  }], null, null);
+})();
+/**
+ * Exports the required infrastructure and directives for reactive forms,
+ * making them available for import by NgModules that import this module.
+ *
+ * Providers associated with this module:
+ * * `FormBuilder`
+ * * `RadioControlRegistry`
+ *
+ * @see [Forms Overview](guide/forms-overview)
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ *
+ * @publicApi
+ */
+
+
+class ReactiveFormsModule {
+  /**
+   * @description
+   * Provides options for configuring the reactive forms module.
+   *
+   * @param opts An object of configuration options
+   * * `warnOnNgModelWithFormControl` Configures when to emit a warning when an `ngModel`
+   * binding is used with reactive form directives.
+   */
+  static withConfig(opts) {
+    return {
+      ngModule: ReactiveFormsModule,
+      providers: [{
+        provide: NG_MODEL_WITH_FORM_CONTROL_WARNING,
+        useValue: opts.warnOnNgModelWithFormControl
+      }]
+    };
+  }
+
+}
+
+ReactiveFormsModule.ɵfac = function ReactiveFormsModule_Factory(t) {
+  return new (t || ReactiveFormsModule)();
+};
+
+ReactiveFormsModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: ReactiveFormsModule
+});
+ReactiveFormsModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({
+  imports: [ɵInternalFormsSharedModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ReactiveFormsModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule,
+    args: [{
+      declarations: [REACTIVE_DRIVEN_DIRECTIVES],
+      exports: [ɵInternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+function isAbstractControlOptions(options) {
+  return options.asyncValidators !== undefined || options.validators !== undefined || options.updateOn !== undefined;
+}
+/**
+ * @description
+ * Creates an `AbstractControl` from a user-specified configuration.
+ *
+ * The `FormBuilder` provides syntactic sugar that shortens creating instances of a `FormControl`,
+ * `FormGroup`, or `FormArray`. It reduces the amount of boilerplate needed to build complex
+ * forms.
+ *
+ * @see [Reactive Forms Guide](/guide/reactive-forms)
+ *
+ * @publicApi
+ */
+
+
+class FormBuilder {
+  group(controlsConfig, options = null) {
+    const controls = this._reduceControls(controlsConfig);
+
+    let validators = null;
+    let asyncValidators = null;
+    let updateOn = undefined;
+
+    if (options != null) {
+      if (isAbstractControlOptions(options)) {
+        // `options` are `AbstractControlOptions`
+        validators = options.validators != null ? options.validators : null;
+        asyncValidators = options.asyncValidators != null ? options.asyncValidators : null;
+        updateOn = options.updateOn != null ? options.updateOn : undefined;
+      } else {
+        // `options` are legacy form group options
+        validators = options['validator'] != null ? options['validator'] : null;
+        asyncValidators = options['asyncValidator'] != null ? options['asyncValidator'] : null;
+      }
+    }
+
+    return new FormGroup(controls, {
+      asyncValidators,
+      updateOn,
+      validators
+    });
+  }
+  /**
+   * @description
+   * Construct a new `FormControl` with the given state, validators and options.
+   *
+   * @param formState Initializes the control with an initial state value, or
+   * with an object that contains both a value and a disabled status.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains
+   * validation functions and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator
+   * functions.
+   *
+   * @usageNotes
+   *
+   * ### Initialize a control as disabled
+   *
+   * The following example returns a control with an initial value in a disabled state.
+   *
+   * <code-example path="forms/ts/formBuilder/form_builder_example.ts" region="disabled-control">
+   * </code-example>
+   */
+
+
+  control(formState, validatorOrOpts, asyncValidator) {
+    return new FormControl(formState, validatorOrOpts, asyncValidator);
+  }
+  /**
+   * Constructs a new `FormArray` from the given array of configurations,
+   * validators and options.
+   *
+   * @param controlsConfig An array of child controls or control configs. Each
+   * child control is given an index when it is registered.
+   *
+   * @param validatorOrOpts A synchronous validator function, or an array of
+   * such functions, or an `AbstractControlOptions` object that contains
+   * validation functions and a validation trigger.
+   *
+   * @param asyncValidator A single async validator or array of async validator
+   * functions.
+   */
+
+
+  array(controlsConfig, validatorOrOpts, asyncValidator) {
+    const controls = controlsConfig.map(c => this._createControl(c));
+    return new FormArray(controls, validatorOrOpts, asyncValidator);
+  }
+  /** @internal */
+
+
+  _reduceControls(controlsConfig) {
+    const controls = {};
+    Object.keys(controlsConfig).forEach(controlName => {
+      controls[controlName] = this._createControl(controlsConfig[controlName]);
+    });
+    return controls;
+  }
+  /** @internal */
+
+
+  _createControl(controlConfig) {
+    if (isFormControl(controlConfig) || isFormGroup(controlConfig) || isFormArray(controlConfig)) {
+      return controlConfig;
+    } else if (Array.isArray(controlConfig)) {
+      const value = controlConfig[0];
+      const validator = controlConfig.length > 1 ? controlConfig[1] : null;
+      const asyncValidator = controlConfig.length > 2 ? controlConfig[2] : null;
+      return this.control(value, validator, asyncValidator);
+    } else {
+      return this.control(controlConfig);
+    }
+  }
+
+}
+
+FormBuilder.ɵfac = function FormBuilder_Factory(t) {
+  return new (t || FormBuilder)();
+};
+
+FormBuilder.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
+  token: FormBuilder,
+  factory: FormBuilder.ɵfac,
+  providedIn: ReactiveFormsModule
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](FormBuilder, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Injectable,
+    args: [{
+      providedIn: ReactiveFormsModule
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @publicApi
+ */
+
+
+const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.2.3');
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// This file only reexports content of the `src` folder. Keep it that way.
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+/***/ }),
+
+/***/ 7317:
+/*!************************************************************!*\
+  !*** ./node_modules/@angular/material/fesm2015/button.mjs ***!
+  \************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MatAnchor": () => (/* binding */ MatAnchor),
+/* harmony export */   "MatButton": () => (/* binding */ MatButton),
+/* harmony export */   "MatButtonModule": () => (/* binding */ MatButtonModule)
+/* harmony export */ });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/material/core */ 8133);
+/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/platform-browser/animations */ 3598);
+/* harmony import */ var _angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/cdk/a11y */ 4128);
+
+
+
+
+
+
+/** Default color palette for round buttons (mat-fab and mat-mini-fab) */
+
+const _c0 = ["mat-button", ""];
+const _c1 = ["*"];
+const _c2 = ".mat-button .mat-button-focus-overlay,.mat-icon-button .mat-button-focus-overlay{opacity:0}.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:.04}@media(hover: none){.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:0}}.mat-button,.mat-icon-button,.mat-stroked-button,.mat-flat-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-button.mat-button-disabled,.mat-icon-button.mat-button-disabled,.mat-stroked-button.mat-button-disabled,.mat-flat-button.mat-button-disabled{cursor:default}.mat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-button.cdk-program-focused .mat-button-focus-overlay,.mat-icon-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-icon-button.cdk-program-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-program-focused .mat-button-focus-overlay,.mat-flat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-flat-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-raised-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1)}.mat-raised-button::-moz-focus-inner{border:0}.mat-raised-button.mat-button-disabled{cursor:default}.mat-raised-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-raised-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-raised-button::-moz-focus-inner{border:0}._mat-animation-noopable.mat-raised-button{transition:none;animation:none}.mat-stroked-button{border:1px solid currentColor;padding:0 15px;line-height:34px}.mat-stroked-button .mat-button-ripple.mat-ripple,.mat-stroked-button .mat-button-focus-overlay{top:-1px;left:-1px;right:-1px;bottom:-1px}.mat-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:56px;height:56px;padding:0;flex-shrink:0}.mat-fab::-moz-focus-inner{border:0}.mat-fab.mat-button-disabled{cursor:default}.mat-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-fab{transition:none;animation:none}.mat-fab .mat-button-wrapper{padding:16px 0;display:inline-block;line-height:24px}.mat-mini-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:40px;height:40px;padding:0;flex-shrink:0}.mat-mini-fab::-moz-focus-inner{border:0}.mat-mini-fab.mat-button-disabled{cursor:default}.mat-mini-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-mini-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-mini-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-mini-fab{transition:none;animation:none}.mat-mini-fab .mat-button-wrapper{padding:8px 0;display:inline-block;line-height:24px}.mat-icon-button{padding:0;min-width:0;width:40px;height:40px;flex-shrink:0;line-height:40px;border-radius:50%}.mat-icon-button i,.mat-icon-button .mat-icon{line-height:24px}.mat-button-ripple.mat-ripple,.mat-button-focus-overlay{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-button-ripple.mat-ripple:not(:empty){transform:translateZ(0)}.mat-button-focus-overlay{opacity:0;transition:opacity 200ms cubic-bezier(0.35, 0, 0.25, 1),background-color 200ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-button-focus-overlay{transition:none}.mat-button-ripple-round{border-radius:50%;z-index:1}.mat-button .mat-button-wrapper>*,.mat-flat-button .mat-button-wrapper>*,.mat-stroked-button .mat-button-wrapper>*,.mat-raised-button .mat-button-wrapper>*,.mat-icon-button .mat-button-wrapper>*,.mat-fab .mat-button-wrapper>*,.mat-mini-fab .mat-button-wrapper>*{vertical-align:middle}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button{display:inline-flex;justify-content:center;align-items:center;font-size:inherit;width:2.5em;height:2.5em}.cdk-high-contrast-active .mat-button,.cdk-high-contrast-active .mat-flat-button,.cdk-high-contrast-active .mat-raised-button,.cdk-high-contrast-active .mat-icon-button,.cdk-high-contrast-active .mat-fab,.cdk-high-contrast-active .mat-mini-fab{outline:solid 1px}.cdk-high-contrast-active .mat-button-base.cdk-keyboard-focused,.cdk-high-contrast-active .mat-button-base.cdk-program-focused{outline:solid 3px}\n";
+const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
+/**
+ * List of classes to add to MatButton instances based on host attributes to
+ * style as different variants.
+ */
+
+const BUTTON_HOST_ATTRIBUTES = ['mat-button', 'mat-flat-button', 'mat-icon-button', 'mat-raised-button', 'mat-stroked-button', 'mat-mini-fab', 'mat-fab']; // Boilerplate for applying mixins to MatButton.
+
+const _MatButtonBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.mixinColor)((0,_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.mixinDisabled)((0,_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.mixinDisableRipple)(class {
+  constructor(_elementRef) {
+    this._elementRef = _elementRef;
+  }
+
+})));
+/**
+ * Material design button.
+ */
+
+
+class MatButton extends _MatButtonBase {
+  constructor(elementRef, _focusMonitor, _animationMode) {
+    super(elementRef);
+    this._focusMonitor = _focusMonitor;
+    this._animationMode = _animationMode;
+    /** Whether the button is round. */
+
+    this.isRoundButton = this._hasHostAttributes('mat-fab', 'mat-mini-fab');
+    /** Whether the button is icon button. */
+
+    this.isIconButton = this._hasHostAttributes('mat-icon-button'); // For each of the variant selectors that is present in the button's host
+    // attributes, add the correct corresponding class.
+
+    for (const attr of BUTTON_HOST_ATTRIBUTES) {
+      if (this._hasHostAttributes(attr)) {
+        this._getHostElement().classList.add(attr);
+      }
+    } // Add a class that applies to all buttons. This makes it easier to target if somebody
+    // wants to target all Material buttons. We do it here rather than `host` to ensure that
+    // the class is applied to derived classes.
+
+
+    elementRef.nativeElement.classList.add('mat-button-base');
+
+    if (this.isRoundButton) {
+      this.color = DEFAULT_ROUND_BUTTON_COLOR;
+    }
+  }
+
+  ngAfterViewInit() {
+    this._focusMonitor.monitor(this._elementRef, true);
+  }
+
+  ngOnDestroy() {
+    this._focusMonitor.stopMonitoring(this._elementRef);
+  }
+  /** Focuses the button. */
+
+
+  focus(origin, options) {
+    if (origin) {
+      this._focusMonitor.focusVia(this._getHostElement(), origin, options);
+    } else {
+      this._getHostElement().focus(options);
+    }
+  }
+
+  _getHostElement() {
+    return this._elementRef.nativeElement;
+  }
+
+  _isRippleDisabled() {
+    return this.disableRipple || this.disabled;
+  }
+  /** Gets whether the button has one of the given attributes. */
+
+
+  _hasHostAttributes(...attributes) {
+    return attributes.some(attribute => this._getHostElement().hasAttribute(attribute));
+  }
+
+}
+
+MatButton.ɵfac = function MatButton_Factory(t) {
+  return new (t || MatButton)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_2__.FocusMonitor), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_3__.ANIMATION_MODULE_TYPE, 8));
+};
+
+MatButton.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({
+  type: MatButton,
+  selectors: [["button", "mat-button", ""], ["button", "mat-raised-button", ""], ["button", "mat-icon-button", ""], ["button", "mat-fab", ""], ["button", "mat-mini-fab", ""], ["button", "mat-stroked-button", ""], ["button", "mat-flat-button", ""]],
+  viewQuery: function MatButton_Query(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵviewQuery"](_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatRipple, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.ripple = _t.first);
+    }
+  },
+  hostAttrs: [1, "mat-focus-indicator"],
+  hostVars: 5,
+  hostBindings: function MatButton_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵattribute"]("disabled", ctx.disabled || null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-button-disabled", ctx.disabled);
+    }
+  },
+  inputs: {
+    disabled: "disabled",
+    disableRipple: "disableRipple",
+    color: "color"
+  },
+  exportAs: ["matButton"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"]],
+  attrs: _c0,
+  ngContentSelectors: _c1,
+  decls: 4,
+  vars: 5,
+  consts: [[1, "mat-button-wrapper"], ["matRipple", "", 1, "mat-button-ripple", 3, "matRippleDisabled", "matRippleCentered", "matRippleTrigger"], [1, "mat-button-focus-overlay"]],
+  template: function MatButton_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵprojectionDef"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span", 0);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵprojection"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "span", 1)(3, "span", 2);
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("mat-button-ripple-round", ctx.isRoundButton || ctx.isIconButton);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("matRippleDisabled", ctx._isRippleDisabled())("matRippleCentered", ctx.isIconButton)("matRippleTrigger", ctx._getHostElement());
+    }
+  },
+  directives: [_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatRipple],
+  styles: [".mat-button .mat-button-focus-overlay,.mat-icon-button .mat-button-focus-overlay{opacity:0}.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:.04}@media(hover: none){.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:0}}.mat-button,.mat-icon-button,.mat-stroked-button,.mat-flat-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-button.mat-button-disabled,.mat-icon-button.mat-button-disabled,.mat-stroked-button.mat-button-disabled,.mat-flat-button.mat-button-disabled{cursor:default}.mat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-button.cdk-program-focused .mat-button-focus-overlay,.mat-icon-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-icon-button.cdk-program-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-program-focused .mat-button-focus-overlay,.mat-flat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-flat-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-raised-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1)}.mat-raised-button::-moz-focus-inner{border:0}.mat-raised-button.mat-button-disabled{cursor:default}.mat-raised-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-raised-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-raised-button::-moz-focus-inner{border:0}._mat-animation-noopable.mat-raised-button{transition:none;animation:none}.mat-stroked-button{border:1px solid currentColor;padding:0 15px;line-height:34px}.mat-stroked-button .mat-button-ripple.mat-ripple,.mat-stroked-button .mat-button-focus-overlay{top:-1px;left:-1px;right:-1px;bottom:-1px}.mat-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:56px;height:56px;padding:0;flex-shrink:0}.mat-fab::-moz-focus-inner{border:0}.mat-fab.mat-button-disabled{cursor:default}.mat-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-fab{transition:none;animation:none}.mat-fab .mat-button-wrapper{padding:16px 0;display:inline-block;line-height:24px}.mat-mini-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:40px;height:40px;padding:0;flex-shrink:0}.mat-mini-fab::-moz-focus-inner{border:0}.mat-mini-fab.mat-button-disabled{cursor:default}.mat-mini-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-mini-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-mini-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-mini-fab{transition:none;animation:none}.mat-mini-fab .mat-button-wrapper{padding:8px 0;display:inline-block;line-height:24px}.mat-icon-button{padding:0;min-width:0;width:40px;height:40px;flex-shrink:0;line-height:40px;border-radius:50%}.mat-icon-button i,.mat-icon-button .mat-icon{line-height:24px}.mat-button-ripple.mat-ripple,.mat-button-focus-overlay{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-button-ripple.mat-ripple:not(:empty){transform:translateZ(0)}.mat-button-focus-overlay{opacity:0;transition:opacity 200ms cubic-bezier(0.35, 0, 0.25, 1),background-color 200ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-button-focus-overlay{transition:none}.mat-button-ripple-round{border-radius:50%;z-index:1}.mat-button .mat-button-wrapper>*,.mat-flat-button .mat-button-wrapper>*,.mat-stroked-button .mat-button-wrapper>*,.mat-raised-button .mat-button-wrapper>*,.mat-icon-button .mat-button-wrapper>*,.mat-fab .mat-button-wrapper>*,.mat-mini-fab .mat-button-wrapper>*{vertical-align:middle}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button{display:inline-flex;justify-content:center;align-items:center;font-size:inherit;width:2.5em;height:2.5em}.cdk-high-contrast-active .mat-button,.cdk-high-contrast-active .mat-flat-button,.cdk-high-contrast-active .mat-raised-button,.cdk-high-contrast-active .mat-icon-button,.cdk-high-contrast-active .mat-fab,.cdk-high-contrast-active .mat-mini-fab{outline:solid 1px}.cdk-high-contrast-active .mat-button-base.cdk-keyboard-focused,.cdk-high-contrast-active .mat-button-base.cdk-program-focused{outline:solid 3px}\n"],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](MatButton, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Component,
+    args: [{
+      selector: `button[mat-button], button[mat-raised-button], button[mat-icon-button],
+             button[mat-fab], button[mat-mini-fab], button[mat-stroked-button],
+             button[mat-flat-button]`,
+      exportAs: 'matButton',
+      host: {
+        '[attr.disabled]': 'disabled || null',
+        '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+        // Add a class for disabled button styling instead of the using attribute
+        // selector or pseudo-selector.  This allows users to create focusabled
+        // disabled buttons without recreating the styles.
+        '[class.mat-button-disabled]': 'disabled',
+        'class': 'mat-focus-indicator'
+      },
+      inputs: ['disabled', 'disableRipple', 'color'],
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ChangeDetectionStrategy.OnPush,
+      template: "<span class=\"mat-button-wrapper\"><ng-content></ng-content></span>\n<span matRipple class=\"mat-button-ripple\"\n      [class.mat-button-ripple-round]=\"isRoundButton || isIconButton\"\n      [matRippleDisabled]=\"_isRippleDisabled()\"\n      [matRippleCentered]=\"isIconButton\"\n      [matRippleTrigger]=\"_getHostElement()\"></span>\n<span class=\"mat-button-focus-overlay\"></span>\n",
+      styles: [".mat-button .mat-button-focus-overlay,.mat-icon-button .mat-button-focus-overlay{opacity:0}.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:.04}@media(hover: none){.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:0}}.mat-button,.mat-icon-button,.mat-stroked-button,.mat-flat-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-button.mat-button-disabled,.mat-icon-button.mat-button-disabled,.mat-stroked-button.mat-button-disabled,.mat-flat-button.mat-button-disabled{cursor:default}.mat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-button.cdk-program-focused .mat-button-focus-overlay,.mat-icon-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-icon-button.cdk-program-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-program-focused .mat-button-focus-overlay,.mat-flat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-flat-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-raised-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1)}.mat-raised-button::-moz-focus-inner{border:0}.mat-raised-button.mat-button-disabled{cursor:default}.mat-raised-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-raised-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-raised-button::-moz-focus-inner{border:0}._mat-animation-noopable.mat-raised-button{transition:none;animation:none}.mat-stroked-button{border:1px solid currentColor;padding:0 15px;line-height:34px}.mat-stroked-button .mat-button-ripple.mat-ripple,.mat-stroked-button .mat-button-focus-overlay{top:-1px;left:-1px;right:-1px;bottom:-1px}.mat-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:56px;height:56px;padding:0;flex-shrink:0}.mat-fab::-moz-focus-inner{border:0}.mat-fab.mat-button-disabled{cursor:default}.mat-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-fab{transition:none;animation:none}.mat-fab .mat-button-wrapper{padding:16px 0;display:inline-block;line-height:24px}.mat-mini-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:40px;height:40px;padding:0;flex-shrink:0}.mat-mini-fab::-moz-focus-inner{border:0}.mat-mini-fab.mat-button-disabled{cursor:default}.mat-mini-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-mini-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-mini-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-mini-fab{transition:none;animation:none}.mat-mini-fab .mat-button-wrapper{padding:8px 0;display:inline-block;line-height:24px}.mat-icon-button{padding:0;min-width:0;width:40px;height:40px;flex-shrink:0;line-height:40px;border-radius:50%}.mat-icon-button i,.mat-icon-button .mat-icon{line-height:24px}.mat-button-ripple.mat-ripple,.mat-button-focus-overlay{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-button-ripple.mat-ripple:not(:empty){transform:translateZ(0)}.mat-button-focus-overlay{opacity:0;transition:opacity 200ms cubic-bezier(0.35, 0, 0.25, 1),background-color 200ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-button-focus-overlay{transition:none}.mat-button-ripple-round{border-radius:50%;z-index:1}.mat-button .mat-button-wrapper>*,.mat-flat-button .mat-button-wrapper>*,.mat-stroked-button .mat-button-wrapper>*,.mat-raised-button .mat-button-wrapper>*,.mat-icon-button .mat-button-wrapper>*,.mat-fab .mat-button-wrapper>*,.mat-mini-fab .mat-button-wrapper>*{vertical-align:middle}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button{display:inline-flex;justify-content:center;align-items:center;font-size:inherit;width:2.5em;height:2.5em}.cdk-high-contrast-active .mat-button,.cdk-high-contrast-active .mat-flat-button,.cdk-high-contrast-active .mat-raised-button,.cdk-high-contrast-active .mat-icon-button,.cdk-high-contrast-active .mat-fab,.cdk-high-contrast-active .mat-mini-fab{outline:solid 1px}.cdk-high-contrast-active .mat-button-base.cdk-keyboard-focused,.cdk-high-contrast-active .mat-button-base.cdk-program-focused{outline:solid 3px}\n"]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ElementRef
+    }, {
+      type: _angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_2__.FocusMonitor
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Inject,
+        args: [_angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_3__.ANIMATION_MODULE_TYPE]
+      }]
+    }];
+  }, {
+    ripple: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ViewChild,
+      args: [_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatRipple]
+    }]
+  });
+})();
+/**
+ * Material design anchor button.
+ */
+
+
+class MatAnchor extends MatButton {
+  constructor(focusMonitor, elementRef, animationMode,
+  /** @breaking-change 14.0.0 _ngZone will be required. */
+  _ngZone) {
+    super(elementRef, focusMonitor, animationMode);
+    this._ngZone = _ngZone;
+
+    this._haltDisabledEvents = event => {
+      // A disabled button shouldn't apply any actions
+      if (this.disabled) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    };
+  }
+
+  ngAfterViewInit() {
+    super.ngAfterViewInit();
+    /** @breaking-change 14.0.0 _ngZone will be required. */
+
+    if (this._ngZone) {
+      this._ngZone.runOutsideAngular(() => {
+        this._elementRef.nativeElement.addEventListener('click', this._haltDisabledEvents);
+      });
+    } else {
+      this._elementRef.nativeElement.addEventListener('click', this._haltDisabledEvents);
+    }
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+
+    this._elementRef.nativeElement.removeEventListener('click', this._haltDisabledEvents);
+  }
+
+}
+
+MatAnchor.ɵfac = function MatAnchor_Factory(t) {
+  return new (t || MatAnchor)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_2__.FocusMonitor), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_3__.ANIMATION_MODULE_TYPE, 8), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__.NgZone, 8));
+};
+
+MatAnchor.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({
+  type: MatAnchor,
+  selectors: [["a", "mat-button", ""], ["a", "mat-raised-button", ""], ["a", "mat-icon-button", ""], ["a", "mat-fab", ""], ["a", "mat-mini-fab", ""], ["a", "mat-stroked-button", ""], ["a", "mat-flat-button", ""]],
+  hostAttrs: [1, "mat-focus-indicator"],
+  hostVars: 7,
+  hostBindings: function MatAnchor_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵattribute"]("tabindex", ctx.disabled ? -1 : ctx.tabIndex || 0)("disabled", ctx.disabled || null)("aria-disabled", ctx.disabled.toString());
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("_mat-animation-noopable", ctx._animationMode === "NoopAnimations")("mat-button-disabled", ctx.disabled);
+    }
+  },
+  inputs: {
+    disabled: "disabled",
+    disableRipple: "disableRipple",
+    color: "color",
+    tabIndex: "tabIndex"
+  },
+  exportAs: ["matButton", "matAnchor"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵInheritDefinitionFeature"]],
+  attrs: _c0,
+  ngContentSelectors: _c1,
+  decls: 4,
+  vars: 5,
+  consts: [[1, "mat-button-wrapper"], ["matRipple", "", 1, "mat-button-ripple", 3, "matRippleDisabled", "matRippleCentered", "matRippleTrigger"], [1, "mat-button-focus-overlay"]],
+  template: function MatAnchor_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵprojectionDef"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "span", 0);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵprojection"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "span", 1)(3, "span", 2);
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("mat-button-ripple-round", ctx.isRoundButton || ctx.isIconButton);
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("matRippleDisabled", ctx._isRippleDisabled())("matRippleCentered", ctx.isIconButton)("matRippleTrigger", ctx._getHostElement());
+    }
+  },
+  directives: [_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatRipple],
+  styles: [_c2],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](MatAnchor, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Component,
+    args: [{
+      selector: `a[mat-button], a[mat-raised-button], a[mat-icon-button], a[mat-fab],
+             a[mat-mini-fab], a[mat-stroked-button], a[mat-flat-button]`,
+      exportAs: 'matButton, matAnchor',
+      host: {
+        // Note that we ignore the user-specified tabindex when it's disabled for
+        // consistency with the `mat-button` applied on native buttons where even
+        // though they have an index, they're not tabbable.
+        '[attr.tabindex]': 'disabled ? -1 : (tabIndex || 0)',
+        '[attr.disabled]': 'disabled || null',
+        '[attr.aria-disabled]': 'disabled.toString()',
+        '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
+        '[class.mat-button-disabled]': 'disabled',
+        'class': 'mat-focus-indicator'
+      },
+      inputs: ['disabled', 'disableRipple', 'color'],
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ChangeDetectionStrategy.OnPush,
+      template: "<span class=\"mat-button-wrapper\"><ng-content></ng-content></span>\n<span matRipple class=\"mat-button-ripple\"\n      [class.mat-button-ripple-round]=\"isRoundButton || isIconButton\"\n      [matRippleDisabled]=\"_isRippleDisabled()\"\n      [matRippleCentered]=\"isIconButton\"\n      [matRippleTrigger]=\"_getHostElement()\"></span>\n<span class=\"mat-button-focus-overlay\"></span>\n",
+      styles: [".mat-button .mat-button-focus-overlay,.mat-icon-button .mat-button-focus-overlay{opacity:0}.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:.04}@media(hover: none){.mat-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay,.mat-stroked-button:hover:not(.mat-button-disabled) .mat-button-focus-overlay{opacity:0}}.mat-button,.mat-icon-button,.mat-stroked-button,.mat-flat-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-button.mat-button-disabled,.mat-icon-button.mat-button-disabled,.mat-stroked-button.mat-button-disabled,.mat-flat-button.mat-button-disabled{cursor:default}.mat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-button.cdk-program-focused .mat-button-focus-overlay,.mat-icon-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-icon-button.cdk-program-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-stroked-button.cdk-program-focused .mat-button-focus-overlay,.mat-flat-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-flat-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-button::-moz-focus-inner,.mat-icon-button::-moz-focus-inner,.mat-stroked-button::-moz-focus-inner,.mat-flat-button::-moz-focus-inner{border:0}.mat-raised-button{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1)}.mat-raised-button::-moz-focus-inner{border:0}.mat-raised-button.mat-button-disabled{cursor:default}.mat-raised-button.cdk-keyboard-focused .mat-button-focus-overlay,.mat-raised-button.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-raised-button::-moz-focus-inner{border:0}._mat-animation-noopable.mat-raised-button{transition:none;animation:none}.mat-stroked-button{border:1px solid currentColor;padding:0 15px;line-height:34px}.mat-stroked-button .mat-button-ripple.mat-ripple,.mat-stroked-button .mat-button-focus-overlay{top:-1px;left:-1px;right:-1px;bottom:-1px}.mat-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:56px;height:56px;padding:0;flex-shrink:0}.mat-fab::-moz-focus-inner{border:0}.mat-fab.mat-button-disabled{cursor:default}.mat-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-fab{transition:none;animation:none}.mat-fab .mat-button-wrapper{padding:16px 0;display:inline-block;line-height:24px}.mat-mini-fab{box-sizing:border-box;position:relative;-webkit-user-select:none;-moz-user-select:none;user-select:none;cursor:pointer;outline:none;border:none;-webkit-tap-highlight-color:transparent;display:inline-block;white-space:nowrap;text-decoration:none;vertical-align:baseline;text-align:center;margin:0;min-width:64px;line-height:36px;padding:0 16px;border-radius:4px;overflow:visible;transform:translate3d(0, 0, 0);transition:background 400ms cubic-bezier(0.25, 0.8, 0.25, 1),box-shadow 280ms cubic-bezier(0.4, 0, 0.2, 1);min-width:0;border-radius:50%;width:40px;height:40px;padding:0;flex-shrink:0}.mat-mini-fab::-moz-focus-inner{border:0}.mat-mini-fab.mat-button-disabled{cursor:default}.mat-mini-fab.cdk-keyboard-focused .mat-button-focus-overlay,.mat-mini-fab.cdk-program-focused .mat-button-focus-overlay{opacity:.12}.mat-mini-fab::-moz-focus-inner{border:0}._mat-animation-noopable.mat-mini-fab{transition:none;animation:none}.mat-mini-fab .mat-button-wrapper{padding:8px 0;display:inline-block;line-height:24px}.mat-icon-button{padding:0;min-width:0;width:40px;height:40px;flex-shrink:0;line-height:40px;border-radius:50%}.mat-icon-button i,.mat-icon-button .mat-icon{line-height:24px}.mat-button-ripple.mat-ripple,.mat-button-focus-overlay{top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none;border-radius:inherit}.mat-button-ripple.mat-ripple:not(:empty){transform:translateZ(0)}.mat-button-focus-overlay{opacity:0;transition:opacity 200ms cubic-bezier(0.35, 0, 0.25, 1),background-color 200ms cubic-bezier(0.35, 0, 0.25, 1)}._mat-animation-noopable .mat-button-focus-overlay{transition:none}.mat-button-ripple-round{border-radius:50%;z-index:1}.mat-button .mat-button-wrapper>*,.mat-flat-button .mat-button-wrapper>*,.mat-stroked-button .mat-button-wrapper>*,.mat-raised-button .mat-button-wrapper>*,.mat-icon-button .mat-button-wrapper>*,.mat-fab .mat-button-wrapper>*,.mat-mini-fab .mat-button-wrapper>*{vertical-align:middle}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button{display:inline-flex;justify-content:center;align-items:center;font-size:inherit;width:2.5em;height:2.5em}.cdk-high-contrast-active .mat-button,.cdk-high-contrast-active .mat-flat-button,.cdk-high-contrast-active .mat-raised-button,.cdk-high-contrast-active .mat-icon-button,.cdk-high-contrast-active .mat-fab,.cdk-high-contrast-active .mat-mini-fab{outline:solid 1px}.cdk-high-contrast-active .mat-button-base.cdk-keyboard-focused,.cdk-high-contrast-active .mat-button-base.cdk-program-focused{outline:solid 3px}\n"]
+    }]
+  }], function () {
+    return [{
+      type: _angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_2__.FocusMonitor
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ElementRef
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Inject,
+        args: [_angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_3__.ANIMATION_MODULE_TYPE]
+      }]
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.NgZone,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Optional
+      }]
+    }];
+  }, {
+    tabIndex: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class MatButtonModule {}
+
+MatButtonModule.ɵfac = function MatButtonModule_Factory(t) {
+  return new (t || MatButtonModule)();
+};
+
+MatButtonModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineNgModule"]({
+  type: MatButtonModule
+});
+MatButtonModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector"]({
+  imports: [[_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatRippleModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule], _angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](MatButtonModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.NgModule,
+    args: [{
+      imports: [_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatRippleModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule],
+      exports: [MatButton, MatAnchor, _angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule],
+      declarations: [MatButton, MatAnchor]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
 /***/ 1961:
 /*!**********************************************************!*\
   !*** ./node_modules/@angular/material/fesm2015/card.mjs ***!
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "MatCard": () => (/* binding */ MatCard),
@@ -60446,6 +74865,7 @@ MatCardModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__[
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "AnimationCurves": () => (/* binding */ AnimationCurves),
@@ -63083,12 +77503,3534 @@ MatOptionModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0_
 
 /***/ }),
 
+/***/ 9076:
+/*!****************************************************************!*\
+  !*** ./node_modules/@angular/material/fesm2015/form-field.mjs ***!
+  \****************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MAT_ERROR": () => (/* binding */ MAT_ERROR),
+/* harmony export */   "MAT_FORM_FIELD": () => (/* binding */ MAT_FORM_FIELD),
+/* harmony export */   "MAT_FORM_FIELD_DEFAULT_OPTIONS": () => (/* binding */ MAT_FORM_FIELD_DEFAULT_OPTIONS),
+/* harmony export */   "MAT_PREFIX": () => (/* binding */ MAT_PREFIX),
+/* harmony export */   "MAT_SUFFIX": () => (/* binding */ MAT_SUFFIX),
+/* harmony export */   "MatError": () => (/* binding */ MatError),
+/* harmony export */   "MatFormField": () => (/* binding */ MatFormField),
+/* harmony export */   "MatFormFieldControl": () => (/* binding */ MatFormFieldControl),
+/* harmony export */   "MatFormFieldModule": () => (/* binding */ MatFormFieldModule),
+/* harmony export */   "MatHint": () => (/* binding */ MatHint),
+/* harmony export */   "MatLabel": () => (/* binding */ MatLabel),
+/* harmony export */   "MatPlaceholder": () => (/* binding */ MatPlaceholder),
+/* harmony export */   "MatPrefix": () => (/* binding */ MatPrefix),
+/* harmony export */   "MatSuffix": () => (/* binding */ MatSuffix),
+/* harmony export */   "_MAT_HINT": () => (/* binding */ _MAT_HINT),
+/* harmony export */   "getMatFormFieldDuplicatedHintError": () => (/* binding */ getMatFormFieldDuplicatedHintError),
+/* harmony export */   "getMatFormFieldMissingControlError": () => (/* binding */ getMatFormFieldMissingControlError),
+/* harmony export */   "getMatFormFieldPlaceholderConflictError": () => (/* binding */ getMatFormFieldPlaceholderConflictError),
+/* harmony export */   "matFormFieldAnimations": () => (/* binding */ matFormFieldAnimations)
+/* harmony export */ });
+/* harmony import */ var _angular_cdk_observers__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @angular/cdk/observers */ 5837);
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! @angular/common */ 6362);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material/core */ 8133);
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rxjs */ 6646);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs */ 3280);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs/operators */ 4874);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs/operators */ 8951);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! rxjs/operators */ 9295);
+/* harmony import */ var _angular_animations__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/animations */ 1631);
+/* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/platform-browser/animations */ 3598);
+/* harmony import */ var _angular_cdk_bidi__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/cdk/bidi */ 1588);
+/* harmony import */ var _angular_cdk_platform__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/cdk/platform */ 4390);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+const _c0 = ["connectionContainer"];
+const _c1 = ["inputContainer"];
+const _c2 = ["label"];
+
+function MatFormField_ng_container_3_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "div", 15)(3, "div", 16)(4, "div", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "div", 15)(7, "div", 16)(8, "div", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+  }
+}
+
+function MatFormField_div_4_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("cdkObserveContent", function MatFormField_div_4_Template_div_cdkObserveContent_0_listener() {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r10);
+      const ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+      return ctx_r9.updateOutlineGap();
+    });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](1, 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+
+  if (rf & 2) {
+    const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("cdkObserveContentDisabled", ctx_r2.appearance != "outline");
+  }
+}
+
+function MatFormField_label_9_ng_container_2_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](1, 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
+  }
+
+  if (rf & 2) {
+    const ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r12._control.placeholder);
+  }
+}
+
+function MatFormField_label_9_ng_content_3_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](0, 3, ["*ngSwitchCase", "true"]);
+  }
+}
+
+function MatFormField_label_9_span_4_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " *");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+}
+
+function MatFormField_label_9_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r16 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "label", 20, 21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("cdkObserveContent", function MatFormField_label_9_Template_label_cdkObserveContent_0_listener() {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r16);
+      const ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+      return ctx_r15.updateOutlineGap();
+    });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, MatFormField_label_9_ng_container_2_Template, 4, 1, "ng-container", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, MatFormField_label_9_ng_content_3_Template, 1, 0, "ng-content", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, MatFormField_label_9_span_4_Template, 2, 0, "span", 22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+
+  if (rf & 2) {
+    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-empty", ctx_r4._control.empty && !ctx_r4._shouldAlwaysFloat())("mat-form-field-empty", ctx_r4._control.empty && !ctx_r4._shouldAlwaysFloat())("mat-accent", ctx_r4.color == "accent")("mat-warn", ctx_r4.color == "warn");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("cdkObserveContentDisabled", ctx_r4.appearance != "outline")("id", ctx_r4._labelId)("ngSwitch", ctx_r4._hasLabel());
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("for", ctx_r4._control.id)("aria-owns", ctx_r4._control.id);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngSwitchCase", false);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngSwitchCase", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx_r4.hideRequiredMarker && ctx_r4._control.required && !ctx_r4._control.disabled);
+  }
+}
+
+function MatFormField_div_10_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 24);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](1, 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+}
+
+function MatFormField_div_11_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 25);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "span", 26);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+
+  if (rf & 2) {
+    const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-accent", ctx_r6.color == "accent")("mat-warn", ctx_r6.color == "warn");
+  }
+}
+
+function MatFormField_div_13_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](1, 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+
+  if (rf & 2) {
+    const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("@transitionMessages", ctx_r7._subscriptAnimationState);
+  }
+}
+
+function MatFormField_div_14_div_1_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 30);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+
+  if (rf & 2) {
+    const ctx_r17 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", ctx_r17._hintLabelId);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx_r17.hintLabel);
+  }
+}
+
+function MatFormField_div_14_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 27);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, MatFormField_div_14_div_1_Template, 2, 2, "div", 28);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](2, 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "div", 29);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](4, 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+  }
+
+  if (rf & 2) {
+    const ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("@transitionMessages", ctx_r8._subscriptAnimationState);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r8.hintLabel);
+  }
+}
+
+const _c3 = ["*", [["", "matPrefix", ""]], [["mat-placeholder"]], [["mat-label"]], [["", "matSuffix", ""]], [["mat-error"]], [["mat-hint", 3, "align", "end"]], [["mat-hint", "align", "end"]]];
+const _c4 = ["*", "[matPrefix]", "mat-placeholder", "mat-label", "[matSuffix]", "mat-error", "mat-hint:not([align='end'])", "mat-hint[align='end']"];
+let nextUniqueId$2 = 0;
+/**
+ * Injection token that can be used to reference instances of `MatError`. It serves as
+ * alternative token to the actual `MatError` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+
+const MAT_ERROR = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MatError');
+/** Single error message to be shown underneath the form field. */
+
+class MatError {
+  constructor(ariaLive, elementRef) {
+    this.id = `mat-error-${nextUniqueId$2++}`; // If no aria-live value is set add 'polite' as a default. This is preferred over setting
+    // role='alert' so that screen readers do not interrupt the current task to read this aloud.
+
+    if (!ariaLive) {
+      elementRef.nativeElement.setAttribute('aria-live', 'polite');
+    }
+  }
+
+}
+
+MatError.ɵfac = function MatError_Factory(t) {
+  return new (t || MatError)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinjectAttribute"]('aria-live'), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef));
+};
+
+MatError.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatError,
+  selectors: [["mat-error"]],
+  hostAttrs: ["aria-atomic", "true", 1, "mat-error"],
+  hostVars: 1,
+  hostBindings: function MatError_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("id", ctx.id);
+    }
+  },
+  inputs: {
+    id: "id"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: MAT_ERROR,
+    useExisting: MatError
+  }])]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatError, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'mat-error',
+      host: {
+        'class': 'mat-error',
+        '[attr.id]': 'id',
+        'aria-atomic': 'true'
+      },
+      providers: [{
+        provide: MAT_ERROR,
+        useExisting: MatError
+      }]
+    }]
+  }], function () {
+    return [{
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Attribute,
+        args: ['aria-live']
+      }]
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }];
+  }, {
+    id: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Animations used by the MatFormField.
+ * @docs-private
+ */
+
+
+const matFormFieldAnimations = {
+  /** Animation that transitions the form field's error and hint messages. */
+  transitionMessages: (0,_angular_animations__WEBPACK_IMPORTED_MODULE_1__.trigger)('transitionMessages', [// TODO(mmalerba): Use angular animations for label animation as well.
+  (0,_angular_animations__WEBPACK_IMPORTED_MODULE_1__.state)('enter', (0,_angular_animations__WEBPACK_IMPORTED_MODULE_1__.style)({
+    opacity: 1,
+    transform: 'translateY(0%)'
+  })), (0,_angular_animations__WEBPACK_IMPORTED_MODULE_1__.transition)('void => enter', [(0,_angular_animations__WEBPACK_IMPORTED_MODULE_1__.style)({
+    opacity: 0,
+    transform: 'translateY(-5px)'
+  }), (0,_angular_animations__WEBPACK_IMPORTED_MODULE_1__.animate)('300ms cubic-bezier(0.55, 0, 0.55, 0.2)')])])
+};
+/** An interface which allows a control to work inside of a `MatFormField`. */
+
+class MatFormFieldControl {}
+
+MatFormFieldControl.ɵfac = function MatFormFieldControl_Factory(t) {
+  return new (t || MatFormFieldControl)();
+};
+
+MatFormFieldControl.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatFormFieldControl
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatFormFieldControl, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** @docs-private */
+
+
+function getMatFormFieldPlaceholderConflictError() {
+  return Error('Placeholder attribute and child element were both specified.');
+}
+/** @docs-private */
+
+
+function getMatFormFieldDuplicatedHintError(align) {
+  return Error(`A hint was already declared for 'align="${align}"'.`);
+}
+/** @docs-private */
+
+
+function getMatFormFieldMissingControlError() {
+  return Error('mat-form-field must contain a MatFormFieldControl.');
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+let nextUniqueId$1 = 0;
+/**
+ * Injection token that can be used to reference instances of `MatHint`. It serves as
+ * alternative token to the actual `MatHint` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ *
+ * *Note*: This is not part of the public API as the MDC-based form-field will not
+ * need a lightweight token for `MatHint` and we want to reduce breaking changes.
+ */
+
+const _MAT_HINT = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MatHint');
+/** Hint text to be shown underneath the form field control. */
+
+
+class MatHint {
+  constructor() {
+    /** Whether to align the hint label at the start or end of the line. */
+    this.align = 'start';
+    /** Unique ID for the hint. Used for the aria-describedby on the form field control. */
+
+    this.id = `mat-hint-${nextUniqueId$1++}`;
+  }
+
+}
+
+MatHint.ɵfac = function MatHint_Factory(t) {
+  return new (t || MatHint)();
+};
+
+MatHint.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatHint,
+  selectors: [["mat-hint"]],
+  hostAttrs: [1, "mat-hint"],
+  hostVars: 4,
+  hostBindings: function MatHint_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("id", ctx.id)("align", null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-form-field-hint-end", ctx.align === "end");
+    }
+  },
+  inputs: {
+    align: "align",
+    id: "id"
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: _MAT_HINT,
+    useExisting: MatHint
+  }])]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatHint, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'mat-hint',
+      host: {
+        'class': 'mat-hint',
+        '[class.mat-form-field-hint-end]': 'align === "end"',
+        '[attr.id]': 'id',
+        // Remove align attribute to prevent it from interfering with layout.
+        '[attr.align]': 'null'
+      },
+      providers: [{
+        provide: _MAT_HINT,
+        useExisting: MatHint
+      }]
+    }]
+  }], null, {
+    align: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    id: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** The floating label for a `mat-form-field`. */
+
+
+class MatLabel {}
+
+MatLabel.ɵfac = function MatLabel_Factory(t) {
+  return new (t || MatLabel)();
+};
+
+MatLabel.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatLabel,
+  selectors: [["mat-label"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatLabel, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'mat-label'
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * The placeholder text for an `MatFormField`.
+ * @deprecated Use `<mat-label>` to specify the label and the `placeholder` attribute to specify the
+ *     placeholder.
+ * @breaking-change 8.0.0
+ */
+
+
+class MatPlaceholder {}
+
+MatPlaceholder.ɵfac = function MatPlaceholder_Factory(t) {
+  return new (t || MatPlaceholder)();
+};
+
+MatPlaceholder.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatPlaceholder,
+  selectors: [["mat-placeholder"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatPlaceholder, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: 'mat-placeholder'
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Injection token that can be used to reference instances of `MatPrefix`. It serves as
+ * alternative token to the actual `MatPrefix` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+
+
+const MAT_PREFIX = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MatPrefix');
+/** Prefix to be placed in front of the form field. */
+
+class MatPrefix {}
+
+MatPrefix.ɵfac = function MatPrefix_Factory(t) {
+  return new (t || MatPrefix)();
+};
+
+MatPrefix.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatPrefix,
+  selectors: [["", "matPrefix", ""]],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: MAT_PREFIX,
+    useExisting: MatPrefix
+  }])]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatPrefix, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[matPrefix]',
+      providers: [{
+        provide: MAT_PREFIX,
+        useExisting: MatPrefix
+      }]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Injection token that can be used to reference instances of `MatSuffix`. It serves as
+ * alternative token to the actual `MatSuffix` class which could cause unnecessary
+ * retention of the class and its directive metadata.
+ */
+
+
+const MAT_SUFFIX = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MatSuffix');
+/** Suffix to be placed at the end of the form field. */
+
+class MatSuffix {}
+
+MatSuffix.ɵfac = function MatSuffix_Factory(t) {
+  return new (t || MatSuffix)();
+};
+
+MatSuffix.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatSuffix,
+  selectors: [["", "matSuffix", ""]],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: MAT_SUFFIX,
+    useExisting: MatSuffix
+  }])]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatSuffix, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[matSuffix]',
+      providers: [{
+        provide: MAT_SUFFIX,
+        useExisting: MatSuffix
+      }]
+    }]
+  }], null, null);
+})();
+
+let nextUniqueId = 0;
+const floatingLabelScale = 0.75;
+const outlineGapPadding = 5;
+/**
+ * Boilerplate for applying mixins to MatFormField.
+ * @docs-private
+ */
+
+const _MatFormFieldBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_2__.mixinColor)(class {
+  constructor(_elementRef) {
+    this._elementRef = _elementRef;
+  }
+
+}, 'primary');
+/**
+ * Injection token that can be used to configure the
+ * default options for all form field within an app.
+ */
+
+
+const MAT_FORM_FIELD_DEFAULT_OPTIONS = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MAT_FORM_FIELD_DEFAULT_OPTIONS');
+/**
+ * Injection token that can be used to inject an instances of `MatFormField`. It serves
+ * as alternative token to the actual `MatFormField` class which would cause unnecessary
+ * retention of the `MatFormField` class and its component metadata.
+ */
+
+const MAT_FORM_FIELD = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MatFormField');
+/** Container for form controls that applies Material Design styling and behavior. */
+
+class MatFormField extends _MatFormFieldBase {
+  constructor(elementRef, _changeDetectorRef, _dir, _defaults, _platform, _ngZone, _animationMode) {
+    super(elementRef);
+    this._changeDetectorRef = _changeDetectorRef;
+    this._dir = _dir;
+    this._defaults = _defaults;
+    this._platform = _platform;
+    this._ngZone = _ngZone;
+    /**
+     * Whether the outline gap needs to be calculated
+     * immediately on the next change detection run.
+     */
+
+    this._outlineGapCalculationNeededImmediately = false;
+    /** Whether the outline gap needs to be calculated next time the zone has stabilized. */
+
+    this._outlineGapCalculationNeededOnStable = false;
+    this._destroyed = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
+    /** Override for the logic that disables the label animation in certain cases. */
+
+    this._showAlwaysAnimate = false;
+    /** State of the mat-hint and mat-error animations. */
+
+    this._subscriptAnimationState = '';
+    this._hintLabel = ''; // Unique id for the hint label.
+
+    this._hintLabelId = `mat-hint-${nextUniqueId++}`; // Unique id for the label element.
+
+    this._labelId = `mat-form-field-label-${nextUniqueId++}`;
+    this.floatLabel = this._getDefaultFloatLabelState();
+    this._animationsEnabled = _animationMode !== 'NoopAnimations'; // Set the default through here so we invoke the setter on the first run.
+
+    this.appearance = _defaults && _defaults.appearance ? _defaults.appearance : 'legacy';
+    this._hideRequiredMarker = _defaults && _defaults.hideRequiredMarker != null ? _defaults.hideRequiredMarker : false;
+  }
+  /** The form-field appearance style. */
+
+
+  get appearance() {
+    return this._appearance;
+  }
+
+  set appearance(value) {
+    const oldValue = this._appearance;
+    this._appearance = value || this._defaults && this._defaults.appearance || 'legacy';
+
+    if (this._appearance === 'outline' && oldValue !== value) {
+      this._outlineGapCalculationNeededOnStable = true;
+    }
+  }
+  /** Whether the required marker should be hidden. */
+
+
+  get hideRequiredMarker() {
+    return this._hideRequiredMarker;
+  }
+
+  set hideRequiredMarker(value) {
+    this._hideRequiredMarker = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value);
+  }
+  /** Whether the floating label should always float or not. */
+
+
+  _shouldAlwaysFloat() {
+    return this.floatLabel === 'always' && !this._showAlwaysAnimate;
+  }
+  /** Whether the label can float or not. */
+
+
+  _canLabelFloat() {
+    return this.floatLabel !== 'never';
+  }
+  /** Text for the form field hint. */
+
+
+  get hintLabel() {
+    return this._hintLabel;
+  }
+
+  set hintLabel(value) {
+    this._hintLabel = value;
+
+    this._processHints();
+  }
+  /**
+   * Whether the label should always float, never float or float as the user types.
+   *
+   * Note: only the legacy appearance supports the `never` option. `never` was originally added as a
+   * way to make the floating label emulate the behavior of a standard input placeholder. However
+   * the form field now supports both floating labels and placeholders. Therefore in the non-legacy
+   * appearances the `never` option has been disabled in favor of just using the placeholder.
+   */
+
+
+  get floatLabel() {
+    return this.appearance !== 'legacy' && this._floatLabel === 'never' ? 'auto' : this._floatLabel;
+  }
+
+  set floatLabel(value) {
+    if (value !== this._floatLabel) {
+      this._floatLabel = value || this._getDefaultFloatLabelState();
+
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+
+  get _control() {
+    // TODO(crisbeto): we need this workaround in order to support both Ivy and ViewEngine.
+    //  We should clean this up once Ivy is the default renderer.
+    return this._explicitFormFieldControl || this._controlNonStatic || this._controlStatic;
+  }
+
+  set _control(value) {
+    this._explicitFormFieldControl = value;
+  }
+  /**
+   * Gets the id of the label element. If no label is present, returns `null`.
+   */
+
+
+  getLabelId() {
+    return this._hasFloatingLabel() ? this._labelId : null;
+  }
+  /**
+   * Gets an ElementRef for the element that a overlay attached to the form-field should be
+   * positioned relative to.
+   */
+
+
+  getConnectedOverlayOrigin() {
+    return this._connectionContainerRef || this._elementRef;
+  }
+
+  ngAfterContentInit() {
+    this._validateControlChild();
+
+    const control = this._control;
+
+    if (control.controlType) {
+      this._elementRef.nativeElement.classList.add(`mat-form-field-type-${control.controlType}`);
+    } // Subscribe to changes in the child control state in order to update the form field UI.
+
+
+    control.stateChanges.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_5__.startWith)(null)).subscribe(() => {
+      this._validatePlaceholders();
+
+      this._syncDescribedByIds();
+
+      this._changeDetectorRef.markForCheck();
+    }); // Run change detection if the value changes.
+
+    if (control.ngControl && control.ngControl.valueChanges) {
+      control.ngControl.valueChanges.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_6__.takeUntil)(this._destroyed)).subscribe(() => this._changeDetectorRef.markForCheck());
+    } // Note that we have to run outside of the `NgZone` explicitly,
+    // in order to avoid throwing users into an infinite loop
+    // if `zone-patch-rxjs` is included.
+
+
+    this._ngZone.runOutsideAngular(() => {
+      this._ngZone.onStable.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_6__.takeUntil)(this._destroyed)).subscribe(() => {
+        if (this._outlineGapCalculationNeededOnStable) {
+          this.updateOutlineGap();
+        }
+      });
+    }); // Run change detection and update the outline if the suffix or prefix changes.
+
+
+    (0,rxjs__WEBPACK_IMPORTED_MODULE_7__.merge)(this._prefixChildren.changes, this._suffixChildren.changes).subscribe(() => {
+      this._outlineGapCalculationNeededOnStable = true;
+
+      this._changeDetectorRef.markForCheck();
+    }); // Re-validate when the number of hints changes.
+
+    this._hintChildren.changes.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_5__.startWith)(null)).subscribe(() => {
+      this._processHints();
+
+      this._changeDetectorRef.markForCheck();
+    }); // Update the aria-described by when the number of errors changes.
+
+
+    this._errorChildren.changes.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_5__.startWith)(null)).subscribe(() => {
+      this._syncDescribedByIds();
+
+      this._changeDetectorRef.markForCheck();
+    });
+
+    if (this._dir) {
+      this._dir.change.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_6__.takeUntil)(this._destroyed)).subscribe(() => {
+        if (typeof requestAnimationFrame === 'function') {
+          this._ngZone.runOutsideAngular(() => {
+            requestAnimationFrame(() => this.updateOutlineGap());
+          });
+        } else {
+          this.updateOutlineGap();
+        }
+      });
+    }
+  }
+
+  ngAfterContentChecked() {
+    this._validateControlChild();
+
+    if (this._outlineGapCalculationNeededImmediately) {
+      this.updateOutlineGap();
+    }
+  }
+
+  ngAfterViewInit() {
+    // Avoid animations on load.
+    this._subscriptAnimationState = 'enter';
+
+    this._changeDetectorRef.detectChanges();
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+
+    this._destroyed.complete();
+  }
+  /** Determines whether a class from the NgControl should be forwarded to the host element. */
+
+
+  _shouldForward(prop) {
+    const ngControl = this._control ? this._control.ngControl : null;
+    return ngControl && ngControl[prop];
+  }
+
+  _hasPlaceholder() {
+    return !!(this._control && this._control.placeholder || this._placeholderChild);
+  }
+
+  _hasLabel() {
+    return !!(this._labelChildNonStatic || this._labelChildStatic);
+  }
+
+  _shouldLabelFloat() {
+    return this._canLabelFloat() && (this._control && this._control.shouldLabelFloat || this._shouldAlwaysFloat());
+  }
+
+  _hideControlPlaceholder() {
+    // In the legacy appearance the placeholder is promoted to a label if no label is given.
+    return this.appearance === 'legacy' && !this._hasLabel() || this._hasLabel() && !this._shouldLabelFloat();
+  }
+
+  _hasFloatingLabel() {
+    // In the legacy appearance the placeholder is promoted to a label if no label is given.
+    return this._hasLabel() || this.appearance === 'legacy' && this._hasPlaceholder();
+  }
+  /** Determines whether to display hints or errors. */
+
+
+  _getDisplayedMessages() {
+    return this._errorChildren && this._errorChildren.length > 0 && this._control.errorState ? 'error' : 'hint';
+  }
+  /** Animates the placeholder up and locks it in position. */
+
+
+  _animateAndLockLabel() {
+    if (this._hasFloatingLabel() && this._canLabelFloat()) {
+      // If animations are disabled, we shouldn't go in here,
+      // because the `transitionend` will never fire.
+      if (this._animationsEnabled && this._label) {
+        this._showAlwaysAnimate = true;
+        (0,rxjs__WEBPACK_IMPORTED_MODULE_8__.fromEvent)(this._label.nativeElement, 'transitionend').pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_9__.take)(1)).subscribe(() => {
+          this._showAlwaysAnimate = false;
+        });
+      }
+
+      this.floatLabel = 'always';
+
+      this._changeDetectorRef.markForCheck();
+    }
+  }
+  /**
+   * Ensure that there is only one placeholder (either `placeholder` attribute on the child control
+   * or child element with the `mat-placeholder` directive).
+   */
+
+
+  _validatePlaceholders() {
+    if (this._control.placeholder && this._placeholderChild && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getMatFormFieldPlaceholderConflictError();
+    }
+  }
+  /** Does any extra processing that is required when handling the hints. */
+
+
+  _processHints() {
+    this._validateHints();
+
+    this._syncDescribedByIds();
+  }
+  /**
+   * Ensure that there is a maximum of one of each `<mat-hint>` alignment specified, with the
+   * attribute being considered as `align="start"`.
+   */
+
+
+  _validateHints() {
+    if (this._hintChildren && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      let startHint;
+      let endHint;
+
+      this._hintChildren.forEach(hint => {
+        if (hint.align === 'start') {
+          if (startHint || this.hintLabel) {
+            throw getMatFormFieldDuplicatedHintError('start');
+          }
+
+          startHint = hint;
+        } else if (hint.align === 'end') {
+          if (endHint) {
+            throw getMatFormFieldDuplicatedHintError('end');
+          }
+
+          endHint = hint;
+        }
+      });
+    }
+  }
+  /** Gets the default float label state. */
+
+
+  _getDefaultFloatLabelState() {
+    return this._defaults && this._defaults.floatLabel || 'auto';
+  }
+  /**
+   * Sets the list of element IDs that describe the child control. This allows the control to update
+   * its `aria-describedby` attribute accordingly.
+   */
+
+
+  _syncDescribedByIds() {
+    if (this._control) {
+      let ids = []; // TODO(wagnermaciel): Remove the type check when we find the root cause of this bug.
+
+      if (this._control.userAriaDescribedBy && typeof this._control.userAriaDescribedBy === 'string') {
+        ids.push(...this._control.userAriaDescribedBy.split(' '));
+      }
+
+      if (this._getDisplayedMessages() === 'hint') {
+        const startHint = this._hintChildren ? this._hintChildren.find(hint => hint.align === 'start') : null;
+        const endHint = this._hintChildren ? this._hintChildren.find(hint => hint.align === 'end') : null;
+
+        if (startHint) {
+          ids.push(startHint.id);
+        } else if (this._hintLabel) {
+          ids.push(this._hintLabelId);
+        }
+
+        if (endHint) {
+          ids.push(endHint.id);
+        }
+      } else if (this._errorChildren) {
+        ids.push(...this._errorChildren.map(error => error.id));
+      }
+
+      this._control.setDescribedByIds(ids);
+    }
+  }
+  /** Throws an error if the form field's control is missing. */
+
+
+  _validateControlChild() {
+    if (!this._control && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getMatFormFieldMissingControlError();
+    }
+  }
+  /**
+   * Updates the width and position of the gap in the outline. Only relevant for the outline
+   * appearance.
+   */
+
+
+  updateOutlineGap() {
+    const labelEl = this._label ? this._label.nativeElement : null;
+    const container = this._connectionContainerRef.nativeElement;
+    const outlineStartSelector = '.mat-form-field-outline-start';
+    const outlineGapSelector = '.mat-form-field-outline-gap'; // getBoundingClientRect isn't available on the server.
+
+    if (this.appearance !== 'outline' || !this._platform.isBrowser) {
+      return;
+    } // If there is no content, set the gap elements to zero.
+
+
+    if (!labelEl || !labelEl.children.length || !labelEl.textContent.trim()) {
+      const gapElements = container.querySelectorAll(`${outlineStartSelector}, ${outlineGapSelector}`);
+
+      for (let i = 0; i < gapElements.length; i++) {
+        gapElements[i].style.width = '0';
+      }
+
+      return;
+    } // If the element is not present in the DOM, the outline gap will need to be calculated
+    // the next time it is checked and in the DOM.
+
+
+    if (!this._isAttachedToDOM()) {
+      this._outlineGapCalculationNeededImmediately = true;
+      return;
+    }
+
+    let startWidth = 0;
+    let gapWidth = 0;
+    const startEls = container.querySelectorAll(outlineStartSelector);
+    const gapEls = container.querySelectorAll(outlineGapSelector);
+
+    if (this._label && this._label.nativeElement.children.length) {
+      const containerRect = container.getBoundingClientRect(); // If the container's width and height are zero, it means that the element is
+      // invisible and we can't calculate the outline gap. Mark the element as needing
+      // to be checked the next time the zone stabilizes. We can't do this immediately
+      // on the next change detection, because even if the element becomes visible,
+      // the `ClientRect` won't be reclaculated immediately. We reset the
+      // `_outlineGapCalculationNeededImmediately` flag some we don't run the checks twice.
+
+      if (containerRect.width === 0 && containerRect.height === 0) {
+        this._outlineGapCalculationNeededOnStable = true;
+        this._outlineGapCalculationNeededImmediately = false;
+        return;
+      }
+
+      const containerStart = this._getStartEnd(containerRect);
+
+      const labelChildren = labelEl.children;
+
+      const labelStart = this._getStartEnd(labelChildren[0].getBoundingClientRect());
+
+      let labelWidth = 0;
+
+      for (let i = 0; i < labelChildren.length; i++) {
+        labelWidth += labelChildren[i].offsetWidth;
+      }
+
+      startWidth = Math.abs(labelStart - containerStart) - outlineGapPadding;
+      gapWidth = labelWidth > 0 ? labelWidth * floatingLabelScale + outlineGapPadding * 2 : 0;
+    }
+
+    for (let i = 0; i < startEls.length; i++) {
+      startEls[i].style.width = `${startWidth}px`;
+    }
+
+    for (let i = 0; i < gapEls.length; i++) {
+      gapEls[i].style.width = `${gapWidth}px`;
+    }
+
+    this._outlineGapCalculationNeededOnStable = this._outlineGapCalculationNeededImmediately = false;
+  }
+  /** Gets the start end of the rect considering the current directionality. */
+
+
+  _getStartEnd(rect) {
+    return this._dir && this._dir.value === 'rtl' ? rect.right : rect.left;
+  }
+  /** Checks whether the form field is attached to the DOM. */
+
+
+  _isAttachedToDOM() {
+    const element = this._elementRef.nativeElement;
+
+    if (element.getRootNode) {
+      const rootNode = element.getRootNode(); // If the element is inside the DOM the root node will be either the document
+      // or the closest shadow root, otherwise it'll be the element itself.
+
+      return rootNode && rootNode !== element;
+    } // Otherwise fall back to checking if it's in the document. This doesn't account for
+    // shadow DOM, however browser that support shadow DOM should support `getRootNode` as well.
+
+
+    return document.documentElement.contains(element);
+  }
+
+}
+
+MatFormField.ɵfac = function MatFormField_Factory(t) {
+  return new (t || MatFormField)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_cdk_bidi__WEBPACK_IMPORTED_MODULE_10__.Directionality, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](MAT_FORM_FIELD_DEFAULT_OPTIONS, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_cdk_platform__WEBPACK_IMPORTED_MODULE_11__.Platform), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.NgZone), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_12__.ANIMATION_MODULE_TYPE, 8));
+};
+
+MatFormField.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
+  type: MatFormField,
+  selectors: [["mat-form-field"]],
+  contentQueries: function MatFormField_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatFormFieldControl, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatFormFieldControl, 7);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatLabel, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatLabel, 7);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatPlaceholder, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MAT_ERROR, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, _MAT_HINT, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MAT_PREFIX, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MAT_SUFFIX, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._controlNonStatic = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._controlStatic = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._labelChildNonStatic = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._labelChildStatic = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._placeholderChild = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._errorChildren = _t);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._hintChildren = _t);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._prefixChildren = _t);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._suffixChildren = _t);
+    }
+  },
+  viewQuery: function MatFormField_Query(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, 7);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c1, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c2, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._connectionContainerRef = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._inputContainerRef = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._label = _t.first);
+    }
+  },
+  hostAttrs: [1, "mat-form-field"],
+  hostVars: 40,
+  hostBindings: function MatFormField_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-form-field-appearance-standard", ctx.appearance == "standard")("mat-form-field-appearance-fill", ctx.appearance == "fill")("mat-form-field-appearance-outline", ctx.appearance == "outline")("mat-form-field-appearance-legacy", ctx.appearance == "legacy")("mat-form-field-invalid", ctx._control.errorState)("mat-form-field-can-float", ctx._canLabelFloat())("mat-form-field-should-float", ctx._shouldLabelFloat())("mat-form-field-has-label", ctx._hasFloatingLabel())("mat-form-field-hide-placeholder", ctx._hideControlPlaceholder())("mat-form-field-disabled", ctx._control.disabled)("mat-form-field-autofilled", ctx._control.autofilled)("mat-focused", ctx._control.focused)("ng-untouched", ctx._shouldForward("untouched"))("ng-touched", ctx._shouldForward("touched"))("ng-pristine", ctx._shouldForward("pristine"))("ng-dirty", ctx._shouldForward("dirty"))("ng-valid", ctx._shouldForward("valid"))("ng-invalid", ctx._shouldForward("invalid"))("ng-pending", ctx._shouldForward("pending"))("_mat-animation-noopable", !ctx._animationsEnabled);
+    }
+  },
+  inputs: {
+    color: "color",
+    appearance: "appearance",
+    hideRequiredMarker: "hideRequiredMarker",
+    hintLabel: "hintLabel",
+    floatLabel: "floatLabel"
+  },
+  exportAs: ["matFormField"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: MAT_FORM_FIELD,
+    useExisting: MatFormField
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]],
+  ngContentSelectors: _c4,
+  decls: 15,
+  vars: 8,
+  consts: [[1, "mat-form-field-wrapper"], [1, "mat-form-field-flex", 3, "click"], ["connectionContainer", ""], [4, "ngIf"], ["class", "mat-form-field-prefix", 3, "cdkObserveContentDisabled", "cdkObserveContent", 4, "ngIf"], [1, "mat-form-field-infix"], ["inputContainer", ""], [1, "mat-form-field-label-wrapper"], ["class", "mat-form-field-label", 3, "cdkObserveContentDisabled", "id", "mat-empty", "mat-form-field-empty", "mat-accent", "mat-warn", "ngSwitch", "cdkObserveContent", 4, "ngIf"], ["class", "mat-form-field-suffix", 4, "ngIf"], ["class", "mat-form-field-underline", 4, "ngIf"], [1, "mat-form-field-subscript-wrapper", 3, "ngSwitch"], [4, "ngSwitchCase"], ["class", "mat-form-field-hint-wrapper", 4, "ngSwitchCase"], [1, "mat-form-field-outline"], [1, "mat-form-field-outline-start"], [1, "mat-form-field-outline-gap"], [1, "mat-form-field-outline-end"], [1, "mat-form-field-outline", "mat-form-field-outline-thick"], [1, "mat-form-field-prefix", 3, "cdkObserveContentDisabled", "cdkObserveContent"], [1, "mat-form-field-label", 3, "cdkObserveContentDisabled", "id", "ngSwitch", "cdkObserveContent"], ["label", ""], ["class", "mat-placeholder-required mat-form-field-required-marker", "aria-hidden", "true", 4, "ngIf"], ["aria-hidden", "true", 1, "mat-placeholder-required", "mat-form-field-required-marker"], [1, "mat-form-field-suffix"], [1, "mat-form-field-underline"], [1, "mat-form-field-ripple"], [1, "mat-form-field-hint-wrapper"], ["class", "mat-hint", 3, "id", 4, "ngIf"], [1, "mat-form-field-hint-spacer"], [1, "mat-hint", 3, "id"]],
+  template: function MatFormField_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"](_c3);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0)(1, "div", 1, 2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function MatFormField_Template_div_click_1_listener($event) {
+        return ctx._control.onContainerClick && ctx._control.onContainerClick($event);
+      });
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, MatFormField_ng_container_3_Template, 9, 0, "ng-container", 3);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, MatFormField_div_4_Template, 2, 1, "div", 4);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 5, 6);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](7);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "span", 7);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, MatFormField_label_9_Template, 5, 16, "label", 8);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]()();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](10, MatFormField_div_10_Template, 2, 0, "div", 9);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](11, MatFormField_div_11_Template, 2, 4, "div", 10);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div", 11);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](13, MatFormField_div_13_Template, 2, 1, "div", 12);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](14, MatFormField_div_14_Template, 5, 2, "div", 13);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]()();
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.appearance == "outline");
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx._prefixChildren.length);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx._hasFloatingLabel());
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx._suffixChildren.length);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.appearance != "outline");
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngSwitch", ctx._getDisplayedMessages());
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngSwitchCase", "error");
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngSwitchCase", "hint");
+    }
+  },
+  directives: [_angular_common__WEBPACK_IMPORTED_MODULE_13__.NgIf, _angular_cdk_observers__WEBPACK_IMPORTED_MODULE_14__.CdkObserveContent, _angular_common__WEBPACK_IMPORTED_MODULE_13__.NgSwitch, _angular_common__WEBPACK_IMPORTED_MODULE_13__.NgSwitchCase],
+  styles: [".mat-form-field{display:inline-block;position:relative;text-align:left}[dir=rtl] .mat-form-field{text-align:right}.mat-form-field-wrapper{position:relative}.mat-form-field-flex{display:inline-flex;align-items:baseline;box-sizing:border-box;width:100%}.mat-form-field-prefix,.mat-form-field-suffix{white-space:nowrap;flex:none;position:relative}.mat-form-field-infix{display:block;position:relative;flex:auto;min-width:0;width:180px}.cdk-high-contrast-active .mat-form-field-infix{border-image:linear-gradient(transparent, transparent)}.mat-form-field-label-wrapper{position:absolute;left:0;box-sizing:content-box;width:100%;height:100%;overflow:hidden;pointer-events:none}[dir=rtl] .mat-form-field-label-wrapper{left:auto;right:0}.mat-form-field-label{position:absolute;left:0;font:inherit;pointer-events:none;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;transform-origin:0 0;transition:transform 400ms cubic-bezier(0.25, 0.8, 0.25, 1),color 400ms cubic-bezier(0.25, 0.8, 0.25, 1),width 400ms cubic-bezier(0.25, 0.8, 0.25, 1);display:none}[dir=rtl] .mat-form-field-label{transform-origin:100% 0;left:auto;right:0}.mat-form-field-empty.mat-form-field-label,.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{display:block}.mat-form-field-autofill-control:-webkit-autofill+.mat-form-field-label-wrapper .mat-form-field-label{display:none}.mat-form-field-can-float .mat-form-field-autofill-control:-webkit-autofill+.mat-form-field-label-wrapper .mat-form-field-label{display:block;transition:none}.mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-input-server[placeholder]:not(:placeholder-shown)+.mat-form-field-label-wrapper .mat-form-field-label{display:none}.mat-form-field-can-float .mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-form-field-can-float .mat-input-server[placeholder]:not(:placeholder-shown)+.mat-form-field-label-wrapper .mat-form-field-label{display:block}.mat-form-field-label:not(.mat-form-field-empty){transition:none}.mat-form-field-underline{position:absolute;width:100%;pointer-events:none;transform:scale3d(1, 1.0001, 1)}.mat-form-field-ripple{position:absolute;left:0;width:100%;transform-origin:50%;transform:scaleX(0.5);opacity:0;transition:background-color 300ms cubic-bezier(0.55, 0, 0.55, 0.2)}.mat-form-field.mat-focused .mat-form-field-ripple,.mat-form-field.mat-form-field-invalid .mat-form-field-ripple{opacity:1;transform:none;transition:transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1),opacity 100ms cubic-bezier(0.25, 0.8, 0.25, 1),background-color 300ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-subscript-wrapper{position:absolute;box-sizing:border-box;width:100%;overflow:hidden}.mat-form-field-subscript-wrapper .mat-icon,.mat-form-field-label-wrapper .mat-icon{width:1em;height:1em;font-size:inherit;vertical-align:baseline}.mat-form-field-hint-wrapper{display:flex}.mat-form-field-hint-spacer{flex:1 0 1em}.mat-error{display:block}.mat-form-field-control-wrapper{position:relative}.mat-form-field-hint-end{order:1}.mat-form-field._mat-animation-noopable .mat-form-field-label,.mat-form-field._mat-animation-noopable .mat-form-field-ripple{transition:none}\n", ".mat-form-field-appearance-fill .mat-form-field-flex{border-radius:4px 4px 0 0;padding:.75em .75em 0 .75em}.cdk-high-contrast-active .mat-form-field-appearance-fill .mat-form-field-flex{outline:solid 1px}.cdk-high-contrast-active .mat-form-field-appearance-fill.mat-focused .mat-form-field-flex{outline:dashed 3px}.mat-form-field-appearance-fill .mat-form-field-underline::before{content:\"\";display:block;position:absolute;bottom:0;height:1px;width:100%}.mat-form-field-appearance-fill .mat-form-field-ripple{bottom:0;height:2px}.cdk-high-contrast-active .mat-form-field-appearance-fill .mat-form-field-ripple{height:0}.mat-form-field-appearance-fill:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{opacity:1;transform:none;transition:opacity 600ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-fill._mat-animation-noopable:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{transition:none}.mat-form-field-appearance-fill .mat-form-field-subscript-wrapper{padding:0 1em}\n", ".mat-input-element{font:inherit;background:transparent;color:currentColor;border:none;outline:none;padding:0;margin:0;width:100%;max-width:100%;vertical-align:bottom;text-align:inherit;box-sizing:content-box}.mat-input-element:-moz-ui-invalid{box-shadow:none}.mat-input-element,.mat-input-element::-webkit-search-cancel-button,.mat-input-element::-webkit-search-decoration,.mat-input-element::-webkit-search-results-button,.mat-input-element::-webkit-search-results-decoration{-webkit-appearance:none}.mat-input-element::-webkit-contacts-auto-fill-button,.mat-input-element::-webkit-caps-lock-indicator,.mat-input-element:not([type=password])::-webkit-credentials-auto-fill-button{visibility:hidden}.mat-input-element[type=date],.mat-input-element[type=datetime],.mat-input-element[type=datetime-local],.mat-input-element[type=month],.mat-input-element[type=week],.mat-input-element[type=time]{line-height:1}.mat-input-element[type=date]::after,.mat-input-element[type=datetime]::after,.mat-input-element[type=datetime-local]::after,.mat-input-element[type=month]::after,.mat-input-element[type=week]::after,.mat-input-element[type=time]::after{content:\" \";white-space:pre;width:1px}.mat-input-element::-webkit-inner-spin-button,.mat-input-element::-webkit-calendar-picker-indicator,.mat-input-element::-webkit-clear-button{font-size:.75em}.mat-input-element::placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-input-element::-moz-placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-input-element::-webkit-input-placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-input-element:-ms-input-placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-hide-placeholder .mat-input-element::placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element::placeholder{opacity:0}.mat-form-field-hide-placeholder .mat-input-element::-moz-placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element::-moz-placeholder{opacity:0}.mat-form-field-hide-placeholder .mat-input-element::-webkit-input-placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element::-webkit-input-placeholder{opacity:0}.mat-form-field-hide-placeholder .mat-input-element:-ms-input-placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element:-ms-input-placeholder{opacity:0}textarea.mat-input-element{resize:vertical;overflow:auto}textarea.mat-input-element.cdk-textarea-autosize{resize:none}textarea.mat-input-element{padding:2px 0;margin:-2px 0}select.mat-input-element{-moz-appearance:none;-webkit-appearance:none;position:relative;background-color:transparent;display:inline-flex;box-sizing:border-box;padding-top:1em;top:-1em;margin-bottom:-1em}select.mat-input-element::-moz-focus-inner{border:0}select.mat-input-element:not(:disabled){cursor:pointer}.mat-form-field-type-mat-native-select .mat-form-field-infix::after{content:\"\";width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid;position:absolute;top:50%;right:0;margin-top:-2.5px;pointer-events:none}[dir=rtl] .mat-form-field-type-mat-native-select .mat-form-field-infix::after{right:auto;left:0}.mat-form-field-type-mat-native-select .mat-input-element{padding-right:15px}[dir=rtl] .mat-form-field-type-mat-native-select .mat-input-element{padding-right:0;padding-left:15px}.mat-form-field-type-mat-native-select .mat-form-field-label-wrapper{max-width:calc(100% - 10px)}.mat-form-field-type-mat-native-select.mat-form-field-appearance-outline .mat-form-field-infix::after{margin-top:-5px}.mat-form-field-type-mat-native-select.mat-form-field-appearance-fill .mat-form-field-infix::after{margin-top:-10px}\n", ".mat-form-field-appearance-legacy .mat-form-field-label{transform:perspective(100px)}.mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon,.mat-form-field-appearance-legacy .mat-form-field-suffix .mat-icon{width:1em}.mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon-button,.mat-form-field-appearance-legacy .mat-form-field-suffix .mat-icon-button{font:inherit;vertical-align:baseline}.mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon-button .mat-icon,.mat-form-field-appearance-legacy .mat-form-field-suffix .mat-icon-button .mat-icon{font-size:inherit}.mat-form-field-appearance-legacy .mat-form-field-underline{height:1px}.cdk-high-contrast-active .mat-form-field-appearance-legacy .mat-form-field-underline{height:0;border-top:solid 1px}.mat-form-field-appearance-legacy .mat-form-field-ripple{top:0;height:2px;overflow:hidden}.cdk-high-contrast-active .mat-form-field-appearance-legacy .mat-form-field-ripple{height:0;border-top:solid 2px}.mat-form-field-appearance-legacy.mat-form-field-disabled .mat-form-field-underline{background-position:0;background-color:transparent}.cdk-high-contrast-active .mat-form-field-appearance-legacy.mat-form-field-disabled .mat-form-field-underline{border-top-style:dotted;border-top-width:2px}.mat-form-field-appearance-legacy.mat-form-field-invalid:not(.mat-focused) .mat-form-field-ripple{height:1px}\n", ".mat-form-field-appearance-outline .mat-form-field-wrapper{margin:.25em 0}.mat-form-field-appearance-outline .mat-form-field-flex{padding:0 .75em 0 .75em;margin-top:-0.25em;position:relative}.mat-form-field-appearance-outline .mat-form-field-prefix,.mat-form-field-appearance-outline .mat-form-field-suffix{top:.25em}.mat-form-field-appearance-outline .mat-form-field-outline{display:flex;position:absolute;top:.25em;left:0;right:0;bottom:0;pointer-events:none}.mat-form-field-appearance-outline .mat-form-field-outline-start,.mat-form-field-appearance-outline .mat-form-field-outline-end{border:1px solid currentColor;min-width:5px}.mat-form-field-appearance-outline .mat-form-field-outline-start{border-radius:5px 0 0 5px;border-right-style:none}[dir=rtl] .mat-form-field-appearance-outline .mat-form-field-outline-start{border-right-style:solid;border-left-style:none;border-radius:0 5px 5px 0}.mat-form-field-appearance-outline .mat-form-field-outline-end{border-radius:0 5px 5px 0;border-left-style:none;flex-grow:1}[dir=rtl] .mat-form-field-appearance-outline .mat-form-field-outline-end{border-left-style:solid;border-right-style:none;border-radius:5px 0 0 5px}.mat-form-field-appearance-outline .mat-form-field-outline-gap{border-radius:.000001px;border:1px solid currentColor;border-left-style:none;border-right-style:none}.mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-outline-gap{border-top-color:transparent}.mat-form-field-appearance-outline .mat-form-field-outline-thick{opacity:0}.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-start,.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-end,.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-gap{border-width:2px}.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline,.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline{opacity:0;transition:opacity 100ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick,.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline-thick{opacity:1}.cdk-high-contrast-active .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick{border:3px dashed}.mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline{opacity:0;transition:opacity 600ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline-thick{opacity:1}.mat-form-field-appearance-outline .mat-form-field-subscript-wrapper{padding:0 1em}.mat-form-field-appearance-outline._mat-animation-noopable:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-outline,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline-start,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline-end,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline-gap{transition:none}\n", ".mat-form-field-appearance-standard .mat-form-field-flex{padding-top:.75em}.mat-form-field-appearance-standard .mat-form-field-underline{height:1px}.cdk-high-contrast-active .mat-form-field-appearance-standard .mat-form-field-underline{height:0;border-top:solid 1px}.mat-form-field-appearance-standard .mat-form-field-ripple{bottom:0;height:2px}.cdk-high-contrast-active .mat-form-field-appearance-standard .mat-form-field-ripple{height:0;border-top:solid 2px}.mat-form-field-appearance-standard.mat-form-field-disabled .mat-form-field-underline{background-position:0;background-color:transparent}.cdk-high-contrast-active .mat-form-field-appearance-standard.mat-form-field-disabled .mat-form-field-underline{border-top-style:dotted;border-top-width:2px}.mat-form-field-appearance-standard:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{opacity:1;transform:none;transition:opacity 600ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-standard._mat-animation-noopable:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{transition:none}\n"],
+  encapsulation: 2,
+  data: {
+    animation: [matFormFieldAnimations.transitionMessages]
+  },
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatFormField, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Component,
+    args: [{
+      selector: 'mat-form-field',
+      exportAs: 'matFormField',
+      animations: [matFormFieldAnimations.transitionMessages],
+      host: {
+        'class': 'mat-form-field',
+        '[class.mat-form-field-appearance-standard]': 'appearance == "standard"',
+        '[class.mat-form-field-appearance-fill]': 'appearance == "fill"',
+        '[class.mat-form-field-appearance-outline]': 'appearance == "outline"',
+        '[class.mat-form-field-appearance-legacy]': 'appearance == "legacy"',
+        '[class.mat-form-field-invalid]': '_control.errorState',
+        '[class.mat-form-field-can-float]': '_canLabelFloat()',
+        '[class.mat-form-field-should-float]': '_shouldLabelFloat()',
+        '[class.mat-form-field-has-label]': '_hasFloatingLabel()',
+        '[class.mat-form-field-hide-placeholder]': '_hideControlPlaceholder()',
+        '[class.mat-form-field-disabled]': '_control.disabled',
+        '[class.mat-form-field-autofilled]': '_control.autofilled',
+        '[class.mat-focused]': '_control.focused',
+        '[class.ng-untouched]': '_shouldForward("untouched")',
+        '[class.ng-touched]': '_shouldForward("touched")',
+        '[class.ng-pristine]': '_shouldForward("pristine")',
+        '[class.ng-dirty]': '_shouldForward("dirty")',
+        '[class.ng-valid]': '_shouldForward("valid")',
+        '[class.ng-invalid]': '_shouldForward("invalid")',
+        '[class.ng-pending]': '_shouldForward("pending")',
+        '[class._mat-animation-noopable]': '!_animationsEnabled'
+      },
+      inputs: ['color'],
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectionStrategy.OnPush,
+      providers: [{
+        provide: MAT_FORM_FIELD,
+        useExisting: MatFormField
+      }],
+      template: "<div class=\"mat-form-field-wrapper\">\n  <div class=\"mat-form-field-flex\" #connectionContainer\n       (click)=\"_control.onContainerClick && _control.onContainerClick($event)\">\n\n    <!-- Outline used for outline appearance. -->\n    <ng-container *ngIf=\"appearance == 'outline'\">\n      <div class=\"mat-form-field-outline\">\n        <div class=\"mat-form-field-outline-start\"></div>\n        <div class=\"mat-form-field-outline-gap\"></div>\n        <div class=\"mat-form-field-outline-end\"></div>\n      </div>\n      <div class=\"mat-form-field-outline mat-form-field-outline-thick\">\n        <div class=\"mat-form-field-outline-start\"></div>\n        <div class=\"mat-form-field-outline-gap\"></div>\n        <div class=\"mat-form-field-outline-end\"></div>\n      </div>\n    </ng-container>\n\n    <div\n      class=\"mat-form-field-prefix\"\n      *ngIf=\"_prefixChildren.length\"\n      (cdkObserveContent)=\"updateOutlineGap()\"\n      [cdkObserveContentDisabled]=\"appearance != 'outline'\">\n      <ng-content select=\"[matPrefix]\"></ng-content>\n    </div>\n\n    <div class=\"mat-form-field-infix\" #inputContainer>\n      <ng-content></ng-content>\n\n      <span class=\"mat-form-field-label-wrapper\">\n        <!-- We add aria-owns as a workaround for an issue in JAWS & NVDA where the label isn't\n             read if it comes before the control in the DOM. -->\n        <label class=\"mat-form-field-label\"\n               (cdkObserveContent)=\"updateOutlineGap()\"\n               [cdkObserveContentDisabled]=\"appearance != 'outline'\"\n               [id]=\"_labelId\"\n               [attr.for]=\"_control.id\"\n               [attr.aria-owns]=\"_control.id\"\n               [class.mat-empty]=\"_control.empty && !_shouldAlwaysFloat()\"\n               [class.mat-form-field-empty]=\"_control.empty && !_shouldAlwaysFloat()\"\n               [class.mat-accent]=\"color == 'accent'\"\n               [class.mat-warn]=\"color == 'warn'\"\n               #label\n               *ngIf=\"_hasFloatingLabel()\"\n               [ngSwitch]=\"_hasLabel()\">\n\n          <!-- @breaking-change 8.0.0 remove in favor of mat-label element an placeholder attr. -->\n          <ng-container *ngSwitchCase=\"false\">\n            <ng-content select=\"mat-placeholder\"></ng-content>\n            <span>{{_control.placeholder}}</span>\n          </ng-container>\n\n          <ng-content select=\"mat-label\" *ngSwitchCase=\"true\"></ng-content>\n\n          <!-- @breaking-change 8.0.0 remove `mat-placeholder-required` class -->\n          <span\n            class=\"mat-placeholder-required mat-form-field-required-marker\"\n            aria-hidden=\"true\"\n            *ngIf=\"!hideRequiredMarker && _control.required && !_control.disabled\">&#32;*</span>\n        </label>\n      </span>\n    </div>\n\n    <div class=\"mat-form-field-suffix\" *ngIf=\"_suffixChildren.length\">\n      <ng-content select=\"[matSuffix]\"></ng-content>\n    </div>\n  </div>\n\n  <!-- Underline used for legacy, standard, and box appearances. -->\n  <div class=\"mat-form-field-underline\"\n       *ngIf=\"appearance != 'outline'\">\n    <span class=\"mat-form-field-ripple\"\n          [class.mat-accent]=\"color == 'accent'\"\n          [class.mat-warn]=\"color == 'warn'\"></span>\n  </div>\n\n  <div class=\"mat-form-field-subscript-wrapper\"\n       [ngSwitch]=\"_getDisplayedMessages()\">\n    <div *ngSwitchCase=\"'error'\" [@transitionMessages]=\"_subscriptAnimationState\">\n      <ng-content select=\"mat-error\"></ng-content>\n    </div>\n\n    <div class=\"mat-form-field-hint-wrapper\" *ngSwitchCase=\"'hint'\"\n      [@transitionMessages]=\"_subscriptAnimationState\">\n      <!-- TODO(mmalerba): use an actual <mat-hint> once all selectors are switched to mat-* -->\n      <div *ngIf=\"hintLabel\" [id]=\"_hintLabelId\" class=\"mat-hint\">{{hintLabel}}</div>\n      <ng-content select=\"mat-hint:not([align='end'])\"></ng-content>\n      <div class=\"mat-form-field-hint-spacer\"></div>\n      <ng-content select=\"mat-hint[align='end']\"></ng-content>\n    </div>\n  </div>\n</div>\n",
+      styles: [".mat-form-field{display:inline-block;position:relative;text-align:left}[dir=rtl] .mat-form-field{text-align:right}.mat-form-field-wrapper{position:relative}.mat-form-field-flex{display:inline-flex;align-items:baseline;box-sizing:border-box;width:100%}.mat-form-field-prefix,.mat-form-field-suffix{white-space:nowrap;flex:none;position:relative}.mat-form-field-infix{display:block;position:relative;flex:auto;min-width:0;width:180px}.cdk-high-contrast-active .mat-form-field-infix{border-image:linear-gradient(transparent, transparent)}.mat-form-field-label-wrapper{position:absolute;left:0;box-sizing:content-box;width:100%;height:100%;overflow:hidden;pointer-events:none}[dir=rtl] .mat-form-field-label-wrapper{left:auto;right:0}.mat-form-field-label{position:absolute;left:0;font:inherit;pointer-events:none;width:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;transform-origin:0 0;transition:transform 400ms cubic-bezier(0.25, 0.8, 0.25, 1),color 400ms cubic-bezier(0.25, 0.8, 0.25, 1),width 400ms cubic-bezier(0.25, 0.8, 0.25, 1);display:none}[dir=rtl] .mat-form-field-label{transform-origin:100% 0;left:auto;right:0}.mat-form-field-empty.mat-form-field-label,.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label{display:block}.mat-form-field-autofill-control:-webkit-autofill+.mat-form-field-label-wrapper .mat-form-field-label{display:none}.mat-form-field-can-float .mat-form-field-autofill-control:-webkit-autofill+.mat-form-field-label-wrapper .mat-form-field-label{display:block;transition:none}.mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-input-server[placeholder]:not(:placeholder-shown)+.mat-form-field-label-wrapper .mat-form-field-label{display:none}.mat-form-field-can-float .mat-input-server:focus+.mat-form-field-label-wrapper .mat-form-field-label,.mat-form-field-can-float .mat-input-server[placeholder]:not(:placeholder-shown)+.mat-form-field-label-wrapper .mat-form-field-label{display:block}.mat-form-field-label:not(.mat-form-field-empty){transition:none}.mat-form-field-underline{position:absolute;width:100%;pointer-events:none;transform:scale3d(1, 1.0001, 1)}.mat-form-field-ripple{position:absolute;left:0;width:100%;transform-origin:50%;transform:scaleX(0.5);opacity:0;transition:background-color 300ms cubic-bezier(0.55, 0, 0.55, 0.2)}.mat-form-field.mat-focused .mat-form-field-ripple,.mat-form-field.mat-form-field-invalid .mat-form-field-ripple{opacity:1;transform:none;transition:transform 300ms cubic-bezier(0.25, 0.8, 0.25, 1),opacity 100ms cubic-bezier(0.25, 0.8, 0.25, 1),background-color 300ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-subscript-wrapper{position:absolute;box-sizing:border-box;width:100%;overflow:hidden}.mat-form-field-subscript-wrapper .mat-icon,.mat-form-field-label-wrapper .mat-icon{width:1em;height:1em;font-size:inherit;vertical-align:baseline}.mat-form-field-hint-wrapper{display:flex}.mat-form-field-hint-spacer{flex:1 0 1em}.mat-error{display:block}.mat-form-field-control-wrapper{position:relative}.mat-form-field-hint-end{order:1}.mat-form-field._mat-animation-noopable .mat-form-field-label,.mat-form-field._mat-animation-noopable .mat-form-field-ripple{transition:none}\n", ".mat-form-field-appearance-fill .mat-form-field-flex{border-radius:4px 4px 0 0;padding:.75em .75em 0 .75em}.cdk-high-contrast-active .mat-form-field-appearance-fill .mat-form-field-flex{outline:solid 1px}.cdk-high-contrast-active .mat-form-field-appearance-fill.mat-focused .mat-form-field-flex{outline:dashed 3px}.mat-form-field-appearance-fill .mat-form-field-underline::before{content:\"\";display:block;position:absolute;bottom:0;height:1px;width:100%}.mat-form-field-appearance-fill .mat-form-field-ripple{bottom:0;height:2px}.cdk-high-contrast-active .mat-form-field-appearance-fill .mat-form-field-ripple{height:0}.mat-form-field-appearance-fill:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{opacity:1;transform:none;transition:opacity 600ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-fill._mat-animation-noopable:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{transition:none}.mat-form-field-appearance-fill .mat-form-field-subscript-wrapper{padding:0 1em}\n", ".mat-input-element{font:inherit;background:transparent;color:currentColor;border:none;outline:none;padding:0;margin:0;width:100%;max-width:100%;vertical-align:bottom;text-align:inherit;box-sizing:content-box}.mat-input-element:-moz-ui-invalid{box-shadow:none}.mat-input-element,.mat-input-element::-webkit-search-cancel-button,.mat-input-element::-webkit-search-decoration,.mat-input-element::-webkit-search-results-button,.mat-input-element::-webkit-search-results-decoration{-webkit-appearance:none}.mat-input-element::-webkit-contacts-auto-fill-button,.mat-input-element::-webkit-caps-lock-indicator,.mat-input-element:not([type=password])::-webkit-credentials-auto-fill-button{visibility:hidden}.mat-input-element[type=date],.mat-input-element[type=datetime],.mat-input-element[type=datetime-local],.mat-input-element[type=month],.mat-input-element[type=week],.mat-input-element[type=time]{line-height:1}.mat-input-element[type=date]::after,.mat-input-element[type=datetime]::after,.mat-input-element[type=datetime-local]::after,.mat-input-element[type=month]::after,.mat-input-element[type=week]::after,.mat-input-element[type=time]::after{content:\" \";white-space:pre;width:1px}.mat-input-element::-webkit-inner-spin-button,.mat-input-element::-webkit-calendar-picker-indicator,.mat-input-element::-webkit-clear-button{font-size:.75em}.mat-input-element::placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-input-element::-moz-placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-input-element::-webkit-input-placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-input-element:-ms-input-placeholder{-webkit-user-select:none;-moz-user-select:none;user-select:none;transition:color 400ms 133.3333333333ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-hide-placeholder .mat-input-element::placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element::placeholder{opacity:0}.mat-form-field-hide-placeholder .mat-input-element::-moz-placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element::-moz-placeholder{opacity:0}.mat-form-field-hide-placeholder .mat-input-element::-webkit-input-placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element::-webkit-input-placeholder{opacity:0}.mat-form-field-hide-placeholder .mat-input-element:-ms-input-placeholder{color:transparent !important;-webkit-text-fill-color:transparent;transition:none}.cdk-high-contrast-active .mat-form-field-hide-placeholder .mat-input-element:-ms-input-placeholder{opacity:0}textarea.mat-input-element{resize:vertical;overflow:auto}textarea.mat-input-element.cdk-textarea-autosize{resize:none}textarea.mat-input-element{padding:2px 0;margin:-2px 0}select.mat-input-element{-moz-appearance:none;-webkit-appearance:none;position:relative;background-color:transparent;display:inline-flex;box-sizing:border-box;padding-top:1em;top:-1em;margin-bottom:-1em}select.mat-input-element::-moz-focus-inner{border:0}select.mat-input-element:not(:disabled){cursor:pointer}.mat-form-field-type-mat-native-select .mat-form-field-infix::after{content:\"\";width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid;position:absolute;top:50%;right:0;margin-top:-2.5px;pointer-events:none}[dir=rtl] .mat-form-field-type-mat-native-select .mat-form-field-infix::after{right:auto;left:0}.mat-form-field-type-mat-native-select .mat-input-element{padding-right:15px}[dir=rtl] .mat-form-field-type-mat-native-select .mat-input-element{padding-right:0;padding-left:15px}.mat-form-field-type-mat-native-select .mat-form-field-label-wrapper{max-width:calc(100% - 10px)}.mat-form-field-type-mat-native-select.mat-form-field-appearance-outline .mat-form-field-infix::after{margin-top:-5px}.mat-form-field-type-mat-native-select.mat-form-field-appearance-fill .mat-form-field-infix::after{margin-top:-10px}\n", ".mat-form-field-appearance-legacy .mat-form-field-label{transform:perspective(100px)}.mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon,.mat-form-field-appearance-legacy .mat-form-field-suffix .mat-icon{width:1em}.mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon-button,.mat-form-field-appearance-legacy .mat-form-field-suffix .mat-icon-button{font:inherit;vertical-align:baseline}.mat-form-field-appearance-legacy .mat-form-field-prefix .mat-icon-button .mat-icon,.mat-form-field-appearance-legacy .mat-form-field-suffix .mat-icon-button .mat-icon{font-size:inherit}.mat-form-field-appearance-legacy .mat-form-field-underline{height:1px}.cdk-high-contrast-active .mat-form-field-appearance-legacy .mat-form-field-underline{height:0;border-top:solid 1px}.mat-form-field-appearance-legacy .mat-form-field-ripple{top:0;height:2px;overflow:hidden}.cdk-high-contrast-active .mat-form-field-appearance-legacy .mat-form-field-ripple{height:0;border-top:solid 2px}.mat-form-field-appearance-legacy.mat-form-field-disabled .mat-form-field-underline{background-position:0;background-color:transparent}.cdk-high-contrast-active .mat-form-field-appearance-legacy.mat-form-field-disabled .mat-form-field-underline{border-top-style:dotted;border-top-width:2px}.mat-form-field-appearance-legacy.mat-form-field-invalid:not(.mat-focused) .mat-form-field-ripple{height:1px}\n", ".mat-form-field-appearance-outline .mat-form-field-wrapper{margin:.25em 0}.mat-form-field-appearance-outline .mat-form-field-flex{padding:0 .75em 0 .75em;margin-top:-0.25em;position:relative}.mat-form-field-appearance-outline .mat-form-field-prefix,.mat-form-field-appearance-outline .mat-form-field-suffix{top:.25em}.mat-form-field-appearance-outline .mat-form-field-outline{display:flex;position:absolute;top:.25em;left:0;right:0;bottom:0;pointer-events:none}.mat-form-field-appearance-outline .mat-form-field-outline-start,.mat-form-field-appearance-outline .mat-form-field-outline-end{border:1px solid currentColor;min-width:5px}.mat-form-field-appearance-outline .mat-form-field-outline-start{border-radius:5px 0 0 5px;border-right-style:none}[dir=rtl] .mat-form-field-appearance-outline .mat-form-field-outline-start{border-right-style:solid;border-left-style:none;border-radius:0 5px 5px 0}.mat-form-field-appearance-outline .mat-form-field-outline-end{border-radius:0 5px 5px 0;border-left-style:none;flex-grow:1}[dir=rtl] .mat-form-field-appearance-outline .mat-form-field-outline-end{border-left-style:solid;border-right-style:none;border-radius:5px 0 0 5px}.mat-form-field-appearance-outline .mat-form-field-outline-gap{border-radius:.000001px;border:1px solid currentColor;border-left-style:none;border-right-style:none}.mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-outline-gap{border-top-color:transparent}.mat-form-field-appearance-outline .mat-form-field-outline-thick{opacity:0}.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-start,.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-end,.mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-gap{border-width:2px}.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline,.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline{opacity:0;transition:opacity 100ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick,.mat-form-field-appearance-outline.mat-form-field-invalid .mat-form-field-outline-thick{opacity:1}.cdk-high-contrast-active .mat-form-field-appearance-outline.mat-focused .mat-form-field-outline-thick{border:3px dashed}.mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline{opacity:0;transition:opacity 600ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-outline:not(.mat-form-field-disabled) .mat-form-field-flex:hover .mat-form-field-outline-thick{opacity:1}.mat-form-field-appearance-outline .mat-form-field-subscript-wrapper{padding:0 1em}.mat-form-field-appearance-outline._mat-animation-noopable:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-outline,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline-start,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline-end,.mat-form-field-appearance-outline._mat-animation-noopable .mat-form-field-outline-gap{transition:none}\n", ".mat-form-field-appearance-standard .mat-form-field-flex{padding-top:.75em}.mat-form-field-appearance-standard .mat-form-field-underline{height:1px}.cdk-high-contrast-active .mat-form-field-appearance-standard .mat-form-field-underline{height:0;border-top:solid 1px}.mat-form-field-appearance-standard .mat-form-field-ripple{bottom:0;height:2px}.cdk-high-contrast-active .mat-form-field-appearance-standard .mat-form-field-ripple{height:0;border-top:solid 2px}.mat-form-field-appearance-standard.mat-form-field-disabled .mat-form-field-underline{background-position:0;background-color:transparent}.cdk-high-contrast-active .mat-form-field-appearance-standard.mat-form-field-disabled .mat-form-field-underline{border-top-style:dotted;border-top-width:2px}.mat-form-field-appearance-standard:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{opacity:1;transform:none;transition:opacity 600ms cubic-bezier(0.25, 0.8, 0.25, 1)}.mat-form-field-appearance-standard._mat-animation-noopable:not(.mat-form-field-disabled) .mat-form-field-flex:hover~.mat-form-field-underline .mat-form-field-ripple{transition:none}\n"]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef
+    }, {
+      type: _angular_cdk_bidi__WEBPACK_IMPORTED_MODULE_10__.Directionality,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [MAT_FORM_FIELD_DEFAULT_OPTIONS]
+      }]
+    }, {
+      type: _angular_cdk_platform__WEBPACK_IMPORTED_MODULE_11__.Platform
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgZone
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [_angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_12__.ANIMATION_MODULE_TYPE]
+      }]
+    }];
+  }, {
+    appearance: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    hideRequiredMarker: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    hintLabel: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    floatLabel: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    _connectionContainerRef: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewChild,
+      args: ['connectionContainer', {
+        static: true
+      }]
+    }],
+    _inputContainerRef: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewChild,
+      args: ['inputContainer']
+    }],
+    _label: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewChild,
+      args: ['label']
+    }],
+    _controlNonStatic: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatFormFieldControl]
+    }],
+    _controlStatic: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatFormFieldControl, {
+        static: true
+      }]
+    }],
+    _labelChildNonStatic: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatLabel]
+    }],
+    _labelChildStatic: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatLabel, {
+        static: true
+      }]
+    }],
+    _placeholderChild: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatPlaceholder]
+    }],
+    _errorChildren: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChildren,
+      args: [MAT_ERROR, {
+        descendants: true
+      }]
+    }],
+    _hintChildren: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChildren,
+      args: [_MAT_HINT, {
+        descendants: true
+      }]
+    }],
+    _prefixChildren: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChildren,
+      args: [MAT_PREFIX, {
+        descendants: true
+      }]
+    }],
+    _suffixChildren: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChildren,
+      args: [MAT_SUFFIX, {
+        descendants: true
+      }]
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class MatFormFieldModule {}
+
+MatFormFieldModule.ɵfac = function MatFormFieldModule_Factory(t) {
+  return new (t || MatFormFieldModule)();
+};
+
+MatFormFieldModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: MatFormFieldModule
+});
+MatFormFieldModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({
+  imports: [[_angular_common__WEBPACK_IMPORTED_MODULE_13__.CommonModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule, _angular_cdk_observers__WEBPACK_IMPORTED_MODULE_14__.ObserversModule], _angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatFormFieldModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule,
+    args: [{
+      declarations: [MatError, MatFormField, MatHint, MatLabel, MatPlaceholder, MatPrefix, MatSuffix],
+      imports: [_angular_common__WEBPACK_IMPORTED_MODULE_13__.CommonModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule, _angular_cdk_observers__WEBPACK_IMPORTED_MODULE_14__.ObserversModule],
+      exports: [_angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule, MatError, MatFormField, MatHint, MatLabel, MatPlaceholder, MatPrefix, MatSuffix]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
+/***/ 5590:
+/*!**********************************************************!*\
+  !*** ./node_modules/@angular/material/fesm2015/icon.mjs ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "ICON_REGISTRY_PROVIDER": () => (/* binding */ ICON_REGISTRY_PROVIDER),
+/* harmony export */   "ICON_REGISTRY_PROVIDER_FACTORY": () => (/* binding */ ICON_REGISTRY_PROVIDER_FACTORY),
+/* harmony export */   "MAT_ICON_LOCATION": () => (/* binding */ MAT_ICON_LOCATION),
+/* harmony export */   "MAT_ICON_LOCATION_FACTORY": () => (/* binding */ MAT_ICON_LOCATION_FACTORY),
+/* harmony export */   "MatIcon": () => (/* binding */ MatIcon),
+/* harmony export */   "MatIconModule": () => (/* binding */ MatIconModule),
+/* harmony export */   "MatIconRegistry": () => (/* binding */ MatIconRegistry),
+/* harmony export */   "getMatIconFailedToSanitizeLiteralError": () => (/* binding */ getMatIconFailedToSanitizeLiteralError),
+/* harmony export */   "getMatIconFailedToSanitizeUrlError": () => (/* binding */ getMatIconFailedToSanitizeUrlError),
+/* harmony export */   "getMatIconNameNotFoundError": () => (/* binding */ getMatIconNameNotFoundError),
+/* harmony export */   "getMatIconNoHttpProviderError": () => (/* binding */ getMatIconNoHttpProviderError)
+/* harmony export */ });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/material/core */ 8133);
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/common */ 6362);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ 745);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs */ 5474);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs */ 1640);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! rxjs */ 6078);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ 9337);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ 635);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs/operators */ 3158);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rxjs/operators */ 2313);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs/operators */ 1203);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! rxjs/operators */ 9295);
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/common/http */ 8784);
+/* harmony import */ var _angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/platform-browser */ 318);
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * The Trusted Types policy, or null if Trusted Types are not
+ * enabled/supported, or undefined if the policy has not been created yet.
+ */
+
+const _c0 = ["*"];
+let policy;
+/**
+ * Returns the Trusted Types policy, or null if Trusted Types are not
+ * enabled/supported. The first call to this function will create the policy.
+ */
+
+function getPolicy() {
+  if (policy === undefined) {
+    policy = null;
+
+    if (typeof window !== 'undefined') {
+      const ttWindow = window;
+
+      if (ttWindow.trustedTypes !== undefined) {
+        policy = ttWindow.trustedTypes.createPolicy('angular#components', {
+          createHTML: s => s
+        });
+      }
+    }
+  }
+
+  return policy;
+}
+/**
+ * Unsafely promote a string to a TrustedHTML, falling back to strings when
+ * Trusted Types are not available.
+ * @security This is a security-sensitive function; any use of this function
+ * must go through security review. In particular, it must be assured that the
+ * provided string will never cause an XSS vulnerability if used in a context
+ * that will be interpreted as HTML by a browser, e.g. when assigning to
+ * element.innerHTML.
+ */
+
+
+function trustedHTMLFromString(html) {
+  var _a;
+
+  return ((_a = getPolicy()) === null || _a === void 0 ? void 0 : _a.createHTML(html)) || html;
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Returns an exception to be thrown in the case when attempting to
+ * load an icon with a name that cannot be found.
+ * @docs-private
+ */
+
+
+function getMatIconNameNotFoundError(iconName) {
+  return Error(`Unable to find icon with the name "${iconName}"`);
+}
+/**
+ * Returns an exception to be thrown when the consumer attempts to use
+ * `<mat-icon>` without including @angular/common/http.
+ * @docs-private
+ */
+
+
+function getMatIconNoHttpProviderError() {
+  return Error('Could not find HttpClient provider for use with Angular Material icons. ' + 'Please include the HttpClientModule from @angular/common/http in your ' + 'app imports.');
+}
+/**
+ * Returns an exception to be thrown when a URL couldn't be sanitized.
+ * @param url URL that was attempted to be sanitized.
+ * @docs-private
+ */
+
+
+function getMatIconFailedToSanitizeUrlError(url) {
+  return Error(`The URL provided to MatIconRegistry was not trusted as a resource URL ` + `via Angular's DomSanitizer. Attempted URL was "${url}".`);
+}
+/**
+ * Returns an exception to be thrown when a HTML string couldn't be sanitized.
+ * @param literal HTML that was attempted to be sanitized.
+ * @docs-private
+ */
+
+
+function getMatIconFailedToSanitizeLiteralError(literal) {
+  return Error(`The literal provided to MatIconRegistry was not trusted as safe HTML by ` + `Angular's DomSanitizer. Attempted literal was "${literal}".`);
+}
+/**
+ * Configuration for an icon, including the URL and possibly the cached SVG element.
+ * @docs-private
+ */
+
+
+class SvgIconConfig {
+  constructor(url, svgText, options) {
+    this.url = url;
+    this.svgText = svgText;
+    this.options = options;
+  }
+
+}
+/**
+ * Service to register and display icons used by the `<mat-icon>` component.
+ * - Registers icon URLs by namespace and name.
+ * - Registers icon set URLs by namespace.
+ * - Registers aliases for CSS classes, for use with icon fonts.
+ * - Loads icons from URLs and extracts individual icons from icon sets.
+ */
+
+
+class MatIconRegistry {
+  constructor(_httpClient, _sanitizer, document, _errorHandler) {
+    this._httpClient = _httpClient;
+    this._sanitizer = _sanitizer;
+    this._errorHandler = _errorHandler;
+    /**
+     * URLs and cached SVG elements for individual icons. Keys are of the format "[namespace]:[icon]".
+     */
+
+    this._svgIconConfigs = new Map();
+    /**
+     * SvgIconConfig objects and cached SVG elements for icon sets, keyed by namespace.
+     * Multiple icon sets can be registered under the same namespace.
+     */
+
+    this._iconSetConfigs = new Map();
+    /** Cache for icons loaded by direct URLs. */
+
+    this._cachedIconsByUrl = new Map();
+    /** In-progress icon fetches. Used to coalesce multiple requests to the same URL. */
+
+    this._inProgressUrlFetches = new Map();
+    /** Map from font identifiers to their CSS class names. Used for icon fonts. */
+
+    this._fontCssClassesByAlias = new Map();
+    /** Registered icon resolver functions. */
+
+    this._resolvers = [];
+    /**
+     * The CSS class to apply when an `<mat-icon>` component has no icon name, url, or font specified.
+     * The default 'material-icons' value assumes that the material icon font has been loaded as
+     * described at http://google.github.io/material-design-icons/#icon-font-for-the-web
+     */
+
+    this._defaultFontSetClass = 'material-icons';
+    this._document = document;
+  }
+  /**
+   * Registers an icon by URL in the default namespace.
+   * @param iconName Name under which the icon should be registered.
+   * @param url
+   */
+
+
+  addSvgIcon(iconName, url, options) {
+    return this.addSvgIconInNamespace('', iconName, url, options);
+  }
+  /**
+   * Registers an icon using an HTML string in the default namespace.
+   * @param iconName Name under which the icon should be registered.
+   * @param literal SVG source of the icon.
+   */
+
+
+  addSvgIconLiteral(iconName, literal, options) {
+    return this.addSvgIconLiteralInNamespace('', iconName, literal, options);
+  }
+  /**
+   * Registers an icon by URL in the specified namespace.
+   * @param namespace Namespace in which the icon should be registered.
+   * @param iconName Name under which the icon should be registered.
+   * @param url
+   */
+
+
+  addSvgIconInNamespace(namespace, iconName, url, options) {
+    return this._addSvgIconConfig(namespace, iconName, new SvgIconConfig(url, null, options));
+  }
+  /**
+   * Registers an icon resolver function with the registry. The function will be invoked with the
+   * name and namespace of an icon when the registry tries to resolve the URL from which to fetch
+   * the icon. The resolver is expected to return a `SafeResourceUrl` that points to the icon,
+   * an object with the icon URL and icon options, or `null` if the icon is not supported. Resolvers
+   * will be invoked in the order in which they have been registered.
+   * @param resolver Resolver function to be registered.
+   */
+
+
+  addSvgIconResolver(resolver) {
+    this._resolvers.push(resolver);
+
+    return this;
+  }
+  /**
+   * Registers an icon using an HTML string in the specified namespace.
+   * @param namespace Namespace in which the icon should be registered.
+   * @param iconName Name under which the icon should be registered.
+   * @param literal SVG source of the icon.
+   */
+
+
+  addSvgIconLiteralInNamespace(namespace, iconName, literal, options) {
+    const cleanLiteral = this._sanitizer.sanitize(_angular_core__WEBPACK_IMPORTED_MODULE_0__.SecurityContext.HTML, literal); // TODO: add an ngDevMode check
+
+
+    if (!cleanLiteral) {
+      throw getMatIconFailedToSanitizeLiteralError(literal);
+    } // Security: The literal is passed in as SafeHtml, and is thus trusted.
+
+
+    const trustedLiteral = trustedHTMLFromString(cleanLiteral);
+    return this._addSvgIconConfig(namespace, iconName, new SvgIconConfig('', trustedLiteral, options));
+  }
+  /**
+   * Registers an icon set by URL in the default namespace.
+   * @param url
+   */
+
+
+  addSvgIconSet(url, options) {
+    return this.addSvgIconSetInNamespace('', url, options);
+  }
+  /**
+   * Registers an icon set using an HTML string in the default namespace.
+   * @param literal SVG source of the icon set.
+   */
+
+
+  addSvgIconSetLiteral(literal, options) {
+    return this.addSvgIconSetLiteralInNamespace('', literal, options);
+  }
+  /**
+   * Registers an icon set by URL in the specified namespace.
+   * @param namespace Namespace in which to register the icon set.
+   * @param url
+   */
+
+
+  addSvgIconSetInNamespace(namespace, url, options) {
+    return this._addSvgIconSetConfig(namespace, new SvgIconConfig(url, null, options));
+  }
+  /**
+   * Registers an icon set using an HTML string in the specified namespace.
+   * @param namespace Namespace in which to register the icon set.
+   * @param literal SVG source of the icon set.
+   */
+
+
+  addSvgIconSetLiteralInNamespace(namespace, literal, options) {
+    const cleanLiteral = this._sanitizer.sanitize(_angular_core__WEBPACK_IMPORTED_MODULE_0__.SecurityContext.HTML, literal);
+
+    if (!cleanLiteral) {
+      throw getMatIconFailedToSanitizeLiteralError(literal);
+    } // Security: The literal is passed in as SafeHtml, and is thus trusted.
+
+
+    const trustedLiteral = trustedHTMLFromString(cleanLiteral);
+    return this._addSvgIconSetConfig(namespace, new SvgIconConfig('', trustedLiteral, options));
+  }
+  /**
+   * Defines an alias for a CSS class name to be used for icon fonts. Creating an matIcon
+   * component with the alias as the fontSet input will cause the class name to be applied
+   * to the `<mat-icon>` element.
+   *
+   * @param alias Alias for the font.
+   * @param className Class name override to be used instead of the alias.
+   */
+
+
+  registerFontClassAlias(alias, className = alias) {
+    this._fontCssClassesByAlias.set(alias, className);
+
+    return this;
+  }
+  /**
+   * Returns the CSS class name associated with the alias by a previous call to
+   * registerFontClassAlias. If no CSS class has been associated, returns the alias unmodified.
+   */
+
+
+  classNameForFontAlias(alias) {
+    return this._fontCssClassesByAlias.get(alias) || alias;
+  }
+  /**
+   * Sets the CSS class name to be used for icon fonts when an `<mat-icon>` component does not
+   * have a fontSet input value, and is not loading an icon by name or URL.
+   *
+   * @param className
+   */
+
+
+  setDefaultFontSetClass(className) {
+    this._defaultFontSetClass = className;
+    return this;
+  }
+  /**
+   * Returns the CSS class name to be used for icon fonts when an `<mat-icon>` component does not
+   * have a fontSet input value, and is not loading an icon by name or URL.
+   */
+
+
+  getDefaultFontSetClass() {
+    return this._defaultFontSetClass;
+  }
+  /**
+   * Returns an Observable that produces the icon (as an `<svg>` DOM element) from the given URL.
+   * The response from the URL may be cached so this will not always cause an HTTP request, but
+   * the produced element will always be a new copy of the originally fetched icon. (That is,
+   * it will not contain any modifications made to elements previously returned).
+   *
+   * @param safeUrl URL from which to fetch the SVG icon.
+   */
+
+
+  getSvgIconFromUrl(safeUrl) {
+    const url = this._sanitizer.sanitize(_angular_core__WEBPACK_IMPORTED_MODULE_0__.SecurityContext.RESOURCE_URL, safeUrl);
+
+    if (!url) {
+      throw getMatIconFailedToSanitizeUrlError(safeUrl);
+    }
+
+    const cachedIcon = this._cachedIconsByUrl.get(url);
+
+    if (cachedIcon) {
+      return (0,rxjs__WEBPACK_IMPORTED_MODULE_1__.of)(cloneSvg(cachedIcon));
+    }
+
+    return this._loadSvgIconFromConfig(new SvgIconConfig(safeUrl, null)).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.tap)(svg => this._cachedIconsByUrl.set(url, svg)), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(svg => cloneSvg(svg)));
+  }
+  /**
+   * Returns an Observable that produces the icon (as an `<svg>` DOM element) with the given name
+   * and namespace. The icon must have been previously registered with addIcon or addIconSet;
+   * if not, the Observable will throw an error.
+   *
+   * @param name Name of the icon to be retrieved.
+   * @param namespace Namespace in which to look for the icon.
+   */
+
+
+  getNamedSvgIcon(name, namespace = '') {
+    const key = iconKey(namespace, name);
+
+    let config = this._svgIconConfigs.get(key); // Return (copy of) cached icon if possible.
+
+
+    if (config) {
+      return this._getSvgFromConfig(config);
+    } // Otherwise try to resolve the config from one of the resolver functions.
+
+
+    config = this._getIconConfigFromResolvers(namespace, name);
+
+    if (config) {
+      this._svgIconConfigs.set(key, config);
+
+      return this._getSvgFromConfig(config);
+    } // See if we have any icon sets registered for the namespace.
+
+
+    const iconSetConfigs = this._iconSetConfigs.get(namespace);
+
+    if (iconSetConfigs) {
+      return this._getSvgFromIconSetConfigs(name, iconSetConfigs);
+    }
+
+    return (0,rxjs__WEBPACK_IMPORTED_MODULE_4__.throwError)(getMatIconNameNotFoundError(key));
+  }
+
+  ngOnDestroy() {
+    this._resolvers = [];
+
+    this._svgIconConfigs.clear();
+
+    this._iconSetConfigs.clear();
+
+    this._cachedIconsByUrl.clear();
+  }
+  /**
+   * Returns the cached icon for a SvgIconConfig if available, or fetches it from its URL if not.
+   */
+
+
+  _getSvgFromConfig(config) {
+    if (config.svgText) {
+      // We already have the SVG element for this icon, return a copy.
+      return (0,rxjs__WEBPACK_IMPORTED_MODULE_1__.of)(cloneSvg(this._svgElementFromConfig(config)));
+    } else {
+      // Fetch the icon from the config's URL, cache it, and return a copy.
+      return this._loadSvgIconFromConfig(config).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(svg => cloneSvg(svg)));
+    }
+  }
+  /**
+   * Attempts to find an icon with the specified name in any of the SVG icon sets.
+   * First searches the available cached icons for a nested element with a matching name, and
+   * if found copies the element to a new `<svg>` element. If not found, fetches all icon sets
+   * that have not been cached, and searches again after all fetches are completed.
+   * The returned Observable produces the SVG element if possible, and throws
+   * an error if no icon with the specified name can be found.
+   */
+
+
+  _getSvgFromIconSetConfigs(name, iconSetConfigs) {
+    // For all the icon set SVG elements we've fetched, see if any contain an icon with the
+    // requested name.
+    const namedIcon = this._extractIconWithNameFromAnySet(name, iconSetConfigs);
+
+    if (namedIcon) {
+      // We could cache namedIcon in _svgIconConfigs, but since we have to make a copy every
+      // time anyway, there's probably not much advantage compared to just always extracting
+      // it from the icon set.
+      return (0,rxjs__WEBPACK_IMPORTED_MODULE_1__.of)(namedIcon);
+    } // Not found in any cached icon sets. If there are icon sets with URLs that we haven't
+    // fetched, fetch them now and look for iconName in the results.
+
+
+    const iconSetFetchRequests = iconSetConfigs.filter(iconSetConfig => !iconSetConfig.svgText).map(iconSetConfig => {
+      return this._loadSvgIconSetFromConfig(iconSetConfig).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_5__.catchError)(err => {
+        const url = this._sanitizer.sanitize(_angular_core__WEBPACK_IMPORTED_MODULE_0__.SecurityContext.RESOURCE_URL, iconSetConfig.url); // Swallow errors fetching individual URLs so the
+        // combined Observable won't necessarily fail.
+
+
+        const errorMessage = `Loading icon set URL: ${url} failed: ${err.message}`;
+
+        this._errorHandler.handleError(new Error(errorMessage));
+
+        return (0,rxjs__WEBPACK_IMPORTED_MODULE_1__.of)(null);
+      }));
+    }); // Fetch all the icon set URLs. When the requests complete, every IconSet should have a
+    // cached SVG element (unless the request failed), and we can check again for the icon.
+
+    return (0,rxjs__WEBPACK_IMPORTED_MODULE_6__.forkJoin)(iconSetFetchRequests).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(() => {
+      const foundIcon = this._extractIconWithNameFromAnySet(name, iconSetConfigs); // TODO: add an ngDevMode check
+
+
+      if (!foundIcon) {
+        throw getMatIconNameNotFoundError(name);
+      }
+
+      return foundIcon;
+    }));
+  }
+  /**
+   * Searches the cached SVG elements for the given icon sets for a nested icon element whose "id"
+   * tag matches the specified name. If found, copies the nested element to a new SVG element and
+   * returns it. Returns null if no matching element is found.
+   */
+
+
+  _extractIconWithNameFromAnySet(iconName, iconSetConfigs) {
+    // Iterate backwards, so icon sets added later have precedence.
+    for (let i = iconSetConfigs.length - 1; i >= 0; i--) {
+      const config = iconSetConfigs[i]; // Parsing the icon set's text into an SVG element can be expensive. We can avoid some of
+      // the parsing by doing a quick check using `indexOf` to see if there's any chance for the
+      // icon to be in the set. This won't be 100% accurate, but it should help us avoid at least
+      // some of the parsing.
+
+      if (config.svgText && config.svgText.toString().indexOf(iconName) > -1) {
+        const svg = this._svgElementFromConfig(config);
+
+        const foundIcon = this._extractSvgIconFromSet(svg, iconName, config.options);
+
+        if (foundIcon) {
+          return foundIcon;
+        }
+      }
+    }
+
+    return null;
+  }
+  /**
+   * Loads the content of the icon URL specified in the SvgIconConfig and creates an SVG element
+   * from it.
+   */
+
+
+  _loadSvgIconFromConfig(config) {
+    return this._fetchIcon(config).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.tap)(svgText => config.svgText = svgText), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(() => this._svgElementFromConfig(config)));
+  }
+  /**
+   * Loads the content of the icon set URL specified in the
+   * SvgIconConfig and attaches it to the config.
+   */
+
+
+  _loadSvgIconSetFromConfig(config) {
+    if (config.svgText) {
+      return (0,rxjs__WEBPACK_IMPORTED_MODULE_1__.of)(null);
+    }
+
+    return this._fetchIcon(config).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.tap)(svgText => config.svgText = svgText));
+  }
+  /**
+   * Searches the cached element of the given SvgIconConfig for a nested icon element whose "id"
+   * tag matches the specified name. If found, copies the nested element to a new SVG element and
+   * returns it. Returns null if no matching element is found.
+   */
+
+
+  _extractSvgIconFromSet(iconSet, iconName, options) {
+    // Use the `id="iconName"` syntax in order to escape special
+    // characters in the ID (versus using the #iconName syntax).
+    const iconSource = iconSet.querySelector(`[id="${iconName}"]`);
+
+    if (!iconSource) {
+      return null;
+    } // Clone the element and remove the ID to prevent multiple elements from being added
+    // to the page with the same ID.
+
+
+    const iconElement = iconSource.cloneNode(true);
+    iconElement.removeAttribute('id'); // If the icon node is itself an <svg> node, clone and return it directly. If not, set it as
+    // the content of a new <svg> node.
+
+    if (iconElement.nodeName.toLowerCase() === 'svg') {
+      return this._setSvgAttributes(iconElement, options);
+    } // If the node is a <symbol>, it won't be rendered so we have to convert it into <svg>. Note
+    // that the same could be achieved by referring to it via <use href="#id">, however the <use>
+    // tag is problematic on Firefox, because it needs to include the current page path.
+
+
+    if (iconElement.nodeName.toLowerCase() === 'symbol') {
+      return this._setSvgAttributes(this._toSvgElement(iconElement), options);
+    } // createElement('SVG') doesn't work as expected; the DOM ends up with
+    // the correct nodes, but the SVG content doesn't render. Instead we
+    // have to create an empty SVG node using innerHTML and append its content.
+    // Elements created using DOMParser.parseFromString have the same problem.
+    // http://stackoverflow.com/questions/23003278/svg-innerhtml-in-firefox-can-not-display
+
+
+    const svg = this._svgElementFromString(trustedHTMLFromString('<svg></svg>')); // Clone the node so we don't remove it from the parent icon set element.
+
+
+    svg.appendChild(iconElement);
+    return this._setSvgAttributes(svg, options);
+  }
+  /**
+   * Creates a DOM element from the given SVG string.
+   */
+
+
+  _svgElementFromString(str) {
+    const div = this._document.createElement('DIV');
+
+    div.innerHTML = str;
+    const svg = div.querySelector('svg'); // TODO: add an ngDevMode check
+
+    if (!svg) {
+      throw Error('<svg> tag not found');
+    }
+
+    return svg;
+  }
+  /**
+   * Converts an element into an SVG node by cloning all of its children.
+   */
+
+
+  _toSvgElement(element) {
+    const svg = this._svgElementFromString(trustedHTMLFromString('<svg></svg>'));
+
+    const attributes = element.attributes; // Copy over all the attributes from the `symbol` to the new SVG, except the id.
+
+    for (let i = 0; i < attributes.length; i++) {
+      const {
+        name,
+        value
+      } = attributes[i];
+
+      if (name !== 'id') {
+        svg.setAttribute(name, value);
+      }
+    }
+
+    for (let i = 0; i < element.childNodes.length; i++) {
+      if (element.childNodes[i].nodeType === this._document.ELEMENT_NODE) {
+        svg.appendChild(element.childNodes[i].cloneNode(true));
+      }
+    }
+
+    return svg;
+  }
+  /**
+   * Sets the default attributes for an SVG element to be used as an icon.
+   */
+
+
+  _setSvgAttributes(svg, options) {
+    svg.setAttribute('fit', '');
+    svg.setAttribute('height', '100%');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.setAttribute('focusable', 'false'); // Disable IE11 default behavior to make SVGs focusable.
+
+    if (options && options.viewBox) {
+      svg.setAttribute('viewBox', options.viewBox);
+    }
+
+    return svg;
+  }
+  /**
+   * Returns an Observable which produces the string contents of the given icon. Results may be
+   * cached, so future calls with the same URL may not cause another HTTP request.
+   */
+
+
+  _fetchIcon(iconConfig) {
+    var _a;
+
+    const {
+      url: safeUrl,
+      options
+    } = iconConfig;
+    const withCredentials = (_a = options === null || options === void 0 ? void 0 : options.withCredentials) !== null && _a !== void 0 ? _a : false;
+
+    if (!this._httpClient) {
+      throw getMatIconNoHttpProviderError();
+    } // TODO: add an ngDevMode check
+
+
+    if (safeUrl == null) {
+      throw Error(`Cannot fetch icon from URL "${safeUrl}".`);
+    }
+
+    const url = this._sanitizer.sanitize(_angular_core__WEBPACK_IMPORTED_MODULE_0__.SecurityContext.RESOURCE_URL, safeUrl); // TODO: add an ngDevMode check
+
+
+    if (!url) {
+      throw getMatIconFailedToSanitizeUrlError(safeUrl);
+    } // Store in-progress fetches to avoid sending a duplicate request for a URL when there is
+    // already a request in progress for that URL. It's necessary to call share() on the
+    // Observable returned by http.get() so that multiple subscribers don't cause multiple XHRs.
+
+
+    const inProgressFetch = this._inProgressUrlFetches.get(url);
+
+    if (inProgressFetch) {
+      return inProgressFetch;
+    }
+
+    const req = this._httpClient.get(url, {
+      responseType: 'text',
+      withCredentials
+    }).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.map)(svg => {
+      // Security: This SVG is fetched from a SafeResourceUrl, and is thus
+      // trusted HTML.
+      return trustedHTMLFromString(svg);
+    }), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_7__.finalize)(() => this._inProgressUrlFetches.delete(url)), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_8__.share)());
+
+    this._inProgressUrlFetches.set(url, req);
+
+    return req;
+  }
+  /**
+   * Registers an icon config by name in the specified namespace.
+   * @param namespace Namespace in which to register the icon config.
+   * @param iconName Name under which to register the config.
+   * @param config Config to be registered.
+   */
+
+
+  _addSvgIconConfig(namespace, iconName, config) {
+    this._svgIconConfigs.set(iconKey(namespace, iconName), config);
+
+    return this;
+  }
+  /**
+   * Registers an icon set config in the specified namespace.
+   * @param namespace Namespace in which to register the icon config.
+   * @param config Config to be registered.
+   */
+
+
+  _addSvgIconSetConfig(namespace, config) {
+    const configNamespace = this._iconSetConfigs.get(namespace);
+
+    if (configNamespace) {
+      configNamespace.push(config);
+    } else {
+      this._iconSetConfigs.set(namespace, [config]);
+    }
+
+    return this;
+  }
+  /** Parses a config's text into an SVG element. */
+
+
+  _svgElementFromConfig(config) {
+    if (!config.svgElement) {
+      const svg = this._svgElementFromString(config.svgText);
+
+      this._setSvgAttributes(svg, config.options);
+
+      config.svgElement = svg;
+    }
+
+    return config.svgElement;
+  }
+  /** Tries to create an icon config through the registered resolver functions. */
+
+
+  _getIconConfigFromResolvers(namespace, name) {
+    for (let i = 0; i < this._resolvers.length; i++) {
+      const result = this._resolvers[i](name, namespace);
+
+      if (result) {
+        return isSafeUrlWithOptions(result) ? new SvgIconConfig(result.url, null, result.options) : new SvgIconConfig(result, null);
+      }
+    }
+
+    return undefined;
+  }
+
+}
+
+MatIconRegistry.ɵfac = function MatIconRegistry_Factory(t) {
+  return new (t || MatIconRegistry)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_9__.HttpClient, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__.DomSanitizer), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common__WEBPACK_IMPORTED_MODULE_11__.DOCUMENT, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ErrorHandler));
+};
+
+MatIconRegistry.ɵprov = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
+  token: MatIconRegistry,
+  factory: MatIconRegistry.ɵfac,
+  providedIn: 'root'
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatIconRegistry, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Injectable,
+    args: [{
+      providedIn: 'root'
+    }]
+  }], function () {
+    return [{
+      type: _angular_common_http__WEBPACK_IMPORTED_MODULE_9__.HttpClient,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }]
+    }, {
+      type: _angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__.DomSanitizer
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [_angular_common__WEBPACK_IMPORTED_MODULE_11__.DOCUMENT]
+      }]
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ErrorHandler
+    }];
+  }, null);
+})();
+/** @docs-private */
+
+
+function ICON_REGISTRY_PROVIDER_FACTORY(parentRegistry, httpClient, sanitizer, errorHandler, document) {
+  return parentRegistry || new MatIconRegistry(httpClient, sanitizer, document, errorHandler);
+}
+/** @docs-private */
+
+
+const ICON_REGISTRY_PROVIDER = {
+  // If there is already an MatIconRegistry available, use that. Otherwise, provide a new one.
+  provide: MatIconRegistry,
+  deps: [[new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional(), new _angular_core__WEBPACK_IMPORTED_MODULE_0__.SkipSelf(), MatIconRegistry], [new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional(), _angular_common_http__WEBPACK_IMPORTED_MODULE_9__.HttpClient], _angular_platform_browser__WEBPACK_IMPORTED_MODULE_10__.DomSanitizer, _angular_core__WEBPACK_IMPORTED_MODULE_0__.ErrorHandler, [new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional(), _angular_common__WEBPACK_IMPORTED_MODULE_11__.DOCUMENT]],
+  useFactory: ICON_REGISTRY_PROVIDER_FACTORY
+};
+/** Clones an SVGElement while preserving type information. */
+
+function cloneSvg(svg) {
+  return svg.cloneNode(true);
+}
+/** Returns the cache key to use for an icon namespace and name. */
+
+
+function iconKey(namespace, name) {
+  return namespace + ':' + name;
+}
+
+function isSafeUrlWithOptions(value) {
+  return !!(value.url && value.options);
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// Boilerplate for applying mixins to MatIcon.
+
+/** @docs-private */
+
+
+const _MatIconBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_12__.mixinColor)(class {
+  constructor(_elementRef) {
+    this._elementRef = _elementRef;
+  }
+
+});
+/**
+ * Injection token used to provide the current location to `MatIcon`.
+ * Used to handle server-side rendering and to stub out during unit tests.
+ * @docs-private
+ */
+
+
+const MAT_ICON_LOCATION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('mat-icon-location', {
+  providedIn: 'root',
+  factory: MAT_ICON_LOCATION_FACTORY
+});
+/** @docs-private */
+
+function MAT_ICON_LOCATION_FACTORY() {
+  const _document = (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.inject)(_angular_common__WEBPACK_IMPORTED_MODULE_11__.DOCUMENT);
+
+  const _location = _document ? _document.location : null;
+
+  return {
+    // Note that this needs to be a function, rather than a property, because Angular
+    // will only resolve it once, but we want the current path on each call.
+    getPathname: () => _location ? _location.pathname + _location.search : ''
+  };
+}
+/** SVG attributes that accept a FuncIRI (e.g. `url(<something>)`). */
+
+
+const funcIriAttributes = ['clip-path', 'color-profile', 'src', 'cursor', 'fill', 'filter', 'marker', 'marker-start', 'marker-mid', 'marker-end', 'mask', 'stroke'];
+/** Selector that can be used to find all elements that are using a `FuncIRI`. */
+
+const funcIriAttributeSelector = funcIriAttributes.map(attr => `[${attr}]`).join(', ');
+/** Regex that can be used to extract the id out of a FuncIRI. */
+
+const funcIriPattern = /^url\(['"]?#(.*?)['"]?\)$/;
+/**
+ * Component to display an icon. It can be used in the following ways:
+ *
+ * - Specify the svgIcon input to load an SVG icon from a URL previously registered with the
+ *   addSvgIcon, addSvgIconInNamespace, addSvgIconSet, or addSvgIconSetInNamespace methods of
+ *   MatIconRegistry. If the svgIcon value contains a colon it is assumed to be in the format
+ *   "[namespace]:[name]", if not the value will be the name of an icon in the default namespace.
+ *   Examples:
+ *     `<mat-icon svgIcon="left-arrow"></mat-icon>
+ *     <mat-icon svgIcon="animals:cat"></mat-icon>`
+ *
+ * - Use a font ligature as an icon by putting the ligature text in the content of the `<mat-icon>`
+ *   component. By default the Material icons font is used as described at
+ *   http://google.github.io/material-design-icons/#icon-font-for-the-web. You can specify an
+ *   alternate font by setting the fontSet input to either the CSS class to apply to use the
+ *   desired font, or to an alias previously registered with MatIconRegistry.registerFontClassAlias.
+ *   Examples:
+ *     `<mat-icon>home</mat-icon>
+ *     <mat-icon fontSet="myfont">sun</mat-icon>`
+ *
+ * - Specify a font glyph to be included via CSS rules by setting the fontSet input to specify the
+ *   font, and the fontIcon input to specify the icon. Typically the fontIcon will specify a
+ *   CSS class which causes the glyph to be displayed via a :before selector, as in
+ *   https://fortawesome.github.io/Font-Awesome/examples/
+ *   Example:
+ *     `<mat-icon fontSet="fa" fontIcon="alarm"></mat-icon>`
+ */
+
+class MatIcon extends _MatIconBase {
+  constructor(elementRef, _iconRegistry, ariaHidden, _location, _errorHandler) {
+    super(elementRef);
+    this._iconRegistry = _iconRegistry;
+    this._location = _location;
+    this._errorHandler = _errorHandler;
+    this._inline = false;
+    /** Subscription to the current in-progress SVG icon request. */
+
+    this._currentIconFetch = rxjs__WEBPACK_IMPORTED_MODULE_13__.Subscription.EMPTY; // If the user has not explicitly set aria-hidden, mark the icon as hidden, as this is
+    // the right thing to do for the majority of icon use-cases.
+
+    if (!ariaHidden) {
+      elementRef.nativeElement.setAttribute('aria-hidden', 'true');
+    }
+  }
+  /**
+   * Whether the icon should be inlined, automatically sizing the icon to match the font size of
+   * the element the icon is contained in.
+   */
+
+
+  get inline() {
+    return this._inline;
+  }
+
+  set inline(inline) {
+    this._inline = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_14__.coerceBooleanProperty)(inline);
+  }
+  /** Name of the icon in the SVG icon set. */
+
+
+  get svgIcon() {
+    return this._svgIcon;
+  }
+
+  set svgIcon(value) {
+    if (value !== this._svgIcon) {
+      if (value) {
+        this._updateSvgIcon(value);
+      } else if (this._svgIcon) {
+        this._clearSvgElement();
+      }
+
+      this._svgIcon = value;
+    }
+  }
+  /** Font set that the icon is a part of. */
+
+
+  get fontSet() {
+    return this._fontSet;
+  }
+
+  set fontSet(value) {
+    const newValue = this._cleanupFontValue(value);
+
+    if (newValue !== this._fontSet) {
+      this._fontSet = newValue;
+
+      this._updateFontIconClasses();
+    }
+  }
+  /** Name of an icon within a font set. */
+
+
+  get fontIcon() {
+    return this._fontIcon;
+  }
+
+  set fontIcon(value) {
+    const newValue = this._cleanupFontValue(value);
+
+    if (newValue !== this._fontIcon) {
+      this._fontIcon = newValue;
+
+      this._updateFontIconClasses();
+    }
+  }
+  /**
+   * Splits an svgIcon binding value into its icon set and icon name components.
+   * Returns a 2-element array of [(icon set), (icon name)].
+   * The separator for the two fields is ':'. If there is no separator, an empty
+   * string is returned for the icon set and the entire value is returned for
+   * the icon name. If the argument is falsy, returns an array of two empty strings.
+   * Throws an error if the name contains two or more ':' separators.
+   * Examples:
+   *   `'social:cake' -> ['social', 'cake']
+   *   'penguin' -> ['', 'penguin']
+   *   null -> ['', '']
+   *   'a:b:c' -> (throws Error)`
+   */
+
+
+  _splitIconName(iconName) {
+    if (!iconName) {
+      return ['', ''];
+    }
+
+    const parts = iconName.split(':');
+
+    switch (parts.length) {
+      case 1:
+        return ['', parts[0]];
+      // Use default namespace.
+
+      case 2:
+        return parts;
+
+      default:
+        throw Error(`Invalid icon name: "${iconName}"`);
+      // TODO: add an ngDevMode check
+    }
+  }
+
+  ngOnInit() {
+    // Update font classes because ngOnChanges won't be called if none of the inputs are present,
+    // e.g. <mat-icon>arrow</mat-icon> In this case we need to add a CSS class for the default font.
+    this._updateFontIconClasses();
+  }
+
+  ngAfterViewChecked() {
+    const cachedElements = this._elementsWithExternalReferences;
+
+    if (cachedElements && cachedElements.size) {
+      const newPath = this._location.getPathname(); // We need to check whether the URL has changed on each change detection since
+      // the browser doesn't have an API that will let us react on link clicks and
+      // we can't depend on the Angular router. The references need to be updated,
+      // because while most browsers don't care whether the URL is correct after
+      // the first render, Safari will break if the user navigates to a different
+      // page and the SVG isn't re-rendered.
+
+
+      if (newPath !== this._previousPath) {
+        this._previousPath = newPath;
+
+        this._prependPathToReferences(newPath);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    this._currentIconFetch.unsubscribe();
+
+    if (this._elementsWithExternalReferences) {
+      this._elementsWithExternalReferences.clear();
+    }
+  }
+
+  _usingFontIcon() {
+    return !this.svgIcon;
+  }
+
+  _setSvgElement(svg) {
+    this._clearSvgElement(); // Workaround for IE11 and Edge ignoring `style` tags inside dynamically-created SVGs.
+    // See: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/10898469/
+    // Do this before inserting the element into the DOM, in order to avoid a style recalculation.
+
+
+    const styleTags = svg.querySelectorAll('style');
+
+    for (let i = 0; i < styleTags.length; i++) {
+      styleTags[i].textContent += ' ';
+    } // Note: we do this fix here, rather than the icon registry, because the
+    // references have to point to the URL at the time that the icon was created.
+
+
+    const path = this._location.getPathname();
+
+    this._previousPath = path;
+
+    this._cacheChildrenWithExternalReferences(svg);
+
+    this._prependPathToReferences(path);
+
+    this._elementRef.nativeElement.appendChild(svg);
+  }
+
+  _clearSvgElement() {
+    const layoutElement = this._elementRef.nativeElement;
+    let childCount = layoutElement.childNodes.length;
+
+    if (this._elementsWithExternalReferences) {
+      this._elementsWithExternalReferences.clear();
+    } // Remove existing non-element child nodes and SVGs, and add the new SVG element. Note that
+    // we can't use innerHTML, because IE will throw if the element has a data binding.
+
+
+    while (childCount--) {
+      const child = layoutElement.childNodes[childCount]; // 1 corresponds to Node.ELEMENT_NODE. We remove all non-element nodes in order to get rid
+      // of any loose text nodes, as well as any SVG elements in order to remove any old icons.
+
+      if (child.nodeType !== 1 || child.nodeName.toLowerCase() === 'svg') {
+        child.remove();
+      }
+    }
+  }
+
+  _updateFontIconClasses() {
+    if (!this._usingFontIcon()) {
+      return;
+    }
+
+    const elem = this._elementRef.nativeElement;
+    const fontSetClass = this.fontSet ? this._iconRegistry.classNameForFontAlias(this.fontSet) : this._iconRegistry.getDefaultFontSetClass();
+
+    if (fontSetClass != this._previousFontSetClass) {
+      if (this._previousFontSetClass) {
+        elem.classList.remove(this._previousFontSetClass);
+      }
+
+      if (fontSetClass) {
+        elem.classList.add(fontSetClass);
+      }
+
+      this._previousFontSetClass = fontSetClass;
+    }
+
+    if (this.fontIcon != this._previousFontIconClass) {
+      if (this._previousFontIconClass) {
+        elem.classList.remove(this._previousFontIconClass);
+      }
+
+      if (this.fontIcon) {
+        elem.classList.add(this.fontIcon);
+      }
+
+      this._previousFontIconClass = this.fontIcon;
+    }
+  }
+  /**
+   * Cleans up a value to be used as a fontIcon or fontSet.
+   * Since the value ends up being assigned as a CSS class, we
+   * have to trim the value and omit space-separated values.
+   */
+
+
+  _cleanupFontValue(value) {
+    return typeof value === 'string' ? value.trim().split(' ')[0] : value;
+  }
+  /**
+   * Prepends the current path to all elements that have an attribute pointing to a `FuncIRI`
+   * reference. This is required because WebKit browsers require references to be prefixed with
+   * the current path, if the page has a `base` tag.
+   */
+
+
+  _prependPathToReferences(path) {
+    const elements = this._elementsWithExternalReferences;
+
+    if (elements) {
+      elements.forEach((attrs, element) => {
+        attrs.forEach(attr => {
+          element.setAttribute(attr.name, `url('${path}#${attr.value}')`);
+        });
+      });
+    }
+  }
+  /**
+   * Caches the children of an SVG element that have `url()`
+   * references that we need to prefix with the current path.
+   */
+
+
+  _cacheChildrenWithExternalReferences(element) {
+    const elementsWithFuncIri = element.querySelectorAll(funcIriAttributeSelector);
+    const elements = this._elementsWithExternalReferences = this._elementsWithExternalReferences || new Map();
+
+    for (let i = 0; i < elementsWithFuncIri.length; i++) {
+      funcIriAttributes.forEach(attr => {
+        const elementWithReference = elementsWithFuncIri[i];
+        const value = elementWithReference.getAttribute(attr);
+        const match = value ? value.match(funcIriPattern) : null;
+
+        if (match) {
+          let attributes = elements.get(elementWithReference);
+
+          if (!attributes) {
+            attributes = [];
+            elements.set(elementWithReference, attributes);
+          }
+
+          attributes.push({
+            name: attr,
+            value: match[1]
+          });
+        }
+      });
+    }
+  }
+  /** Sets a new SVG icon with a particular name. */
+
+
+  _updateSvgIcon(rawName) {
+    this._svgNamespace = null;
+    this._svgName = null;
+
+    this._currentIconFetch.unsubscribe();
+
+    if (rawName) {
+      const [namespace, iconName] = this._splitIconName(rawName);
+
+      if (namespace) {
+        this._svgNamespace = namespace;
+      }
+
+      if (iconName) {
+        this._svgName = iconName;
+      }
+
+      this._currentIconFetch = this._iconRegistry.getNamedSvgIcon(iconName, namespace).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_15__.take)(1)).subscribe(svg => this._setSvgElement(svg), err => {
+        const errorMessage = `Error retrieving icon ${namespace}:${iconName}! ${err.message}`;
+
+        this._errorHandler.handleError(new Error(errorMessage));
+      });
+    }
+  }
+
+}
+
+MatIcon.ɵfac = function MatIcon_Factory(t) {
+  return new (t || MatIcon)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](MatIconRegistry), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinjectAttribute"]('aria-hidden'), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](MAT_ICON_LOCATION), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ErrorHandler));
+};
+
+MatIcon.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
+  type: MatIcon,
+  selectors: [["mat-icon"]],
+  hostAttrs: ["role", "img", 1, "mat-icon", "notranslate"],
+  hostVars: 7,
+  hostBindings: function MatIcon_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("data-mat-icon-type", ctx._usingFontIcon() ? "font" : "svg")("data-mat-icon-name", ctx._svgName || ctx.fontIcon)("data-mat-icon-namespace", ctx._svgNamespace || ctx.fontSet);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-icon-inline", ctx.inline)("mat-icon-no-color", ctx.color !== "primary" && ctx.color !== "accent" && ctx.color !== "warn");
+    }
+  },
+  inputs: {
+    color: "color",
+    inline: "inline",
+    svgIcon: "svgIcon",
+    fontSet: "fontSet",
+    fontIcon: "fontIcon"
+  },
+  exportAs: ["matIcon"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]],
+  ngContentSelectors: _c0,
+  decls: 1,
+  vars: 0,
+  template: function MatIcon_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](0);
+    }
+  },
+  styles: [".mat-icon{-webkit-user-select:none;-moz-user-select:none;user-select:none;background-repeat:no-repeat;display:inline-block;fill:currentColor;height:24px;width:24px}.mat-icon.mat-icon-inline{font-size:inherit;height:inherit;line-height:inherit;width:inherit}[dir=rtl] .mat-icon-rtl-mirror{transform:scale(-1, 1)}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon{display:block}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button .mat-icon,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button .mat-icon{margin:auto}\n"],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatIcon, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Component,
+    args: [{
+      template: '<ng-content></ng-content>',
+      selector: 'mat-icon',
+      exportAs: 'matIcon',
+      inputs: ['color'],
+      host: {
+        'role': 'img',
+        'class': 'mat-icon notranslate',
+        '[attr.data-mat-icon-type]': '_usingFontIcon() ? "font" : "svg"',
+        '[attr.data-mat-icon-name]': '_svgName || fontIcon',
+        '[attr.data-mat-icon-namespace]': '_svgNamespace || fontSet',
+        '[class.mat-icon-inline]': 'inline',
+        '[class.mat-icon-no-color]': 'color !== "primary" && color !== "accent" && color !== "warn"'
+      },
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectionStrategy.OnPush,
+      styles: [".mat-icon{-webkit-user-select:none;-moz-user-select:none;user-select:none;background-repeat:no-repeat;display:inline-block;fill:currentColor;height:24px;width:24px}.mat-icon.mat-icon-inline{font-size:inherit;height:inherit;line-height:inherit;width:inherit}[dir=rtl] .mat-icon-rtl-mirror{transform:scale(-1, 1)}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon{display:block}.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-prefix .mat-icon-button .mat-icon,.mat-form-field:not(.mat-form-field-appearance-legacy) .mat-form-field-suffix .mat-icon-button .mat-icon{margin:auto}\n"]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: MatIconRegistry
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Attribute,
+        args: ['aria-hidden']
+      }]
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [MAT_ICON_LOCATION]
+      }]
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ErrorHandler
+    }];
+  }, {
+    inline: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    svgIcon: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    fontSet: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    fontIcon: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class MatIconModule {}
+
+MatIconModule.ɵfac = function MatIconModule_Factory(t) {
+  return new (t || MatIconModule)();
+};
+
+MatIconModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: MatIconModule
+});
+MatIconModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({
+  imports: [[_angular_material_core__WEBPACK_IMPORTED_MODULE_12__.MatCommonModule], _angular_material_core__WEBPACK_IMPORTED_MODULE_12__.MatCommonModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatIconModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule,
+    args: [{
+      imports: [_angular_material_core__WEBPACK_IMPORTED_MODULE_12__.MatCommonModule],
+      exports: [MatIcon, _angular_material_core__WEBPACK_IMPORTED_MODULE_12__.MatCommonModule],
+      declarations: [MatIcon]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
+/***/ 3365:
+/*!***********************************************************!*\
+  !*** ./node_modules/@angular/material/fesm2015/input.mjs ***!
+  \***********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MAT_INPUT_VALUE_ACCESSOR": () => (/* binding */ MAT_INPUT_VALUE_ACCESSOR),
+/* harmony export */   "MatInput": () => (/* binding */ MatInput),
+/* harmony export */   "MatInputModule": () => (/* binding */ MatInputModule),
+/* harmony export */   "getMatInputUnsupportedTypeError": () => (/* binding */ getMatInputUnsupportedTypeError)
+/* harmony export */ });
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var _angular_cdk_platform__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/cdk/platform */ 4390);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/forms */ 587);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material/core */ 8133);
+/* harmony import */ var _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material/form-field */ 9076);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/cdk/text-field */ 1307);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** @docs-private */
+
+function getMatInputUnsupportedTypeError(type) {
+  return Error(`Input type "${type}" isn't supported by matInput.`);
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * This token is used to inject the object whose value should be set into `MatInput`. If none is
+ * provided, the native `HTMLInputElement` is used. Directives like `MatDatepickerInput` can provide
+ * themselves for this token, in order to make `MatInput` delegate the getting and setting of the
+ * value to them.
+ */
+
+
+const MAT_INPUT_VALUE_ACCESSOR = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MAT_INPUT_VALUE_ACCESSOR');
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// Invalid input type. Using one of these will throw an MatInputUnsupportedTypeError.
+
+const MAT_INPUT_INVALID_TYPES = ['button', 'checkbox', 'file', 'hidden', 'image', 'radio', 'range', 'reset', 'submit'];
+let nextUniqueId = 0; // Boilerplate for applying mixins to MatInput.
+
+/** @docs-private */
+
+const _MatInputBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.mixinErrorState)(class {
+  constructor(_defaultErrorStateMatcher, _parentForm, _parentFormGroup,
+  /** @docs-private */
+  ngControl) {
+    this._defaultErrorStateMatcher = _defaultErrorStateMatcher;
+    this._parentForm = _parentForm;
+    this._parentFormGroup = _parentFormGroup;
+    this.ngControl = ngControl;
+  }
+
+});
+/** Directive that allows a native input to work inside a `MatFormField`. */
+
+
+class MatInput extends _MatInputBase {
+  constructor(_elementRef, _platform, ngControl, _parentForm, _parentFormGroup, _defaultErrorStateMatcher, inputValueAccessor, _autofillMonitor, ngZone, // TODO: Remove this once the legacy appearance has been removed. We only need
+  // to inject the form-field for determining whether the placeholder has been promoted.
+  _formField) {
+    super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
+    this._elementRef = _elementRef;
+    this._platform = _platform;
+    this._autofillMonitor = _autofillMonitor;
+    this._formField = _formField;
+    this._uid = `mat-input-${nextUniqueId++}`;
+    /**
+     * Implemented as part of MatFormFieldControl.
+     * @docs-private
+     */
+
+    this.focused = false;
+    /**
+     * Implemented as part of MatFormFieldControl.
+     * @docs-private
+     */
+
+    this.stateChanges = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+    /**
+     * Implemented as part of MatFormFieldControl.
+     * @docs-private
+     */
+
+    this.controlType = 'mat-input';
+    /**
+     * Implemented as part of MatFormFieldControl.
+     * @docs-private
+     */
+
+    this.autofilled = false;
+    this._disabled = false;
+    this._type = 'text';
+    this._readonly = false;
+    this._neverEmptyInputTypes = ['date', 'datetime', 'datetime-local', 'month', 'time', 'week'].filter(t => (0,_angular_cdk_platform__WEBPACK_IMPORTED_MODULE_3__.getSupportedInputTypes)().has(t));
+    const element = this._elementRef.nativeElement;
+    const nodeName = element.nodeName.toLowerCase(); // If no input value accessor was explicitly specified, use the element as the input value
+    // accessor.
+
+    this._inputValueAccessor = inputValueAccessor || element;
+    this._previousNativeValue = this.value; // Force setter to be called in case id was not specified.
+
+    this.id = this.id; // On some versions of iOS the caret gets stuck in the wrong place when holding down the delete
+    // key. In order to get around this we need to "jiggle" the caret loose. Since this bug only
+    // exists on iOS, we only bother to install the listener on iOS.
+
+    if (_platform.IOS) {
+      ngZone.runOutsideAngular(() => {
+        _elementRef.nativeElement.addEventListener('keyup', event => {
+          const el = event.target; // Note: We specifically check for 0, rather than `!el.selectionStart`, because the two
+          // indicate different things. If the value is 0, it means that the caret is at the start
+          // of the input, whereas a value of `null` means that the input doesn't support
+          // manipulating the selection range. Inputs that don't support setting the selection range
+          // will throw an error so we want to avoid calling `setSelectionRange` on them. See:
+          // https://html.spec.whatwg.org/multipage/input.html#do-not-apply
+
+          if (!el.value && el.selectionStart === 0 && el.selectionEnd === 0) {
+            // Note: Just setting `0, 0` doesn't fix the issue. Setting
+            // `1, 1` fixes it for the first time that you type text and
+            // then hold delete. Toggling to `1, 1` and then back to
+            // `0, 0` seems to completely fix it.
+            el.setSelectionRange(1, 1);
+            el.setSelectionRange(0, 0);
+          }
+        });
+      });
+    }
+
+    this._isServer = !this._platform.isBrowser;
+    this._isNativeSelect = nodeName === 'select';
+    this._isTextarea = nodeName === 'textarea';
+    this._isInFormField = !!_formField;
+
+    if (this._isNativeSelect) {
+      this.controlType = element.multiple ? 'mat-native-select-multiple' : 'mat-native-select';
+    }
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  get disabled() {
+    if (this.ngControl && this.ngControl.disabled !== null) {
+      return this.ngControl.disabled;
+    }
+
+    return this._disabled;
+  }
+
+  set disabled(value) {
+    this._disabled = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value); // Browsers may not fire the blur event if the input is disabled too quickly.
+    // Reset from here to ensure that the element doesn't become stuck.
+
+    if (this.focused) {
+      this.focused = false;
+      this.stateChanges.next();
+    }
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  get id() {
+    return this._id;
+  }
+
+  set id(value) {
+    this._id = value || this._uid;
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  get required() {
+    var _a, _b, _c, _d;
+
+    return (_d = (_a = this._required) !== null && _a !== void 0 ? _a : (_c = (_b = this.ngControl) === null || _b === void 0 ? void 0 : _b.control) === null || _c === void 0 ? void 0 : _c.hasValidator(_angular_forms__WEBPACK_IMPORTED_MODULE_5__.Validators.required)) !== null && _d !== void 0 ? _d : false;
+  }
+
+  set required(value) {
+    this._required = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value);
+  }
+  /** Input type of the element. */
+
+
+  get type() {
+    return this._type;
+  }
+
+  set type(value) {
+    this._type = value || 'text';
+
+    this._validateType(); // When using Angular inputs, developers are no longer able to set the properties on the native
+    // input element. To ensure that bindings for `type` work, we need to sync the setter
+    // with the native property. Textarea elements don't support the type property or attribute.
+
+
+    if (!this._isTextarea && (0,_angular_cdk_platform__WEBPACK_IMPORTED_MODULE_3__.getSupportedInputTypes)().has(this._type)) {
+      this._elementRef.nativeElement.type = this._type;
+    }
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  get value() {
+    return this._inputValueAccessor.value;
+  }
+
+  set value(value) {
+    if (value !== this.value) {
+      this._inputValueAccessor.value = value;
+      this.stateChanges.next();
+    }
+  }
+  /** Whether the element is readonly. */
+
+
+  get readonly() {
+    return this._readonly;
+  }
+
+  set readonly(value) {
+    this._readonly = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value);
+  }
+
+  ngAfterViewInit() {
+    if (this._platform.isBrowser) {
+      this._autofillMonitor.monitor(this._elementRef.nativeElement).subscribe(event => {
+        this.autofilled = event.isAutofilled;
+        this.stateChanges.next();
+      });
+    }
+  }
+
+  ngOnChanges() {
+    this.stateChanges.next();
+  }
+
+  ngOnDestroy() {
+    this.stateChanges.complete();
+
+    if (this._platform.isBrowser) {
+      this._autofillMonitor.stopMonitoring(this._elementRef.nativeElement);
+    }
+  }
+
+  ngDoCheck() {
+    if (this.ngControl) {
+      // We need to re-evaluate this on every change detection cycle, because there are some
+      // error triggers that we can't subscribe to (e.g. parent form submissions). This means
+      // that whatever logic is in here has to be super lean or we risk destroying the performance.
+      this.updateErrorState();
+    } // We need to dirty-check the native element's value, because there are some cases where
+    // we won't be notified when it changes (e.g. the consumer isn't using forms or they're
+    // updating the value using `emitEvent: false`).
+
+
+    this._dirtyCheckNativeValue(); // We need to dirty-check and set the placeholder attribute ourselves, because whether it's
+    // present or not depends on a query which is prone to "changed after checked" errors.
+
+
+    this._dirtyCheckPlaceholder();
+  }
+  /** Focuses the input. */
+
+
+  focus(options) {
+    this._elementRef.nativeElement.focus(options);
+  }
+  /** Callback for the cases where the focused state of the input changes. */
+
+
+  _focusChanged(isFocused) {
+    if (isFocused !== this.focused) {
+      this.focused = isFocused;
+      this.stateChanges.next();
+    }
+  }
+
+  _onInput() {// This is a noop function and is used to let Angular know whenever the value changes.
+    // Angular will run a new change detection each time the `input` event has been dispatched.
+    // It's necessary that Angular recognizes the value change, because when floatingLabel
+    // is set to false and Angular forms aren't used, the placeholder won't recognize the
+    // value changes and will not disappear.
+    // Listening to the input event wouldn't be necessary when the input is using the
+    // FormsModule or ReactiveFormsModule, because Angular forms also listens to input events.
+  }
+  /** Does some manual dirty checking on the native input `placeholder` attribute. */
+
+
+  _dirtyCheckPlaceholder() {
+    var _a, _b; // If we're hiding the native placeholder, it should also be cleared from the DOM, otherwise
+    // screen readers will read it out twice: once from the label and once from the attribute.
+    // TODO: can be removed once we get rid of the `legacy` style for the form field, because it's
+    // the only one that supports promoting the placeholder to a label.
+
+
+    const placeholder = ((_b = (_a = this._formField) === null || _a === void 0 ? void 0 : _a._hideControlPlaceholder) === null || _b === void 0 ? void 0 : _b.call(_a)) ? null : this.placeholder;
+
+    if (placeholder !== this._previousPlaceholder) {
+      const element = this._elementRef.nativeElement;
+      this._previousPlaceholder = placeholder;
+      placeholder ? element.setAttribute('placeholder', placeholder) : element.removeAttribute('placeholder');
+    }
+  }
+  /** Does some manual dirty checking on the native input `value` property. */
+
+
+  _dirtyCheckNativeValue() {
+    const newValue = this._elementRef.nativeElement.value;
+
+    if (this._previousNativeValue !== newValue) {
+      this._previousNativeValue = newValue;
+      this.stateChanges.next();
+    }
+  }
+  /** Make sure the input is a supported type. */
+
+
+  _validateType() {
+    if (MAT_INPUT_INVALID_TYPES.indexOf(this._type) > -1 && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getMatInputUnsupportedTypeError(this._type);
+    }
+  }
+  /** Checks whether the input type is one of the types that are never empty. */
+
+
+  _isNeverEmpty() {
+    return this._neverEmptyInputTypes.indexOf(this._type) > -1;
+  }
+  /** Checks whether the input is invalid based on the native validation. */
+
+
+  _isBadInput() {
+    // The `validity` property won't be present on platform-server.
+    let validity = this._elementRef.nativeElement.validity;
+    return validity && validity.badInput;
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  get empty() {
+    return !this._isNeverEmpty() && !this._elementRef.nativeElement.value && !this._isBadInput() && !this.autofilled;
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  get shouldLabelFloat() {
+    if (this._isNativeSelect) {
+      // For a single-selection `<select>`, the label should float when the selected option has
+      // a non-empty display value. For a `<select multiple>`, the label *always* floats to avoid
+      // overlapping the label with the options.
+      const selectElement = this._elementRef.nativeElement;
+      const firstOption = selectElement.options[0]; // On most browsers the `selectedIndex` will always be 0, however on IE and Edge it'll be
+      // -1 if the `value` is set to something, that isn't in the list of options, at a later point.
+
+      return this.focused || selectElement.multiple || !this.empty || !!(selectElement.selectedIndex > -1 && firstOption && firstOption.label);
+    } else {
+      return this.focused || !this.empty;
+    }
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  setDescribedByIds(ids) {
+    if (ids.length) {
+      this._elementRef.nativeElement.setAttribute('aria-describedby', ids.join(' '));
+    } else {
+      this._elementRef.nativeElement.removeAttribute('aria-describedby');
+    }
+  }
+  /**
+   * Implemented as part of MatFormFieldControl.
+   * @docs-private
+   */
+
+
+  onContainerClick() {
+    // Do not re-focus the input element if the element is already focused. Otherwise it can happen
+    // that someone clicks on a time input and the cursor resets to the "hours" field while the
+    // "minutes" field was actually clicked. See: https://github.com/angular/components/issues/12849
+    if (!this.focused) {
+      this.focus();
+    }
+  }
+  /** Whether the form control is a native select that is displayed inline. */
+
+
+  _isInlineSelect() {
+    const element = this._elementRef.nativeElement;
+    return this._isNativeSelect && (element.multiple || element.size > 1);
+  }
+
+}
+
+MatInput.ɵfac = function MatInput_Factory(t) {
+  return new (t || MatInput)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_cdk_platform__WEBPACK_IMPORTED_MODULE_3__.Platform), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_5__.NgControl, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_5__.NgForm, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_forms__WEBPACK_IMPORTED_MODULE_5__.FormGroupDirective, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.ErrorStateMatcher), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](MAT_INPUT_VALUE_ACCESSOR, 10), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_6__.AutofillMonitor), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.NgZone), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MAT_FORM_FIELD, 8));
+};
+
+MatInput.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatInput,
+  selectors: [["input", "matInput", ""], ["textarea", "matInput", ""], ["select", "matNativeControl", ""], ["input", "matNativeControl", ""], ["textarea", "matNativeControl", ""]],
+  hostAttrs: [1, "mat-input-element", "mat-form-field-autofill-control"],
+  hostVars: 12,
+  hostBindings: function MatInput_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("focus", function MatInput_focus_HostBindingHandler() {
+        return ctx._focusChanged(true);
+      })("blur", function MatInput_blur_HostBindingHandler() {
+        return ctx._focusChanged(false);
+      })("input", function MatInput_input_HostBindingHandler() {
+        return ctx._onInput();
+      });
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵhostProperty"]("disabled", ctx.disabled)("required", ctx.required);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("id", ctx.id)("data-placeholder", ctx.placeholder)("name", ctx.name || null)("readonly", ctx.readonly && !ctx._isNativeSelect || null)("aria-invalid", ctx.empty && ctx.required ? null : ctx.errorState)("aria-required", ctx.required);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-input-server", ctx._isServer)("mat-native-select-inline", ctx._isInlineSelect());
+    }
+  },
+  inputs: {
+    disabled: "disabled",
+    id: "id",
+    placeholder: "placeholder",
+    name: "name",
+    required: "required",
+    type: "type",
+    errorStateMatcher: "errorStateMatcher",
+    userAriaDescribedBy: ["aria-describedby", "userAriaDescribedBy"],
+    value: "value",
+    readonly: "readonly"
+  },
+  exportAs: ["matInput"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormFieldControl,
+    useExisting: MatInput
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatInput, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: `input[matInput], textarea[matInput], select[matNativeControl],
+      input[matNativeControl], textarea[matNativeControl]`,
+      exportAs: 'matInput',
+      host: {
+        /**
+         * @breaking-change 8.0.0 remove .mat-form-field-autofill-control in favor of AutofillMonitor.
+         */
+        'class': 'mat-input-element mat-form-field-autofill-control',
+        '[class.mat-input-server]': '_isServer',
+        // Native input properties that are overwritten by Angular inputs need to be synced with
+        // the native input element. Otherwise property bindings for those don't work.
+        '[attr.id]': 'id',
+        // At the time of writing, we have a lot of customer tests that look up the input based on its
+        // placeholder. Since we sometimes omit the placeholder attribute from the DOM to prevent screen
+        // readers from reading it twice, we have to keep it somewhere in the DOM for the lookup.
+        '[attr.data-placeholder]': 'placeholder',
+        '[disabled]': 'disabled',
+        '[required]': 'required',
+        '[attr.name]': 'name || null',
+        '[attr.readonly]': 'readonly && !_isNativeSelect || null',
+        '[class.mat-native-select-inline]': '_isInlineSelect()',
+        // Only mark the input as invalid for assistive technology if it has a value since the
+        // state usually overlaps with `aria-required` when the input is empty and can be redundant.
+        '[attr.aria-invalid]': '(empty && required) ? null : errorState',
+        '[attr.aria-required]': 'required',
+        '(focus)': '_focusChanged(true)',
+        '(blur)': '_focusChanged(false)',
+        '(input)': '_onInput()'
+      },
+      providers: [{
+        provide: _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormFieldControl,
+        useExisting: MatInput
+      }]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: _angular_cdk_platform__WEBPACK_IMPORTED_MODULE_3__.Platform
+    }, {
+      type: _angular_forms__WEBPACK_IMPORTED_MODULE_5__.NgControl,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }]
+    }, {
+      type: _angular_forms__WEBPACK_IMPORTED_MODULE_5__.NgForm,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }]
+    }, {
+      type: _angular_forms__WEBPACK_IMPORTED_MODULE_5__.FormGroupDirective,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }]
+    }, {
+      type: _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.ErrorStateMatcher
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Self
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [MAT_INPUT_VALUE_ACCESSOR]
+      }]
+    }, {
+      type: _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_6__.AutofillMonitor
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgZone
+    }, {
+      type: _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormField,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [_angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MAT_FORM_FIELD]
+      }]
+    }];
+  }, {
+    disabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    id: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    placeholder: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    name: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    required: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    type: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    errorStateMatcher: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    userAriaDescribedBy: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input,
+      args: ['aria-describedby']
+    }],
+    value: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    readonly: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class MatInputModule {}
+
+MatInputModule.ɵfac = function MatInputModule_Factory(t) {
+  return new (t || MatInputModule)();
+};
+
+MatInputModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: MatInputModule
+});
+MatInputModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({
+  providers: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.ErrorStateMatcher],
+  imports: [[_angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_6__.TextFieldModule, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormFieldModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatCommonModule], _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_6__.TextFieldModule, // We re-export the `MatFormFieldModule` since `MatInput` will almost always
+  // be used together with `MatFormField`.
+  _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormFieldModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatInputModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule,
+    args: [{
+      declarations: [MatInput],
+      imports: [_angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_6__.TextFieldModule, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormFieldModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatCommonModule],
+      exports: [_angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_6__.TextFieldModule, // We re-export the `MatFormFieldModule` since `MatInput` will almost always
+      // be used together with `MatFormField`.
+      _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormFieldModule, MatInput],
+      providers: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.ErrorStateMatcher]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
 /***/ 9946:
 /*!*************************************************************!*\
   !*** ./node_modules/@angular/material/fesm2015/toolbar.mjs ***!
   \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "MatToolbar": () => (/* binding */ MatToolbar),
@@ -63333,6 +81275,7 @@ MatToolbarModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1
   \*************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "MAT_TOOLTIP_DEFAULT_OPTIONS": () => (/* binding */ MAT_TOOLTIP_DEFAULT_OPTIONS),
@@ -64572,6 +82515,7 @@ MatTooltipModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2
   \************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ANIMATION_MODULE_TYPE": () => (/* binding */ ANIMATION_MODULE_TYPE),
@@ -65307,6 +83251,7 @@ NoopAnimationsModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODU
   \******************************************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ɵgetDOM": () => (/* reexport safe */ _angular_common__WEBPACK_IMPORTED_MODULE_0__["ɵgetDOM"]),
@@ -68122,6 +86067,7 @@ const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_1__.Version('13.2.3')
   \**********************************************************/
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
+"use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ActivatedRoute": () => (/* binding */ ActivatedRoute),
@@ -75604,6 +93550,55 @@ const VERSION = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.Version('13.2.3')
  */
 
 
+
+/***/ }),
+
+/***/ 1670:
+/*!*********************************************************************!*\
+  !*** ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js ***!
+  \*********************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ _asyncToGenerator)
+/* harmony export */ });
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+    var value = info.value;
+  } catch (error) {
+    reject(error);
+    return;
+  }
+
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
+
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this,
+        args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+
+      _next(undefined);
+    });
+  };
+}
 
 /***/ })
 

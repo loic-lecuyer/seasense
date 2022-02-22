@@ -6,9 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Client\src\app\api\http\http-message.ts" />
+    <None Remove="Client\src\app\api\http\http-request.ts" />
+    <None Remove="Client\src\app\api\http\http-response.ts" />
+    <None Remove="Client\src\app\api\http\login-request.ts" />
+    <None Remove="Client\src\app\api\http\login-response.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Client\src\app\pages\" />
     <Folder Include="www\" />
-    <Folder Include="Server\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +26,18 @@
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Exavision.Api.Http\Exavision.Api.Http.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="Client\src\app\api\http\http-message.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\http-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\http-response.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\login-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\login-response.ts" />
   </ItemGroup>
 
   <ItemGroup>
