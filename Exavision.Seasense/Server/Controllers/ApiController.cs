@@ -16,13 +16,13 @@
 
 
 
-        private readonly IUserRepository _userRepository;
+        private readonly IUserRepository userRepository;
         private readonly ISiteService siteService;
         private readonly ITokenService _tokenService;
 
         public ApiController(ITokenService tokenService, IUserRepository userRepository,ISiteService siteService) {
             _tokenService = tokenService;
-            _userRepository = userRepository;
+            this.userRepository = userRepository;
             this.siteService = siteService;
         }
 
@@ -49,7 +49,7 @@
         [Route("login")]
         public LoginResponse Login([FromBody] LoginRequest request) {
             if (!String.IsNullOrEmpty(request.Login) && !String.IsNullOrEmpty(request.PasswordHash)) {
-                User user = this._userRepository.FindUser(request.Login, request.PasswordHash.ToLower());
+                User user = this.userRepository.FindUser(request.Login, request.PasswordHash.ToLower());
                 if (user != null) {
 
                     string token = _tokenService.BuildToken(user);

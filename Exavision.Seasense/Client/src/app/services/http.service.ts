@@ -59,6 +59,6 @@ export class HttpService {
   getSetting(): Observable<GetSettingResponse> {
     let url: string = this.getApiUrl("setting");
     let req: GetSettingRequest = {};
-    return this.http.post<GetSettingResponse>(url, req)
+    return this.http.get<GetSettingResponse>(url, req)
   }
 }

@@ -601,7 +601,7 @@ class HttpService {
     getSetting() {
         let url = this.getApiUrl("setting");
         let req = {};
-        return this.http.post(url, req);
+        return this.http.get(url, req);
     }
 }
 HttpService.ɵfac = function HttpService_Factory(t) { return new (t || HttpService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_1__.HttpClient)); };
