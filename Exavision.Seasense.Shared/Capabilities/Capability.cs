@@ -1,9 +1,11 @@
-﻿using Exavision.Seasense.Shared.Materials;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Exavision.Seasense.Shared.Settings;
 
 namespace Exavision.Seasense.Shared.Capabilities {
-    public abstract class Capability<M> where M : Material,new()  {
+    public abstract class Capability<S> : ICapability where S : SettingCapability {
+        public SettingCapability GetSettingCapability() {
+            return GetSetting();
+        }
+        public abstract void SetSetting(S setting);
+        public abstract S GetSetting();
     }
 }

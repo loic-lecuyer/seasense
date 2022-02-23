@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Exavision.Seasense.Shared.Settings;
 
 namespace Exavision.Seasense.Shared.Materials {
-   public  class InertialMeasurement : Material {
+    public abstract class InertialMeasurement<S> : Material<S> where S : SettingMaterial {
     }
 }

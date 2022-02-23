@@ -30,8 +30,9 @@ namespace Exavision.Seasense.Server {
                 // @TODO update ssl port from conf
                 options.HttpsPort = 443;
             });
-            services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<ITokenService, TokenService>();
+            services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<ITokenService, TokenService>();
+            services.AddSingleton<ISiteService, SiteService>();
             services.AddControllers().AddJsonOptions(j => {
                 j.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
@@ -63,10 +64,11 @@ namespace Exavision.Seasense.Server {
                 configuration.RootPath = Path.Combine(appPath, "www");
             });
 
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISiteService siteService) {
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
@@ -88,6 +90,8 @@ namespace Exavision.Seasense.Server {
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
+            siteService.Start();
+
 
         }
     }

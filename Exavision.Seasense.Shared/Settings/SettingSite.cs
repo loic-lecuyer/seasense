@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Exavision.Seasense.Shared.Settings {
     public class SettingSite : SettingBase {
-        public List<SettingUnit> Units { get; set; }
+        public List<SettingMaterial> Units { get; set; } = new List<SettingMaterial>();
     }
 }

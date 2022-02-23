@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Exavision.Seasense.Shared.Settings;
 
 namespace Exavision.Seasense.Shared.Materials {
-    public class LazerMeasurement : Material {
+    public abstract class LazerMeasurement<S> : Material<S> where S : SettingMaterial {
     }
 }
