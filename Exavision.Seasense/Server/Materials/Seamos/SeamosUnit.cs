@@ -1,4 +1,5 @@
 ﻿using Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit;
+using Exavision.Seasense.Server.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Materials;
 using System;
 
@@ -16,11 +17,13 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         }
 
         public override SettingSeamosUnit GetSetting() {
-            return new SettingSeamosUnit();
+            SettingSeamosUnit SettingSeamosUnit = base.GetSetting();
+            return SettingSeamosUnit;
         }
 
         public override void SetSetting(SettingSeamosUnit setting) {
             Console.WriteLine("SeamosUnit SetSetting");
+            base.SetSetting(setting);
         }
     }
 }

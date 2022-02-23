@@ -7,6 +7,8 @@ import { ValidateTokenResponse } from '../api/http/validate-token-response';
 import { ValidateTokenRequest } from '../api/http/validate-token-request';
 import { LogoutResponse } from '../api/http/logout-response';
 import { LogoutRequest } from '../api/http/logout-request';
+import { GetSettingResponse } from '../api/http/get-setting-response';
+import { GetSettingRequest } from '../api/http/get-setting-request';
 
 @Injectable({
   providedIn: 'root'
@@ -53,5 +55,10 @@ export class HttpService {
     let url: string = this.getApiUrl("token/validate");
     let req: ValidateTokenRequest = {};
     return this.http.post<ValidateTokenResponse>(url, req)
+  }
+  getSetting(): Observable<GetSettingResponse> {
+    let url: string = this.getApiUrl("setting");
+    let req: GetSettingRequest = {};
+    return this.http.post<GetSettingResponse>(url, req)
   }
 }

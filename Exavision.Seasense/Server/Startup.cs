@@ -69,6 +69,7 @@ namespace Exavision.Seasense.Server {
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISiteService siteService) {
+            siteService.Start();
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
@@ -90,7 +91,7 @@ namespace Exavision.Seasense.Server {
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
-            siteService.Start();
+        
 
 
         }

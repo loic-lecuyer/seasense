@@ -12,6 +12,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit {
         }
 
         public override void SetSetting(SettingSeamosUnitRebootCapability setting) {
+            base.SetSetting(setting);
             Console.WriteLine("SeamosUnitRebootCapability SetSetting");
         }
     }

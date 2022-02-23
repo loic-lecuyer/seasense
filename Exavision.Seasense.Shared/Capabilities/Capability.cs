@@ -5,7 +5,8 @@ namespace Exavision.Seasense.Shared.Capabilities {
         public SettingCapability GetSettingCapability() {
             return GetSetting();
         }
-        public abstract void SetSetting(S setting);
+        public virtual void SetSetting(S setting) { 
+        }
         public abstract S GetSetting();
     }
 }

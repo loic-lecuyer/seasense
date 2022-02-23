@@ -1,5 +1,6 @@
 ﻿namespace Exavision.Seasense.Server.Controllers {
     using Exavision.Seasense.Api.Http.Login;
+    using Exavision.Seasense.Api.Http.Setting;
     using Exavision.Seasense.Api.Http.Token;
     using Exavision.Seasense.Server.Attributes;
     using Exavision.Seasense.Server.Services;
@@ -16,11 +17,13 @@
 
 
         private readonly IUserRepository _userRepository;
+        private readonly ISiteService siteService;
         private readonly ITokenService _tokenService;
 
-        public ApiController(ITokenService tokenService, IUserRepository userRepository) {
+        public ApiController(ITokenService tokenService, IUserRepository userRepository,ISiteService siteService) {
             _tokenService = tokenService;
             _userRepository = userRepository;
+            this.siteService = siteService;
         }
 
 
@@ -32,11 +35,13 @@
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [Authorize]
-        [Route("logout")]
-        public LogoutResponse Logout([FromBody] LogoutRequest request) {
-            return new LogoutResponse();
+        [Route("setting")]
+        public SettingResponse Logout([FromBody] SettingRequest request) {
+            SettingResponse settingResponse = new SettingResponse();
+            settingResponse.Site = this.siteService.LoadSetting();
+            return settingResponse;
         }
 
         [HttpPost]

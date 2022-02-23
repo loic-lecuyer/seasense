@@ -1,6 +1,9 @@
-﻿namespace Exavision.Seasense.Server.Services {
+﻿using Exavision.Seasense.Shared.Settings;
+
+namespace Exavision.Seasense.Server.Services {
     public interface ISiteService {
-        void Start();
-        void Stop();
+        public void Start();
+        public void Stop();
+        public SettingSite LoadSetting();
     }
 }

@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Client\src\app\api\http\get-setting-request.ts" />
+    <None Remove="Client\src\app\api\http\get-setting-response.ts" />
     <None Remove="Client\src\app\api\http\http-message.ts" />
     <None Remove="Client\src\app\api\http\http-request.ts" />
     <None Remove="Client\src\app\api\http\http-response.ts" />
@@ -50,6 +52,10 @@
     <TypeScriptCompile Include="Client\src\app\api\http\login-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\logout-response.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\login-response.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\get-setting-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\get-setting-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-response.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
