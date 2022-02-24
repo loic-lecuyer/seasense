@@ -4,11 +4,12 @@ using System;
 
 namespace Exavision.Seasense.Server.Materials.Seamos {
     public class SeamosInertialMeasurement : InertialMeasurement<SettingSeamosInertialMeasurement> {
-        public override SettingSeamosInertialMeasurement GetSetting() {
-            SettingSeamosInertialMeasurement settingSeamosInertialMeasurement = base.GetSetting();
-            return settingSeamosInertialMeasurement;
+        public SeamosInertialMeasurement() {
+            this.DisplayName = "Seamos Inertial Measurement";
         }
-
+        public override SettingSeamosInertialMeasurement GetSetting(SettingSeamosInertialMeasurement setting) {
+            return setting;
+        }
         public override void SetSetting(SettingSeamosInertialMeasurement setting) {
             base.SetSetting(setting);
             Console.WriteLine("SettingSeamosInertialMeasurement SetSetting");

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LoginRequest } from '../api/http/login-request';
 import { LoginResponse } from '../api/http/login-response';
@@ -15,8 +15,9 @@ import { GetSettingRequest } from '../api/http/get-setting-request';
 })
 export class HttpService {
   private baseApiUrl: string = "";
-
+  private headers: HttpHeaders;
   constructor(private http: HttpClient) {
+    this.headers = new HttpHeaders().set('Content-Type', 'application/json; charset=utf-8');
   }
   getApiUrl(path : string): string{
     if (this.baseApiUrl == "") {
@@ -42,23 +43,23 @@ export class HttpService {
       login: login,
       passwordHash: hash
     };
-    return this.http.post<LoginResponse>(url, req)
+    return this.http.post<LoginResponse>(url, req, { headers: this.headers });
   }
 
   logout(): Observable<LogoutResponse> {
     let url: string = this.getApiUrl("logout");
     let req: LogoutRequest = { };
-    return this.http.post<LogoutResponse>(url, req)
+    return this.http.post<LogoutResponse>(url, req, { headers: this.headers });
   }
 
   validateToken(): Observable<ValidateTokenResponse> {
     let url: string = this.getApiUrl("token/validate");
     let req: ValidateTokenRequest = {};
-    return this.http.post<ValidateTokenResponse>(url, req)
+    return this.http.post<ValidateTokenResponse>(url, req, { headers: this.headers });
   }
   getSetting(): Observable<GetSettingResponse> {
-    let url: string = this.getApiUrl("setting");
+    let url: string = this.getApiUrl("setting/get");
     let req: GetSettingRequest = {};
-    return this.http.get<GetSettingResponse>(url, req)
+    return this.http.post<GetSettingResponse>(url, req,{ headers: this.headers });
   }
 }

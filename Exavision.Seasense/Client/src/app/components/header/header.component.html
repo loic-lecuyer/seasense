@@ -1,8 +1,24 @@
 <mat-toolbar class="display-flex" color="primary">
   <div class="display-flex flex-1 flex-align-end">
+    <button [matMenuTriggerFor]="menu" mat-button>
+      <mat-icon aria-hidden="false" aria-label="Example home icon">view_headline</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button (click)="onConfigurationButtonClick()" mat-menu-item>Configuration</button>
+      <button mat-menu-item>Camera</button>
+      <button mat-menu-item>Sav</button>
+    </mat-menu>
     <div matTooltip="Go to home page" (click)="onHomeClick()" class="title">Seasens</div>
     <div matTooltip="Go to home page" (click)="onHomeClick()" class="sub-title">By Exavision</div>
     <div class="flex-1"></div>
+    <div *ngIf="this.userService.user != null" class="display-flex">
+      <mat-label class="margin-4">Unit :</mat-label>
+      <mat-select [(value)]="selectedUnitId" #unitSelect (selectionChange)="onSelectedUnitChange(unitSelect.value)" class="unit-select margin-4">
+        <mat-option [value]="unit.id" *ngFor="let unit of units">
+          {{unit.displayName}}
+        </mat-option>
+      </mat-select>
+    </div>
     <button *ngIf="this.userService.user != null" (click)="onLogoutClick()" mat-raised-button color="accent">Logout</button>
   </div>
 </mat-toolbar>

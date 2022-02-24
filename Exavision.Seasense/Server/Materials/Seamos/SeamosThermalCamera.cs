@@ -3,12 +3,14 @@ using Exavision.Seasense.Shared.Materials;
 using System;
 
 namespace Exavision.Seasense.Server.Materials.Seamos {
-    public class SeamosThermalCamera : Material<SettingSeamosThermalCamera> {
-        public override SettingSeamosThermalCamera GetSetting() {
-            SettingSeamosThermalCamera settingSeamosThermalCamera = base.GetSetting();
-            return settingSeamosThermalCamera;
-        }
+    public class SeamosThermalCamera : ThermalCamera<SettingSeamosThermalCamera> {
 
+        public SeamosThermalCamera() {
+            this.DisplayName = "Seamos Thermal Camera";
+        }
+        public override SettingSeamosThermalCamera GetSetting(SettingSeamosThermalCamera setting) {
+            return setting;
+        }
         public override void SetSetting(SettingSeamosThermalCamera setting) {
             base.SetSetting(setting);
             Console.WriteLine("SeamosThermalCamera SetSetting");

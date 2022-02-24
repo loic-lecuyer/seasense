@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Folder Include="Capabilities\Camera\" />
+    <Folder Include="Capabilities\Site\" />
   </ItemGroup>
 
 </Project>

@@ -75,13 +75,18 @@ namespace Exavision.Seasense.Server {
             }
             app.UseMiddleware<JwtMiddleware>();
             app.UseRouting();
-            app.UseSpaStaticFiles();
+            app.UseSpaStaticFiles(new StaticFileOptions {
+                OnPrepareResponse = context => {
+                    if (context.File.Name == "index.html") {
+                        context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                        context.Context.Response.Headers.Add("Expires", "-1");
+                    }
+                }
+            });
             app.UseSpa(spa => {
-
                 if (env.IsDevelopment()) {
                     spa.Options.SourcePath = "Client";
                 }
-
             });
             app.UseStaticFiles(new StaticFileOptions() {
                 ServeUnknownFileTypes = true
@@ -91,7 +96,7 @@ namespace Exavision.Seasense.Server {
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });
-        
+
 
 
         }

@@ -1,18 +1,24 @@
 ﻿using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Settings;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Exavision.Seasense.Shared.Materials {
-    public abstract class Material<S> : IMaterial where S : SettingMaterial,new() {
+    public abstract class Material<S> : IMaterial where S : SettingMaterial, new() {
+
+        public string DisplayName { get; protected set; }
         public string Id { get; private set; } = Guid.NewGuid().ToString();
         public List<IMaterial> Materials { get; set; } = new List<IMaterial>();
         public List<ICapability> Capabilities { get; set; } = new List<ICapability>();
+
+
+
         public virtual S GetSetting() {
             S setting = new S();
             setting.Id = this.Id;
+            setting.DisplayName = this.DisplayName;
             foreach (ICapability capability in this.Capabilities) {
                 SettingCapability settingCapability = capability.GetSettingCapability();
                 setting.Capabilities.Add(settingCapability);
@@ -21,10 +27,12 @@ namespace Exavision.Seasense.Shared.Materials {
                 SettingMaterial settingMaterial = material.GetSettingMaterial();
                 setting.Materials.Add(settingMaterial);
             }
+            setting = GetSetting(setting);
             return setting;
         }
         public virtual void SetSetting(S setting) {
             this.Id = setting.Id;
+            this.DisplayName = setting.DisplayName;
             foreach (ICapability capability in this.Capabilities) {
                 if (capability.GetType().BaseType.GenericTypeArguments.Length > 0) {
                     SettingCapability settingCapability = (from sm in setting.Capabilities where capability.GetType().BaseType.GenericTypeArguments.Contains(sm.GetType()) select sm).FirstOrDefault();
@@ -40,8 +48,12 @@ namespace Exavision.Seasense.Shared.Materials {
                 }
             }
         }
+
+        public abstract S GetSetting(S setting);
         public SettingMaterial GetSettingMaterial() {
-            return this.GetSetting();
+            SettingMaterial SettingMaterial = this.GetSetting();
+            SettingMaterial.Id = this.Id;
+            return SettingMaterial;
         }
     }
 }

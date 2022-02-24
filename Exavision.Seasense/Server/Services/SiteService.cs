@@ -1,5 +1,4 @@
 ﻿using Exavision.Seasense.Server.Materials.Seamos;
-using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
@@ -8,16 +7,15 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 
 namespace Exavision.Seasense.Server.Services {
-    
+
     public class SiteService : ISiteService {
         const string CONFIGURATION_FILE = "Configuration.json";
         private Site site;
         public void Start() {
             SettingSite settingSite = this.LoadSetting();
-            this.site = CreateInstanceFromSetting(settingSite);          
+            this.site = CreateInstanceFromSetting(settingSite);
         }
 
         public Type GetTypeFromSetting(Type settingType) {
@@ -58,12 +56,12 @@ namespace Exavision.Seasense.Server.Services {
                 return JsonConvert.DeserializeObject<SettingSite>(content, JsonSerializerSettings);
             }
             else {
-                SettingSite settingSite = new SettingSite();
+                Site site = new Site();
                 SeamosUnit unit = new SeamosUnit();
-                SettingMaterial s = unit.GetSetting();
-                settingSite.Units.Add(s);
+                site.Units.Add(unit);
+                SettingSite settingSite = site.GetSetting();
                 this.SaveSetting(settingSite);
-                return settingSite; 
+                return settingSite;
             }
         }
 
@@ -83,6 +81,6 @@ namespace Exavision.Seasense.Server.Services {
 
         }
 
-       
+
     }
 }

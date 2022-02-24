@@ -7,11 +7,11 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
     public class SeamosTurret : Turret<SettingSeamosTurret> {
 
         public SeamosTurret() {
+            this.DisplayName = "Seamos Turret";
             this.Capabilities.Add(new SeamosTurretMoveSpeedCapability());
         }
-        public override SettingSeamosTurret GetSetting() {
-            SettingSeamosTurret settingSeamosTurret = base.GetSetting();
-            return settingSeamosTurret;
+        public override SettingSeamosTurret GetSetting(SettingSeamosTurret setting) {
+            return setting;
         }
 
         public override void SetSetting(SettingSeamosTurret setting) {

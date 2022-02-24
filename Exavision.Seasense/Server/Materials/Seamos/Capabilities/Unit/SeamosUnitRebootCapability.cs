@@ -3,8 +3,15 @@ using System;
 
 namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit {
     public class SeamosUnitRebootCapability : UnitRebootCapability<SettingSeamosUnitRebootCapability> {
-        public override SettingSeamosUnitRebootCapability GetSetting() {
-            return new SettingSeamosUnitRebootCapability();
+
+        public SeamosUnitRebootCapability() : base() {
+
+        }
+
+
+        public override SettingSeamosUnitRebootCapability GetSetting(SettingSeamosUnitRebootCapability setting) {
+            setting.CapabilityType = Shared.Settings.CapabilityType.UnitReboot;
+            return setting;
         }
 
         public override void Reboot() {

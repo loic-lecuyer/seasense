@@ -19,6 +19,8 @@ import { HttpService } from './services/http.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UserService } from './services/user.service';
 import { JwtInterceptor } from './interceptor/jwt-interceptor';
+import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -29,16 +31,18 @@ export const httpInterceptorProviders = [
     HomeComponent,
     LoginComponent,
     ConfigurationComponent,
-    HeaderComponent
+    HeaderComponent    
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    MatSelectModule,
     MatToolbarModule,
     MatCardModule,
     MatIconModule,
+    MatMenuModule,
     MatFormFieldModule,
     MatInputModule ,
     FormsModule,

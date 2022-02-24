@@ -7,6 +7,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
     public class SeamosUnit : Unit<SettingSeamosUnit> {
 
         public SeamosUnit() {
+            this.DisplayName = "Seamos Unit";
             this.Materials.Add(new SeamosTurret());
             this.Materials.Add(new SeamosDayCamera());
             this.Materials.Add(new SeamosThermalCamera());
@@ -16,11 +17,9 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
 
         }
 
-        public override SettingSeamosUnit GetSetting() {
-            SettingSeamosUnit SettingSeamosUnit = base.GetSetting();
-            return SettingSeamosUnit;
+        public override SettingSeamosUnit GetSetting(SettingSeamosUnit setting) {
+            return setting;
         }
-
         public override void SetSetting(SettingSeamosUnit setting) {
             Console.WriteLine("SeamosUnit SetSetting");
             base.SetSetting(setting);

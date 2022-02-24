@@ -13,8 +13,8 @@ import { UserService } from '../../services/user.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  public login: string = "";
-  public password: string = "";
+  public login: string = "sav";
+  public password: string = "sav";
   public loginRunning: boolean = false;
   public errorMessage: string = "";
 

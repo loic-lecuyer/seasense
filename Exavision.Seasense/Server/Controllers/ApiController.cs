@@ -1,5 +1,6 @@
 ﻿namespace Exavision.Seasense.Server.Controllers {
     using Exavision.Seasense.Api.Http.Login;
+    using Exavision.Seasense.Api.Http.Logout;
     using Exavision.Seasense.Api.Http.Setting;
     using Exavision.Seasense.Api.Http.Token;
     using Exavision.Seasense.Server.Attributes;
@@ -20,7 +21,7 @@
         private readonly ISiteService siteService;
         private readonly ITokenService _tokenService;
 
-        public ApiController(ITokenService tokenService, IUserRepository userRepository,ISiteService siteService) {
+        public ApiController(ITokenService tokenService, IUserRepository userRepository, ISiteService siteService) {
             _tokenService = tokenService;
             this.userRepository = userRepository;
             this.siteService = siteService;
@@ -35,14 +36,26 @@
         }
 
 
-        [HttpGet]
+        [HttpPost]
         [Authorize]
-        [Route("setting")]
-        public SettingResponse Logout([FromBody] SettingRequest request) {
+        [Route("setting/get")]
+        public SettingResponse Setting([FromBody] SettingRequest request) {
             SettingResponse settingResponse = new SettingResponse();
             settingResponse.Site = this.siteService.LoadSetting();
             return settingResponse;
         }
+
+
+        [HttpPost]
+        [Authorize]
+        [Route("logout")]
+        public LogoutResponse Logout([FromBody] LogoutRequest request) {
+            LogoutResponse logoutResponse = new LogoutResponse();
+
+            return logoutResponse;
+        }
+
+
 
         [HttpPost]
         [Microsoft.AspNetCore.Authorization.AllowAnonymous]

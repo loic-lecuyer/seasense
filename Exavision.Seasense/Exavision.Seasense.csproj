@@ -18,6 +18,18 @@
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
+    <None Remove="Client\src\app\materials\capabilities\capability-type.ts" />
+    <None Remove="Client\src\app\materials\capabilities\capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\turret\turret-move-speed-capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
+    <None Remove="Client\src\app\materials\factory.ts" />
+    <None Remove="Client\src\app\materials\material.ts" />
+    <None Remove="Client\src\app\materials\settings\setting-capability.ts" />
+    <None Remove="Client\src\app\materials\settings\setting-material.ts" />
+    <None Remove="Client\src\app\materials\settings\setting-site.ts" />
+    <None Remove="Client\src\app\materials\settings\setting-unit.ts" />
+    <None Remove="Client\src\app\materials\site.ts" />
+    <None Remove="Client\src\app\materials\unit.ts" />
     <None Remove="Client\src\app\models\user.ts" />
   </ItemGroup>
 
@@ -61,6 +73,28 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
     <TypeScriptCompile Include="Client\src\app\interceptor\jwt-interceptor.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability-type.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-move-speed-capability.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\factory.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\material.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\unit.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\settings\setting-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\settings\setting-material.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\settings\setting-unit.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\settings\setting-site.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\site.ts" />
     <TypeScriptCompile Include="Client\src\app\models\user.ts" />
   </ItemGroup>
 
