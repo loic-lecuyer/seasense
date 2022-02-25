@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
   host: { 'class': 'hud-layer' }
 })
 export class HudUiComponent implements OnInit {
-
+  public isLeftToRight: boolean = true;
   constructor() { }
 
   ngOnInit(): void {

@@ -3209,6 +3209,20 @@ body {
   position: absolute;
   width: 100%;
   height: calc(100% - 64px);
+  display: flex;
+}
+
+.no-margin-right {
+  margin-right: 0px;
+}
+
+.no-margin-left {
+  margin-left: 0px;
+}
+
+.unselectable {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /*# sourceMappingURL=styles.css.map*/

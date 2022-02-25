@@ -29,8 +29,9 @@ import { HudUiComponent } from './components/hud-ui/hud-ui.component';
 import { HudStreamComponent } from './components/hud-stream/hud-stream.component';
 import { HudPanRullerComponent } from './components/hud-pan-ruller/hud-pan-ruller.component';
 import { HudTiltRullerComponent } from './components/hud-tilt-ruller/hud-tilt-ruller.component';
-import { HudCompassComponent } from './components/hud-compass/hud-compass.component';
 import { HudStatusComponent } from './components/hud-status/hud-status.component';
+import { CompassComponent } from './components/compass/compass.component';
+import { StickComponent } from './components/stick/stick.component';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -45,9 +46,8 @@ export const httpInterceptorProviders = [
     HudUiComponent,
     HudStreamComponent,
     HudPanRullerComponent,
-    HudTiltRullerComponent,
-    HudCompassComponent,
-    HudStatusComponent    
+    HudTiltRullerComponent,    
+    HudStatusComponent, CompassComponent, StickComponent    
   ],
   imports: [
     BrowserModule,

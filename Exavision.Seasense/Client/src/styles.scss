@@ -90,4 +90,19 @@ body {
   position: absolute;
   width: 100%;
   height: calc(100% - 64px);
+  display:flex;
+}
+
+.no-margin-right{
+    margin-right:0px;
+}
+.no-margin-left {
+  margin-left: 0px;
+}
+.unselectable {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

@@ -1,1 +1,17 @@
-<p>hud-ui works!</p>
+<div *ngIf="isLeftToRight" class="hud-column">
+
+</div>
+<div *ngIf="!isLeftToRight" class="hud-column">
+
+</div>
+<div class="spacer">
+
+</div>
+<div *ngIf="isLeftToRight" class="hud-column flex-dir-col">
+  <app-compass></app-compass>
+  <div class="flex-1"></div>
+  <app-stick></app-stick>
+</div>
+<div *ngIf="!isLeftToRight" class="hud-column">
+
+</div>
