@@ -86,3 +86,8 @@ body {
 .flex-dir-row {
   flex-direction: row;
 }
+.hud-layer {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 64px);
+}

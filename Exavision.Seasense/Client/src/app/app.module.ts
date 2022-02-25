@@ -25,6 +25,8 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
+import { HudUiComponent } from './components/hud-ui/hud-ui.component';
+import { HudStreamComponent } from './components/hud-stream/hud-stream.component';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -35,7 +37,9 @@ export const httpInterceptorProviders = [
     HomeComponent,
     LoginComponent,
     ConfigurationComponent,
-    HeaderComponent    
+    HeaderComponent,
+    HudUiComponent,
+    HudStreamComponent    
   ],
   imports: [
     BrowserModule,

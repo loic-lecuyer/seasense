@@ -3205,4 +3205,10 @@ body {
   flex-direction: row;
 }
 
+.hud-layer {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 64px);
+}
+
 /*# sourceMappingURL=styles.css.map*/
