@@ -15,5 +15,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
             base.SetSetting(setting);
             Console.WriteLine("SeamosDayCamera SetSetting");
         }
+
+
     }
 }

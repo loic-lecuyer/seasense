@@ -8,11 +8,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Text;
-using System.Text.Json.Serialization;
 
 namespace Exavision.Seasense.Server {
     public class Startup {
@@ -33,8 +36,14 @@ namespace Exavision.Seasense.Server {
             services.AddSingleton<IUserRepository, UserRepository>();
             services.AddSingleton<ITokenService, TokenService>();
             services.AddSingleton<ISiteService, SiteService>();
-            services.AddControllers().AddJsonOptions(j => {
-                j.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            services.AddSingleton<IWebSocketService, WebSocketService>();
+            services.AddControllers().AddNewtonsoftJson(options => {
+                options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                };
+                options.SerializerSettings.SerializationBinder = new SerializationBinder();
+                options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
                 options.TokenValidationParameters = new TokenValidationParameters {
@@ -50,6 +59,7 @@ namespace Exavision.Seasense.Server {
                     (Configuration["Jwt:Key"]))
                 };
             });
+
             services.AddCors(c => {
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             });
@@ -68,7 +78,7 @@ namespace Exavision.Seasense.Server {
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISiteService siteService) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISiteService siteService, IWebSocketService webSocketService) {
             siteService.Start();
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
@@ -83,6 +93,21 @@ namespace Exavision.Seasense.Server {
                     }
                 }
             });
+
+            var webSocketOptions = new WebSocketOptions() {
+                KeepAliveInterval = TimeSpan.FromSeconds(3)
+            };
+            app.UseWebSockets(webSocketOptions);
+            app.Map("/ws", builder => {
+                builder.Use(async (context, next) => {
+                    await webSocketService.HandleRequest(context, next);
+
+                });
+            });
+
+
+
+
             app.UseSpa(spa => {
                 if (env.IsDevelopment()) {
                     spa.Options.SourcePath = "Client";

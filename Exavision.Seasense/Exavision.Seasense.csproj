@@ -15,6 +15,10 @@
     <None Remove="Client\src\app\api\http\login-response.ts" />
     <None Remove="Client\src\app\api\http\logout-request.ts" />
     <None Remove="Client\src\app\api\http\logout-response.ts" />
+    <None Remove="Client\src\app\api\http\set-setting-request.ts" />
+    <None Remove="Client\src\app\api\http\set-setting-response.ts" />
+    <None Remove="Client\src\app\api\http\unit-create-empty-request.ts" />
+    <None Remove="Client\src\app\api\http\unit-create-empty-response.ts" />
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
@@ -30,17 +34,19 @@
     <None Remove="Client\src\app\materials\settings\setting-unit.ts" />
     <None Remove="Client\src\app\materials\site.ts" />
     <None Remove="Client\src\app\materials\unit.ts" />
+    <None Remove="Client\src\app\models\unit-type.ts" />
     <None Remove="Client\src\app\models\user.ts" />
+    <None Remove="Client\src\app\pages\configuration\configuration-node.ts" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Client\src\app\pages\" />
     <Folder Include="www\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EasySharpIni" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.14" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.14" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
@@ -53,10 +59,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Exavision.Seasense.Api.Http\Exavision.Seasense.Api.Http.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Api.WebSocket\Exavision.Seasense.Api.WebSocket.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="Client\src\app\api\http\set-setting-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\http\set-setting-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\http-message.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\http-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\http-response.ts" />
@@ -68,6 +79,10 @@
     <TypeScriptCompile Include="Client\src\app\api\http\get-setting-response.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\http\unit-create-empty-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\http\unit-create-empty-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-response.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -95,7 +110,9 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\settings\setting-site.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\site.ts" />
+    <TypeScriptCompile Include="Client\src\app\models\unit-type.ts" />
     <TypeScriptCompile Include="Client\src\app\models\user.ts" />
+    <TypeScriptCompile Include="Client\src\app\pages\configuration\configuration-node.ts" />
   </ItemGroup>
 
   <ItemGroup>

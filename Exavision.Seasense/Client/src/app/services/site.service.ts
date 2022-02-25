@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { GetSettingResponse } from '../api/http/get-setting-response';
+import { SettingSite } from '../materials/settings/setting-site';
 import { Site } from '../materials/site';
 import { Unit } from '../materials/unit';
 
@@ -13,10 +14,17 @@ export class SiteService {
   public unitSelectedSubject: Subject<Unit | undefined> = new Subject<Unit | undefined>();
   public site: Site | undefined = undefined;
   public selectedUnit: Unit | undefined = undefined;
-
+  public siteSetting: SettingSite = {
+    id: 'none',
+    capabilities:[],
+    units: [],
+    type: 'Site',
+    displayName:'Site'
+  };
   createSite(response: GetSettingResponse) {
     this.site = undefined;    
     if (response.site != null) {
+      this.siteSetting = response.site;
       this.site = new Site(response.site);      
     }   
     if (this.site != null && this.site.units.length > 0) {

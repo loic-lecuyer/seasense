@@ -3,6 +3,7 @@ using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
@@ -16,6 +17,9 @@ namespace Exavision.Seasense.Server.Services {
         public void Start() {
             SettingSite settingSite = this.LoadSetting();
             this.site = CreateInstanceFromSetting(settingSite);
+            this.site.Units.ForEach((IUnit unit) => {
+                unit.Start();
+            });
         }
 
         public Type GetTypeFromSetting(Type settingType) {
@@ -65,20 +69,25 @@ namespace Exavision.Seasense.Server.Services {
             }
         }
 
-        private void SaveSetting(SettingSite settingSite) {
+        public void SaveSetting(SettingSite settingSite) {
             JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings() {
                 TypeNameHandling = TypeNameHandling.Auto,
                 ContractResolver = new DefaultContractResolver {
                     NamingStrategy = new CamelCaseNamingStrategy()
                 },
+
                 SerializationBinder = new SerializationBinder()
             };
+            JsonSerializerSettings.Converters.Add(new StringEnumConverter());
+
             string content = JsonConvert.SerializeObject(settingSite, JsonSerializerSettings);
             File.WriteAllText(CONFIGURATION_FILE, content);
         }
 
         public void Stop() {
-
+            this.site.Units.ForEach((IUnit unit) => {
+                unit.Stop();
+            });
         }
 
 

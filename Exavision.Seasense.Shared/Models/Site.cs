@@ -8,6 +8,7 @@ using System.Reflection;
 
 namespace Exavision.Seasense.Shared.Models {
     public class Site {
+        public string DisplayName { get; set; } = "Site";
         public string Id { get; private set; } = Guid.NewGuid().ToString();
         public List<IUnit> Units { get; set; } = new List<IUnit>();
         public List<ICapability> Capabilities { get; set; } = new List<ICapability>();
@@ -15,6 +16,7 @@ namespace Exavision.Seasense.Shared.Models {
         public SettingSite GetSetting() {
             SettingSite settingSite = new SettingSite();
             settingSite.Id = this.Id;
+            settingSite.DisplayName = DisplayName;
             foreach (ICapability capability in this.Capabilities) {
                 SettingCapability settingCapability = capability.GetSettingCapability();
                 settingSite.Capabilities.Add(settingCapability);
@@ -27,6 +29,7 @@ namespace Exavision.Seasense.Shared.Models {
 
         public void SetSetting(SettingSite settingSite) {
             this.Id = settingSite.Id;
+            this.DisplayName = settingSite.DisplayName;
             foreach (IUnit unit in this.Units) {
                 if (unit.GetType().BaseType.GenericTypeArguments.Length > 0) {
                     SettingMaterial settingMateiral = (from sm in settingSite.Units where unit.GetType().BaseType.GenericTypeArguments.Contains(sm.GetType()) select sm).FirstOrDefault();

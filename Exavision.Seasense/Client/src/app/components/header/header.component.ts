@@ -8,6 +8,7 @@ import { Unit } from '../../materials/unit';
 import { HttpService } from '../../services/http.service';
 import { SiteService } from '../../services/site.service';
 import { UserService } from '../../services/user.service';
+import { WsService } from '../../services/ws.service';
 
 @Component({
   selector: 'app-header',
@@ -18,7 +19,7 @@ export class HeaderComponent implements OnInit {
   private siteLoadedSubscription: Subscription;
   public units: Unit[] = [];
   public selectedUnitId: string | undefined = undefined;
-  constructor(public userService: UserService, private httpService: HttpService, private router: Router, private siteService: SiteService) {
+  constructor(public userService: UserService, private httpService: HttpService, private router: Router, private siteService: SiteService, private wsService: WsService) {
     this.siteLoadedSubscription = this.siteService.siteLoadedSubject.subscribe((site: Site | undefined) => {
       if (site == null) this.units = [];
       else this.units = site.units;
@@ -43,6 +44,7 @@ export class HeaderComponent implements OnInit {
   onLogoutClick() {
     this.httpService.logout().subscribe({
       next: (response: LogoutResponse) => {
+        this.wsService.stop();
         this.userService.clearToken();
         this.userService.clearUser();
         this.router.navigate(['/login'])

@@ -5,7 +5,8 @@ export interface SettingSite {
   id: string;
   units: SettingUnit[];
   capabilities: SettingCapability[];
-
+  displayName: string;
+  type: string;
 }
 
 

@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Shared",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Api.Http", "Exavision.Seasense.Api.Http\Exavision.Seasense.Api.Http.csproj", "{D66E3937-4BD6-4D5D-9BA8-42BFB5D6CF41}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exavision.Seasense.Api.WebSocket", "Exavision.Seasense.Api.WebSocket\Exavision.Seasense.Api.WebSocket.csproj", "{F60321B1-A30E-4C2E-A839-72606CA9394A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{D66E3937-4BD6-4D5D-9BA8-42BFB5D6CF41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D66E3937-4BD6-4D5D-9BA8-42BFB5D6CF41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D66E3937-4BD6-4D5D-9BA8-42BFB5D6CF41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F60321B1-A30E-4C2E-A839-72606CA9394A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F60321B1-A30E-4C2E-A839-72606CA9394A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F60321B1-A30E-4C2E-A839-72606CA9394A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F60321B1-A30E-4C2E-A839-72606CA9394A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

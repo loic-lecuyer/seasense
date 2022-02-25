@@ -1,0 +1,63 @@
+:host {
+  display: flex;
+  flex: 1;
+}
+
+.card-configuration {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 100px;
+  margin-bottom: auto;
+  width: 800px;
+  height:600px;
+}
+.configuration-tree-container {
+  height: 400px;
+  width:400px;
+  overflow-x: hidden;
+  overflow-y:visible;
+}
+.icon-title {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  margin: 8px;
+}
+.configuration-tree-invisible {
+  display: none;
+}
+
+.configuration-tree ul,
+.configuration-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+/*
+ * This padding sets alignment of the nested nodes.
+ */
+.configuration-tree .mat-nested-tree-node div[role=group] {
+  padding-left: 32px;
+}
+
+/*
+ * Padding for leaf nodes.
+ * Leaf nodes need to have padding so as to align with other non-leaf nodes
+ * under the same parent.
+ */
+.configuration-tree div[role=group] > .mat-tree-node {
+  padding-left: 32px;
+}
+.node-bold{
+    font-weight:bold;
+}
+.node-normal{
+    font-weight:normal;
+}
+
+.full-size {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}

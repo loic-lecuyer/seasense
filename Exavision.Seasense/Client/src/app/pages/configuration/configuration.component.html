@@ -1,1 +1,178 @@
-<p>configuration works!</p>
+<mat-card class="card-configuration">
+  <mat-card-header>
+    <mat-card-title><mat-icon class="icon-title">face</mat-icon>Configuration</mat-card-title>
+    <mat-card-subtitle>Configure Seasense</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form class="display-flex flex-1">
+      <div class="configuration-tree-container">
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="configuration-tree">
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
+            <button mat-button (click)="selectNode(node)">
+              <div [class]="node.selected == true ? 'node-bold' : 'node-normal'">{{node.item.displayName}}</div>
+
+            </button>
+          </mat-tree-node>
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="mat-tree-node">
+              <button mat-icon-button matTreeNodeToggle
+                      [attr.aria-label]="'Toggle ' + node.name">
+                <mat-icon class="mat-icon-rtl-mirror">
+                  {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                </mat-icon>
+              </button>
+              <button mat-button (click)="selectNode(node)">
+                <div [class]="node.selected == true ? 'node-bold' : 'node-normal'">{{node.item.displayName}}</div>
+              </button>
+            </div>
+            <div [class.configuration-tree-invisible]="!treeControl.isExpanded(node)"
+                 role="group">
+              <ng-container matTreeNodeOutlet></ng-container>
+            </div>
+          </mat-nested-tree-node>
+        </mat-tree>
+      </div>
+      <mat-divider vertical="true"></mat-divider>
+      <div class="flex-1 display-flex">
+
+        <mat-card *ngIf="selectedNode != null" class="display-flex flex-1 mat-elevation-z0">
+          <mat-card-header>
+            <mat-card-title>{{selectedNode.item.displayName}}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="full-size flex-1 display-flex">
+
+            <!------------------------------------------  SettingSite  -------------------------------------------------->
+            <div class="full-size display-flex" *ngIf="selectedNode.item.type == 'SettingSite'">
+              <div class="flex-1 display-flex flex-dir-col">
+                <mat-form-field class="full-width" appearance="fill">
+                  <mat-label>Display name</mat-label>
+                  <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+                </mat-form-field>
+
+                <div class="flex-1"></div>
+                <div class="flex-dir-row display-flex flex-align-center">
+                  <mat-label class="margin-4">Add unit of type </mat-label>
+                  <mat-select class="flex-1 margin-4" [(value)]="selectedUnitTypeValue">
+                    <mat-option *ngFor="let unitType of unitTypes" [value]="unitType.value">
+                      {{unitType.displayName}}
+                    </mat-option>
+                  </mat-select>
+                  <button class="flex-1 margin-4" [disabled]="selectedUnitTypeValue == null" (click)="onAddUnitButtonClick()" mat-button>Add</button>
+                </div>
+              </div>
+            </div>
+
+            <!------------------------------------------  SettingSeamosUnit  -------------------------------------------------->
+            <div class="full-size display-flex flex-dir-col" *ngIf="selectedNode.item.type == 'SettingSeamosUnit'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Hardware IP</mat-label>
+                <input name="hardwareIP" matInput [(ngModel)]="selectedNode.item.hardwareCardIp">
+              </mat-form-field>
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Hardware Port</mat-label>
+                <input name="hardwarePort" matInput [(ngModel)]="selectedNode.item.hardwareCardPort">
+              </mat-form-field>
+              <div class="flex-1"></div>
+              <button class="full-width" (click)="onRemoveSelectedNodeButtonClick()" mat-button>Remove this unit</button>
+            </div>
+
+            <!------------------------------------------  SettingSeamosDayCamera  -------------------------------------------------->
+            <div class="full-size display-flex flex-dir-col" *ngIf="selectedNode.item.type == 'SettingSeamosDayCamera'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Stream URL</mat-label>
+                <input name="streamUrl" matInput [(ngModel)]="selectedNode.item.streamUrl">
+              </mat-form-field>
+            </div>
+
+            <!------------------------------------------  SettingSeamosThermalCamera  -------------------------------------------------->
+            <div class="full-size display-flex flex-dir-col" *ngIf="selectedNode.item.type == 'SettingSeamosThermalCamera'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Stream URL</mat-label>
+                <input name="streamUrl" matInput [(ngModel)]="selectedNode.item.streamUrl">
+              </mat-form-field>
+            </div>
+
+
+            <!------------------------------------------  SettingSeamosInertialMeasurement  -------------------------------------------------->
+
+            <div class="full-size display-flex" *ngIf="selectedNode.item.type == 'SettingSeamosInertialMeasurement'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+            </div>
+
+
+            <!------------------------------------------  SettingSeamosLazerMeasurement  -------------------------------------------------->
+            <div class="full-size display-flex" *ngIf="selectedNode.item.type == 'SettingSeamosLazerMeasurement'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+            </div>
+
+
+
+            <!------------------------------------------  SettingSeamosTurret  -------------------------------------------------->
+            <div class="full-size display-flex" *ngIf="selectedNode.item.type == 'SettingSeamosTurret'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+            </div>
+
+
+
+            <!------------------------------------------  SettingSeamosTurretMoveSpeedCapability  -------------------------------------------------->
+            <div class="full-size display-flex" *ngIf="selectedNode.item.type == 'SettingSeamosTurretMoveSpeedCapability'">
+              <div class="flex-1 display-flex flex-dir-col">
+                <mat-form-field class="full-width" appearance="fill">
+                  <mat-label>Max Pan Speed (°/sec)</mat-label>
+                  <input name="maxPanSpeed" matInput [(ngModel)]="selectedNode.item.maxPanSpeed">
+                </mat-form-field>
+
+                <mat-form-field class="full-width" appearance="fill">
+                  <mat-label>Max Tilt Speed  (°/sec)</mat-label>
+                  <input name="maxTiltSpeed" matInput [(ngModel)]="selectedNode.item.maxTiltSpeed">
+
+                </mat-form-field>
+              </div>
+
+            </div>
+
+
+
+
+
+
+
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </form>
+    <mat-error *ngIf="errorMessage != ''">{{errorMessage}}</mat-error>
+  </mat-card-content>
+  <mat-card-actions>
+    <div class="display-flex">
+      <button class="full-width" (click)="onCancelButtonClick()" mat-button>Cancel</button>
+      <button class="full-width" (click)="onApplyButtonClick()" mat-button>Apply</button>
+    </div>
+  </mat-card-actions>
+</mat-card>
+

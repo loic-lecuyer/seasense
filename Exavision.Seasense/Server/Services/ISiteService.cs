@@ -5,5 +5,6 @@ namespace Exavision.Seasense.Server.Services {
         public void Start();
         public void Stop();
         public SettingSite LoadSetting();
+        void SaveSetting(SettingSite site);
     }
 }

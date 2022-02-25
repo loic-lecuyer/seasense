@@ -20,7 +20,11 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UserService } from './services/user.service';
 import { JwtInterceptor } from './interceptor/jwt-interceptor';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTreeModule } from '@angular/material/tree';
+import { ScrollingModule } from '@angular/cdk/scrolling';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -39,9 +43,13 @@ export const httpInterceptorProviders = [
     BrowserAnimationsModule,
     MatButtonModule,
     MatSelectModule,
+    ScrollingModule,
+    MatListModule,
+    MatTreeModule,
     MatToolbarModule,
     MatCardModule,
     MatIconModule,
+    MatDividerModule,
     MatMenuModule,
     MatFormFieldModule,
     MatInputModule ,

@@ -4,8 +4,10 @@
     using Exavision.Seasense.Api.Http.Setting;
     using Exavision.Seasense.Api.Http.Token;
     using Exavision.Seasense.Server.Attributes;
+    using Exavision.Seasense.Server.Materials.Seamos;
     using Exavision.Seasense.Server.Services;
     using Exavision.Seasense.Shared.Models;
+    using Exavision.Seasense.Shared.Settings;
     using Microsoft.AspNetCore.Cors;
     using Microsoft.AspNetCore.Mvc;
     using System;
@@ -14,9 +16,6 @@
     [EnableCors("AllowOrigin")]
     [ApiController]
     public class ApiController : Controller {
-
-
-
         private readonly IUserRepository userRepository;
         private readonly ISiteService siteService;
         private readonly ITokenService _tokenService;
@@ -27,7 +26,6 @@
             this.siteService = siteService;
         }
 
-
         [HttpPost]
         [Authorize]
         [Route("token/validate")]
@@ -35,16 +33,39 @@
             return new ValidateTokenResponse();
         }
 
-
         [HttpPost]
         [Authorize]
         [Route("setting/get")]
-        public SettingResponse Setting([FromBody] SettingRequest request) {
-            SettingResponse settingResponse = new SettingResponse();
+        public GetSettingResponse Setting([FromBody] GetSettingRequest request) {
+            GetSettingResponse settingResponse = new GetSettingResponse();
             settingResponse.Site = this.siteService.LoadSetting();
             return settingResponse;
         }
 
+        [HttpPost]
+        [Authorize]
+        [Route("setting/set")]
+        public SetSettingResponse Setting([FromBody] SetSettingRequest request) {
+            siteService.Stop();
+            SetSettingResponse settingResponse = new SetSettingResponse();
+            this.siteService.SaveSetting(request.Site);
+            settingResponse.Site = this.siteService.LoadSetting();
+            siteService.Start();
+            return settingResponse;
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("unit/create/empty")]
+        public UnitCreateEmptyResponse UnitCreateEmpty([FromBody] UnitCreateEmptyRequest request) {
+            UnitCreateEmptyResponse response = new UnitCreateEmptyResponse();
+            if (request.UnitType.Equals("SeamosUnit")) {
+                SeamosUnit unit = new SeamosUnit();
+                SettingMaterial setting = unit.GetSettingMaterial();
+                response.SettingUnit = setting;
+            }
+            return response;
+        }
 
         [HttpPost]
         [Authorize]
@@ -54,8 +75,6 @@
 
             return logoutResponse;
         }
-
-
 
         [HttpPost]
         [Microsoft.AspNetCore.Authorization.AllowAnonymous]

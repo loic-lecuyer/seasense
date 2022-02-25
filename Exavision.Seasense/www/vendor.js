@@ -25580,6 +25580,1378 @@ TextFieldModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4_
 
 /***/ }),
 
+/***/ 8205:
+/*!*****************************************************!*\
+  !*** ./node_modules/@angular/cdk/fesm2015/tree.mjs ***!
+  \*****************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "BaseTreeControl": () => (/* binding */ BaseTreeControl),
+/* harmony export */   "CDK_TREE_NODE_OUTLET_NODE": () => (/* binding */ CDK_TREE_NODE_OUTLET_NODE),
+/* harmony export */   "CdkNestedTreeNode": () => (/* binding */ CdkNestedTreeNode),
+/* harmony export */   "CdkTree": () => (/* binding */ CdkTree),
+/* harmony export */   "CdkTreeModule": () => (/* binding */ CdkTreeModule),
+/* harmony export */   "CdkTreeNode": () => (/* binding */ CdkTreeNode),
+/* harmony export */   "CdkTreeNodeDef": () => (/* binding */ CdkTreeNodeDef),
+/* harmony export */   "CdkTreeNodeOutlet": () => (/* binding */ CdkTreeNodeOutlet),
+/* harmony export */   "CdkTreeNodeOutletContext": () => (/* binding */ CdkTreeNodeOutletContext),
+/* harmony export */   "CdkTreeNodePadding": () => (/* binding */ CdkTreeNodePadding),
+/* harmony export */   "CdkTreeNodeToggle": () => (/* binding */ CdkTreeNodeToggle),
+/* harmony export */   "FlatTreeControl": () => (/* binding */ FlatTreeControl),
+/* harmony export */   "NestedTreeControl": () => (/* binding */ NestedTreeControl),
+/* harmony export */   "getTreeControlFunctionsMissingError": () => (/* binding */ getTreeControlFunctionsMissingError),
+/* harmony export */   "getTreeControlMissingError": () => (/* binding */ getTreeControlMissingError),
+/* harmony export */   "getTreeMissingMatchingNodeDefError": () => (/* binding */ getTreeMissingMatchingNodeDefError),
+/* harmony export */   "getTreeMultipleDefaultNodeDefsError": () => (/* binding */ getTreeMultipleDefaultNodeDefsError),
+/* harmony export */   "getTreeNoValidDataSourceError": () => (/* binding */ getTreeNoValidDataSourceError)
+/* harmony export */ });
+/* harmony import */ var _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/cdk/collections */ 9502);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ 4437);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs */ 6317);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rxjs */ 745);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs/operators */ 9295);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ 116);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs/operators */ 8951);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var _angular_cdk_bidi__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/cdk/bidi */ 1588);
+
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** Base tree control. It has basic toggle/expand/collapse operations on a single data node. */
+
+class BaseTreeControl {
+  constructor() {
+    /** A selection model with multi-selection to track expansion status. */
+    this.expansionModel = new _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_0__.SelectionModel(true);
+  }
+  /** Toggles one single data node's expanded/collapsed state. */
+
+
+  toggle(dataNode) {
+    this.expansionModel.toggle(this._trackByValue(dataNode));
+  }
+  /** Expands one single data node. */
+
+
+  expand(dataNode) {
+    this.expansionModel.select(this._trackByValue(dataNode));
+  }
+  /** Collapses one single data node. */
+
+
+  collapse(dataNode) {
+    this.expansionModel.deselect(this._trackByValue(dataNode));
+  }
+  /** Whether a given data node is expanded or not. Returns true if the data node is expanded. */
+
+
+  isExpanded(dataNode) {
+    return this.expansionModel.isSelected(this._trackByValue(dataNode));
+  }
+  /** Toggles a subtree rooted at `node` recursively. */
+
+
+  toggleDescendants(dataNode) {
+    this.expansionModel.isSelected(this._trackByValue(dataNode)) ? this.collapseDescendants(dataNode) : this.expandDescendants(dataNode);
+  }
+  /** Collapse all dataNodes in the tree. */
+
+
+  collapseAll() {
+    this.expansionModel.clear();
+  }
+  /** Expands a subtree rooted at given data node recursively. */
+
+
+  expandDescendants(dataNode) {
+    let toBeProcessed = [dataNode];
+    toBeProcessed.push(...this.getDescendants(dataNode));
+    this.expansionModel.select(...toBeProcessed.map(value => this._trackByValue(value)));
+  }
+  /** Collapses a subtree rooted at given data node recursively. */
+
+
+  collapseDescendants(dataNode) {
+    let toBeProcessed = [dataNode];
+    toBeProcessed.push(...this.getDescendants(dataNode));
+    this.expansionModel.deselect(...toBeProcessed.map(value => this._trackByValue(value)));
+  }
+
+  _trackByValue(value) {
+    return this.trackBy ? this.trackBy(value) : value;
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** Flat tree control. Able to expand/collapse a subtree recursively for flattened tree. */
+
+
+class FlatTreeControl extends BaseTreeControl {
+  /** Construct with flat tree data node functions getLevel and isExpandable. */
+  constructor(getLevel, isExpandable, options) {
+    super();
+    this.getLevel = getLevel;
+    this.isExpandable = isExpandable;
+    this.options = options;
+
+    if (this.options) {
+      this.trackBy = this.options.trackBy;
+    }
+  }
+  /**
+   * Gets a list of the data node's subtree of descendent data nodes.
+   *
+   * To make this working, the `dataNodes` of the TreeControl must be flattened tree nodes
+   * with correct levels.
+   */
+
+
+  getDescendants(dataNode) {
+    const startIndex = this.dataNodes.indexOf(dataNode);
+    const results = []; // Goes through flattened tree nodes in the `dataNodes` array, and get all descendants.
+    // The level of descendants of a tree node must be greater than the level of the given
+    // tree node.
+    // If we reach a node whose level is equal to the level of the tree node, we hit a sibling.
+    // If we reach a node whose level is greater than the level of the tree node, we hit a
+    // sibling of an ancestor.
+
+    for (let i = startIndex + 1; i < this.dataNodes.length && this.getLevel(dataNode) < this.getLevel(this.dataNodes[i]); i++) {
+      results.push(this.dataNodes[i]);
+    }
+
+    return results;
+  }
+  /**
+   * Expands all data nodes in the tree.
+   *
+   * To make this working, the `dataNodes` variable of the TreeControl must be set to all flattened
+   * data nodes of the tree.
+   */
+
+
+  expandAll() {
+    this.expansionModel.select(...this.dataNodes.map(node => this._trackByValue(node)));
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** Nested tree control. Able to expand/collapse a subtree recursively for NestedNode type. */
+
+
+class NestedTreeControl extends BaseTreeControl {
+  /** Construct with nested tree function getChildren. */
+  constructor(getChildren, options) {
+    super();
+    this.getChildren = getChildren;
+    this.options = options;
+
+    if (this.options) {
+      this.trackBy = this.options.trackBy;
+    }
+  }
+  /**
+   * Expands all dataNodes in the tree.
+   *
+   * To make this working, the `dataNodes` variable of the TreeControl must be set to all root level
+   * data nodes of the tree.
+   */
+
+
+  expandAll() {
+    this.expansionModel.clear();
+    const allNodes = this.dataNodes.reduce((accumulator, dataNode) => [...accumulator, ...this.getDescendants(dataNode), dataNode], []);
+    this.expansionModel.select(...allNodes.map(node => this._trackByValue(node)));
+  }
+  /** Gets a list of descendant dataNodes of a subtree rooted at given data node recursively. */
+
+
+  getDescendants(dataNode) {
+    const descendants = [];
+
+    this._getDescendants(descendants, dataNode); // Remove the node itself
+
+
+    return descendants.splice(1);
+  }
+  /** A helper function to get descendants recursively. */
+
+
+  _getDescendants(descendants, dataNode) {
+    descendants.push(dataNode);
+    const childrenNodes = this.getChildren(dataNode);
+
+    if (Array.isArray(childrenNodes)) {
+      childrenNodes.forEach(child => this._getDescendants(descendants, child));
+    } else if ((0,rxjs__WEBPACK_IMPORTED_MODULE_1__.isObservable)(childrenNodes)) {
+      // TypeScript as of version 3.5 doesn't seem to treat `Boolean` like a function that
+      // returns a `boolean` specifically in the context of `filter`, so we manually clarify that.
+      childrenNodes.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_2__.take)(1), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.filter)(Boolean)).subscribe(children => {
+        for (const child of children) {
+          this._getDescendants(descendants, child);
+        }
+      });
+    }
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Injection token used to provide a `CdkTreeNode` to its outlet.
+ * Used primarily to avoid circular imports.
+ * @docs-private
+ */
+
+
+const CDK_TREE_NODE_OUTLET_NODE = new _angular_core__WEBPACK_IMPORTED_MODULE_4__.InjectionToken('CDK_TREE_NODE_OUTLET_NODE');
+/**
+ * Outlet for nested CdkNode. Put `[cdkTreeNodeOutlet]` on a tag to place children dataNodes
+ * inside the outlet.
+ */
+
+class CdkTreeNodeOutlet {
+  constructor(viewContainer, _node) {
+    this.viewContainer = viewContainer;
+    this._node = _node;
+  }
+
+}
+
+CdkTreeNodeOutlet.ɵfac = function CdkTreeNodeOutlet_Factory(t) {
+  return new (t || CdkTreeNodeOutlet)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.ViewContainerRef), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](CDK_TREE_NODE_OUTLET_NODE, 8));
+};
+
+CdkTreeNodeOutlet.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkTreeNodeOutlet,
+  selectors: [["", "cdkTreeNodeOutlet", ""]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTreeNodeOutlet, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: '[cdkTreeNodeOutlet]'
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ViewContainerRef
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Inject,
+        args: [CDK_TREE_NODE_OUTLET_NODE]
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Optional
+      }]
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/** Context provided to the tree node component. */
+
+
+class CdkTreeNodeOutletContext {
+  constructor(data) {
+    this.$implicit = data;
+  }
+
+}
+/**
+ * Data node definition for the CdkTree.
+ * Captures the node's template and a when predicate that describes when this node should be used.
+ */
+
+
+class CdkTreeNodeDef {
+  /** @docs-private */
+  constructor(template) {
+    this.template = template;
+  }
+
+}
+
+CdkTreeNodeDef.ɵfac = function CdkTreeNodeDef_Factory(t) {
+  return new (t || CdkTreeNodeDef)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.TemplateRef));
+};
+
+CdkTreeNodeDef.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkTreeNodeDef,
+  selectors: [["", "cdkTreeNodeDef", ""]],
+  inputs: {
+    when: ["cdkTreeNodeDefWhen", "when"]
+  }
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTreeNodeDef, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: '[cdkTreeNodeDef]',
+      inputs: ['when: cdkTreeNodeDefWhen']
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.TemplateRef
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Returns an error to be thrown when there is no usable data.
+ * @docs-private
+ */
+
+
+function getTreeNoValidDataSourceError() {
+  return Error(`A valid data source must be provided.`);
+}
+/**
+ * Returns an error to be thrown when there are multiple nodes that are missing a when function.
+ * @docs-private
+ */
+
+
+function getTreeMultipleDefaultNodeDefsError() {
+  return Error(`There can only be one default row without a when predicate function.`);
+}
+/**
+ * Returns an error to be thrown when there are no matching node defs for a particular set of data.
+ * @docs-private
+ */
+
+
+function getTreeMissingMatchingNodeDefError() {
+  return Error(`Could not find a matching node definition for the provided node data.`);
+}
+/**
+ * Returns an error to be thrown when there are tree control.
+ * @docs-private
+ */
+
+
+function getTreeControlMissingError() {
+  return Error(`Could not find a tree control for the tree.`);
+}
+/**
+ * Returns an error to be thrown when tree control did not implement functions for flat/nested node.
+ * @docs-private
+ */
+
+
+function getTreeControlFunctionsMissingError() {
+  return Error(`Could not find functions for nested/flat tree in tree control.`);
+}
+/**
+ * CDK tree component that connects with a data source to retrieve data of type `T` and renders
+ * dataNodes with hierarchy. Updates the dataNodes when new data is provided by the data source.
+ */
+
+
+class CdkTree {
+  constructor(_differs, _changeDetectorRef) {
+    this._differs = _differs;
+    this._changeDetectorRef = _changeDetectorRef;
+    /** Subject that emits when the component has been destroyed. */
+
+    this._onDestroy = new rxjs__WEBPACK_IMPORTED_MODULE_5__.Subject();
+    /** Level of nodes */
+
+    this._levels = new Map(); // TODO(tinayuangao): Setup a listener for scrolling, emit the calculated view to viewChange.
+    //     Remove the MAX_VALUE in viewChange
+
+    /**
+     * Stream containing the latest information on what rows are being displayed on screen.
+     * Can be used by the data source to as a heuristic of what data should be provided.
+     */
+
+    this.viewChange = new rxjs__WEBPACK_IMPORTED_MODULE_6__.BehaviorSubject({
+      start: 0,
+      end: Number.MAX_VALUE
+    });
+  }
+  /**
+   * Provides a stream containing the latest data array to render. Influenced by the tree's
+   * stream of view window (what dataNodes are currently on screen).
+   * Data source can be an observable of data array, or a data array to render.
+   */
+
+
+  get dataSource() {
+    return this._dataSource;
+  }
+
+  set dataSource(dataSource) {
+    if (this._dataSource !== dataSource) {
+      this._switchDataSource(dataSource);
+    }
+  }
+
+  ngOnInit() {
+    this._dataDiffer = this._differs.find([]).create(this.trackBy);
+
+    if (!this.treeControl && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getTreeControlMissingError();
+    }
+  }
+
+  ngOnDestroy() {
+    this._nodeOutlet.viewContainer.clear();
+
+    this.viewChange.complete();
+
+    this._onDestroy.next();
+
+    this._onDestroy.complete();
+
+    if (this._dataSource && typeof this._dataSource.disconnect === 'function') {
+      this.dataSource.disconnect(this);
+    }
+
+    if (this._dataSubscription) {
+      this._dataSubscription.unsubscribe();
+
+      this._dataSubscription = null;
+    }
+  }
+
+  ngAfterContentChecked() {
+    const defaultNodeDefs = this._nodeDefs.filter(def => !def.when);
+
+    if (defaultNodeDefs.length > 1 && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getTreeMultipleDefaultNodeDefsError();
+    }
+
+    this._defaultNodeDef = defaultNodeDefs[0];
+
+    if (this.dataSource && this._nodeDefs && !this._dataSubscription) {
+      this._observeRenderChanges();
+    }
+  } // TODO(tinayuangao): Work on keyboard traversal and actions, make sure it's working for RTL
+  //     and nested trees.
+
+  /**
+   * Switch to the provided data source by resetting the data and unsubscribing from the current
+   * render change subscription if one exists. If the data source is null, interpret this by
+   * clearing the node outlet. Otherwise start listening for new data.
+   */
+
+
+  _switchDataSource(dataSource) {
+    if (this._dataSource && typeof this._dataSource.disconnect === 'function') {
+      this.dataSource.disconnect(this);
+    }
+
+    if (this._dataSubscription) {
+      this._dataSubscription.unsubscribe();
+
+      this._dataSubscription = null;
+    } // Remove the all dataNodes if there is now no data source
+
+
+    if (!dataSource) {
+      this._nodeOutlet.viewContainer.clear();
+    }
+
+    this._dataSource = dataSource;
+
+    if (this._nodeDefs) {
+      this._observeRenderChanges();
+    }
+  }
+  /** Set up a subscription for the data provided by the data source. */
+
+
+  _observeRenderChanges() {
+    let dataStream;
+
+    if ((0,_angular_cdk_collections__WEBPACK_IMPORTED_MODULE_0__.isDataSource)(this._dataSource)) {
+      dataStream = this._dataSource.connect(this);
+    } else if ((0,rxjs__WEBPACK_IMPORTED_MODULE_1__.isObservable)(this._dataSource)) {
+      dataStream = this._dataSource;
+    } else if (Array.isArray(this._dataSource)) {
+      dataStream = (0,rxjs__WEBPACK_IMPORTED_MODULE_7__.of)(this._dataSource);
+    }
+
+    if (dataStream) {
+      this._dataSubscription = dataStream.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_8__.takeUntil)(this._onDestroy)).subscribe(data => this.renderNodeChanges(data));
+    } else if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      throw getTreeNoValidDataSourceError();
+    }
+  }
+  /** Check for changes made in the data and render each change (node added/removed/moved). */
+
+
+  renderNodeChanges(data, dataDiffer = this._dataDiffer, viewContainer = this._nodeOutlet.viewContainer, parentData) {
+    const changes = dataDiffer.diff(data);
+
+    if (!changes) {
+      return;
+    }
+
+    changes.forEachOperation((item, adjustedPreviousIndex, currentIndex) => {
+      if (item.previousIndex == null) {
+        this.insertNode(data[currentIndex], currentIndex, viewContainer, parentData);
+      } else if (currentIndex == null) {
+        viewContainer.remove(adjustedPreviousIndex);
+
+        this._levels.delete(item.item);
+      } else {
+        const view = viewContainer.get(adjustedPreviousIndex);
+        viewContainer.move(view, currentIndex);
+      }
+    });
+
+    this._changeDetectorRef.detectChanges();
+  }
+  /**
+   * Finds the matching node definition that should be used for this node data. If there is only
+   * one node definition, it is returned. Otherwise, find the node definition that has a when
+   * predicate that returns true with the data. If none return true, return the default node
+   * definition.
+   */
+
+
+  _getNodeDef(data, i) {
+    if (this._nodeDefs.length === 1) {
+      return this._nodeDefs.first;
+    }
+
+    const nodeDef = this._nodeDefs.find(def => def.when && def.when(i, data)) || this._defaultNodeDef;
+
+    if (!nodeDef && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getTreeMissingMatchingNodeDefError();
+    }
+
+    return nodeDef;
+  }
+  /**
+   * Create the embedded view for the data node template and place it in the correct index location
+   * within the data node view container.
+   */
+
+
+  insertNode(nodeData, index, viewContainer, parentData) {
+    const node = this._getNodeDef(nodeData, index); // Node context that will be provided to created embedded view
+
+
+    const context = new CdkTreeNodeOutletContext(nodeData); // If the tree is flat tree, then use the `getLevel` function in flat tree control
+    // Otherwise, use the level of parent node.
+
+    if (this.treeControl.getLevel) {
+      context.level = this.treeControl.getLevel(nodeData);
+    } else if (typeof parentData !== 'undefined' && this._levels.has(parentData)) {
+      context.level = this._levels.get(parentData) + 1;
+    } else {
+      context.level = 0;
+    }
+
+    this._levels.set(nodeData, context.level); // Use default tree nodeOutlet, or nested node's nodeOutlet
+
+
+    const container = viewContainer ? viewContainer : this._nodeOutlet.viewContainer;
+    container.createEmbeddedView(node.template, context, index); // Set the data to just created `CdkTreeNode`.
+    // The `CdkTreeNode` created from `createEmbeddedView` will be saved in static variable
+    //     `mostRecentTreeNode`. We get it from static variable and pass the node data to it.
+
+    if (CdkTreeNode.mostRecentTreeNode) {
+      CdkTreeNode.mostRecentTreeNode.data = nodeData;
+    }
+  }
+
+}
+
+CdkTree.ɵfac = function CdkTree_Factory(t) {
+  return new (t || CdkTree)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.IterableDiffers), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.ChangeDetectorRef));
+};
+
+CdkTree.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineComponent"]({
+  type: CdkTree,
+  selectors: [["cdk-tree"]],
+  contentQueries: function CdkTree_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵcontentQuery"](dirIndex, CdkTreeNodeDef, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵloadQuery"]()) && (ctx._nodeDefs = _t);
+    }
+  },
+  viewQuery: function CdkTree_Query(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵviewQuery"](CdkTreeNodeOutlet, 7);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵloadQuery"]()) && (ctx._nodeOutlet = _t.first);
+    }
+  },
+  hostAttrs: ["role", "tree", 1, "cdk-tree"],
+  inputs: {
+    dataSource: "dataSource",
+    treeControl: "treeControl",
+    trackBy: "trackBy"
+  },
+  exportAs: ["cdkTree"],
+  decls: 1,
+  vars: 0,
+  consts: [["cdkTreeNodeOutlet", ""]],
+  template: function CdkTree_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵelementContainer"](0, 0);
+    }
+  },
+  directives: [CdkTreeNodeOutlet],
+  encapsulation: 2
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTree, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Component,
+    args: [{
+      selector: 'cdk-tree',
+      exportAs: 'cdkTree',
+      template: `<ng-container cdkTreeNodeOutlet></ng-container>`,
+      host: {
+        'class': 'cdk-tree',
+        'role': 'tree'
+      },
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ViewEncapsulation.None,
+      // The "OnPush" status for the `CdkTree` component is effectively a noop, so we are removing it.
+      // The view for `CdkTree` consists entirely of templates declared in other views. As they are
+      // declared elsewhere, they are checked when their declaration points are checked.
+      // tslint:disable-next-line:validate-decorators
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ChangeDetectionStrategy.Default
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.IterableDiffers
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ChangeDetectorRef
+    }];
+  }, {
+    dataSource: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input
+    }],
+    treeControl: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input
+    }],
+    trackBy: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input
+    }],
+    _nodeOutlet: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ViewChild,
+      args: [CdkTreeNodeOutlet, {
+        static: true
+      }]
+    }],
+    _nodeDefs: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ContentChildren,
+      args: [CdkTreeNodeDef, {
+        // We need to use `descendants: true`, because Ivy will no longer match
+        // indirect descendants if it's left as false.
+        descendants: true
+      }]
+    }]
+  });
+})();
+/**
+ * Tree node for CdkTree. It contains the data in the tree node.
+ */
+
+
+class CdkTreeNode {
+  constructor(_elementRef, _tree) {
+    this._elementRef = _elementRef;
+    this._tree = _tree;
+    /** Subject that emits when the component has been destroyed. */
+
+    this._destroyed = new rxjs__WEBPACK_IMPORTED_MODULE_5__.Subject();
+    /** Emits when the node's data has changed. */
+
+    this._dataChanges = new rxjs__WEBPACK_IMPORTED_MODULE_5__.Subject();
+    CdkTreeNode.mostRecentTreeNode = this;
+    this.role = 'treeitem';
+  }
+  /**
+   * The role of the tree node.
+   * @deprecated The correct role is 'treeitem', 'group' should not be used. This input will be
+   *   removed in a future version.
+   * @breaking-change 12.0.0 Remove this input
+   */
+
+
+  get role() {
+    return 'treeitem';
+  }
+
+  set role(_role) {
+    // TODO: move to host after View Engine deprecation
+    this._elementRef.nativeElement.setAttribute('role', _role);
+  }
+  /** The tree node's data. */
+
+
+  get data() {
+    return this._data;
+  }
+
+  set data(value) {
+    if (value !== this._data) {
+      this._data = value;
+
+      this._setRoleFromData();
+
+      this._dataChanges.next();
+    }
+  }
+
+  get isExpanded() {
+    return this._tree.treeControl.isExpanded(this._data);
+  }
+
+  get level() {
+    // If the treeControl has a getLevel method, use it to get the level. Otherwise read the
+    // aria-level off the parent node and use it as the level for this node (note aria-level is
+    // 1-indexed, while this property is 0-indexed, so we don't need to increment).
+    return this._tree.treeControl.getLevel ? this._tree.treeControl.getLevel(this._data) : this._parentNodeAriaLevel;
+  }
+
+  ngOnInit() {
+    this._parentNodeAriaLevel = getParentNodeAriaLevel(this._elementRef.nativeElement);
+
+    this._elementRef.nativeElement.setAttribute('aria-level', `${this.level + 1}`);
+  }
+
+  ngOnDestroy() {
+    // If this is the last tree node being destroyed,
+    // clear out the reference to avoid leaking memory.
+    if (CdkTreeNode.mostRecentTreeNode === this) {
+      CdkTreeNode.mostRecentTreeNode = null;
+    }
+
+    this._dataChanges.complete();
+
+    this._destroyed.next();
+
+    this._destroyed.complete();
+  }
+  /** Focuses the menu item. Implements for FocusableOption. */
+
+
+  focus() {
+    this._elementRef.nativeElement.focus();
+  } // TODO: role should eventually just be set in the component host
+
+
+  _setRoleFromData() {
+    if (!this._tree.treeControl.isExpandable && !this._tree.treeControl.getChildren && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getTreeControlFunctionsMissingError();
+    }
+
+    this.role = 'treeitem';
+  }
+
+}
+/**
+ * The most recently created `CdkTreeNode`. We save it in static variable so we can retrieve it
+ * in `CdkTree` and set the data to it.
+ */
+
+
+CdkTreeNode.mostRecentTreeNode = null;
+
+CdkTreeNode.ɵfac = function CdkTreeNode_Factory(t) {
+  return new (t || CdkTreeNode)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](CdkTree));
+};
+
+CdkTreeNode.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkTreeNode,
+  selectors: [["cdk-tree-node"]],
+  hostAttrs: [1, "cdk-tree-node"],
+  hostVars: 1,
+  hostBindings: function CdkTreeNode_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵattribute"]("aria-expanded", ctx.isExpanded);
+    }
+  },
+  inputs: {
+    role: "role"
+  },
+  exportAs: ["cdkTreeNode"]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTreeNode, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: 'cdk-tree-node',
+      exportAs: 'cdkTreeNode',
+      host: {
+        'class': 'cdk-tree-node',
+        '[attr.aria-expanded]': 'isExpanded'
+      }
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef
+    }, {
+      type: CdkTree
+    }];
+  }, {
+    role: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input
+    }]
+  });
+})();
+
+function getParentNodeAriaLevel(nodeElement) {
+  let parent = nodeElement.parentElement;
+
+  while (parent && !isNodeElement(parent)) {
+    parent = parent.parentElement;
+  }
+
+  if (!parent) {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      throw Error('Incorrect tree structure containing detached node.');
+    } else {
+      return -1;
+    }
+  } else if (parent.classList.contains('cdk-nested-tree-node')) {
+    return (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_9__.coerceNumberProperty)(parent.getAttribute('aria-level'));
+  } else {
+    // The ancestor element is the cdk-tree itself
+    return 0;
+  }
+}
+
+function isNodeElement(element) {
+  const classList = element.classList;
+  return !!((classList === null || classList === void 0 ? void 0 : classList.contains('cdk-nested-tree-node')) || (classList === null || classList === void 0 ? void 0 : classList.contains('cdk-tree')));
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Nested node is a child of `<cdk-tree>`. It works with nested tree.
+ * By using `cdk-nested-tree-node` component in tree node template, children of the parent node will
+ * be added in the `cdkTreeNodeOutlet` in tree node template.
+ * The children of node will be automatically added to `cdkTreeNodeOutlet`.
+ */
+
+
+class CdkNestedTreeNode extends CdkTreeNode {
+  constructor(elementRef, tree, _differs) {
+    super(elementRef, tree);
+    this._differs = _differs;
+  }
+
+  ngAfterContentInit() {
+    this._dataDiffer = this._differs.find([]).create(this._tree.trackBy);
+
+    if (!this._tree.treeControl.getChildren && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw getTreeControlFunctionsMissingError();
+    }
+
+    const childrenNodes = this._tree.treeControl.getChildren(this.data);
+
+    if (Array.isArray(childrenNodes)) {
+      this.updateChildrenNodes(childrenNodes);
+    } else if ((0,rxjs__WEBPACK_IMPORTED_MODULE_1__.isObservable)(childrenNodes)) {
+      childrenNodes.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_8__.takeUntil)(this._destroyed)).subscribe(result => this.updateChildrenNodes(result));
+    }
+
+    this.nodeOutlet.changes.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_8__.takeUntil)(this._destroyed)).subscribe(() => this.updateChildrenNodes());
+  } // This is a workaround for https://github.com/angular/angular/issues/23091
+  // In aot mode, the lifecycle hooks from parent class are not called.
+
+
+  ngOnInit() {
+    super.ngOnInit();
+  }
+
+  ngOnDestroy() {
+    this._clear();
+
+    super.ngOnDestroy();
+  }
+  /** Add children dataNodes to the NodeOutlet */
+
+
+  updateChildrenNodes(children) {
+    const outlet = this._getNodeOutlet();
+
+    if (children) {
+      this._children = children;
+    }
+
+    if (outlet && this._children) {
+      const viewContainer = outlet.viewContainer;
+
+      this._tree.renderNodeChanges(this._children, this._dataDiffer, viewContainer, this._data);
+    } else {
+      // Reset the data differ if there's no children nodes displayed
+      this._dataDiffer.diff([]);
+    }
+  }
+  /** Clear the children dataNodes. */
+
+
+  _clear() {
+    const outlet = this._getNodeOutlet();
+
+    if (outlet) {
+      outlet.viewContainer.clear();
+
+      this._dataDiffer.diff([]);
+    }
+  }
+  /** Gets the outlet for the current node. */
+
+
+  _getNodeOutlet() {
+    const outlets = this.nodeOutlet; // Note that since we use `descendants: true` on the query, we have to ensure
+    // that we don't pick up the outlet of a child node by accident.
+
+    return outlets && outlets.find(outlet => !outlet._node || outlet._node === this);
+  }
+
+}
+
+CdkNestedTreeNode.ɵfac = function CdkNestedTreeNode_Factory(t) {
+  return new (t || CdkNestedTreeNode)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](CdkTree), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.IterableDiffers));
+};
+
+CdkNestedTreeNode.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkNestedTreeNode,
+  selectors: [["cdk-nested-tree-node"]],
+  contentQueries: function CdkNestedTreeNode_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵcontentQuery"](dirIndex, CdkTreeNodeOutlet, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵloadQuery"]()) && (ctx.nodeOutlet = _t);
+    }
+  },
+  hostAttrs: [1, "cdk-nested-tree-node"],
+  inputs: {
+    role: "role",
+    disabled: "disabled",
+    tabIndex: "tabIndex"
+  },
+  exportAs: ["cdkNestedTreeNode"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵProvidersFeature"]([{
+    provide: CdkTreeNode,
+    useExisting: CdkNestedTreeNode
+  }, {
+    provide: CDK_TREE_NODE_OUTLET_NODE,
+    useExisting: CdkNestedTreeNode
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkNestedTreeNode, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: 'cdk-nested-tree-node',
+      exportAs: 'cdkNestedTreeNode',
+      inputs: ['role', 'disabled', 'tabIndex'],
+      providers: [{
+        provide: CdkTreeNode,
+        useExisting: CdkNestedTreeNode
+      }, {
+        provide: CDK_TREE_NODE_OUTLET_NODE,
+        useExisting: CdkNestedTreeNode
+      }],
+      host: {
+        'class': 'cdk-nested-tree-node'
+      }
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef
+    }, {
+      type: CdkTree
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.IterableDiffers
+    }];
+  }, {
+    nodeOutlet: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ContentChildren,
+      args: [CdkTreeNodeOutlet, {
+        // We need to use `descendants: true`, because Ivy will no longer match
+        // indirect descendants if it's left as false.
+        descendants: true
+      }]
+    }]
+  });
+})();
+/** Regex used to split a string on its CSS units. */
+
+
+const cssUnitPattern = /([A-Za-z%]+)$/;
+/**
+ * Indent for the children tree dataNodes.
+ * This directive will add left-padding to the node to show hierarchy.
+ */
+
+class CdkTreeNodePadding {
+  constructor(_treeNode, _tree, _element, _dir) {
+    this._treeNode = _treeNode;
+    this._tree = _tree;
+    this._element = _element;
+    this._dir = _dir;
+    /** Subject that emits when the component has been destroyed. */
+
+    this._destroyed = new rxjs__WEBPACK_IMPORTED_MODULE_5__.Subject();
+    /** CSS units used for the indentation value. */
+
+    this.indentUnits = 'px';
+    this._indent = 40;
+
+    this._setPadding();
+
+    if (_dir) {
+      _dir.change.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_8__.takeUntil)(this._destroyed)).subscribe(() => this._setPadding(true));
+    } // In Ivy the indentation binding might be set before the tree node's data has been added,
+    // which means that we'll miss the first render. We have to subscribe to changes in the
+    // data to ensure that everything is up to date.
+
+
+    _treeNode._dataChanges.subscribe(() => this._setPadding());
+  }
+  /** The level of depth of the tree node. The padding will be `level * indent` pixels. */
+
+
+  get level() {
+    return this._level;
+  }
+
+  set level(value) {
+    this._setLevelInput(value);
+  }
+  /**
+   * The indent for each level. Can be a number or a CSS string.
+   * Default number 40px from material design menu sub-menu spec.
+   */
+
+
+  get indent() {
+    return this._indent;
+  }
+
+  set indent(indent) {
+    this._setIndentInput(indent);
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+
+    this._destroyed.complete();
+  }
+  /** The padding indent value for the tree node. Returns a string with px numbers if not null. */
+
+
+  _paddingIndent() {
+    const nodeLevel = this._treeNode.data && this._tree.treeControl.getLevel ? this._tree.treeControl.getLevel(this._treeNode.data) : null;
+    const level = this._level == null ? nodeLevel : this._level;
+    return typeof level === 'number' ? `${level * this._indent}${this.indentUnits}` : null;
+  }
+
+  _setPadding(forceChange = false) {
+    const padding = this._paddingIndent();
+
+    if (padding !== this._currentPadding || forceChange) {
+      const element = this._element.nativeElement;
+      const paddingProp = this._dir && this._dir.value === 'rtl' ? 'paddingRight' : 'paddingLeft';
+      const resetProp = paddingProp === 'paddingLeft' ? 'paddingRight' : 'paddingLeft';
+      element.style[paddingProp] = padding || '';
+      element.style[resetProp] = '';
+      this._currentPadding = padding;
+    }
+  }
+  /**
+   * This has been extracted to a util because of TS 4 and VE.
+   * View Engine doesn't support property rename inheritance.
+   * TS 4.0 doesn't allow properties to override accessors or vice-versa.
+   * @docs-private
+   */
+
+
+  _setLevelInput(value) {
+    // Set to null as the fallback value so that _setPadding can fall back to the node level if the
+    // consumer set the directive as `cdkTreeNodePadding=""`. We still want to take this value if
+    // they set 0 explicitly.
+    this._level = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_9__.coerceNumberProperty)(value, null);
+
+    this._setPadding();
+  }
+  /**
+   * This has been extracted to a util because of TS 4 and VE.
+   * View Engine doesn't support property rename inheritance.
+   * TS 4.0 doesn't allow properties to override accessors or vice-versa.
+   * @docs-private
+   */
+
+
+  _setIndentInput(indent) {
+    let value = indent;
+    let units = 'px';
+
+    if (typeof indent === 'string') {
+      const parts = indent.split(cssUnitPattern);
+      value = parts[0];
+      units = parts[1] || units;
+    }
+
+    this.indentUnits = units;
+    this._indent = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_9__.coerceNumberProperty)(value);
+
+    this._setPadding();
+  }
+
+}
+
+CdkTreeNodePadding.ɵfac = function CdkTreeNodePadding_Factory(t) {
+  return new (t || CdkTreeNodePadding)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](CdkTreeNode), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](CdkTree), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](_angular_cdk_bidi__WEBPACK_IMPORTED_MODULE_10__.Directionality, 8));
+};
+
+CdkTreeNodePadding.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkTreeNodePadding,
+  selectors: [["", "cdkTreeNodePadding", ""]],
+  inputs: {
+    level: ["cdkTreeNodePadding", "level"],
+    indent: ["cdkTreeNodePaddingIndent", "indent"]
+  }
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTreeNodePadding, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: '[cdkTreeNodePadding]'
+    }]
+  }], function () {
+    return [{
+      type: CdkTreeNode
+    }, {
+      type: CdkTree
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.ElementRef
+    }, {
+      type: _angular_cdk_bidi__WEBPACK_IMPORTED_MODULE_10__.Directionality,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Optional
+      }]
+    }];
+  }, {
+    level: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input,
+      args: ['cdkTreeNodePadding']
+    }],
+    indent: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input,
+      args: ['cdkTreeNodePaddingIndent']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Node toggle to expand/collapse the node.
+ */
+
+
+class CdkTreeNodeToggle {
+  constructor(_tree, _treeNode) {
+    this._tree = _tree;
+    this._treeNode = _treeNode;
+    this._recursive = false;
+  }
+  /** Whether expand/collapse the node recursively. */
+
+
+  get recursive() {
+    return this._recursive;
+  }
+
+  set recursive(value) {
+    this._recursive = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_9__.coerceBooleanProperty)(value);
+  }
+
+  _toggle(event) {
+    this.recursive ? this._tree.treeControl.toggleDescendants(this._treeNode.data) : this._tree.treeControl.toggle(this._treeNode.data);
+    event.stopPropagation();
+  }
+
+}
+
+CdkTreeNodeToggle.ɵfac = function CdkTreeNodeToggle_Factory(t) {
+  return new (t || CdkTreeNodeToggle)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](CdkTree), _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdirectiveInject"](CdkTreeNode));
+};
+
+CdkTreeNodeToggle.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineDirective"]({
+  type: CdkTreeNodeToggle,
+  selectors: [["", "cdkTreeNodeToggle", ""]],
+  hostBindings: function CdkTreeNodeToggle_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵlistener"]("click", function CdkTreeNodeToggle_click_HostBindingHandler($event) {
+        return ctx._toggle($event);
+      });
+    }
+  },
+  inputs: {
+    recursive: ["cdkTreeNodeToggleRecursive", "recursive"]
+  }
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTreeNodeToggle, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Directive,
+    args: [{
+      selector: '[cdkTreeNodeToggle]',
+      host: {
+        '(click)': '_toggle($event)'
+      }
+    }]
+  }], function () {
+    return [{
+      type: CdkTree
+    }, {
+      type: CdkTreeNode
+    }];
+  }, {
+    recursive: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.Input,
+      args: ['cdkTreeNodeToggleRecursive']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const EXPORTED_DECLARATIONS = [CdkNestedTreeNode, CdkTreeNodeDef, CdkTreeNodePadding, CdkTreeNodeToggle, CdkTree, CdkTreeNode, CdkTreeNodeOutlet];
+
+class CdkTreeModule {}
+
+CdkTreeModule.ɵfac = function CdkTreeModule_Factory(t) {
+  return new (t || CdkTreeModule)();
+};
+
+CdkTreeModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineNgModule"]({
+  type: CdkTreeModule
+});
+CdkTreeModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjector"]({});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵsetClassMetadata"](CdkTreeModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_4__.NgModule,
+    args: [{
+      exports: EXPORTED_DECLARATIONS,
+      declarations: EXPORTED_DECLARATIONS
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
 /***/ 6362:
 /*!**********************************************************!*\
   !*** ./node_modules/@angular/common/fesm2015/common.mjs ***!
@@ -77604,6 +78976,172 @@ MatOptionModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0_
 
 /***/ }),
 
+/***/ 9975:
+/*!*************************************************************!*\
+  !*** ./node_modules/@angular/material/fesm2015/divider.mjs ***!
+  \*************************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MatDivider": () => (/* binding */ MatDivider),
+/* harmony export */   "MatDividerModule": () => (/* binding */ MatDividerModule)
+/* harmony export */ });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material/core */ 8133);
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+class MatDivider {
+  constructor() {
+    this._vertical = false;
+    this._inset = false;
+  }
+  /** Whether the divider is vertically aligned. */
+
+
+  get vertical() {
+    return this._vertical;
+  }
+
+  set vertical(value) {
+    this._vertical = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_0__.coerceBooleanProperty)(value);
+  }
+  /** Whether the divider is an inset divider. */
+
+
+  get inset() {
+    return this._inset;
+  }
+
+  set inset(value) {
+    this._inset = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_0__.coerceBooleanProperty)(value);
+  }
+
+}
+
+MatDivider.ɵfac = function MatDivider_Factory(t) {
+  return new (t || MatDivider)();
+};
+
+MatDivider.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({
+  type: MatDivider,
+  selectors: [["mat-divider"]],
+  hostAttrs: ["role", "separator", 1, "mat-divider"],
+  hostVars: 7,
+  hostBindings: function MatDivider_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵattribute"]("aria-orientation", ctx.vertical ? "vertical" : "horizontal");
+      _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵclassProp"]("mat-divider-vertical", ctx.vertical)("mat-divider-horizontal", !ctx.vertical)("mat-divider-inset", ctx.inset);
+    }
+  },
+  inputs: {
+    vertical: "vertical",
+    inset: "inset"
+  },
+  decls: 0,
+  vars: 0,
+  template: function MatDivider_Template(rf, ctx) {},
+  styles: [".mat-divider{display:block;margin:0;border-top-width:1px;border-top-style:solid}.mat-divider.mat-divider-vertical{border-top:0;border-right-width:1px;border-right-style:solid}.mat-divider.mat-divider-inset{margin-left:80px}[dir=rtl] .mat-divider.mat-divider-inset{margin-left:auto;margin-right:80px}\n"],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](MatDivider, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Component,
+    args: [{
+      selector: 'mat-divider',
+      host: {
+        'role': 'separator',
+        '[attr.aria-orientation]': 'vertical ? "vertical" : "horizontal"',
+        '[class.mat-divider-vertical]': 'vertical',
+        '[class.mat-divider-horizontal]': '!vertical',
+        '[class.mat-divider-inset]': 'inset',
+        'class': 'mat-divider'
+      },
+      template: '',
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_1__.ChangeDetectionStrategy.OnPush,
+      styles: [".mat-divider{display:block;margin:0;border-top-width:1px;border-top-style:solid}.mat-divider.mat-divider-vertical{border-top:0;border-right-width:1px;border-right-style:solid}.mat-divider.mat-divider-inset{margin-left:80px}[dir=rtl] .mat-divider.mat-divider-inset{margin-left:auto;margin-right:80px}\n"]
+    }]
+  }], null, {
+    vertical: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Input
+    }],
+    inset: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class MatDividerModule {}
+
+MatDividerModule.ɵfac = function MatDividerModule_Factory(t) {
+  return new (t || MatDividerModule)();
+};
+
+MatDividerModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineNgModule"]({
+  type: MatDividerModule
+});
+MatDividerModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector"]({
+  imports: [[_angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule], _angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](MatDividerModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_1__.NgModule,
+    args: [{
+      imports: [_angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule],
+      exports: [MatDivider, _angular_material_core__WEBPACK_IMPORTED_MODULE_2__.MatCommonModule],
+      declarations: [MatDivider]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
 /***/ 9076:
 /*!****************************************************************!*\
   !*** ./node_modules/@angular/material/fesm2015/form-field.mjs ***!
@@ -81097,6 +82635,1579 @@ MatInputModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__
       // be used together with `MatFormField`.
       _angular_material_form_field__WEBPACK_IMPORTED_MODULE_7__.MatFormFieldModule, MatInput],
       providers: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.ErrorStateMatcher]
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
+/***/ 6131:
+/*!**********************************************************!*\
+  !*** ./node_modules/@angular/material/fesm2015/list.mjs ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MAT_LIST": () => (/* binding */ MAT_LIST),
+/* harmony export */   "MAT_NAV_LIST": () => (/* binding */ MAT_NAV_LIST),
+/* harmony export */   "MAT_SELECTION_LIST_VALUE_ACCESSOR": () => (/* binding */ MAT_SELECTION_LIST_VALUE_ACCESSOR),
+/* harmony export */   "MatList": () => (/* binding */ MatList),
+/* harmony export */   "MatListAvatarCssMatStyler": () => (/* binding */ MatListAvatarCssMatStyler),
+/* harmony export */   "MatListIconCssMatStyler": () => (/* binding */ MatListIconCssMatStyler),
+/* harmony export */   "MatListItem": () => (/* binding */ MatListItem),
+/* harmony export */   "MatListModule": () => (/* binding */ MatListModule),
+/* harmony export */   "MatListOption": () => (/* binding */ MatListOption),
+/* harmony export */   "MatListSubheaderCssMatStyler": () => (/* binding */ MatListSubheaderCssMatStyler),
+/* harmony export */   "MatNavList": () => (/* binding */ MatNavList),
+/* harmony export */   "MatSelectionList": () => (/* binding */ MatSelectionList),
+/* harmony export */   "MatSelectionListChange": () => (/* binding */ MatSelectionListChange)
+/* harmony export */ });
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ 6362);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/material/core */ 8133);
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs/operators */ 8951);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! rxjs/operators */ 4874);
+/* harmony import */ var _angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/cdk/a11y */ 4128);
+/* harmony import */ var _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/cdk/collections */ 9502);
+/* harmony import */ var _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/cdk/keycodes */ 5939);
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/forms */ 587);
+/* harmony import */ var _angular_material_divider__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/material/divider */ 9975);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+// Boilerplate for applying mixins to MatList.
+
+/** @docs-private */
+
+const _c0 = ["*"];
+const _c1 = ".mat-subheader{display:flex;box-sizing:border-box;padding:16px;align-items:center}.mat-list-base .mat-subheader{margin:0}.mat-list-base{padding-top:8px;display:block;-webkit-tap-highlight-color:transparent}.mat-list-base .mat-subheader{height:48px;line-height:16px}.mat-list-base .mat-subheader:first-child{margin-top:-8px}.mat-list-base .mat-list-item,.mat-list-base .mat-list-option{display:block;height:48px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base .mat-list-item .mat-list-item-content,.mat-list-base .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base .mat-list-item .mat-list-item-content-reverse,.mat-list-base .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base .mat-list-item .mat-list-item-ripple,.mat-list-base .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar,.mat-list-base .mat-list-option.mat-list-item-with-avatar{height:56px}.mat-list-base .mat-list-item.mat-2-line,.mat-list-base .mat-list-option.mat-2-line{height:72px}.mat-list-base .mat-list-item.mat-3-line,.mat-list-base .mat-list-option.mat-3-line{height:88px}.mat-list-base .mat-list-item.mat-multi-line,.mat-list-base .mat-list-option.mat-multi-line{height:auto}.mat-list-base .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base .mat-list-item .mat-list-text,.mat-list-base .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base .mat-list-item .mat-list-text>*,.mat-list-base .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base .mat-list-item .mat-list-text:empty,.mat-list-base .mat-list-option .mat-list-text:empty{display:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base .mat-list-item .mat-list-avatar,.mat-list-base .mat-list-option .mat-list-avatar{flex-shrink:0;width:40px;height:40px;border-radius:50%;object-fit:cover}.mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:72px;width:calc(100% - 72px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:72px}.mat-list-base .mat-list-item .mat-list-icon,.mat-list-base .mat-list-option .mat-list-icon{flex-shrink:0;width:24px;height:24px;font-size:24px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:64px;width:calc(100% - 64px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:64px}.mat-list-base .mat-list-item .mat-divider,.mat-list-base .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base .mat-list-item .mat-divider,[dir=rtl] .mat-list-base .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-list-base[dense]{padding-top:4px;display:block}.mat-list-base[dense] .mat-subheader{height:40px;line-height:8px}.mat-list-base[dense] .mat-subheader:first-child{margin-top:-4px}.mat-list-base[dense] .mat-list-item,.mat-list-base[dense] .mat-list-option{display:block;height:40px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-item-content,.mat-list-base[dense] .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base[dense] .mat-list-item .mat-list-item-content-reverse,.mat-list-base[dense] .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base[dense] .mat-list-item .mat-list-item-ripple,.mat-list-base[dense] .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar{height:48px}.mat-list-base[dense] .mat-list-item.mat-2-line,.mat-list-base[dense] .mat-list-option.mat-2-line{height:60px}.mat-list-base[dense] .mat-list-item.mat-3-line,.mat-list-base[dense] .mat-list-option.mat-3-line{height:76px}.mat-list-base[dense] .mat-list-item.mat-multi-line,.mat-list-base[dense] .mat-list-option.mat-multi-line{height:auto}.mat-list-base[dense] .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base[dense] .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base[dense] .mat-list-item .mat-list-text,.mat-list-base[dense] .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-text>*,.mat-list-base[dense] .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base[dense] .mat-list-item .mat-list-text:empty,.mat-list-base[dense] .mat-list-option .mat-list-text:empty{display:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base[dense] .mat-list-item .mat-list-avatar,.mat-list-base[dense] .mat-list-option .mat-list-avatar{flex-shrink:0;width:36px;height:36px;border-radius:50%;object-fit:cover}.mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:68px;width:calc(100% - 68px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:68px}.mat-list-base[dense] .mat-list-item .mat-list-icon,.mat-list-base[dense] .mat-list-option .mat-list-icon{flex-shrink:0;width:20px;height:20px;font-size:20px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:60px;width:calc(100% - 60px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:60px}.mat-list-base[dense] .mat-list-item .mat-divider,.mat-list-base[dense] .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-divider,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base[dense] .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-nav-list a{text-decoration:none;color:inherit}.mat-nav-list .mat-list-item{cursor:pointer;outline:none}mat-action-list button{background:none;color:inherit;border:none;font:inherit;outline:inherit;-webkit-tap-highlight-color:transparent;text-align:left}[dir=rtl] mat-action-list button{text-align:right}mat-action-list button::-moz-focus-inner{border:0}mat-action-list .mat-list-item{cursor:pointer;outline:inherit}.mat-list-option:not(.mat-list-item-disabled){cursor:pointer;outline:none}.mat-list-item-disabled{pointer-events:none}.cdk-high-contrast-active .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active :host .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active .mat-selection-list:focus{outline-style:dotted}.cdk-high-contrast-active .mat-list-option:hover,.cdk-high-contrast-active .mat-list-option:focus,.cdk-high-contrast-active .mat-nav-list .mat-list-item:hover,.cdk-high-contrast-active .mat-nav-list .mat-list-item:focus,.cdk-high-contrast-active mat-action-list .mat-list-item:hover,.cdk-high-contrast-active mat-action-list .mat-list-item:focus{outline:dotted 1px;z-index:1}.cdk-high-contrast-active .mat-list-single-selected-option::after{content:\"\";position:absolute;top:50%;right:16px;transform:translateY(-50%);width:10px;height:0;border-bottom:solid 10px;border-radius:10px}.cdk-high-contrast-active [dir=rtl] .mat-list-single-selected-option::after{right:auto;left:16px}@media(hover: none){.mat-list-option:not(.mat-list-single-selected-option):not(.mat-list-item-disabled):hover,.mat-nav-list .mat-list-item:not(.mat-list-item-disabled):hover,.mat-action-list .mat-list-item:not(.mat-list-item-disabled):hover{background:none}}\n";
+const _c2 = [[["", "mat-list-avatar", ""], ["", "mat-list-icon", ""], ["", "matListAvatar", ""], ["", "matListIcon", ""]], [["", "mat-line", ""], ["", "matLine", ""]], "*"];
+const _c3 = ["[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]", "[mat-line], [matLine]", "*"];
+const _c4 = ["text"];
+
+function MatListOption_mat_pseudo_checkbox_2_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "mat-pseudo-checkbox", 5);
+  }
+
+  if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("state", ctx_r0.selected ? "checked" : "unchecked")("disabled", ctx_r0.disabled);
+  }
+}
+
+const _c5 = ["*", [["", "mat-list-avatar", ""], ["", "mat-list-icon", ""], ["", "matListAvatar", ""], ["", "matListIcon", ""]]];
+const _c6 = ["*", "[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]"];
+
+const _MatListBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.mixinDisabled)((0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.mixinDisableRipple)(class {})); // Boilerplate for applying mixins to MatListItem.
+
+/** @docs-private */
+
+
+const _MatListItemMixinBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.mixinDisableRipple)(class {});
+/**
+ * Injection token that can be used to inject instances of `MatList`. It serves as
+ * alternative token to the actual `MatList` class which could cause unnecessary
+ * retention of the class and its component metadata.
+ */
+
+
+const MAT_LIST = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MatList');
+/**
+ * Injection token that can be used to inject instances of `MatNavList`. It serves as
+ * alternative token to the actual `MatNavList` class which could cause unnecessary
+ * retention of the class and its component metadata.
+ */
+
+const MAT_NAV_LIST = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.InjectionToken('MatNavList');
+
+class MatNavList extends _MatListBase {
+  constructor() {
+    super(...arguments);
+    /** Emits when the state of the list changes. */
+
+    this._stateChanges = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+  }
+
+  ngOnChanges() {
+    this._stateChanges.next();
+  }
+
+  ngOnDestroy() {
+    this._stateChanges.complete();
+  }
+
+}
+
+MatNavList.ɵfac = /* @__PURE__ */function () {
+  let ɵMatNavList_BaseFactory;
+  return function MatNavList_Factory(t) {
+    return (ɵMatNavList_BaseFactory || (ɵMatNavList_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetInheritedFactory"](MatNavList)))(t || MatNavList);
+  };
+}();
+
+MatNavList.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
+  type: MatNavList,
+  selectors: [["mat-nav-list"]],
+  hostAttrs: ["role", "navigation", 1, "mat-nav-list", "mat-list-base"],
+  inputs: {
+    disableRipple: "disableRipple",
+    disabled: "disabled"
+  },
+  exportAs: ["matNavList"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: MAT_NAV_LIST,
+    useExisting: MatNavList
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]],
+  ngContentSelectors: _c0,
+  decls: 1,
+  vars: 0,
+  template: function MatNavList_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](0);
+    }
+  },
+  styles: [".mat-subheader{display:flex;box-sizing:border-box;padding:16px;align-items:center}.mat-list-base .mat-subheader{margin:0}.mat-list-base{padding-top:8px;display:block;-webkit-tap-highlight-color:transparent}.mat-list-base .mat-subheader{height:48px;line-height:16px}.mat-list-base .mat-subheader:first-child{margin-top:-8px}.mat-list-base .mat-list-item,.mat-list-base .mat-list-option{display:block;height:48px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base .mat-list-item .mat-list-item-content,.mat-list-base .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base .mat-list-item .mat-list-item-content-reverse,.mat-list-base .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base .mat-list-item .mat-list-item-ripple,.mat-list-base .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar,.mat-list-base .mat-list-option.mat-list-item-with-avatar{height:56px}.mat-list-base .mat-list-item.mat-2-line,.mat-list-base .mat-list-option.mat-2-line{height:72px}.mat-list-base .mat-list-item.mat-3-line,.mat-list-base .mat-list-option.mat-3-line{height:88px}.mat-list-base .mat-list-item.mat-multi-line,.mat-list-base .mat-list-option.mat-multi-line{height:auto}.mat-list-base .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base .mat-list-item .mat-list-text,.mat-list-base .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base .mat-list-item .mat-list-text>*,.mat-list-base .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base .mat-list-item .mat-list-text:empty,.mat-list-base .mat-list-option .mat-list-text:empty{display:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base .mat-list-item .mat-list-avatar,.mat-list-base .mat-list-option .mat-list-avatar{flex-shrink:0;width:40px;height:40px;border-radius:50%;object-fit:cover}.mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:72px;width:calc(100% - 72px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:72px}.mat-list-base .mat-list-item .mat-list-icon,.mat-list-base .mat-list-option .mat-list-icon{flex-shrink:0;width:24px;height:24px;font-size:24px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:64px;width:calc(100% - 64px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:64px}.mat-list-base .mat-list-item .mat-divider,.mat-list-base .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base .mat-list-item .mat-divider,[dir=rtl] .mat-list-base .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-list-base[dense]{padding-top:4px;display:block}.mat-list-base[dense] .mat-subheader{height:40px;line-height:8px}.mat-list-base[dense] .mat-subheader:first-child{margin-top:-4px}.mat-list-base[dense] .mat-list-item,.mat-list-base[dense] .mat-list-option{display:block;height:40px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-item-content,.mat-list-base[dense] .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base[dense] .mat-list-item .mat-list-item-content-reverse,.mat-list-base[dense] .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base[dense] .mat-list-item .mat-list-item-ripple,.mat-list-base[dense] .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar{height:48px}.mat-list-base[dense] .mat-list-item.mat-2-line,.mat-list-base[dense] .mat-list-option.mat-2-line{height:60px}.mat-list-base[dense] .mat-list-item.mat-3-line,.mat-list-base[dense] .mat-list-option.mat-3-line{height:76px}.mat-list-base[dense] .mat-list-item.mat-multi-line,.mat-list-base[dense] .mat-list-option.mat-multi-line{height:auto}.mat-list-base[dense] .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base[dense] .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base[dense] .mat-list-item .mat-list-text,.mat-list-base[dense] .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-text>*,.mat-list-base[dense] .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base[dense] .mat-list-item .mat-list-text:empty,.mat-list-base[dense] .mat-list-option .mat-list-text:empty{display:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base[dense] .mat-list-item .mat-list-avatar,.mat-list-base[dense] .mat-list-option .mat-list-avatar{flex-shrink:0;width:36px;height:36px;border-radius:50%;object-fit:cover}.mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:68px;width:calc(100% - 68px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:68px}.mat-list-base[dense] .mat-list-item .mat-list-icon,.mat-list-base[dense] .mat-list-option .mat-list-icon{flex-shrink:0;width:20px;height:20px;font-size:20px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:60px;width:calc(100% - 60px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:60px}.mat-list-base[dense] .mat-list-item .mat-divider,.mat-list-base[dense] .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-divider,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base[dense] .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-nav-list a{text-decoration:none;color:inherit}.mat-nav-list .mat-list-item{cursor:pointer;outline:none}mat-action-list button{background:none;color:inherit;border:none;font:inherit;outline:inherit;-webkit-tap-highlight-color:transparent;text-align:left}[dir=rtl] mat-action-list button{text-align:right}mat-action-list button::-moz-focus-inner{border:0}mat-action-list .mat-list-item{cursor:pointer;outline:inherit}.mat-list-option:not(.mat-list-item-disabled){cursor:pointer;outline:none}.mat-list-item-disabled{pointer-events:none}.cdk-high-contrast-active .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active :host .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active .mat-selection-list:focus{outline-style:dotted}.cdk-high-contrast-active .mat-list-option:hover,.cdk-high-contrast-active .mat-list-option:focus,.cdk-high-contrast-active .mat-nav-list .mat-list-item:hover,.cdk-high-contrast-active .mat-nav-list .mat-list-item:focus,.cdk-high-contrast-active mat-action-list .mat-list-item:hover,.cdk-high-contrast-active mat-action-list .mat-list-item:focus{outline:dotted 1px;z-index:1}.cdk-high-contrast-active .mat-list-single-selected-option::after{content:\"\";position:absolute;top:50%;right:16px;transform:translateY(-50%);width:10px;height:0;border-bottom:solid 10px;border-radius:10px}.cdk-high-contrast-active [dir=rtl] .mat-list-single-selected-option::after{right:auto;left:16px}@media(hover: none){.mat-list-option:not(.mat-list-single-selected-option):not(.mat-list-item-disabled):hover,.mat-nav-list .mat-list-item:not(.mat-list-item-disabled):hover,.mat-action-list .mat-list-item:not(.mat-list-item-disabled):hover{background:none}}\n"],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatNavList, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Component,
+    args: [{
+      selector: 'mat-nav-list',
+      exportAs: 'matNavList',
+      host: {
+        'role': 'navigation',
+        'class': 'mat-nav-list mat-list-base'
+      },
+      inputs: ['disableRipple', 'disabled'],
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectionStrategy.OnPush,
+      providers: [{
+        provide: MAT_NAV_LIST,
+        useExisting: MatNavList
+      }],
+      template: "<ng-content></ng-content>\n\n",
+      styles: [".mat-subheader{display:flex;box-sizing:border-box;padding:16px;align-items:center}.mat-list-base .mat-subheader{margin:0}.mat-list-base{padding-top:8px;display:block;-webkit-tap-highlight-color:transparent}.mat-list-base .mat-subheader{height:48px;line-height:16px}.mat-list-base .mat-subheader:first-child{margin-top:-8px}.mat-list-base .mat-list-item,.mat-list-base .mat-list-option{display:block;height:48px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base .mat-list-item .mat-list-item-content,.mat-list-base .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base .mat-list-item .mat-list-item-content-reverse,.mat-list-base .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base .mat-list-item .mat-list-item-ripple,.mat-list-base .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar,.mat-list-base .mat-list-option.mat-list-item-with-avatar{height:56px}.mat-list-base .mat-list-item.mat-2-line,.mat-list-base .mat-list-option.mat-2-line{height:72px}.mat-list-base .mat-list-item.mat-3-line,.mat-list-base .mat-list-option.mat-3-line{height:88px}.mat-list-base .mat-list-item.mat-multi-line,.mat-list-base .mat-list-option.mat-multi-line{height:auto}.mat-list-base .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base .mat-list-item .mat-list-text,.mat-list-base .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base .mat-list-item .mat-list-text>*,.mat-list-base .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base .mat-list-item .mat-list-text:empty,.mat-list-base .mat-list-option .mat-list-text:empty{display:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base .mat-list-item .mat-list-avatar,.mat-list-base .mat-list-option .mat-list-avatar{flex-shrink:0;width:40px;height:40px;border-radius:50%;object-fit:cover}.mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:72px;width:calc(100% - 72px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:72px}.mat-list-base .mat-list-item .mat-list-icon,.mat-list-base .mat-list-option .mat-list-icon{flex-shrink:0;width:24px;height:24px;font-size:24px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:64px;width:calc(100% - 64px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:64px}.mat-list-base .mat-list-item .mat-divider,.mat-list-base .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base .mat-list-item .mat-divider,[dir=rtl] .mat-list-base .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-list-base[dense]{padding-top:4px;display:block}.mat-list-base[dense] .mat-subheader{height:40px;line-height:8px}.mat-list-base[dense] .mat-subheader:first-child{margin-top:-4px}.mat-list-base[dense] .mat-list-item,.mat-list-base[dense] .mat-list-option{display:block;height:40px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-item-content,.mat-list-base[dense] .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base[dense] .mat-list-item .mat-list-item-content-reverse,.mat-list-base[dense] .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base[dense] .mat-list-item .mat-list-item-ripple,.mat-list-base[dense] .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar{height:48px}.mat-list-base[dense] .mat-list-item.mat-2-line,.mat-list-base[dense] .mat-list-option.mat-2-line{height:60px}.mat-list-base[dense] .mat-list-item.mat-3-line,.mat-list-base[dense] .mat-list-option.mat-3-line{height:76px}.mat-list-base[dense] .mat-list-item.mat-multi-line,.mat-list-base[dense] .mat-list-option.mat-multi-line{height:auto}.mat-list-base[dense] .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base[dense] .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base[dense] .mat-list-item .mat-list-text,.mat-list-base[dense] .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-text>*,.mat-list-base[dense] .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base[dense] .mat-list-item .mat-list-text:empty,.mat-list-base[dense] .mat-list-option .mat-list-text:empty{display:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base[dense] .mat-list-item .mat-list-avatar,.mat-list-base[dense] .mat-list-option .mat-list-avatar{flex-shrink:0;width:36px;height:36px;border-radius:50%;object-fit:cover}.mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:68px;width:calc(100% - 68px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:68px}.mat-list-base[dense] .mat-list-item .mat-list-icon,.mat-list-base[dense] .mat-list-option .mat-list-icon{flex-shrink:0;width:20px;height:20px;font-size:20px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:60px;width:calc(100% - 60px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:60px}.mat-list-base[dense] .mat-list-item .mat-divider,.mat-list-base[dense] .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-divider,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base[dense] .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-nav-list a{text-decoration:none;color:inherit}.mat-nav-list .mat-list-item{cursor:pointer;outline:none}mat-action-list button{background:none;color:inherit;border:none;font:inherit;outline:inherit;-webkit-tap-highlight-color:transparent;text-align:left}[dir=rtl] mat-action-list button{text-align:right}mat-action-list button::-moz-focus-inner{border:0}mat-action-list .mat-list-item{cursor:pointer;outline:inherit}.mat-list-option:not(.mat-list-item-disabled){cursor:pointer;outline:none}.mat-list-item-disabled{pointer-events:none}.cdk-high-contrast-active .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active :host .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active .mat-selection-list:focus{outline-style:dotted}.cdk-high-contrast-active .mat-list-option:hover,.cdk-high-contrast-active .mat-list-option:focus,.cdk-high-contrast-active .mat-nav-list .mat-list-item:hover,.cdk-high-contrast-active .mat-nav-list .mat-list-item:focus,.cdk-high-contrast-active mat-action-list .mat-list-item:hover,.cdk-high-contrast-active mat-action-list .mat-list-item:focus{outline:dotted 1px;z-index:1}.cdk-high-contrast-active .mat-list-single-selected-option::after{content:\"\";position:absolute;top:50%;right:16px;transform:translateY(-50%);width:10px;height:0;border-bottom:solid 10px;border-radius:10px}.cdk-high-contrast-active [dir=rtl] .mat-list-single-selected-option::after{right:auto;left:16px}@media(hover: none){.mat-list-option:not(.mat-list-single-selected-option):not(.mat-list-item-disabled):hover,.mat-nav-list .mat-list-item:not(.mat-list-item-disabled):hover,.mat-action-list .mat-list-item:not(.mat-list-item-disabled):hover{background:none}}\n"]
+    }]
+  }], null, null);
+})();
+
+class MatList extends _MatListBase {
+  constructor(_elementRef) {
+    super();
+    this._elementRef = _elementRef;
+    /** Emits when the state of the list changes. */
+
+    this._stateChanges = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+
+    if (this._getListType() === 'action-list') {
+      _elementRef.nativeElement.classList.add('mat-action-list');
+    }
+  }
+
+  _getListType() {
+    const nodeName = this._elementRef.nativeElement.nodeName.toLowerCase();
+
+    if (nodeName === 'mat-list') {
+      return 'list';
+    }
+
+    if (nodeName === 'mat-action-list') {
+      return 'action-list';
+    }
+
+    return null;
+  }
+
+  ngOnChanges() {
+    this._stateChanges.next();
+  }
+
+  ngOnDestroy() {
+    this._stateChanges.complete();
+  }
+
+}
+
+MatList.ɵfac = function MatList_Factory(t) {
+  return new (t || MatList)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef));
+};
+
+MatList.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
+  type: MatList,
+  selectors: [["mat-list"], ["mat-action-list"]],
+  hostAttrs: [1, "mat-list", "mat-list-base"],
+  inputs: {
+    disableRipple: "disableRipple",
+    disabled: "disabled"
+  },
+  exportAs: ["matList"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([{
+    provide: MAT_LIST,
+    useExisting: MatList
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]],
+  ngContentSelectors: _c0,
+  decls: 1,
+  vars: 0,
+  template: function MatList_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](0);
+    }
+  },
+  styles: [_c1],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatList, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Component,
+    args: [{
+      selector: 'mat-list, mat-action-list',
+      exportAs: 'matList',
+      host: {
+        'class': 'mat-list mat-list-base'
+      },
+      inputs: ['disableRipple', 'disabled'],
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectionStrategy.OnPush,
+      providers: [{
+        provide: MAT_LIST,
+        useExisting: MatList
+      }],
+      template: "<ng-content></ng-content>\n\n",
+      styles: [".mat-subheader{display:flex;box-sizing:border-box;padding:16px;align-items:center}.mat-list-base .mat-subheader{margin:0}.mat-list-base{padding-top:8px;display:block;-webkit-tap-highlight-color:transparent}.mat-list-base .mat-subheader{height:48px;line-height:16px}.mat-list-base .mat-subheader:first-child{margin-top:-8px}.mat-list-base .mat-list-item,.mat-list-base .mat-list-option{display:block;height:48px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base .mat-list-item .mat-list-item-content,.mat-list-base .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base .mat-list-item .mat-list-item-content-reverse,.mat-list-base .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base .mat-list-item .mat-list-item-ripple,.mat-list-base .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar,.mat-list-base .mat-list-option.mat-list-item-with-avatar{height:56px}.mat-list-base .mat-list-item.mat-2-line,.mat-list-base .mat-list-option.mat-2-line{height:72px}.mat-list-base .mat-list-item.mat-3-line,.mat-list-base .mat-list-option.mat-3-line{height:88px}.mat-list-base .mat-list-item.mat-multi-line,.mat-list-base .mat-list-option.mat-multi-line{height:auto}.mat-list-base .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base .mat-list-item .mat-list-text,.mat-list-base .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base .mat-list-item .mat-list-text>*,.mat-list-base .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base .mat-list-item .mat-list-text:empty,.mat-list-base .mat-list-option .mat-list-text:empty{display:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base .mat-list-item .mat-list-avatar,.mat-list-base .mat-list-option .mat-list-avatar{flex-shrink:0;width:40px;height:40px;border-radius:50%;object-fit:cover}.mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:72px;width:calc(100% - 72px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:72px}.mat-list-base .mat-list-item .mat-list-icon,.mat-list-base .mat-list-option .mat-list-icon{flex-shrink:0;width:24px;height:24px;font-size:24px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:64px;width:calc(100% - 64px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:64px}.mat-list-base .mat-list-item .mat-divider,.mat-list-base .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base .mat-list-item .mat-divider,[dir=rtl] .mat-list-base .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-list-base[dense]{padding-top:4px;display:block}.mat-list-base[dense] .mat-subheader{height:40px;line-height:8px}.mat-list-base[dense] .mat-subheader:first-child{margin-top:-4px}.mat-list-base[dense] .mat-list-item,.mat-list-base[dense] .mat-list-option{display:block;height:40px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-item-content,.mat-list-base[dense] .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base[dense] .mat-list-item .mat-list-item-content-reverse,.mat-list-base[dense] .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base[dense] .mat-list-item .mat-list-item-ripple,.mat-list-base[dense] .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar{height:48px}.mat-list-base[dense] .mat-list-item.mat-2-line,.mat-list-base[dense] .mat-list-option.mat-2-line{height:60px}.mat-list-base[dense] .mat-list-item.mat-3-line,.mat-list-base[dense] .mat-list-option.mat-3-line{height:76px}.mat-list-base[dense] .mat-list-item.mat-multi-line,.mat-list-base[dense] .mat-list-option.mat-multi-line{height:auto}.mat-list-base[dense] .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base[dense] .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base[dense] .mat-list-item .mat-list-text,.mat-list-base[dense] .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-text>*,.mat-list-base[dense] .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base[dense] .mat-list-item .mat-list-text:empty,.mat-list-base[dense] .mat-list-option .mat-list-text:empty{display:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base[dense] .mat-list-item .mat-list-avatar,.mat-list-base[dense] .mat-list-option .mat-list-avatar{flex-shrink:0;width:36px;height:36px;border-radius:50%;object-fit:cover}.mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:68px;width:calc(100% - 68px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:68px}.mat-list-base[dense] .mat-list-item .mat-list-icon,.mat-list-base[dense] .mat-list-option .mat-list-icon{flex-shrink:0;width:20px;height:20px;font-size:20px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:60px;width:calc(100% - 60px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:60px}.mat-list-base[dense] .mat-list-item .mat-divider,.mat-list-base[dense] .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-divider,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base[dense] .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-nav-list a{text-decoration:none;color:inherit}.mat-nav-list .mat-list-item{cursor:pointer;outline:none}mat-action-list button{background:none;color:inherit;border:none;font:inherit;outline:inherit;-webkit-tap-highlight-color:transparent;text-align:left}[dir=rtl] mat-action-list button{text-align:right}mat-action-list button::-moz-focus-inner{border:0}mat-action-list .mat-list-item{cursor:pointer;outline:inherit}.mat-list-option:not(.mat-list-item-disabled){cursor:pointer;outline:none}.mat-list-item-disabled{pointer-events:none}.cdk-high-contrast-active .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active :host .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active .mat-selection-list:focus{outline-style:dotted}.cdk-high-contrast-active .mat-list-option:hover,.cdk-high-contrast-active .mat-list-option:focus,.cdk-high-contrast-active .mat-nav-list .mat-list-item:hover,.cdk-high-contrast-active .mat-nav-list .mat-list-item:focus,.cdk-high-contrast-active mat-action-list .mat-list-item:hover,.cdk-high-contrast-active mat-action-list .mat-list-item:focus{outline:dotted 1px;z-index:1}.cdk-high-contrast-active .mat-list-single-selected-option::after{content:\"\";position:absolute;top:50%;right:16px;transform:translateY(-50%);width:10px;height:0;border-bottom:solid 10px;border-radius:10px}.cdk-high-contrast-active [dir=rtl] .mat-list-single-selected-option::after{right:auto;left:16px}@media(hover: none){.mat-list-option:not(.mat-list-single-selected-option):not(.mat-list-item-disabled):hover,.mat-nav-list .mat-list-item:not(.mat-list-item-disabled):hover,.mat-action-list .mat-list-item:not(.mat-list-item-disabled):hover{background:none}}\n"]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }];
+  }, null);
+})();
+/**
+ * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
+ */
+
+
+class MatListAvatarCssMatStyler {}
+
+MatListAvatarCssMatStyler.ɵfac = function MatListAvatarCssMatStyler_Factory(t) {
+  return new (t || MatListAvatarCssMatStyler)();
+};
+
+MatListAvatarCssMatStyler.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatListAvatarCssMatStyler,
+  selectors: [["", "mat-list-avatar", ""], ["", "matListAvatar", ""]],
+  hostAttrs: [1, "mat-list-avatar"]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatListAvatarCssMatStyler, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[mat-list-avatar], [matListAvatar]',
+      host: {
+        'class': 'mat-list-avatar'
+      }
+    }]
+  }], null, null);
+})();
+/**
+ * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
+ */
+
+
+class MatListIconCssMatStyler {}
+
+MatListIconCssMatStyler.ɵfac = function MatListIconCssMatStyler_Factory(t) {
+  return new (t || MatListIconCssMatStyler)();
+};
+
+MatListIconCssMatStyler.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatListIconCssMatStyler,
+  selectors: [["", "mat-list-icon", ""], ["", "matListIcon", ""]],
+  hostAttrs: [1, "mat-list-icon"]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatListIconCssMatStyler, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[mat-list-icon], [matListIcon]',
+      host: {
+        'class': 'mat-list-icon'
+      }
+    }]
+  }], null, null);
+})();
+/**
+ * Directive whose purpose is to add the mat- CSS styling to this selector.
+ * @docs-private
+ */
+
+
+class MatListSubheaderCssMatStyler {}
+
+MatListSubheaderCssMatStyler.ɵfac = function MatListSubheaderCssMatStyler_Factory(t) {
+  return new (t || MatListSubheaderCssMatStyler)();
+};
+
+MatListSubheaderCssMatStyler.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineDirective"]({
+  type: MatListSubheaderCssMatStyler,
+  selectors: [["", "mat-subheader", ""], ["", "matSubheader", ""]],
+  hostAttrs: [1, "mat-subheader"]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatListSubheaderCssMatStyler, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Directive,
+    args: [{
+      selector: '[mat-subheader], [matSubheader]',
+      host: {
+        'class': 'mat-subheader'
+      }
+    }]
+  }], null, null);
+})();
+/** An item within a Material Design list. */
+
+
+class MatListItem extends _MatListItemMixinBase {
+  constructor(_element, _changeDetectorRef, navList, list) {
+    super();
+    this._element = _element;
+    this._isInteractiveList = false;
+    this._destroyed = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+    this._disabled = false;
+    this._isInteractiveList = !!(navList || list && list._getListType() === 'action-list');
+    this._list = navList || list; // If no type attribute is specified for <button>, set it to "button".
+    // If a type attribute is already specified, do nothing.
+
+    const element = this._getHostElement();
+
+    if (element.nodeName.toLowerCase() === 'button' && !element.hasAttribute('type')) {
+      element.setAttribute('type', 'button');
+    }
+
+    if (this._list) {
+      // React to changes in the state of the parent list since
+      // some of the item's properties depend on it (e.g. `disableRipple`).
+      this._list._stateChanges.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this._destroyed)).subscribe(() => {
+        _changeDetectorRef.markForCheck();
+      });
+    }
+  }
+  /** Whether the option is disabled. */
+
+
+  get disabled() {
+    return this._disabled || !!(this._list && this._list.disabled);
+  }
+
+  set disabled(value) {
+    this._disabled = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value);
+  }
+
+  ngAfterContentInit() {
+    (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.setLines)(this._lines, this._element);
+  }
+
+  ngOnDestroy() {
+    this._destroyed.next();
+
+    this._destroyed.complete();
+  }
+  /** Whether this list item should show a ripple effect when clicked. */
+
+
+  _isRippleDisabled() {
+    return !this._isInteractiveList || this.disableRipple || !!(this._list && this._list.disableRipple);
+  }
+  /** Retrieves the DOM element of the component host. */
+
+
+  _getHostElement() {
+    return this._element.nativeElement;
+  }
+
+}
+
+MatListItem.ɵfac = function MatListItem_Factory(t) {
+  return new (t || MatListItem)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](MAT_NAV_LIST, 8), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](MAT_LIST, 8));
+};
+
+MatListItem.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
+  type: MatListItem,
+  selectors: [["mat-list-item"], ["a", "mat-list-item", ""], ["button", "mat-list-item", ""]],
+  contentQueries: function MatListItem_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatListAvatarCssMatStyler, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatListIconCssMatStyler, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLine, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._avatar = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._icon = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._lines = _t);
+    }
+  },
+  hostAttrs: [1, "mat-list-item", "mat-focus-indicator"],
+  hostVars: 6,
+  hostBindings: function MatListItem_HostBindings(rf, ctx) {
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-list-item-disabled", ctx.disabled)("mat-list-item-avatar", ctx._avatar || ctx._icon)("mat-list-item-with-avatar", ctx._avatar || ctx._icon);
+    }
+  },
+  inputs: {
+    disableRipple: "disableRipple",
+    disabled: "disabled"
+  },
+  exportAs: ["matListItem"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]],
+  ngContentSelectors: _c3,
+  decls: 6,
+  vars: 2,
+  consts: [[1, "mat-list-item-content"], ["mat-ripple", "", 1, "mat-list-item-ripple", 3, "matRippleTrigger", "matRippleDisabled"], [1, "mat-list-text"]],
+  template: function MatListItem_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"](_c2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 0);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "span", 1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "span", 2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](4, 1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](5, 2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("matRippleTrigger", ctx._getHostElement())("matRippleDisabled", ctx._isRippleDisabled());
+    }
+  },
+  directives: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatRipple],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatListItem, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Component,
+    args: [{
+      selector: 'mat-list-item, a[mat-list-item], button[mat-list-item]',
+      exportAs: 'matListItem',
+      host: {
+        'class': 'mat-list-item mat-focus-indicator',
+        '[class.mat-list-item-disabled]': 'disabled',
+        // @breaking-change 8.0.0 Remove `mat-list-item-avatar` in favor of `mat-list-item-with-avatar`.
+        '[class.mat-list-item-avatar]': '_avatar || _icon',
+        '[class.mat-list-item-with-avatar]': '_avatar || _icon'
+      },
+      inputs: ['disableRipple'],
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectionStrategy.OnPush,
+      template: "<span class=\"mat-list-item-content\">\n  <span class=\"mat-list-item-ripple\" mat-ripple\n       [matRippleTrigger]=\"_getHostElement()\"\n       [matRippleDisabled]=\"_isRippleDisabled()\">\n  </span>\n\n  <ng-content select=\"[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]\">\n  </ng-content>\n\n  <span class=\"mat-list-text\"><ng-content select=\"[mat-line], [matLine]\"></ng-content></span>\n\n  <ng-content></ng-content>\n</span>\n"
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef
+    }, {
+      type: MatNavList,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [MAT_NAV_LIST]
+      }]
+    }, {
+      type: MatList,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Optional
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [MAT_LIST]
+      }]
+    }];
+  }, {
+    _lines: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChildren,
+      args: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLine, {
+        descendants: true
+      }]
+    }],
+    _avatar: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatListAvatarCssMatStyler]
+    }],
+    _icon: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatListIconCssMatStyler]
+    }],
+    disabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const _MatSelectionListBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.mixinDisableRipple)(class {});
+
+const _MatListOptionBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.mixinDisableRipple)(class {});
+/** @docs-private */
+
+
+const MAT_SELECTION_LIST_VALUE_ACCESSOR = {
+  provide: _angular_forms__WEBPACK_IMPORTED_MODULE_5__.NG_VALUE_ACCESSOR,
+  useExisting: (0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => MatSelectionList),
+  multi: true
+};
+/** Change event that is being fired whenever the selected state of an option changes. */
+
+class MatSelectionListChange {
+  constructor(
+  /** Reference to the selection list that emitted the event. */
+  source,
+  /**
+   * Reference to the option that has been changed.
+   * @deprecated Use `options` instead, because some events may change more than one option.
+   * @breaking-change 12.0.0
+   */
+  option,
+  /** Reference to the options that have been changed. */
+  options) {
+    this.source = source;
+    this.option = option;
+    this.options = options;
+  }
+
+}
+/**
+ * Component for list-options of selection-list. Each list-option can automatically
+ * generate a checkbox and can put current item into the selectionModel of selection-list
+ * if the current item is selected.
+ */
+
+
+class MatListOption extends _MatListOptionBase {
+  constructor(_element, _changeDetector,
+  /** @docs-private */
+  selectionList) {
+    super();
+    this._element = _element;
+    this._changeDetector = _changeDetector;
+    this.selectionList = selectionList;
+    this._selected = false;
+    this._disabled = false;
+    this._hasFocus = false;
+    /**
+     * Emits when the selected state of the option has changed.
+     * Use to facilitate two-data binding to the `selected` property.
+     * @docs-private
+     */
+
+    this.selectedChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+    /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
+
+    this.checkboxPosition = 'after';
+    /**
+     * This is set to true after the first OnChanges cycle so we don't clear the value of `selected`
+     * in the first cycle.
+     */
+
+    this._inputsInitialized = false;
+  }
+  /** Theme color of the list option. This sets the color of the checkbox. */
+
+
+  get color() {
+    return this._color || this.selectionList.color;
+  }
+
+  set color(newValue) {
+    this._color = newValue;
+  }
+  /** Value of the option */
+
+
+  get value() {
+    return this._value;
+  }
+
+  set value(newValue) {
+    if (this.selected && !this.selectionList.compareWith(newValue, this.value) && this._inputsInitialized) {
+      this.selected = false;
+    }
+
+    this._value = newValue;
+  }
+  /** Whether the option is disabled. */
+
+
+  get disabled() {
+    return this._disabled || this.selectionList && this.selectionList.disabled;
+  }
+
+  set disabled(value) {
+    const newValue = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value);
+
+    if (newValue !== this._disabled) {
+      this._disabled = newValue;
+
+      this._changeDetector.markForCheck();
+    }
+  }
+  /** Whether the option is selected. */
+
+
+  get selected() {
+    return this.selectionList.selectedOptions.isSelected(this);
+  }
+
+  set selected(value) {
+    const isSelected = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value);
+
+    if (isSelected !== this._selected) {
+      this._setSelected(isSelected);
+
+      if (isSelected || this.selectionList.multiple) {
+        this.selectionList._reportValueChange();
+      }
+    }
+  }
+
+  ngOnInit() {
+    const list = this.selectionList;
+
+    if (list._value && list._value.some(value => list.compareWith(value, this._value))) {
+      this._setSelected(true);
+    }
+
+    const wasSelected = this._selected; // List options that are selected at initialization can't be reported properly to the form
+    // control. This is because it takes some time until the selection-list knows about all
+    // available options. Also it can happen that the ControlValueAccessor has an initial value
+    // that should be used instead. Deferring the value change report to the next tick ensures
+    // that the form control value is not being overwritten.
+
+    Promise.resolve().then(() => {
+      if (this._selected || wasSelected) {
+        this.selected = true;
+
+        this._changeDetector.markForCheck();
+      }
+    });
+    this._inputsInitialized = true;
+  }
+
+  ngAfterContentInit() {
+    (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.setLines)(this._lines, this._element);
+  }
+
+  ngOnDestroy() {
+    if (this.selected) {
+      // We have to delay this until the next tick in order
+      // to avoid changed after checked errors.
+      Promise.resolve().then(() => {
+        this.selected = false;
+      });
+    }
+
+    const hadFocus = this._hasFocus;
+
+    const newActiveItem = this.selectionList._removeOptionFromList(this); // Only move focus if this option was focused at the time it was destroyed.
+
+
+    if (hadFocus && newActiveItem) {
+      newActiveItem.focus();
+    }
+  }
+  /** Toggles the selection state of the option. */
+
+
+  toggle() {
+    this.selected = !this.selected;
+  }
+  /** Allows for programmatic focusing of the option. */
+
+
+  focus() {
+    this._element.nativeElement.focus();
+  }
+  /**
+   * Returns the list item's text label. Implemented as a part of the FocusKeyManager.
+   * @docs-private
+   */
+
+
+  getLabel() {
+    return this._text ? this._text.nativeElement.textContent || '' : '';
+  }
+  /** Whether this list item should show a ripple effect when clicked. */
+
+
+  _isRippleDisabled() {
+    return this.disabled || this.disableRipple || this.selectionList.disableRipple;
+  }
+
+  _handleClick() {
+    if (!this.disabled && (this.selectionList.multiple || !this.selected)) {
+      this.toggle(); // Emit a change event if the selected state of the option changed through user interaction.
+
+      this.selectionList._emitChangeEvent([this]);
+    }
+  }
+
+  _handleFocus() {
+    this.selectionList._setFocusedOption(this);
+
+    this._hasFocus = true;
+  }
+
+  _handleBlur() {
+    this.selectionList._onTouched();
+
+    this._hasFocus = false;
+  }
+  /** Retrieves the DOM element of the component host. */
+
+
+  _getHostElement() {
+    return this._element.nativeElement;
+  }
+  /** Sets the selected state of the option. Returns whether the value has changed. */
+
+
+  _setSelected(selected) {
+    if (selected === this._selected) {
+      return false;
+    }
+
+    this._selected = selected;
+
+    if (selected) {
+      this.selectionList.selectedOptions.select(this);
+    } else {
+      this.selectionList.selectedOptions.deselect(this);
+    }
+
+    this.selectedChange.emit(selected);
+
+    this._changeDetector.markForCheck();
+
+    return true;
+  }
+  /**
+   * Notifies Angular that the option needs to be checked in the next change detection run. Mainly
+   * used to trigger an update of the list option if the disabled state of the selection list
+   * changed.
+   */
+
+
+  _markForCheck() {
+    this._changeDetector.markForCheck();
+  }
+
+}
+
+MatListOption.ɵfac = function MatListOption_Factory(t) {
+  return new (t || MatListOption)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"]((0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => MatSelectionList)));
+};
+
+MatListOption.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
+  type: MatListOption,
+  selectors: [["mat-list-option"]],
+  contentQueries: function MatListOption_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatListAvatarCssMatStyler, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatListIconCssMatStyler, 5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLine, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._avatar = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._icon = _t.first);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._lines = _t);
+    }
+  },
+  viewQuery: function MatListOption_Query(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c4, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx._text = _t.first);
+    }
+  },
+  hostAttrs: ["role", "option", 1, "mat-list-item", "mat-list-option", "mat-focus-indicator"],
+  hostVars: 15,
+  hostBindings: function MatListOption_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("focus", function MatListOption_focus_HostBindingHandler() {
+        return ctx._handleFocus();
+      })("blur", function MatListOption_blur_HostBindingHandler() {
+        return ctx._handleBlur();
+      })("click", function MatListOption_click_HostBindingHandler() {
+        return ctx._handleClick();
+      });
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("aria-selected", ctx.selected)("aria-disabled", ctx.disabled)("tabindex", -1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-list-item-disabled", ctx.disabled)("mat-list-item-with-avatar", ctx._avatar || ctx._icon)("mat-primary", ctx.color === "primary")("mat-accent", ctx.color !== "primary" && ctx.color !== "warn")("mat-warn", ctx.color === "warn")("mat-list-single-selected-option", ctx.selected && !ctx.selectionList.multiple);
+    }
+  },
+  inputs: {
+    disableRipple: "disableRipple",
+    checkboxPosition: "checkboxPosition",
+    color: "color",
+    value: "value",
+    disabled: "disabled",
+    selected: "selected"
+  },
+  outputs: {
+    selectedChange: "selectedChange"
+  },
+  exportAs: ["matListOption"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"]],
+  ngContentSelectors: _c6,
+  decls: 7,
+  vars: 5,
+  consts: [[1, "mat-list-item-content"], ["mat-ripple", "", 1, "mat-list-item-ripple", 3, "matRippleTrigger", "matRippleDisabled"], [3, "state", "disabled", 4, "ngIf"], [1, "mat-list-text"], ["text", ""], [3, "state", "disabled"]],
+  template: function MatListOption_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"](_c5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "div", 1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, MatListOption_mat_pseudo_checkbox_2_Template, 1, 2, "mat-pseudo-checkbox", 2);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 3, 4);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](5);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](6, 1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassProp"]("mat-list-item-content-reverse", ctx.checkboxPosition == "after");
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("matRippleTrigger", ctx._getHostElement())("matRippleDisabled", ctx._isRippleDisabled());
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.selectionList.multiple);
+    }
+  },
+  directives: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatPseudoCheckbox, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatRipple, _angular_common__WEBPACK_IMPORTED_MODULE_6__.NgIf],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatListOption, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Component,
+    args: [{
+      selector: 'mat-list-option',
+      exportAs: 'matListOption',
+      inputs: ['disableRipple'],
+      host: {
+        'role': 'option',
+        'class': 'mat-list-item mat-list-option mat-focus-indicator',
+        '(focus)': '_handleFocus()',
+        '(blur)': '_handleBlur()',
+        '(click)': '_handleClick()',
+        '[class.mat-list-item-disabled]': 'disabled',
+        '[class.mat-list-item-with-avatar]': '_avatar || _icon',
+        // Manually set the "primary" or "warn" class if the color has been explicitly
+        // set to "primary" or "warn". The pseudo checkbox picks up these classes for
+        // its theme.
+        '[class.mat-primary]': 'color === "primary"',
+        // Even though accent is the default, we need to set this class anyway, because the  list might
+        // be placed inside a parent that has one of the other colors with a higher specificity.
+        '[class.mat-accent]': 'color !== "primary" && color !== "warn"',
+        '[class.mat-warn]': 'color === "warn"',
+        '[class.mat-list-single-selected-option]': 'selected && !selectionList.multiple',
+        '[attr.aria-selected]': 'selected',
+        '[attr.aria-disabled]': 'disabled',
+        '[attr.tabindex]': '-1'
+      },
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectionStrategy.OnPush,
+      template: "<div class=\"mat-list-item-content\"\n  [class.mat-list-item-content-reverse]=\"checkboxPosition == 'after'\">\n\n  <div mat-ripple\n    class=\"mat-list-item-ripple\"\n    [matRippleTrigger]=\"_getHostElement()\"\n    [matRippleDisabled]=\"_isRippleDisabled()\"></div>\n\n  <mat-pseudo-checkbox\n    *ngIf=\"selectionList.multiple\"\n    [state]=\"selected ? 'checked' : 'unchecked'\"\n    [disabled]=\"disabled\"></mat-pseudo-checkbox>\n\n  <div class=\"mat-list-text\" #text><ng-content></ng-content></div>\n\n  <ng-content select=\"[mat-list-avatar], [mat-list-icon], [matListAvatar], [matListIcon]\">\n  </ng-content>\n\n</div>\n"
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef
+    }, {
+      type: MatSelectionList,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Inject,
+        args: [(0,_angular_core__WEBPACK_IMPORTED_MODULE_0__.forwardRef)(() => MatSelectionList)]
+      }]
+    }];
+  }, {
+    _avatar: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatListAvatarCssMatStyler]
+    }],
+    _icon: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChild,
+      args: [MatListIconCssMatStyler]
+    }],
+    _lines: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChildren,
+      args: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLine, {
+        descendants: true
+      }]
+    }],
+    selectedChange: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Output
+    }],
+    _text: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewChild,
+      args: ['text']
+    }],
+    checkboxPosition: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    color: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    value: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    disabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    selected: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * Material Design list component where each item is a selectable option. Behaves as a listbox.
+ */
+
+
+class MatSelectionList extends _MatSelectionListBase {
+  constructor(_element, // @breaking-change 11.0.0 Remove `tabIndex` parameter.
+  tabIndex, _changeDetector, // @breaking-change 11.0.0 `_focusMonitor` parameter to become required.
+  _focusMonitor) {
+    super();
+    this._element = _element;
+    this._changeDetector = _changeDetector;
+    this._focusMonitor = _focusMonitor;
+    this._multiple = true;
+    this._contentInitialized = false;
+    /** Emits a change event whenever the selected state of an option changes. */
+
+    this.selectionChange = new _angular_core__WEBPACK_IMPORTED_MODULE_0__.EventEmitter();
+    /**
+     * Tabindex of the selection list.
+     * @breaking-change 11.0.0 Remove `tabIndex` input.
+     */
+
+    this.tabIndex = 0;
+    /** Theme color of the selection list. This sets the checkbox color for all list options. */
+
+    this.color = 'accent';
+    /**
+     * Function used for comparing an option against the selected value when determining which
+     * options should appear as selected. The first argument is the value of an options. The second
+     * one is a value from the selected value. A boolean must be returned.
+     */
+
+    this.compareWith = (a1, a2) => a1 === a2;
+
+    this._disabled = false;
+    /** The currently selected options. */
+
+    this.selectedOptions = new _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_7__.SelectionModel(this._multiple);
+    /** The tabindex of the selection list. */
+
+    this._tabIndex = -1;
+    /** View to model callback that should be called whenever the selected options change. */
+
+    this._onChange = _ => {};
+    /** Emits when the list has been destroyed. */
+
+
+    this._destroyed = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+    /** View to model callback that should be called if the list or its options lost focus. */
+
+    this._onTouched = () => {};
+  }
+  /** Whether the selection list is disabled. */
+
+
+  get disabled() {
+    return this._disabled;
+  }
+
+  set disabled(value) {
+    this._disabled = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value); // The `MatSelectionList` and `MatListOption` are using the `OnPush` change detection
+    // strategy. Therefore the options will not check for any changes if the `MatSelectionList`
+    // changed its state. Since we know that a change to `disabled` property of the list affects
+    // the state of the options, we manually mark each option for check.
+
+    this._markOptionsForCheck();
+  }
+  /** Whether selection is limited to one or multiple items (default multiple). */
+
+
+  get multiple() {
+    return this._multiple;
+  }
+
+  set multiple(value) {
+    const newValue = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_4__.coerceBooleanProperty)(value);
+
+    if (newValue !== this._multiple) {
+      if (this._contentInitialized && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+        throw new Error('Cannot change `multiple` mode of mat-selection-list after initialization.');
+      }
+
+      this._multiple = newValue;
+      this.selectedOptions = new _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_7__.SelectionModel(this._multiple, this.selectedOptions.selected);
+    }
+  }
+
+  ngAfterContentInit() {
+    var _a;
+
+    this._contentInitialized = true;
+    this._keyManager = new _angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_8__.FocusKeyManager(this.options).withWrap().withTypeAhead().withHomeAndEnd() // Allow disabled items to be focusable. For accessibility reasons, there must be a way for
+    // screenreader users, that allows reading the different options of the list.
+    .skipPredicate(() => false).withAllowedModifierKeys(['shiftKey']);
+
+    if (this._value) {
+      this._setOptionsFromValues(this._value);
+    } // If the user attempts to tab out of the selection list, allow focus to escape.
+
+
+    this._keyManager.tabOut.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this._destroyed)).subscribe(() => {
+      this._allowFocusEscape();
+    }); // When the number of options change, update the tabindex of the selection list.
+
+
+    this.options.changes.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_9__.startWith)(null), (0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this._destroyed)).subscribe(() => {
+      this._updateTabIndex();
+    }); // Sync external changes to the model back to the options.
+
+    this.selectedOptions.changed.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this._destroyed)).subscribe(event => {
+      if (event.added) {
+        for (let item of event.added) {
+          item.selected = true;
+        }
+      }
+
+      if (event.removed) {
+        for (let item of event.removed) {
+          item.selected = false;
+        }
+      }
+    }); // @breaking-change 11.0.0 Remove null assertion once _focusMonitor is required.
+
+    (_a = this._focusMonitor) === null || _a === void 0 ? void 0 : _a.monitor(this._element).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_3__.takeUntil)(this._destroyed)).subscribe(origin => {
+      var _a;
+
+      if (origin === 'keyboard' || origin === 'program') {
+        let toFocus = 0;
+
+        for (let i = 0; i < this.options.length; i++) {
+          if ((_a = this.options.get(i)) === null || _a === void 0 ? void 0 : _a.selected) {
+            toFocus = i;
+            break;
+          }
+        }
+
+        this._keyManager.setActiveItem(toFocus);
+      }
+    });
+  }
+
+  ngOnChanges(changes) {
+    const disableRippleChanges = changes['disableRipple'];
+    const colorChanges = changes['color'];
+
+    if (disableRippleChanges && !disableRippleChanges.firstChange || colorChanges && !colorChanges.firstChange) {
+      this._markOptionsForCheck();
+    }
+  }
+
+  ngOnDestroy() {
+    var _a; // @breaking-change 11.0.0 Remove null assertion once _focusMonitor is required.
+
+
+    (_a = this._focusMonitor) === null || _a === void 0 ? void 0 : _a.stopMonitoring(this._element);
+
+    this._destroyed.next();
+
+    this._destroyed.complete();
+
+    this._isDestroyed = true;
+  }
+  /** Focuses the selection list. */
+
+
+  focus(options) {
+    this._element.nativeElement.focus(options);
+  }
+  /** Selects all of the options. Returns the options that changed as a result. */
+
+
+  selectAll() {
+    return this._setAllOptionsSelected(true);
+  }
+  /** Deselects all of the options. Returns the options that changed as a result. */
+
+
+  deselectAll() {
+    return this._setAllOptionsSelected(false);
+  }
+  /** Sets the focused option of the selection-list. */
+
+
+  _setFocusedOption(option) {
+    this._keyManager.updateActiveItem(option);
+  }
+  /**
+   * Removes an option from the selection list and updates the active item.
+   * @returns Currently-active item.
+   */
+
+
+  _removeOptionFromList(option) {
+    const optionIndex = this._getOptionIndex(option);
+
+    if (optionIndex > -1 && this._keyManager.activeItemIndex === optionIndex) {
+      // Check whether the option is the last item
+      if (optionIndex > 0) {
+        this._keyManager.updateActiveItem(optionIndex - 1);
+      } else if (optionIndex === 0 && this.options.length > 1) {
+        this._keyManager.updateActiveItem(Math.min(optionIndex + 1, this.options.length - 1));
+      }
+    }
+
+    return this._keyManager.activeItem;
+  }
+  /** Passes relevant key presses to our key manager. */
+
+
+  _keydown(event) {
+    const keyCode = event.keyCode;
+    const manager = this._keyManager;
+    const previousFocusIndex = manager.activeItemIndex;
+    const hasModifier = (0,_angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__.hasModifierKey)(event);
+
+    switch (keyCode) {
+      case _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__.SPACE:
+      case _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__.ENTER:
+        if (!hasModifier && !manager.isTyping()) {
+          this._toggleFocusedOption(); // Always prevent space from scrolling the page since the list has focus
+
+
+          event.preventDefault();
+        }
+
+        break;
+
+      default:
+        // The "A" key gets special treatment, because it's used for the "select all" functionality.
+        if (keyCode === _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__.A && this.multiple && (0,_angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__.hasModifierKey)(event, 'ctrlKey') && !manager.isTyping()) {
+          const shouldSelect = this.options.some(option => !option.disabled && !option.selected);
+
+          this._setAllOptionsSelected(shouldSelect, true, true);
+
+          event.preventDefault();
+        } else {
+          manager.onKeydown(event);
+        }
+
+    }
+
+    if (this.multiple && (keyCode === _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__.UP_ARROW || keyCode === _angular_cdk_keycodes__WEBPACK_IMPORTED_MODULE_10__.DOWN_ARROW) && event.shiftKey && manager.activeItemIndex !== previousFocusIndex) {
+      this._toggleFocusedOption();
+    }
+  }
+  /** Reports a value change to the ControlValueAccessor */
+
+
+  _reportValueChange() {
+    // Stop reporting value changes after the list has been destroyed. This avoids
+    // cases where the list might wrongly reset its value once it is removed, but
+    // the form control is still live.
+    if (this.options && !this._isDestroyed) {
+      const value = this._getSelectedOptionValues();
+
+      this._onChange(value);
+
+      this._value = value;
+    }
+  }
+  /** Emits a change event if the selected state of an option changed. */
+
+
+  _emitChangeEvent(options) {
+    this.selectionChange.emit(new MatSelectionListChange(this, options[0], options));
+  }
+  /** Implemented as part of ControlValueAccessor. */
+
+
+  writeValue(values) {
+    this._value = values;
+
+    if (this.options) {
+      this._setOptionsFromValues(values || []);
+    }
+  }
+  /** Implemented as a part of ControlValueAccessor. */
+
+
+  setDisabledState(isDisabled) {
+    this.disabled = isDisabled;
+  }
+  /** Implemented as part of ControlValueAccessor. */
+
+
+  registerOnChange(fn) {
+    this._onChange = fn;
+  }
+  /** Implemented as part of ControlValueAccessor. */
+
+
+  registerOnTouched(fn) {
+    this._onTouched = fn;
+  }
+  /** Sets the selected options based on the specified values. */
+
+
+  _setOptionsFromValues(values) {
+    this.options.forEach(option => option._setSelected(false));
+    values.forEach(value => {
+      const correspondingOption = this.options.find(option => {
+        // Skip options that are already in the model. This allows us to handle cases
+        // where the same primitive value is selected multiple times.
+        return option.selected ? false : this.compareWith(option.value, value);
+      });
+
+      if (correspondingOption) {
+        correspondingOption._setSelected(true);
+      }
+    });
+  }
+  /** Returns the values of the selected options. */
+
+
+  _getSelectedOptionValues() {
+    return this.options.filter(option => option.selected).map(option => option.value);
+  }
+  /** Toggles the state of the currently focused option if enabled. */
+
+
+  _toggleFocusedOption() {
+    let focusedIndex = this._keyManager.activeItemIndex;
+
+    if (focusedIndex != null && this._isValidIndex(focusedIndex)) {
+      let focusedOption = this.options.toArray()[focusedIndex];
+
+      if (focusedOption && !focusedOption.disabled && (this._multiple || !focusedOption.selected)) {
+        focusedOption.toggle(); // Emit a change event because the focused option changed its state through user
+        // interaction.
+
+        this._emitChangeEvent([focusedOption]);
+      }
+    }
+  }
+  /**
+   * Sets the selected state on all of the options
+   * and emits an event if anything changed.
+   */
+
+
+  _setAllOptionsSelected(isSelected, skipDisabled, isUserInput) {
+    // Keep track of whether anything changed, because we only want to
+    // emit the changed event when something actually changed.
+    const changedOptions = [];
+    this.options.forEach(option => {
+      if ((!skipDisabled || !option.disabled) && option._setSelected(isSelected)) {
+        changedOptions.push(option);
+      }
+    });
+
+    if (changedOptions.length) {
+      this._reportValueChange();
+
+      if (isUserInput) {
+        this._emitChangeEvent(changedOptions);
+      }
+    }
+
+    return changedOptions;
+  }
+  /**
+   * Utility to ensure all indexes are valid.
+   * @param index The index to be checked.
+   * @returns True if the index is valid for our list of options.
+   */
+
+
+  _isValidIndex(index) {
+    return index >= 0 && index < this.options.length;
+  }
+  /** Returns the index of the specified list option. */
+
+
+  _getOptionIndex(option) {
+    return this.options.toArray().indexOf(option);
+  }
+  /** Marks all the options to be checked in the next change detection run. */
+
+
+  _markOptionsForCheck() {
+    if (this.options) {
+      this.options.forEach(option => option._markForCheck());
+    }
+  }
+  /**
+   * Removes the tabindex from the selection list and resets it back afterwards, allowing the user
+   * to tab out of it. This prevents the list from capturing focus and redirecting it back within
+   * the list, creating a focus trap if it user tries to tab away.
+   */
+
+
+  _allowFocusEscape() {
+    this._tabIndex = -1;
+    setTimeout(() => {
+      this._tabIndex = 0;
+
+      this._changeDetector.markForCheck();
+    });
+  }
+  /** Updates the tabindex based upon if the selection list is empty. */
+
+
+  _updateTabIndex() {
+    this._tabIndex = this.options.length === 0 ? -1 : 0;
+  }
+
+}
+
+MatSelectionList.ɵfac = function MatSelectionList_Factory(t) {
+  return new (t || MatSelectionList)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinjectAttribute"]('tabindex'), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_8__.FocusMonitor));
+};
+
+MatSelectionList.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({
+  type: MatSelectionList,
+  selectors: [["mat-selection-list"]],
+  contentQueries: function MatSelectionList_ContentQueries(rf, ctx, dirIndex) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵcontentQuery"](dirIndex, MatListOption, 5);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.options = _t);
+    }
+  },
+  hostAttrs: ["role", "listbox", 1, "mat-selection-list", "mat-list-base"],
+  hostVars: 3,
+  hostBindings: function MatSelectionList_HostBindings(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("keydown", function MatSelectionList_keydown_HostBindingHandler($event) {
+        return ctx._keydown($event);
+      });
+    }
+
+    if (rf & 2) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("aria-multiselectable", ctx.multiple)("aria-disabled", ctx.disabled.toString())("tabindex", ctx._tabIndex);
+    }
+  },
+  inputs: {
+    disableRipple: "disableRipple",
+    tabIndex: "tabIndex",
+    color: "color",
+    compareWith: "compareWith",
+    disabled: "disabled",
+    multiple: "multiple"
+  },
+  outputs: {
+    selectionChange: "selectionChange"
+  },
+  exportAs: ["matSelectionList"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵProvidersFeature"]([MAT_SELECTION_LIST_VALUE_ACCESSOR]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵInheritDefinitionFeature"], _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]],
+  ngContentSelectors: _c0,
+  decls: 1,
+  vars: 0,
+  template: function MatSelectionList_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojectionDef"]();
+      _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵprojection"](0);
+    }
+  },
+  styles: [_c1],
+  encapsulation: 2,
+  changeDetection: 0
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatSelectionList, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Component,
+    args: [{
+      selector: 'mat-selection-list',
+      exportAs: 'matSelectionList',
+      inputs: ['disableRipple'],
+      host: {
+        'role': 'listbox',
+        'class': 'mat-selection-list mat-list-base',
+        '(keydown)': '_keydown($event)',
+        '[attr.aria-multiselectable]': 'multiple',
+        '[attr.aria-disabled]': 'disabled.toString()',
+        '[attr.tabindex]': '_tabIndex'
+      },
+      template: '<ng-content></ng-content>',
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ViewEncapsulation.None,
+      providers: [MAT_SELECTION_LIST_VALUE_ACCESSOR],
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectionStrategy.OnPush,
+      styles: [".mat-subheader{display:flex;box-sizing:border-box;padding:16px;align-items:center}.mat-list-base .mat-subheader{margin:0}.mat-list-base{padding-top:8px;display:block;-webkit-tap-highlight-color:transparent}.mat-list-base .mat-subheader{height:48px;line-height:16px}.mat-list-base .mat-subheader:first-child{margin-top:-8px}.mat-list-base .mat-list-item,.mat-list-base .mat-list-option{display:block;height:48px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base .mat-list-item .mat-list-item-content,.mat-list-base .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base .mat-list-item .mat-list-item-content-reverse,.mat-list-base .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base .mat-list-item .mat-list-item-ripple,.mat-list-base .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar,.mat-list-base .mat-list-option.mat-list-item-with-avatar{height:56px}.mat-list-base .mat-list-item.mat-2-line,.mat-list-base .mat-list-option.mat-2-line{height:72px}.mat-list-base .mat-list-item.mat-3-line,.mat-list-base .mat-list-option.mat-3-line{height:88px}.mat-list-base .mat-list-item.mat-multi-line,.mat-list-base .mat-list-option.mat-multi-line{height:auto}.mat-list-base .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base .mat-list-item .mat-list-text,.mat-list-base .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base .mat-list-item .mat-list-text>*,.mat-list-base .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base .mat-list-item .mat-list-text:empty,.mat-list-base .mat-list-option .mat-list-text:empty{display:none}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base .mat-list-item .mat-list-avatar,.mat-list-base .mat-list-option .mat-list-avatar{flex-shrink:0;width:40px;height:40px;border-radius:50%;object-fit:cover}.mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:72px;width:calc(100% - 72px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:72px}.mat-list-base .mat-list-item .mat-list-icon,.mat-list-base .mat-list-option .mat-list-icon{flex-shrink:0;width:24px;height:24px;font-size:24px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:64px;width:calc(100% - 64px)}[dir=rtl] .mat-list-base .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:64px}.mat-list-base .mat-list-item .mat-divider,.mat-list-base .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base .mat-list-item .mat-divider,[dir=rtl] .mat-list-base .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-list-base[dense]{padding-top:4px;display:block}.mat-list-base[dense] .mat-subheader{height:40px;line-height:8px}.mat-list-base[dense] .mat-subheader:first-child{margin-top:-4px}.mat-list-base[dense] .mat-list-item,.mat-list-base[dense] .mat-list-option{display:block;height:40px;-webkit-tap-highlight-color:transparent;width:100%;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-item-content,.mat-list-base[dense] .mat-list-option .mat-list-item-content{display:flex;flex-direction:row;align-items:center;box-sizing:border-box;padding:0 16px;position:relative;height:inherit}.mat-list-base[dense] .mat-list-item .mat-list-item-content-reverse,.mat-list-base[dense] .mat-list-option .mat-list-item-content-reverse{display:flex;align-items:center;padding:0 16px;flex-direction:row-reverse;justify-content:space-around}.mat-list-base[dense] .mat-list-item .mat-list-item-ripple,.mat-list-base[dense] .mat-list-option .mat-list-item-ripple{display:block;top:0;left:0;right:0;bottom:0;position:absolute;pointer-events:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar{height:48px}.mat-list-base[dense] .mat-list-item.mat-2-line,.mat-list-base[dense] .mat-list-option.mat-2-line{height:60px}.mat-list-base[dense] .mat-list-item.mat-3-line,.mat-list-base[dense] .mat-list-option.mat-3-line{height:76px}.mat-list-base[dense] .mat-list-item.mat-multi-line,.mat-list-base[dense] .mat-list-option.mat-multi-line{height:auto}.mat-list-base[dense] .mat-list-item.mat-multi-line .mat-list-item-content,.mat-list-base[dense] .mat-list-option.mat-multi-line .mat-list-item-content{padding-top:16px;padding-bottom:16px}.mat-list-base[dense] .mat-list-item .mat-list-text,.mat-list-base[dense] .mat-list-option .mat-list-text{display:flex;flex-direction:column;flex:auto;box-sizing:border-box;overflow:hidden;padding:0}.mat-list-base[dense] .mat-list-item .mat-list-text>*,.mat-list-base[dense] .mat-list-option .mat-list-text>*{margin:0;padding:0;font-weight:normal;font-size:inherit}.mat-list-base[dense] .mat-list-item .mat-list-text:empty,.mat-list-base[dense] .mat-list-option .mat-list-text:empty{display:none}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:0;padding-left:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:0}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-left:0;padding-right:16px}[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-item.mat-list-option .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar .mat-list-item-content-reverse .mat-list-text,[dir=rtl] .mat-list-base[dense] .mat-list-option.mat-list-option .mat-list-item-content-reverse .mat-list-text{padding-right:0;padding-left:16px}.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-item.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content-reverse .mat-list-text,.mat-list-base[dense] .mat-list-option.mat-list-item-with-avatar.mat-list-option .mat-list-item-content .mat-list-text{padding-right:16px;padding-left:16px}.mat-list-base[dense] .mat-list-item .mat-list-avatar,.mat-list-base[dense] .mat-list-option .mat-list-avatar{flex-shrink:0;width:36px;height:36px;border-radius:50%;object-fit:cover}.mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:68px;width:calc(100% - 68px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-avatar~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-avatar~.mat-divider-inset{margin-left:auto;margin-right:68px}.mat-list-base[dense] .mat-list-item .mat-list-icon,.mat-list-base[dense] .mat-list-option .mat-list-icon{flex-shrink:0;width:20px;height:20px;font-size:20px;box-sizing:content-box;border-radius:50%;padding:4px}.mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:60px;width:calc(100% - 60px)}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-list-icon~.mat-divider-inset,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-list-icon~.mat-divider-inset{margin-left:auto;margin-right:60px}.mat-list-base[dense] .mat-list-item .mat-divider,.mat-list-base[dense] .mat-list-option .mat-divider{position:absolute;bottom:0;left:0;width:100%;margin:0}[dir=rtl] .mat-list-base[dense] .mat-list-item .mat-divider,[dir=rtl] .mat-list-base[dense] .mat-list-option .mat-divider{margin-left:auto;margin-right:0}.mat-list-base[dense] .mat-list-item .mat-divider.mat-divider-inset,.mat-list-base[dense] .mat-list-option .mat-divider.mat-divider-inset{position:absolute}.mat-nav-list a{text-decoration:none;color:inherit}.mat-nav-list .mat-list-item{cursor:pointer;outline:none}mat-action-list button{background:none;color:inherit;border:none;font:inherit;outline:inherit;-webkit-tap-highlight-color:transparent;text-align:left}[dir=rtl] mat-action-list button{text-align:right}mat-action-list button::-moz-focus-inner{border:0}mat-action-list .mat-list-item{cursor:pointer;outline:inherit}.mat-list-option:not(.mat-list-item-disabled){cursor:pointer;outline:none}.mat-list-item-disabled{pointer-events:none}.cdk-high-contrast-active .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active :host .mat-list-item-disabled{opacity:.5}.cdk-high-contrast-active .mat-selection-list:focus{outline-style:dotted}.cdk-high-contrast-active .mat-list-option:hover,.cdk-high-contrast-active .mat-list-option:focus,.cdk-high-contrast-active .mat-nav-list .mat-list-item:hover,.cdk-high-contrast-active .mat-nav-list .mat-list-item:focus,.cdk-high-contrast-active mat-action-list .mat-list-item:hover,.cdk-high-contrast-active mat-action-list .mat-list-item:focus{outline:dotted 1px;z-index:1}.cdk-high-contrast-active .mat-list-single-selected-option::after{content:\"\";position:absolute;top:50%;right:16px;transform:translateY(-50%);width:10px;height:0;border-bottom:solid 10px;border-radius:10px}.cdk-high-contrast-active [dir=rtl] .mat-list-single-selected-option::after{right:auto;left:16px}@media(hover: none){.mat-list-option:not(.mat-list-single-selected-option):not(.mat-list-item-disabled):hover,.mat-nav-list .mat-list-item:not(.mat-list-item-disabled):hover,.mat-action-list .mat-list-item:not(.mat-list-item-disabled):hover{background:none}}\n"]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ElementRef
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Attribute,
+        args: ['tabindex']
+      }]
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ChangeDetectorRef
+    }, {
+      type: _angular_cdk_a11y__WEBPACK_IMPORTED_MODULE_8__.FocusMonitor
+    }];
+  }, {
+    options: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.ContentChildren,
+      args: [MatListOption, {
+        descendants: true
+      }]
+    }],
+    selectionChange: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Output
+    }],
+    tabIndex: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    color: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    compareWith: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    disabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }],
+    multiple: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.Input
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+class MatListModule {}
+
+MatListModule.ɵfac = function MatListModule_Factory(t) {
+  return new (t || MatListModule)();
+};
+
+MatListModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineNgModule"]({
+  type: MatListModule
+});
+MatListModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjector"]({
+  imports: [[_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLineModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatRippleModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatCommonModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatPseudoCheckboxModule, _angular_common__WEBPACK_IMPORTED_MODULE_6__.CommonModule], _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLineModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatCommonModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatPseudoCheckboxModule, _angular_material_divider__WEBPACK_IMPORTED_MODULE_11__.MatDividerModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](MatListModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_0__.NgModule,
+    args: [{
+      imports: [_angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLineModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatRippleModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatCommonModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatPseudoCheckboxModule, _angular_common__WEBPACK_IMPORTED_MODULE_6__.CommonModule],
+      exports: [MatList, MatNavList, MatListItem, MatListAvatarCssMatStyler, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatLineModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatCommonModule, MatListIconCssMatStyler, MatListSubheaderCssMatStyler, _angular_material_core__WEBPACK_IMPORTED_MODULE_1__.MatPseudoCheckboxModule, MatSelectionList, MatListOption, _angular_material_divider__WEBPACK_IMPORTED_MODULE_11__.MatDividerModule],
+      declarations: [MatList, MatNavList, MatListItem, MatListAvatarCssMatStyler, MatListIconCssMatStyler, MatListSubheaderCssMatStyler, MatSelectionList, MatListOption]
     }]
   }], null, null);
 })();
@@ -86584,6 +89695,825 @@ MatTooltipModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2
     }]
   }], null, null);
 })();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+
+
+
+/***/ }),
+
+/***/ 4972:
+/*!**********************************************************!*\
+  !*** ./node_modules/@angular/material/fesm2015/tree.mjs ***!
+  \**********************************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "MatNestedTreeNode": () => (/* binding */ MatNestedTreeNode),
+/* harmony export */   "MatTree": () => (/* binding */ MatTree),
+/* harmony export */   "MatTreeFlatDataSource": () => (/* binding */ MatTreeFlatDataSource),
+/* harmony export */   "MatTreeFlattener": () => (/* binding */ MatTreeFlattener),
+/* harmony export */   "MatTreeModule": () => (/* binding */ MatTreeModule),
+/* harmony export */   "MatTreeNestedDataSource": () => (/* binding */ MatTreeNestedDataSource),
+/* harmony export */   "MatTreeNode": () => (/* binding */ MatTreeNode),
+/* harmony export */   "MatTreeNodeDef": () => (/* binding */ MatTreeNodeDef),
+/* harmony export */   "MatTreeNodeOutlet": () => (/* binding */ MatTreeNodeOutlet),
+/* harmony export */   "MatTreeNodePadding": () => (/* binding */ MatTreeNodePadding),
+/* harmony export */   "MatTreeNodeToggle": () => (/* binding */ MatTreeNodeToggle)
+/* harmony export */ });
+/* harmony import */ var _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/cdk/tree */ 8205);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/material/core */ 8133);
+/* harmony import */ var _angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/cdk/coercion */ 6484);
+/* harmony import */ var _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/cdk/collections */ 9502);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! rxjs */ 6317);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! rxjs */ 6646);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! rxjs/operators */ 9295);
+/* harmony import */ var rxjs_operators__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! rxjs/operators */ 635);
+
+
+
+
+
+
+
+
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+const _MatTreeNodeBase = (0,_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.mixinTabIndex)((0,_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.mixinDisabled)(_angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNode));
+/**
+ * Wrapper for the CdkTree node with Material design styles.
+ */
+
+
+class MatTreeNode extends _MatTreeNodeBase {
+  constructor(elementRef, tree, tabIndex) {
+    super(elementRef, tree);
+    this.tabIndex = Number(tabIndex) || 0;
+  } // This is a workaround for https://github.com/angular/angular/issues/23091
+  // In aot mode, the lifecycle hooks from parent class are not called.
+
+
+  ngOnInit() {
+    super.ngOnInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+  }
+
+}
+
+MatTreeNode.ɵfac = function MatTreeNode_Factory(t) {
+  return new (t || MatTreeNode)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTree), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵinjectAttribute"]('tabindex'));
+};
+
+MatTreeNode.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineDirective"]({
+  type: MatTreeNode,
+  selectors: [["mat-tree-node"]],
+  hostAttrs: [1, "mat-tree-node"],
+  inputs: {
+    role: "role",
+    disabled: "disabled",
+    tabIndex: "tabIndex"
+  },
+  exportAs: ["matTreeNode"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵProvidersFeature"]([{
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNode,
+    useExisting: MatTreeNode
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatTreeNode, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Directive,
+    args: [{
+      selector: 'mat-tree-node',
+      exportAs: 'matTreeNode',
+      inputs: ['role', 'disabled', 'tabIndex'],
+      providers: [{
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNode,
+        useExisting: MatTreeNode
+      }],
+      host: {
+        'class': 'mat-tree-node'
+      }
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.ElementRef
+    }, {
+      type: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTree
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Attribute,
+        args: ['tabindex']
+      }]
+    }];
+  }, null);
+})();
+/**
+ * Wrapper for the CdkTree node definition with Material design styles.
+ * Captures the node's template and a when predicate that describes when this node should be used.
+ */
+
+
+class MatTreeNodeDef extends _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeDef {}
+
+MatTreeNodeDef.ɵfac = /* @__PURE__ */function () {
+  let ɵMatTreeNodeDef_BaseFactory;
+  return function MatTreeNodeDef_Factory(t) {
+    return (ɵMatTreeNodeDef_BaseFactory || (ɵMatTreeNodeDef_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵgetInheritedFactory"](MatTreeNodeDef)))(t || MatTreeNodeDef);
+  };
+}();
+
+MatTreeNodeDef.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineDirective"]({
+  type: MatTreeNodeDef,
+  selectors: [["", "matTreeNodeDef", ""]],
+  inputs: {
+    when: ["matTreeNodeDefWhen", "when"],
+    data: ["matTreeNode", "data"]
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵProvidersFeature"]([{
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeDef,
+    useExisting: MatTreeNodeDef
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatTreeNodeDef, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Directive,
+    args: [{
+      selector: '[matTreeNodeDef]',
+      inputs: ['when: matTreeNodeDefWhen'],
+      providers: [{
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeDef,
+        useExisting: MatTreeNodeDef
+      }]
+    }]
+  }], null, {
+    data: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Input,
+      args: ['matTreeNode']
+    }]
+  });
+})();
+/**
+ * Wrapper for the CdkTree nested node with Material design styles.
+ */
+
+
+class MatNestedTreeNode extends _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkNestedTreeNode {
+  constructor(elementRef, tree, differs, tabIndex) {
+    super(elementRef, tree, differs);
+    this._disabled = false;
+    this.tabIndex = Number(tabIndex) || 0;
+  }
+  /** Whether the node is disabled. */
+
+
+  get disabled() {
+    return this._disabled;
+  }
+
+  set disabled(value) {
+    this._disabled = (0,_angular_cdk_coercion__WEBPACK_IMPORTED_MODULE_3__.coerceBooleanProperty)(value);
+  }
+  /** Tabindex for the node. */
+
+
+  get tabIndex() {
+    return this.disabled ? -1 : this._tabIndex;
+  }
+
+  set tabIndex(value) {
+    // If the specified tabIndex value is null or undefined, fall back to the default value.
+    this._tabIndex = value != null ? value : 0;
+  } // This is a workaround for https://github.com/angular/angular/issues/19145
+  // In aot mode, the lifecycle hooks from parent class are not called.
+  // TODO(tinayuangao): Remove when the angular issue #19145 is fixed
+
+
+  ngOnInit() {
+    super.ngOnInit();
+  }
+
+  ngAfterContentInit() {
+    super.ngAfterContentInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+  }
+
+}
+
+MatNestedTreeNode.ɵfac = function MatNestedTreeNode_Factory(t) {
+  return new (t || MatNestedTreeNode)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTree), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.IterableDiffers), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵinjectAttribute"]('tabindex'));
+};
+
+MatNestedTreeNode.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineDirective"]({
+  type: MatNestedTreeNode,
+  selectors: [["mat-nested-tree-node"]],
+  hostAttrs: [1, "mat-nested-tree-node"],
+  inputs: {
+    role: "role",
+    disabled: "disabled",
+    tabIndex: "tabIndex",
+    node: ["matNestedTreeNode", "node"]
+  },
+  exportAs: ["matNestedTreeNode"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵProvidersFeature"]([{
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkNestedTreeNode,
+    useExisting: MatNestedTreeNode
+  }, {
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNode,
+    useExisting: MatNestedTreeNode
+  }, {
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CDK_TREE_NODE_OUTLET_NODE,
+    useExisting: MatNestedTreeNode
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatNestedTreeNode, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Directive,
+    args: [{
+      selector: 'mat-nested-tree-node',
+      exportAs: 'matNestedTreeNode',
+      inputs: ['role', 'disabled', 'tabIndex'],
+      providers: [{
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkNestedTreeNode,
+        useExisting: MatNestedTreeNode
+      }, {
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNode,
+        useExisting: MatNestedTreeNode
+      }, {
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CDK_TREE_NODE_OUTLET_NODE,
+        useExisting: MatNestedTreeNode
+      }],
+      host: {
+        'class': 'mat-nested-tree-node'
+      }
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.ElementRef
+    }, {
+      type: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTree
+    }, {
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.IterableDiffers
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Attribute,
+        args: ['tabindex']
+      }]
+    }];
+  }, {
+    node: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Input,
+      args: ['matNestedTreeNode']
+    }],
+    disabled: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Input
+    }],
+    tabIndex: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Input
+    }]
+  });
+})();
+/**
+ * Wrapper for the CdkTree padding with Material design styles.
+ */
+
+
+class MatTreeNodePadding extends _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodePadding {
+  /** The level of depth of the tree node. The padding will be `level * indent` pixels. */
+  get level() {
+    return this._level;
+  }
+
+  set level(value) {
+    this._setLevelInput(value);
+  }
+  /** The indent for each level. Default number 40px from material design menu sub-menu spec. */
+
+
+  get indent() {
+    return this._indent;
+  }
+
+  set indent(indent) {
+    this._setIndentInput(indent);
+  }
+
+}
+
+MatTreeNodePadding.ɵfac = /* @__PURE__ */function () {
+  let ɵMatTreeNodePadding_BaseFactory;
+  return function MatTreeNodePadding_Factory(t) {
+    return (ɵMatTreeNodePadding_BaseFactory || (ɵMatTreeNodePadding_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵgetInheritedFactory"](MatTreeNodePadding)))(t || MatTreeNodePadding);
+  };
+}();
+
+MatTreeNodePadding.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineDirective"]({
+  type: MatTreeNodePadding,
+  selectors: [["", "matTreeNodePadding", ""]],
+  inputs: {
+    level: ["matTreeNodePadding", "level"],
+    indent: ["matTreeNodePaddingIndent", "indent"]
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵProvidersFeature"]([{
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodePadding,
+    useExisting: MatTreeNodePadding
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatTreeNodePadding, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Directive,
+    args: [{
+      selector: '[matTreeNodePadding]',
+      providers: [{
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodePadding,
+        useExisting: MatTreeNodePadding
+      }]
+    }]
+  }], null, {
+    level: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Input,
+      args: ['matTreeNodePadding']
+    }],
+    indent: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Input,
+      args: ['matTreeNodePaddingIndent']
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Outlet for nested CdkNode. Put `[matTreeNodeOutlet]` on a tag to place children dataNodes
+ * inside the outlet.
+ */
+
+
+class MatTreeNodeOutlet {
+  constructor(viewContainer, _node) {
+    this.viewContainer = viewContainer;
+    this._node = _node;
+  }
+
+}
+
+MatTreeNodeOutlet.ɵfac = function MatTreeNodeOutlet_Factory(t) {
+  return new (t || MatTreeNodeOutlet)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.ViewContainerRef), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CDK_TREE_NODE_OUTLET_NODE, 8));
+};
+
+MatTreeNodeOutlet.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineDirective"]({
+  type: MatTreeNodeOutlet,
+  selectors: [["", "matTreeNodeOutlet", ""]],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵProvidersFeature"]([{
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeOutlet,
+    useExisting: MatTreeNodeOutlet
+  }])]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatTreeNodeOutlet, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Directive,
+    args: [{
+      selector: '[matTreeNodeOutlet]',
+      providers: [{
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeOutlet,
+        useExisting: MatTreeNodeOutlet
+      }]
+    }]
+  }], function () {
+    return [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.ViewContainerRef
+    }, {
+      type: undefined,
+      decorators: [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Inject,
+        args: [_angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CDK_TREE_NODE_OUTLET_NODE]
+      }, {
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Optional
+      }]
+    }];
+  }, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Wrapper for the CdkTable with Material design styles.
+ */
+
+
+class MatTree extends _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTree {}
+
+MatTree.ɵfac = /* @__PURE__ */function () {
+  let ɵMatTree_BaseFactory;
+  return function MatTree_Factory(t) {
+    return (ɵMatTree_BaseFactory || (ɵMatTree_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵgetInheritedFactory"](MatTree)))(t || MatTree);
+  };
+}();
+
+MatTree.ɵcmp = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineComponent"]({
+  type: MatTree,
+  selectors: [["mat-tree"]],
+  viewQuery: function MatTree_Query(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵviewQuery"](MatTreeNodeOutlet, 7);
+    }
+
+    if (rf & 2) {
+      let _t;
+
+      _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵloadQuery"]()) && (ctx._nodeOutlet = _t.first);
+    }
+  },
+  hostAttrs: ["role", "tree", 1, "mat-tree"],
+  exportAs: ["matTree"],
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵProvidersFeature"]([{
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTree,
+    useExisting: MatTree
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵInheritDefinitionFeature"]],
+  decls: 1,
+  vars: 0,
+  consts: [["matTreeNodeOutlet", ""]],
+  template: function MatTree_Template(rf, ctx) {
+    if (rf & 1) {
+      _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementContainer"](0, 0);
+    }
+  },
+  directives: [MatTreeNodeOutlet],
+  styles: [".mat-tree{display:block}.mat-tree-node{display:flex;align-items:center;flex:1;word-wrap:break-word}.mat-nested-tree-node{border-bottom-width:0}\n"],
+  encapsulation: 2
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatTree, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Component,
+    args: [{
+      selector: 'mat-tree',
+      exportAs: 'matTree',
+      template: `<ng-container matTreeNodeOutlet></ng-container>`,
+      host: {
+        'class': 'mat-tree',
+        'role': 'tree'
+      },
+      encapsulation: _angular_core__WEBPACK_IMPORTED_MODULE_2__.ViewEncapsulation.None,
+      changeDetection: _angular_core__WEBPACK_IMPORTED_MODULE_2__.ChangeDetectionStrategy.Default,
+      providers: [{
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTree,
+        useExisting: MatTree
+      }],
+      styles: [".mat-tree{display:block}.mat-tree-node{display:flex;align-items:center;flex:1;word-wrap:break-word}.mat-nested-tree-node{border-bottom-width:0}\n"]
+    }]
+  }], null, {
+    _nodeOutlet: [{
+      type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.ViewChild,
+      args: [MatTreeNodeOutlet, {
+        static: true
+      }]
+    }]
+  });
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Wrapper for the CdkTree's toggle with Material design styles.
+ */
+
+
+class MatTreeNodeToggle extends _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeToggle {}
+
+MatTreeNodeToggle.ɵfac = /* @__PURE__ */function () {
+  let ɵMatTreeNodeToggle_BaseFactory;
+  return function MatTreeNodeToggle_Factory(t) {
+    return (ɵMatTreeNodeToggle_BaseFactory || (ɵMatTreeNodeToggle_BaseFactory = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵgetInheritedFactory"](MatTreeNodeToggle)))(t || MatTreeNodeToggle);
+  };
+}();
+
+MatTreeNodeToggle.ɵdir = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineDirective"]({
+  type: MatTreeNodeToggle,
+  selectors: [["", "matTreeNodeToggle", ""]],
+  inputs: {
+    recursive: ["matTreeNodeToggleRecursive", "recursive"]
+  },
+  features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵProvidersFeature"]([{
+    provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeToggle,
+    useExisting: MatTreeNodeToggle
+  }]), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵInheritDefinitionFeature"]]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatTreeNodeToggle, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.Directive,
+    args: [{
+      selector: '[matTreeNodeToggle]',
+      providers: [{
+        provide: _angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeNodeToggle,
+        useExisting: MatTreeNodeToggle
+      }],
+      inputs: ['recursive: matTreeNodeToggleRecursive']
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+const MAT_TREE_DIRECTIVES = [MatNestedTreeNode, MatTreeNodeDef, MatTreeNodePadding, MatTreeNodeToggle, MatTree, MatTreeNode, MatTreeNodeOutlet];
+
+class MatTreeModule {}
+
+MatTreeModule.ɵfac = function MatTreeModule_Factory(t) {
+  return new (t || MatTreeModule)();
+};
+
+MatTreeModule.ɵmod = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineNgModule"]({
+  type: MatTreeModule
+});
+MatTreeModule.ɵinj = /* @__PURE__ */_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineInjector"]({
+  imports: [[_angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule], _angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule]
+});
+
+(function () {
+  (typeof ngDevMode === "undefined" || ngDevMode) && _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵsetClassMetadata"](MatTreeModule, [{
+    type: _angular_core__WEBPACK_IMPORTED_MODULE_2__.NgModule,
+    args: [{
+      imports: [_angular_cdk_tree__WEBPACK_IMPORTED_MODULE_1__.CdkTreeModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule],
+      exports: [_angular_material_core__WEBPACK_IMPORTED_MODULE_0__.MatCommonModule, MAT_TREE_DIRECTIVES],
+      declarations: MAT_TREE_DIRECTIVES
+    }]
+  }], null, null);
+})();
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Tree flattener to convert a normal type of node to node with children & level information.
+ * Transform nested nodes of type `T` to flattened nodes of type `F`.
+ *
+ * For example, the input data of type `T` is nested, and contains its children data:
+ *   SomeNode: {
+ *     key: 'Fruits',
+ *     children: [
+ *       NodeOne: {
+ *         key: 'Apple',
+ *       },
+ *       NodeTwo: {
+ *        key: 'Pear',
+ *      }
+ *    ]
+ *  }
+ *  After flattener flatten the tree, the structure will become
+ *  SomeNode: {
+ *    key: 'Fruits',
+ *    expandable: true,
+ *    level: 1
+ *  },
+ *  NodeOne: {
+ *    key: 'Apple',
+ *    expandable: false,
+ *    level: 2
+ *  },
+ *  NodeTwo: {
+ *   key: 'Pear',
+ *   expandable: false,
+ *   level: 2
+ * }
+ * and the output flattened type is `F` with additional information.
+ */
+
+
+class MatTreeFlattener {
+  constructor(transformFunction, getLevel, isExpandable, getChildren) {
+    this.transformFunction = transformFunction;
+    this.getLevel = getLevel;
+    this.isExpandable = isExpandable;
+    this.getChildren = getChildren;
+  }
+
+  _flattenNode(node, level, resultNodes, parentMap) {
+    const flatNode = this.transformFunction(node, level);
+    resultNodes.push(flatNode);
+
+    if (this.isExpandable(flatNode)) {
+      const childrenNodes = this.getChildren(node);
+
+      if (childrenNodes) {
+        if (Array.isArray(childrenNodes)) {
+          this._flattenChildren(childrenNodes, level, resultNodes, parentMap);
+        } else {
+          childrenNodes.pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_4__.take)(1)).subscribe(children => {
+            this._flattenChildren(children, level, resultNodes, parentMap);
+          });
+        }
+      }
+    }
+
+    return resultNodes;
+  }
+
+  _flattenChildren(children, level, resultNodes, parentMap) {
+    children.forEach((child, index) => {
+      let childParentMap = parentMap.slice();
+      childParentMap.push(index != children.length - 1);
+
+      this._flattenNode(child, level + 1, resultNodes, childParentMap);
+    });
+  }
+  /**
+   * Flatten a list of node type T to flattened version of node F.
+   * Please note that type T may be nested, and the length of `structuredData` may be different
+   * from that of returned list `F[]`.
+   */
+
+
+  flattenNodes(structuredData) {
+    let resultNodes = [];
+    structuredData.forEach(node => this._flattenNode(node, 0, resultNodes, []));
+    return resultNodes;
+  }
+  /**
+   * Expand flattened node with current expansion status.
+   * The returned list may have different length.
+   */
+
+
+  expandFlattenedNodes(nodes, treeControl) {
+    let results = [];
+    let currentExpand = [];
+    currentExpand[0] = true;
+    nodes.forEach(node => {
+      let expand = true;
+
+      for (let i = 0; i <= this.getLevel(node); i++) {
+        expand = expand && currentExpand[i];
+      }
+
+      if (expand) {
+        results.push(node);
+      }
+
+      if (this.isExpandable(node)) {
+        currentExpand[this.getLevel(node) + 1] = treeControl.isExpanded(node);
+      }
+    });
+    return results;
+  }
+
+}
+/**
+ * Data source for flat tree.
+ * The data source need to handle expansion/collapsion of the tree node and change the data feed
+ * to `MatTree`.
+ * The nested tree nodes of type `T` are flattened through `MatTreeFlattener`, and converted
+ * to type `F` for `MatTree` to consume.
+ */
+
+
+class MatTreeFlatDataSource extends _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_5__.DataSource {
+  constructor(_treeControl, _treeFlattener, initialData) {
+    super();
+    this._treeControl = _treeControl;
+    this._treeFlattener = _treeFlattener;
+    this._flattenedData = new rxjs__WEBPACK_IMPORTED_MODULE_6__.BehaviorSubject([]);
+    this._expandedData = new rxjs__WEBPACK_IMPORTED_MODULE_6__.BehaviorSubject([]);
+    this._data = new rxjs__WEBPACK_IMPORTED_MODULE_6__.BehaviorSubject([]);
+
+    if (initialData) {
+      // Assign the data through the constructor to ensure that all of the logic is executed.
+      this.data = initialData;
+    }
+  }
+
+  get data() {
+    return this._data.value;
+  }
+
+  set data(value) {
+    this._data.next(value);
+
+    this._flattenedData.next(this._treeFlattener.flattenNodes(this.data));
+
+    this._treeControl.dataNodes = this._flattenedData.value;
+  }
+
+  connect(collectionViewer) {
+    return (0,rxjs__WEBPACK_IMPORTED_MODULE_7__.merge)(collectionViewer.viewChange, this._treeControl.expansionModel.changed, this._flattenedData).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_8__.map)(() => {
+      this._expandedData.next(this._treeFlattener.expandFlattenedNodes(this._flattenedData.value, this._treeControl));
+
+      return this._expandedData.value;
+    }));
+  }
+
+  disconnect() {// no op
+  }
+
+}
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Data source for nested tree.
+ *
+ * The data source for nested tree doesn't have to consider node flattener, or the way to expand
+ * or collapse. The expansion/collapsion will be handled by TreeControl and each non-leaf node.
+ */
+
+
+class MatTreeNestedDataSource extends _angular_cdk_collections__WEBPACK_IMPORTED_MODULE_5__.DataSource {
+  constructor() {
+    super(...arguments);
+    this._data = new rxjs__WEBPACK_IMPORTED_MODULE_6__.BehaviorSubject([]);
+  }
+  /**
+   * Data for the nested tree
+   */
+
+
+  get data() {
+    return this._data.value;
+  }
+
+  set data(value) {
+    this._data.next(value);
+  }
+
+  connect(collectionViewer) {
+    return (0,rxjs__WEBPACK_IMPORTED_MODULE_7__.merge)(...[collectionViewer.viewChange, this._data]).pipe((0,rxjs_operators__WEBPACK_IMPORTED_MODULE_8__.map)(() => this.data));
+  }
+
+  disconnect() {// no op
+  }
+
+}
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.

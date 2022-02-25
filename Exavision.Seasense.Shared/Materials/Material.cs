@@ -55,5 +55,8 @@ namespace Exavision.Seasense.Shared.Materials {
             SettingMaterial.Id = this.Id;
             return SettingMaterial;
         }
+
+        public virtual void Start() { }
+        public virtual void Stop() { }
     }
 }

@@ -5,6 +5,7 @@ import { sha512 } from 'js-sha512';
 import { LoginResponse } from '../../api/http/login-response';
 import { HttpService } from '../../services/http.service';
 import { UserService } from '../../services/user.service';
+import { WsService } from '../../services/ws.service';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class LoginComponent implements OnInit {
   public loginRunning: boolean = false;
   public errorMessage: string = "";
 
-  constructor(private httpService: HttpService, private userService: UserService,private router: Router) {
+  constructor(private httpService: HttpService, private userService: UserService, private router: Router, private wsService: WsService) {
    
   }
 
@@ -35,7 +36,8 @@ export class LoginComponent implements OnInit {
         this.userService.setToken(response.token);
         this.userService.setUser(response.user);
         this.loginRunning = false;
-        this.router.navigate(['/home'])
+        this.wsService.start();
+        this.router.navigate(['/home']);
       },
       error: (err: HttpErrorResponse) => {
         this.errorMessage = err.message;

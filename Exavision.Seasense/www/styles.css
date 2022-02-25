@@ -3185,12 +3185,24 @@ body {
   align-items: stretch;
 }
 
+.flex-align-center {
+  align-items: center;
+}
+
 .flex-align-end {
   align-items: end;
 }
 
 .margin-4 {
   margin: 4px;
+}
+
+.flex-dir-col {
+  flex-direction: column;
+}
+
+.flex-dir-row {
+  flex-direction: row;
 }
 
 /*# sourceMappingURL=styles.css.map*/

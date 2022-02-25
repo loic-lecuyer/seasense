@@ -9,6 +9,11 @@ import { LogoutResponse } from '../api/http/logout-response';
 import { LogoutRequest } from '../api/http/logout-request';
 import { GetSettingResponse } from '../api/http/get-setting-response';
 import { GetSettingRequest } from '../api/http/get-setting-request';
+import { SetSettingResponse } from '../api/http/set-setting-response';
+import { SettingSite } from '../materials/settings/setting-site';
+import { SetSettingRequest } from '../api/http/set-setting-request';
+import { UnitCreateEmptyResponse } from '../api/http/unit-create-empty-response';
+import { UnitCreateEmptyRequest } from '../api/http/unit-create-empty-request';
 
 @Injectable({
   providedIn: 'root'
@@ -61,5 +66,21 @@ export class HttpService {
     let url: string = this.getApiUrl("setting/get");
     let req: GetSettingRequest = {};
     return this.http.post<GetSettingResponse>(url, req,{ headers: this.headers });
+  }
+
+  setSetting(settingSite: SettingSite): Observable<SetSettingResponse> {
+    let url: string = this.getApiUrl("setting/set");
+    let req: SetSettingRequest = {
+      site: settingSite
+    };
+    return this.http.post<SetSettingResponse>(url, req, { headers: this.headers });
+  }
+
+  createEmptyUnit(unitType: string): Observable<UnitCreateEmptyResponse> {
+    let url: string = this.getApiUrl("unit/create/empty");
+    let req: UnitCreateEmptyRequest = {
+      unitType: unitType
+    };
+    return this.http.post<UnitCreateEmptyResponse>(url, req, { headers: this.headers });
   }
 }
