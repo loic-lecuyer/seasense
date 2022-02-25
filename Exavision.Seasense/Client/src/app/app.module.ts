@@ -27,6 +27,10 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { HudUiComponent } from './components/hud-ui/hud-ui.component';
 import { HudStreamComponent } from './components/hud-stream/hud-stream.component';
+import { HudPanRullerComponent } from './components/hud-pan-ruller/hud-pan-ruller.component';
+import { HudTiltRullerComponent } from './components/hud-tilt-ruller/hud-tilt-ruller.component';
+import { HudCompassComponent } from './components/hud-compass/hud-compass.component';
+import { HudStatusComponent } from './components/hud-status/hud-status.component';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -39,7 +43,11 @@ export const httpInterceptorProviders = [
     ConfigurationComponent,
     HeaderComponent,
     HudUiComponent,
-    HudStreamComponent    
+    HudStreamComponent,
+    HudPanRullerComponent,
+    HudTiltRullerComponent,
+    HudCompassComponent,
+    HudStatusComponent    
   ],
   imports: [
     BrowserModule,
