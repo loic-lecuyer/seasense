@@ -1,6 +1,7 @@
 import { Capability } from "./capabilities/capability";
 import { Factory } from "./factory";
 import { Material } from "./material";
+import { MaterialType } from "./material-type";
 import { SettingCapability } from "./settings/setting-capability";
 import { SettingMaterial } from "./settings/setting-material";
 
@@ -10,9 +11,11 @@ export class Turret implements Material {
   materials: Material[];
   capabilities: Capability[] = [];
   displayName: string;
+  materialType: MaterialType;
   constructor(settingMaterial: SettingMaterial) {
     this.id = settingMaterial.id;
     this.materials = [];
+    this.materialType = MaterialType.Turret;
     this.displayName = settingMaterial.displayName;
     let factory: Factory = new Factory();
     settingMaterial.materials.forEach((settingMaterialChild: SettingMaterial) => {
