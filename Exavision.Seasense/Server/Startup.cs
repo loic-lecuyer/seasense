@@ -42,7 +42,7 @@ namespace Exavision.Seasense.Server {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver {
                     NamingStrategy = new CamelCaseNamingStrategy()
                 };
-                options.SerializerSettings.SerializationBinder = new SerializationBinder();
+                options.SerializerSettings.SerializationBinder = new HttpSerializationBinder();
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
             });
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {

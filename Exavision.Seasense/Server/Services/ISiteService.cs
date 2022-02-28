@@ -1,4 +1,5 @@
-﻿using Exavision.Seasense.Shared.Settings;
+﻿using Exavision.Seasense.Shared.Materials;
+using Exavision.Seasense.Shared.Settings;
 
 namespace Exavision.Seasense.Server.Services {
     public interface ISiteService {
@@ -6,5 +7,6 @@ namespace Exavision.Seasense.Server.Services {
         public void Stop();
         public SettingSite LoadSetting();
         void SaveSetting(SettingSite site);
+        IUnit FindUnitById(string unitId);
     }
 }

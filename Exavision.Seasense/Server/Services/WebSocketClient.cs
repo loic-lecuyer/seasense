@@ -62,12 +62,17 @@ namespace Exavision.Seasense.Server.Services {
                 }
                 message = Encoding.UTF8.GetString(buffer, 0, result.Count);
                 this.OnReceiveMessage(this, new WebSocketClientMessage() { Client = this, Message = message });
-                Log.Information("Message " + message);
+
 
 
             }
             return result;
         }
+
+        internal async Task Send(string responseText) {
+            await webSocket.SendAsync(System.Text.Encoding.UTF8.GetBytes(responseText), WebSocketMessageType.Text, true, this.cancelSource.Token);
+        }
+
         private void Stop() {
 
             if (!this.cancelSource.IsCancellationRequested) {

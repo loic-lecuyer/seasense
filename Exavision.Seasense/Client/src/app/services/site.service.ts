@@ -4,6 +4,7 @@ import { GetSettingResponse } from '../api/http/get-setting-response';
 import { SettingSite } from '../materials/settings/setting-site';
 import { Site } from '../materials/site';
 import { Unit } from '../materials/unit';
+import { WsService } from './ws.service';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +22,12 @@ export class SiteService {
     type: 'Site',
     displayName:'Site'
   };
+  constructor(private wsService: WsService) { }
   createSite(response: GetSettingResponse) {
     this.site = undefined;    
     if (response.site != null) {
       this.siteSetting = response.site;
-      this.site = new Site(response.site);      
+      this.site = new Site(response.site, this.wsService);      
     }   
     if (this.site != null && this.site.units.length > 0) {
       this.selectUnitById(this.site.units[0].id);
@@ -41,5 +43,5 @@ export class SiteService {
     this.unitSelectedSubject.next(unit);
   }
 
-  constructor() { }
+  
 }

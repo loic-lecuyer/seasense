@@ -1,6 +1,5 @@
 ﻿using Exavision.Seasense.Server.Services;
 using Microsoft.AspNetCore.Http;
-using Serilog;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,10 +16,8 @@ namespace Exavision.Seasense.Server.Middlewares {
         }
 
         public async Task Invoke(HttpContext context) {
-            Log.Information("===> JwtMiddleware");
-            foreach (var header in context.Request.Headers) {
-                Log.Information("Header " + header.Key + " : " + header.Value);
-            }
+
+
             string authorizationHeader = context.Request.Headers["Authorization"];
             var token = authorizationHeader?.Split(" ").Last();
             if (token != null) AttachUserToContext(context, token);

@@ -1,7 +1,7 @@
 ﻿using Exavision.Seasense.Shared.Capabilities.Turret;
 
 namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
-    public class SeamosTurretMoveSpeedCapability : TurretMoverSpeedCapability<SettingSeamosTurretMoveSpeedCapability> {
+    public class SeamosTurretMoveSpeedCapability : TurretMoveSpeedCapability<SettingSeamosTurretMoveSpeedCapability> {
 
 
         public double MaxPanSpeed { get; private set; } = 40;

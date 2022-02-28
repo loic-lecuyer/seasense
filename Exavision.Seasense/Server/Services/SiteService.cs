@@ -55,7 +55,7 @@ namespace Exavision.Seasense.Server.Services {
                     ContractResolver = new DefaultContractResolver {
                         NamingStrategy = new CamelCaseNamingStrategy()
                     },
-                    SerializationBinder = new SerializationBinder()
+                    SerializationBinder = new HttpSerializationBinder()
                 };
                 return JsonConvert.DeserializeObject<SettingSite>(content, JsonSerializerSettings);
             }
@@ -76,7 +76,7 @@ namespace Exavision.Seasense.Server.Services {
                     NamingStrategy = new CamelCaseNamingStrategy()
                 },
 
-                SerializationBinder = new SerializationBinder()
+                SerializationBinder = new HttpSerializationBinder()
             };
             JsonSerializerSettings.Converters.Add(new StringEnumConverter());
 
@@ -90,6 +90,8 @@ namespace Exavision.Seasense.Server.Services {
             });
         }
 
-
+        public IUnit FindUnitById(string unitId) {
+            return (from u in this.site.Units where u.Id.Equals(unitId) select u).FirstOrDefault();
+        }
     }
 }

@@ -64,7 +64,7 @@ namespace Exavision.Seasense.Server.Services {
             catch {
                 return false;
             }
-            return true;
+
         }
     }
 }

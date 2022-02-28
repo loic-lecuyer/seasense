@@ -555,7 +555,7 @@ class HudUiComponent {
     }
     updateVisibilityFlags() {
         if (this.siteService.selectedUnit != null) {
-            this.hasMoveSpeedCapability = this.siteService.selectedUnit.hasMaterialWithCapability("Turret" /* Turret */);
+            this.hasMoveSpeedCapability = this.siteService.selectedUnit.hasMaterialWithCapability("Turret" /* Turret */, "TurretMoveSpeed" /* TurretMoveSpeed */);
         }
     }
 }
@@ -591,16 +591,49 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var nipplejs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! nipplejs */ 1465);
 /* harmony import */ var nipplejs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(nipplejs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _services_site_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/site.service */ 6633);
+
 
 
 const _c0 = ["nipplejshost"];
 class StickComponent {
-    constructor(cdref) {
+    constructor(cdref, siteService) {
         this.cdref = cdref;
+        this.siteService = siteService;
         this.nipplejshost = null;
+        this.commandInterval = 100;
+        this.nippleControl = undefined;
+        this.turretMoveSpeedCapability = undefined;
+        this.axisX = 0;
+        this.axisY = 0;
+        this.lastSendAxisX = 0;
+        this.lastSendAxisY = 0;
+        this.commandIntervalTimer = setInterval(() => {
+            this.updateStickInfos();
+        }, this.commandInterval);
+        this.findTurretMoveSpeedCapability();
+        this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(this.findTurretMoveSpeedCapability);
+    }
+    findTurretMoveSpeedCapability() {
+        var _a;
+        this.turretMoveSpeedCapability = (_a = this.siteService.selectedUnit) === null || _a === void 0 ? void 0 : _a.getMaterialCapability("Turret" /* Turret */, "TurretMoveSpeed" /* TurretMoveSpeed */);
+        console.log("findTurretMoveSpeedCapability ", this.turretMoveSpeedCapability);
     }
     ngOnInit() {
+    }
+    updateStickInfos() {
+        if (this.lastSendAxisX != this.axisX || this.lastSendAxisY != this.axisY) {
+            if (this.turretMoveSpeedCapability != null) {
+                this.turretMoveSpeedCapability.moveSpeed(this.axisX, this.axisY);
+            }
+        }
+        this.lastSendAxisX = this.axisX;
+        this.lastSendAxisY = this.axisY;
+    }
+    ngOnDestroy() {
+        clearInterval(this.commandIntervalTimer);
+        this.unitSelectedSubscription.unsubscribe();
     }
     ngOnChanges(changes) {
     }
@@ -614,21 +647,33 @@ class StickComponent {
                 zone: this.nipplejshost.nativeElement,
                 mode: 'static',
                 position: { left: '80px', top: '80px' },
-                color: 'red',
-                restOpacity: 0.8
+                color: 'blue',
+                restOpacity: 0.8,
+            });
+            this.nippleControl.on('start', (evt, data) => {
+                this.axisX = 0;
+                this.axisY = 0;
+            });
+            this.nippleControl.on('end', (evt, data) => {
+                this.axisX = 0;
+                this.axisY = 0;
+            });
+            this.nippleControl.on('move', (evt, data) => {
+                this.axisX = data.vector.x;
+                this.axisY = data.vector.y;
             });
         }, 500);
     }
 }
-StickComponent.ɵfac = function StickComponent_Factory(t) { return new (t || StickComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__.ChangeDetectorRef)); };
-StickComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: StickComponent, selectors: [["app-stick"]], viewQuery: function StickComponent_Query(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵviewQuery"](_c0, 5);
+StickComponent.ɵfac = function StickComponent_Factory(t) { return new (t || StickComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.ChangeDetectorRef), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_site_service__WEBPACK_IMPORTED_MODULE_1__.SiteService)); };
+StickComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineComponent"]({ type: StickComponent, selectors: [["app-stick"]], viewQuery: function StickComponent_Query(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵviewQuery"](_c0, 5);
     } if (rf & 2) {
         let _t;
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.nipplejshost = _t.first);
-    } }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵNgOnChangesFeature"]], decls: 2, vars: 0, consts: [[1, "stick-host"], ["nipplejshost", ""]], template: function StickComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](0, "div", 0, 1);
-    } }, styles: ["[_nghost-%COMP%] {\n  width: 160px;\n  height: 160px;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.stick-host[_ngcontent-%COMP%] {\n  position: relative;\n  width: 160px;\n  height: 160px;\n}\n\n.stick-host[_ngcontent-%COMP%]    > div.nipple[_ngcontent-%COMP%] {\n  position: relative !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0aWNrLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FBQ0Y7O0FBQ0E7RUFFSSxrQkFBQTtFQUNBLFlBQUE7RUFDQSxhQUFBO0FBQ0o7O0FBQ0E7RUFDSSw2QkFBQTtBQUVKIiwiZmlsZSI6InN0aWNrLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xuICB3aWR0aDogMTYwcHg7XG4gIGhlaWdodDogMTYwcHg7XG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xuICBtYXJnaW4tcmlnaHQ6IGF1dG87XG59XG4uc3RpY2staG9zdFxue1xuICAgIHBvc2l0aW9uOnJlbGF0aXZlO1xuICAgIHdpZHRoOjE2MHB4O1xuICAgIGhlaWdodDoxNjBweDtcbn1cbi5zdGljay1ob3N0ID4gZGl2Lm5pcHBsZXtcbiAgICBwb3NpdGlvbjpyZWxhdGl2ZSAhaW1wb3J0YW50O1xufVxuIl19 */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵloadQuery"]()) && (ctx.nipplejshost = _t.first);
+    } }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵNgOnChangesFeature"]], decls: 2, vars: 0, consts: [[1, "stick-host"], ["nipplejshost", ""]], template: function StickComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelement"](0, "div", 0, 1);
+    } }, styles: ["[_nghost-%COMP%] {\n  width: 160px;\n  height: 160px;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.stick-host[_ngcontent-%COMP%] {\n  position: relative;\n  width: 160px;\n  height: 160px;\n}\n\n.stick-host[_ngcontent-%COMP%]    > div.nipple[_ngcontent-%COMP%] {\n  position: relative !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0aWNrLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FBQ0Y7O0FBQ0E7RUFFSSxrQkFBQTtFQUNBLFlBQUE7RUFDQSxhQUFBO0FBQ0o7O0FBQ0E7RUFDSSw2QkFBQTtBQUVKIiwiZmlsZSI6InN0aWNrLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xyXG4gIHdpZHRoOiAxNjBweDtcclxuICBoZWlnaHQ6IDE2MHB4O1xyXG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xyXG4gIG1hcmdpbi1yaWdodDogYXV0bztcclxufVxyXG4uc3RpY2staG9zdFxyXG57XHJcbiAgICBwb3NpdGlvbjpyZWxhdGl2ZTtcclxuICAgIHdpZHRoOjE2MHB4O1xyXG4gICAgaGVpZ2h0OjE2MHB4O1xyXG59XHJcbi5zdGljay1ob3N0ID4gZGl2Lm5pcHBsZXtcclxuICAgIHBvc2l0aW9uOnJlbGF0aXZlICFpbXBvcnRhbnQ7XHJcbn1cclxuIl19 */"] });
 
 
 /***/ }),
@@ -713,6 +758,26 @@ JwtInterceptor.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1__
 
 /***/ }),
 
+/***/ 3620:
+/*!**********************************************************************************!*\
+  !*** ./src/app/materials/capabilities/turret/turret-move-absolute-capability.ts ***!
+  \**********************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TurretMoveAbsoluteCapability": () => (/* binding */ TurretMoveAbsoluteCapability)
+/* harmony export */ });
+class TurretMoveAbsoluteCapability {
+    constructor(settingCapability) {
+        this.id = settingCapability.id;
+        this.capabilityType = "TurretMoveAbsolute" /* TurretMoveAbsolute */;
+    }
+}
+
+
+/***/ }),
+
 /***/ 1687:
 /*!*******************************************************************************!*\
   !*** ./src/app/materials/capabilities/turret/turret-move-speed-capability.ts ***!
@@ -726,6 +791,15 @@ __webpack_require__.r(__webpack_exports__);
 class TurretMoveSpeedCapability {
     constructor(settingCapability) {
         this.id = settingCapability.id;
+        this.capabilityType = "TurretMoveSpeed" /* TurretMoveSpeed */;
+    }
+    moveSpeed(axisX, axisY) {
+        var _a;
+        if (this.material == null)
+            return;
+        if (this.material.unit == null)
+            return;
+        (_a = this.material) === null || _a === void 0 ? void 0 : _a.wsService.turretMoveSpeed(this.material.unit.id, this.material.id, axisX, axisY);
     }
 }
 
@@ -745,6 +819,7 @@ __webpack_require__.r(__webpack_exports__);
 class UnitRebootCapability {
     constructor(settingCapability) {
         this.id = settingCapability.id;
+        this.capabilityType = "UnitReboot" /* UnitReboot */;
     }
 }
 
@@ -764,19 +839,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
 
 class DayCamera {
-    constructor(settingMaterial) {
+    constructor(settingMaterial, site, unit, wsService) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
+        this.site = site;
+        this.unit = unit;
+        this.wsService = wsService;
         this.materialType = "DayCamera" /* DayCamera */;
         this.displayName = settingMaterial.displayName;
         let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
-            let material = factory.createMaterial(settingMaterialChild);
+            let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
         });
         settingMaterial.capabilities.forEach((settingCapability) => {
             let capability = factory.createCapability(settingCapability);
+            capability.material = this;
             this.capabilities.push(capability);
         });
     }
@@ -803,6 +882,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _turret__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./turret */ 2491);
 /* harmony import */ var _capabilities_turret_turret_move_speed_capability__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./capabilities/turret/turret-move-speed-capability */ 1687);
 /* harmony import */ var _capabilities_unit_unit_reboot_capability__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./capabilities/unit/unit-reboot-capability */ 4386);
+/* harmony import */ var _capabilities_turret_turret_move_absolute_capability__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./capabilities/turret/turret-move-absolute-capability */ 3620);
+
 
 
 
@@ -818,6 +899,9 @@ class Factory {
             case "TurretMoveSpeed" /* TurretMoveSpeed */:
                 capability = new _capabilities_turret_turret_move_speed_capability__WEBPACK_IMPORTED_MODULE_6__.TurretMoveSpeedCapability(settingCapability);
                 break;
+            case "TurretMoveAbsolute" /* TurretMoveAbsolute */:
+                capability = new _capabilities_turret_turret_move_absolute_capability__WEBPACK_IMPORTED_MODULE_8__.TurretMoveAbsoluteCapability(settingCapability);
+                break;
             case "UnitReboot" /* UnitReboot */:
                 capability = new _capabilities_unit_unit_reboot_capability__WEBPACK_IMPORTED_MODULE_7__.UnitRebootCapability(settingCapability);
                 break;
@@ -826,26 +910,26 @@ class Factory {
             throw 'Capability ' + settingCapability.capabilityType + ' not implemented !!!';
         return capability;
     }
-    createMaterial(settingMaterial) {
+    createMaterial(settingMaterial, site, unit, wsService) {
         let material = null;
         switch (settingMaterial.materialType) {
             case "DayCamera" /* DayCamera */:
-                material = new _day_camera__WEBPACK_IMPORTED_MODULE_0__.DayCamera(settingMaterial);
+                material = new _day_camera__WEBPACK_IMPORTED_MODULE_0__.DayCamera(settingMaterial, site, unit, wsService);
                 break;
             case "ThermalCamera" /* ThermalCamera */:
-                material = new _thermal_camera__WEBPACK_IMPORTED_MODULE_1__.ThermalCamera(settingMaterial);
+                material = new _thermal_camera__WEBPACK_IMPORTED_MODULE_1__.ThermalCamera(settingMaterial, site, unit, wsService);
                 break;
             case "InertialMeasurement" /* InertialMeasurement */:
-                material = new _inertial_measurement__WEBPACK_IMPORTED_MODULE_2__.InertialMeasurement(settingMaterial);
+                material = new _inertial_measurement__WEBPACK_IMPORTED_MODULE_2__.InertialMeasurement(settingMaterial, site, unit, wsService);
                 break;
             case "LazerMeasurement" /* LazerMeasurement */:
-                material = new _lazer_measurement__WEBPACK_IMPORTED_MODULE_3__.LazerMeasurement(settingMaterial);
+                material = new _lazer_measurement__WEBPACK_IMPORTED_MODULE_3__.LazerMeasurement(settingMaterial, site, unit, wsService);
                 break;
             case "Unit" /* Unit */:
-                material = new _unit__WEBPACK_IMPORTED_MODULE_4__.Unit(settingMaterial);
+                material = new _unit__WEBPACK_IMPORTED_MODULE_4__.Unit(settingMaterial, site, wsService);
                 break;
             case "Turret" /* Turret */:
-                material = new _turret__WEBPACK_IMPORTED_MODULE_5__.Turret(settingMaterial);
+                material = new _turret__WEBPACK_IMPORTED_MODULE_5__.Turret(settingMaterial, site, unit, wsService);
                 break;
         }
         if (material == null)
@@ -870,19 +954,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
 
 class InertialMeasurement {
-    constructor(settingMaterial) {
+    constructor(settingMaterial, site, unit, wsService) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
+        this.wsService = wsService;
+        this.site = site;
+        this.unit = unit;
         this.materialType = "InertialMeasurement" /* InertialMeasurement */;
         this.displayName = settingMaterial.displayName;
         let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
-            let material = factory.createMaterial(settingMaterialChild);
+            let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
         });
         settingMaterial.capabilities.forEach((settingCapability) => {
             let capability = factory.createCapability(settingCapability);
+            capability.material = this;
             this.capabilities.push(capability);
         });
     }
@@ -904,19 +992,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
 
 class LazerMeasurement {
-    constructor(settingMaterial) {
+    constructor(settingMaterial, site, unit, wsService) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
+        this.wsService = wsService;
+        this.site = site;
+        this.unit = unit;
         this.materialType = "LazerMeasurement" /* LazerMeasurement */;
         this.displayName = settingMaterial.displayName;
         let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
-            let material = factory.createMaterial(settingMaterialChild);
+            let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
         });
         settingMaterial.capabilities.forEach((settingCapability) => {
             let capability = factory.createCapability(settingCapability);
+            capability.material = this;
             this.capabilities.push(capability);
         });
     }
@@ -940,13 +1032,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Site {
-    constructor(settingSite) {
+    constructor(settingSite, wsService) {
         this.units = [];
         this.capabilities = [];
         this.id = settingSite.id;
         let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingSite.units.forEach((settingUnit) => {
-            let unit = new _unit__WEBPACK_IMPORTED_MODULE_1__.Unit(settingUnit);
+            let unit = new _unit__WEBPACK_IMPORTED_MODULE_1__.Unit(settingUnit, this, wsService);
             this.units.push(unit);
         });
         settingSite.capabilities.forEach((settingCapability) => {
@@ -972,19 +1064,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
 
 class ThermalCamera {
-    constructor(settingMaterial) {
+    constructor(settingMaterial, site, unit, wsService) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
+        this.site = site;
+        this.unit = unit;
+        this.wsService = wsService;
         this.materialType = "ThermalCamera" /* ThermalCamera */;
         this.displayName = settingMaterial.displayName;
         let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
-            let material = factory.createMaterial(settingMaterialChild);
+            let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
         });
         settingMaterial.capabilities.forEach((settingCapability) => {
             let capability = factory.createCapability(settingCapability);
+            capability.material = this;
             this.capabilities.push(capability);
         });
     }
@@ -1006,19 +1102,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
 
 class Turret {
-    constructor(settingMaterial) {
+    constructor(settingMaterial, site, unit, wsService) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
+        this.site = site;
+        this.unit = unit;
         this.materialType = "Turret" /* Turret */;
+        this.wsService = wsService;
         this.displayName = settingMaterial.displayName;
         let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
-            let material = factory.createMaterial(settingMaterialChild);
+            let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
         });
         settingMaterial.capabilities.forEach((settingCapability) => {
             let capability = factory.createCapability(settingCapability);
+            capability.material = this;
             this.capabilities.push(capability);
         });
     }
@@ -1040,34 +1140,50 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
 
 class Unit {
-    constructor(settingMaterial) {
+    constructor(settingMaterial, site, wsService) {
         this.capabilities = [];
         let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
+        this.unit = this;
+        this.site = site;
         this.id = settingMaterial.id;
         this.materials = [];
+        this.wsService = wsService;
         this.materialType = "Unit" /* Unit */;
         this.displayName = settingMaterial.displayName;
         settingMaterial.materials.forEach((settingMaterialChild) => {
-            let material = factory.createMaterial(settingMaterialChild);
+            let material = factory.createMaterial(settingMaterialChild, site, this, this.wsService);
             this.materials.push(material);
         });
         settingMaterial.capabilities.forEach((settingCapability) => {
             let capability = factory.createCapability(settingCapability);
+            capability.material = this;
             this.capabilities.push(capability);
         });
     }
     // Pour coder cette methode il faut au mmoins une deuxième capability qui ne soit pas du type recherché
-    hasMaterialWithCapability(materialType) {
+    hasMaterialWithCapability(materialType, capabilityType) {
         let material = this.getMaterial(materialType);
         if (material != null) {
             let cap = material.capabilities.find((value) => {
-                let tr = value;
-                if (tr != null) {
-                    console.log("ok");
-                }
+                return (value.capabilityType == capabilityType);
             });
+            if (cap != null)
+                return true;
         }
         return false;
+    }
+    getMaterialCapability(materialType, capabilityType) {
+        let material = this.getMaterial(materialType);
+        if (material != null) {
+            let cap = material.capabilities.find((value) => {
+                return (value.capabilityType == capabilityType);
+            });
+            if (cap != null) {
+                let result = cap;
+                return result;
+            }
+        }
+        return undefined;
     }
     getMaterial(materialType) {
         return this.materials.find((value) => { return value.materialType == materialType; });
@@ -1637,7 +1753,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LoginComponent": () => (/* binding */ LoginComponent)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js-sha512 */ 2414);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(js_sha512__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 3184);
@@ -1698,7 +1814,7 @@ class LoginComponent {
   onConnectButtonClick() {
     var _this = this;
 
-    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this.loginRunning = true;
 
       _this.userService.clearToken();
@@ -1885,16 +2001,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "SiteService": () => (/* binding */ SiteService)
 /* harmony export */ });
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 228);
 /* harmony import */ var _materials_site__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../materials/site */ 4753);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _ws_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ws.service */ 4885);
+
 
 
 
 class SiteService {
-    constructor() {
-        this.siteLoadedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_1__.Subject();
-        this.unitSelectedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_1__.Subject();
+    constructor(wsService) {
+        this.wsService = wsService;
+        this.siteLoadedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+        this.unitSelectedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
         this.site = undefined;
         this.selectedUnit = undefined;
         this.siteSetting = {
@@ -1909,7 +2028,7 @@ class SiteService {
         this.site = undefined;
         if (response.site != null) {
             this.siteSetting = response.site;
-            this.site = new _materials_site__WEBPACK_IMPORTED_MODULE_0__.Site(response.site);
+            this.site = new _materials_site__WEBPACK_IMPORTED_MODULE_0__.Site(response.site, this.wsService);
         }
         if (this.site != null && this.site.units.length > 0) {
             this.selectUnitById(this.site.units[0].id);
@@ -1925,8 +2044,8 @@ class SiteService {
         this.unitSelectedSubject.next(unit);
     }
 }
-SiteService.ɵfac = function SiteService_Factory(t) { return new (t || SiteService)(); };
-SiteService.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineInjectable"]({ token: SiteService, factory: SiteService.ɵfac, providedIn: 'root' });
+SiteService.ɵfac = function SiteService_Factory(t) { return new (t || SiteService)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵinject"](_ws_service__WEBPACK_IMPORTED_MODULE_1__.WsService)); };
+SiteService.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineInjectable"]({ token: SiteService, factory: SiteService.ɵfac, providedIn: 'root' });
 
 
 /***/ }),
@@ -1978,12 +2097,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "WsService": () => (/* binding */ WsService)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! uuid */ 2535);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _user_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./user.service */ 3071);
+
+
 
 
 class WsService {
-  constructor() {
+  constructor(userService) {
+    this.userService = userService;
     this.socket = null;
   }
 
@@ -2005,7 +2129,7 @@ class WsService {
     };
 
     this.socket.onclose = /*#__PURE__*/function () {
-      var _ref = (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
+      var _ref = (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
         _this.wsClose(event);
       });
 
@@ -2032,7 +2156,7 @@ class WsService {
   }
 
   wsClose(event) {
-    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       console.log("wsClose", event);
     })();
   }
@@ -2047,13 +2171,31 @@ class WsService {
     }
   }
 
+  turretMoveSpeed(unitId, materialId, axisX, axisY) {
+    var _a;
+
+    if (this.userService.token == null) return;
+    let request = {
+      $type: "WsTurretMoveSpeedRequest",
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_2__["default"](),
+      unitId: unitId,
+      materialId: materialId,
+      axisX: axisX,
+      axisY: axisX,
+      token: this.userService.token
+    };
+    let data = JSON.stringify(request);
+    console.log("WbeSocket Send ", request);
+    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
+  }
+
 }
 
 WsService.ɵfac = function WsService_Factory(t) {
-  return new (t || WsService)();
+  return new (t || WsService)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵinject"](_user_service__WEBPACK_IMPORTED_MODULE_1__.UserService));
 };
 
-WsService.ɵprov = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({
+WsService.ɵprov = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineInjectable"]({
   token: WsService,
   factory: WsService.ɵfac,
   providedIn: 'root'

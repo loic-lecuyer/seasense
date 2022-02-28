@@ -58,5 +58,9 @@ namespace Exavision.Seasense.Shared.Materials {
 
         public virtual void Start() { }
         public virtual void Stop() { }
+
+        public T GetCapability<T>() where T : ICapability {
+            return (T)(from c in this.Capabilities where typeof(T).IsAssignableFrom(c.GetType()) select c).FirstOrDefault();
+        }
     }
 }

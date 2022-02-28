@@ -26,7 +26,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
   }
   updateVisibilityFlags() {
     if (this.siteService.selectedUnit != null) {
-      this.hasMoveSpeedCapability = this.siteService.selectedUnit.hasMaterialWithCapability<TurretMoveSpeedCapability>(MaterialType.Turret);
+      this.hasMoveSpeedCapability = this.siteService.selectedUnit.hasMaterialWithCapability(MaterialType.Turret, CapabilityType.TurretMoveSpeed);
     }
     
   }

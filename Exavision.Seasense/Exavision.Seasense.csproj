@@ -21,9 +21,13 @@
     <None Remove="Client\src\app\api\http\unit-create-empty-response.ts" />
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
+    <None Remove="Client\src\app\api\ws\ws-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-response.ts" />
+    <None Remove="Client\src\app\api\ws\ws-turret-move-speed-request.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability-type.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\turret\turret-move-absolute-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-move-speed-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
     <None Remove="Client\src\app\materials\factory.ts" />
@@ -87,9 +91,19 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-turret-move-speed-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-request.ts" />
     <TypeScriptCompile Include="Client\src\app\interceptor\jwt-interceptor.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability-type.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-move-absolute-capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-move-speed-capability.ts" />

@@ -9,6 +9,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         public SeamosTurret() {
             this.DisplayName = "Seamos Turret";
             this.Capabilities.Add(new SeamosTurretMoveSpeedCapability());
+            this.Capabilities.Add(new SeamosTurretMoveAbsoluteCapability());
         }
         public override SettingSeamosTurret GetSetting(SettingSeamosTurret setting) {
             return setting;

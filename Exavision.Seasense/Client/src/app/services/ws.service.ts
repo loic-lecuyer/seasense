@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
-
+import { WsTurretMoveSpeedRequest } from '../api/ws/ws-turret-move-speed-request';
+import { UserService } from './user.service';
+import * as uuid from 'uuid';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
  
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
  
   private socket: WebSocket | null = null;
-  start() {
-   
+  start() {  
  
     if (this.socket != null) {
       this.socket.close();
@@ -54,6 +55,23 @@ export class WsService {
     if (this.socket != null) {
       this.socket.close();
     }
+  }
+
+  turretMoveSpeed(unitId: string, materialId: string, axisX: number, axisY: number) {
+    if (this.userService.token == null) return;
+    let request: WsTurretMoveSpeedRequest = {
+      $type: "WsTurretMoveSpeedRequest",
+      requestId: uuid.v4(),
+      unitId: unitId,
+      materialId: materialId,
+      axisX: axisX,
+      axisY: axisX,
+      token: this.userService.token    
+    };
+    let data: string = JSON.stringify(request);
+    console.log("WbeSocket Send ", request);
+    this.socket?.send(data);
+
   }
 
 }

@@ -1,6 +1,11 @@
 import { AfterContentInit, AfterViewInit, ChangeDetectorRef, Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import * as nipplejs from 'nipplejs';
 import { JoystickManager } from 'nipplejs';
+import { Subscription } from 'rxjs';
+import { CapabilityType } from '../../materials/capabilities/capability-type';
+import { TurretMoveSpeedCapability } from '../../materials/capabilities/turret/turret-move-speed-capability';
+import { MaterialType } from '../../materials/material-type';
+import { SiteService } from '../../services/site.service';
 @Component({
   selector: 'app-stick',
   templateUrl: './stick.component.html',
@@ -8,9 +13,45 @@ import { JoystickManager } from 'nipplejs';
 })
 export class StickComponent implements AfterViewInit, OnInit, OnChanges, AfterContentInit{
   @ViewChild("nipplejshost") nipplejshost: any = null;
-  private nippleControl: any;
-  constructor(private cdref: ChangeDetectorRef) { }
+  private commandInterval : number = 100;
+  private nippleControl: JoystickManager | undefined = undefined;
+  private commandIntervalTimer: any;
+  private turretMoveSpeedCapability: TurretMoveSpeedCapability | undefined = undefined;
+  public axisX: number = 0;
+  public axisY: number = 0;
+  public lastSendAxisX: number = 0;
+  public lastSendAxisY: number = 0;
+  private unitSelectedSubscription: Subscription;
+  constructor(private cdref: ChangeDetectorRef, private siteService: SiteService) {
+    this.commandIntervalTimer = setInterval(() => {
+      this.updateStickInfos();
+    }, this.commandInterval);
+
+    this.findTurretMoveSpeedCapability();
+    this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(this.findTurretMoveSpeedCapability);
+
+  }
+  findTurretMoveSpeedCapability() {
+    this.turretMoveSpeedCapability = this.siteService.selectedUnit?.getMaterialCapability(MaterialType.Turret, CapabilityType.TurretMoveSpeed);
+    console.log("findTurretMoveSpeedCapability ", this.turretMoveSpeedCapability);
+  }
   ngOnInit(): void {
+
+
+  }
+  updateStickInfos() {
+
+    if (this.lastSendAxisX != this.axisX || this.lastSendAxisY != this.axisY) {
+      if (this.turretMoveSpeedCapability != null) {
+        this.turretMoveSpeedCapability.moveSpeed(this.axisX, this.axisY);
+      }
+    }
+    this.lastSendAxisX = this.axisX;
+    this.lastSendAxisY = this.axisY;
+  }
+  ngOnDestroy() {
+    clearInterval(this.commandIntervalTimer);
+    this.unitSelectedSubscription.unsubscribe();
   }
   ngOnChanges(changes: SimpleChanges) {
    
@@ -26,11 +67,25 @@ export class StickComponent implements AfterViewInit, OnInit, OnChanges, AfterCo
         zone: this.nipplejshost.nativeElement,
         mode: 'static',
         position: { left: '80px', top: '80px' },
-        color: 'red',
-        restOpacity: 0.8
+        color: 'blue',
+        restOpacity: 0.8,
+        
+      });
+      this.nippleControl.on('start', (evt, data) => {       
+        this.axisX = 0;
+        this.axisY = 0;
+      });
+
+      this.nippleControl.on('end', (evt, data) => {       
+        this.axisX = 0;
+        this.axisY = 0;
+      });
+      this.nippleControl.on('move', (evt, data) => {      
+        this.axisX = data.vector.x;
+        this.axisY = data.vector.y;
       });
      }, 500);
-  
+    
   }
 
 }

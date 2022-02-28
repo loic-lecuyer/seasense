@@ -13,5 +13,7 @@ namespace Exavision.Seasense.Shared.Materials {
         SettingMaterial GetSettingMaterial();
 
         public string DisplayName { get; }
+
+        T GetCapability<T>() where T : ICapability;
     }
 }
