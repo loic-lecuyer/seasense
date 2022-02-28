@@ -3,11 +3,17 @@ import { WsTurretMoveSpeedRequest } from '../api/ws/ws-turret-move-speed-request
 import { UserService } from './user.service';
 import * as uuid from 'uuid';
 import { WsGetStateRequest } from '../api/ws/ws-get-state-request';
+import { WsGetStateResponse } from '../api/ws/ws-get-state-response';
+import { Factory } from '../materials/factory';
+import { WsResponse } from '../api/ws/ws-response';
+import { SiteState } from '../materials/states/site-state';
+import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
 
+  public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
   private stateTimer: any;
   private stateInterval: number = 100;
 
@@ -52,7 +58,20 @@ export class WsService {
   }
 
   wsMessage(event: MessageEvent) {
-    console.log("Message " , event);
+    if (event.data != null) {
+      let obj = JSON.parse(event.data);
+      if (obj.$type != null) {
+        let factory: Factory = new Factory()
+        let response: WsResponse = factory.createMessage(obj);
+        if (response.$type === 'WsGetStateResponse') {
+          this.siteStateSubject.next((<WsGetStateResponse>response).site)
+        } 
+      
+       
+      }
+     
+    }
+    
   }
   async wsClose(event: CloseEvent) {
     console.log("wsClose", event);

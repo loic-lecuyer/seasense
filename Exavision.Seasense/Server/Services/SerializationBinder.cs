@@ -1,17 +1,18 @@
 ﻿
 using Exavision.Seasense.Api.WebSocket.Core;
 using Exavision.Seasense.Shared.Settings;
+using Exavision.Seasense.Shared.States;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Exavision.Seasense.Server.Services {
-    public class HttpSerializationBinder : ISerializationBinder {
+    public class SerializationBinder : ISerializationBinder {
 
         private List<Type> knowTypes = new List<Type>();
 
-        public HttpSerializationBinder() {
+        public SerializationBinder() {
             Type[] types = this.GetType().Assembly.GetTypes();
             foreach (Type type in types) {
                 if (typeof(SettingBase).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {
@@ -21,6 +22,13 @@ namespace Exavision.Seasense.Server.Services {
             Type[] typesWs = typeof(WsRequest).Assembly.GetTypes();
             foreach (Type type in typesWs) {
                 if (typeof(WsRequest).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {
+                    knowTypes.Add(type);
+                }
+            }
+
+            Type[] typesState = typeof(State).Assembly.GetTypes();
+            foreach (Type type in typesState) {
+                if (typeof(State).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {
                     knowTypes.Add(type);
                 }
             }

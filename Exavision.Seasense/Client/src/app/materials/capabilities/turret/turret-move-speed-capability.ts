@@ -1,6 +1,7 @@
 import { Material } from "../../material";
 import { SettingCapability } from "../../settings/setting-capability";
 import { Site } from "../../site";
+import { CapabilityState } from "../../states/capability-state";
 import { Unit } from "../../unit";
 import { Capability } from "../capability";
 import { CapabilityType } from "../capability-type";
@@ -23,5 +24,7 @@ export class TurretMoveSpeedCapability implements Capability {
     this.material?.wsService.turretMoveSpeed(this.material.unit.id, this.material.id, axisX, axisY);
     
   }
+  setState(valueState: CapabilityState): void {
 
+  }
 }

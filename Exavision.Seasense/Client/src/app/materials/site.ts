@@ -4,19 +4,23 @@ import { Factory } from "./factory";
 import { SettingCapability } from "./settings/setting-capability";
 import { SettingSite } from "./settings/setting-site";
 import { SettingUnit } from "./settings/setting-unit";
+import { CapabilityState } from "./states/capability-state";
+import { SiteState } from "./states/site-state";
+import { UnitState } from "./states/unit-state";
 import { Unit } from "./unit";
 
 
 export class Site {
+  
   public id: string;
   public units: Unit[] = [];
   public capabilities: Capability[] = [];
-  constructor(settingSite: SettingSite, wsService: WsService) {
+  constructor(settingSite: SettingSite, wsService: WsService, factory: Factory ) {
    
     this.id = settingSite.id;
-    let factory: Factory = new Factory();
+  
     settingSite.units.forEach((settingUnit: SettingUnit) => {
-      let unit: Unit = new Unit(settingUnit,this, wsService);
+      let unit: Unit = new Unit(settingUnit, this, wsService, factory);
       this.units.push(unit);
     });
 
@@ -25,6 +29,21 @@ export class Site {
       this.capabilities.push(capability);
     });
 
+  }
+
+  setState(siteState: SiteState) {
+    siteState.units.forEach((valueState: UnitState) => {
+      let unit: Unit | undefined = this.units.find((valueUnit: Unit) => { return valueUnit.id === valueState.id; });
+      if (unit != null) {
+        unit.setState(valueState);
+      }
+    });
+    siteState.capabilities.forEach((valueState: CapabilityState) => {
+      let cap: Capability | undefined = this.capabilities.find((valueCap: Capability) => { return valueCap.id === valueState.id; });
+      if (cap != null) {
+        cap.setState(valueState);
+      }
+    });
   }
 }
 

@@ -7,7 +7,8 @@ using System.Linq;
 using System.Reflection;
 
 namespace Exavision.Seasense.Shared.Materials {
-    public abstract class Material<S> : IMaterial where S : SettingMaterial, new() {
+    public abstract class Material<S, U> : IMaterial where S : SettingMaterial, new() where U : IUnit, new() {
+        protected readonly U unit;
 
         public string DisplayName { get; protected set; }
         public string Id { get; private set; } = Guid.NewGuid().ToString();
@@ -15,6 +16,9 @@ namespace Exavision.Seasense.Shared.Materials {
         public List<ICapability> Capabilities { get; set; } = new List<ICapability>();
 
 
+        public Material(U unit) {
+            this.unit = unit;
+        }
 
         public virtual S GetSetting() {
             S setting = new S();
@@ -63,7 +67,7 @@ namespace Exavision.Seasense.Shared.Materials {
         public T GetCapability<T>() where T : ICapability {
             return (T)(from c in this.Capabilities where typeof(T).IsAssignableFrom(c.GetType()) select c).FirstOrDefault();
         }
-        public MaterialState GetState() {
+        public virtual MaterialState GetState() {
             MaterialState materialState = new MaterialState();
             materialState.Id = this.Id;
             this.Materials.ForEach((IMaterial material) => {
@@ -72,7 +76,7 @@ namespace Exavision.Seasense.Shared.Materials {
             });
             this.Capabilities.ForEach((ICapability capability) => {
                 CapabilityState capabilityState = capability.GetState();
-                materialState.Capabilies.Add(capabilityState);
+                materialState.Capabilities.Add(capabilityState);
             });
             return materialState;
         }

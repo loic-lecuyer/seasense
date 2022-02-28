@@ -6,6 +6,8 @@ import { MaterialType } from "./material-type";
 import { SettingCapability } from "./settings/setting-capability";
 import { SettingMaterial } from "./settings/setting-material";
 import { Site } from "./site";
+import { CapabilityState } from "./states/capability-state";
+import { MaterialState } from "./states/material-state";
 import { Unit } from "./unit";
 
 export class InertialMeasurement implements Material {
@@ -17,7 +19,7 @@ export class InertialMeasurement implements Material {
   wsService: WsService;
   site: Site;
   unit: Unit;
-  constructor(settingMaterial: SettingMaterial, site: Site, unit: Unit,wsService: WsService) {
+  constructor(settingMaterial: SettingMaterial, site: Site, unit: Unit, wsService: WsService, factory: Factory) {
     this.id = settingMaterial.id;
     this.materials = [];
     this.wsService = wsService;
@@ -25,8 +27,7 @@ export class InertialMeasurement implements Material {
     this.unit = unit;
     this.materialType = MaterialType.InertialMeasurement;
     this.displayName = settingMaterial.displayName;
-    let factory: Factory = new Factory();
-    settingMaterial.materials.forEach((settingMaterialChild: SettingMaterial) => {
+      settingMaterial.materials.forEach((settingMaterialChild: SettingMaterial) => {
       let material: Material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
       this.materials.push(material);
     });
@@ -36,7 +37,20 @@ export class InertialMeasurement implements Material {
       this.capabilities.push(capability);
     });
   }
-
+  setState(state: MaterialState): void {
+    state.capabilities.forEach((valueState: CapabilityState) => {
+      let cap: Capability | undefined = this.capabilities.find((valueCap: Capability) => { return valueCap.id === valueState.id; });
+      if (cap != null) {
+        cap.setState(valueState);
+      }
+    });
+    state.materials.forEach((valueState: MaterialState) => {
+      let mat: Material | undefined = this.materials.find((valueMat: Material) => { return valueMat.id === valueState.id; });
+      if (mat != null) {
+        mat.setState(valueState);
+      }
+    });
+  }
   
 }
 

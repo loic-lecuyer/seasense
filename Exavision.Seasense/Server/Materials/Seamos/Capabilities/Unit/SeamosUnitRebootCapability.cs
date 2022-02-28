@@ -4,9 +4,7 @@ using System;
 namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit {
     public class SeamosUnitRebootCapability : UnitRebootCapability<SettingSeamosUnitRebootCapability> {
 
-        public SeamosUnitRebootCapability() : base() {
 
-        }
 
 
         public override SettingSeamosUnitRebootCapability GetSetting(SettingSeamosUnitRebootCapability setting) {

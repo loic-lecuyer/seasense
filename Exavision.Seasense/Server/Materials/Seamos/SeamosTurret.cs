@@ -4,12 +4,13 @@ using Exavision.Seasense.Shared.Materials;
 using System;
 
 namespace Exavision.Seasense.Server.Materials.Seamos {
-    public class SeamosTurret : Turret<SettingSeamosTurret> {
+    public class SeamosTurret : Turret<SettingSeamosTurret, SeamosUnit> {
 
-        public SeamosTurret() {
+        public SeamosTurret(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Turret";
-            this.Capabilities.Add(new SeamosTurretMoveSpeedCapability());
+            this.Capabilities.Add(new SeamosTurretMoveSpeedCapability() { });
             this.Capabilities.Add(new SeamosTurretMoveAbsoluteCapability());
+            this.Capabilities.Add(new SeamosTurretAbsolutePositionCapability(this.unit));
         }
         public override SettingSeamosTurret GetSetting(SettingSeamosTurret setting) {
             return setting;

@@ -8,6 +8,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
         public double MaxTiltSpeed { get; private set; } = 40;
 
 
+
         public override SettingSeamosTurretMoveSpeedCapability GetSetting(SettingSeamosTurretMoveSpeedCapability setting) {
             setting.CapabilityType = Shared.Settings.CapabilityType.TurretMoveSpeed;
             setting.MaxPanSpeed = this.MaxPanSpeed;

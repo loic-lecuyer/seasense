@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace Exavision.Seasense.Server.Services {
     public class WebSocketService : IWebSocketService {
         private readonly object clientLocker = new object();
-        private readonly IOptions<MvcNewtonsoftJsonOptions> mvcSerializationOptions;
+
         private readonly ITokenService tokenService;
         private readonly IUserRepository userRepository;
         private readonly ISiteService siteService;
@@ -62,8 +62,8 @@ namespace Exavision.Seasense.Server.Services {
                 if (this.tokenService.IsTokenValid(request.Token, out string userId)) {
                     User user = this.userRepository.FindUserById(userId);
                     if (user == null) throw new InvalidOperationException("Invalid user Id");
-                    
-                    this.ProcessRequest(request,  user,e.Client);
+
+                    this.ProcessRequest(request, user, e.Client);
 
 
                 }
@@ -82,7 +82,7 @@ namespace Exavision.Seasense.Server.Services {
         }
 
         private void ProcessRequest(WsRequest request, User user, WebSocketClient client) {
-            
+
             if (request is WsTurretMoveSpeedRequest reqTurretMoveSpeed) {
 
                 IUnit unit = this.siteService.FindUnitById(reqTurretMoveSpeed.UnitId);
@@ -94,15 +94,26 @@ namespace Exavision.Seasense.Server.Services {
                 capability.MoveSpeed(reqTurretMoveSpeed.AxisX, reqTurretMoveSpeed.AxisY);
                 this.SendValid(request.RequestId, client);
 
-            } else if (request is WsGetStateRequest reqGetState) {
-                WsGetStateResponse response = new WsGetStateResponse() { RequestId = request.RequestId, Site = this.siteService.GetState() };
             }
-            
-        }
+            else if (request is WsGetStateRequest reqGetState) {
+                WsResponse response = new WsGetStateResponse() { RequestId = request.RequestId, Site = this.siteService.GetState() };
+                this.SendResponse(response, client);
+            }
 
+        }
+        private void SendResponse(WsResponse response, WebSocketClient client) {
+            try {
+                string responseText = JsonConvert.SerializeObject(response, this.serializationSetting);
+                client.Send(responseText);
+            }
+            catch (Exception ex) {
+                Log.Error("WebSocketService Error when send response " + ex.Message);
+            }
+
+        }
         private void SendValid(string requestId, WebSocketClient client) {
             WsValidResponse response = new WsValidResponse() {
-                RequestId = requestId               
+                RequestId = requestId
             };
             string responseText = JsonConvert.SerializeObject(response);
             client.Send(responseText);

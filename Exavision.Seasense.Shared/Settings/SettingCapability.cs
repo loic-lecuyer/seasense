@@ -4,7 +4,8 @@ namespace Exavision.Seasense.Shared.Settings {
     public enum CapabilityType {
         UnitReboot,
         TurretMoveSpeed,
-        TurretMoveAbsolute
+        TurretMoveAbsolute,
+        TurretAbsolutePosition
     }
     public abstract class SettingCapability : SettingBase {
 

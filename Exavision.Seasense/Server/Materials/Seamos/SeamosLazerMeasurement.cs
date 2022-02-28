@@ -3,9 +3,9 @@ using Exavision.Seasense.Shared.Materials;
 using System;
 
 namespace Exavision.Seasense.Server.Materials.Seamos {
-    public class SeamosLazerMeasurement : LazerMeasurement<SettingSeamosLazerMeasurement> {
+    public class SeamosLazerMeasurement : LazerMeasurement<SettingSeamosLazerMeasurement, SeamosUnit> {
 
-        public SeamosLazerMeasurement() {
+        public SeamosLazerMeasurement(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Lazer Measurement";
         }
         public override SettingSeamosLazerMeasurement GetSetting(SettingSeamosLazerMeasurement setting) {

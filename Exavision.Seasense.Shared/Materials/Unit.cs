@@ -68,17 +68,17 @@ namespace Exavision.Seasense.Shared.Materials {
             return (T)(from c in this.Capabilities where typeof(T).IsAssignableFrom(c.GetType()) select c).FirstOrDefault();
         }
         public virtual MaterialState GetState() {
-            MaterialState materialState = new MaterialState();
-            materialState.Id = this.Id;
+            UnitState unitState = new UnitState();
+            unitState.Id = this.Id;
             this.Materials.ForEach((IMaterial material) => {
                 MaterialState materialStateChild = material.GetState();
-                materialState.Materials.Add(materialState);
+                unitState.Materials.Add(materialStateChild);
             });
             this.Capabilities.ForEach((ICapability capability) => {
                 CapabilityState capabilityState = capability.GetState();
-                materialState.Capabilies.Add(capabilityState);
+                unitState.Capabilities.Add(capabilityState);
             });
-            return materialState;
+            return unitState;
         }
 
 

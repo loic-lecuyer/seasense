@@ -673,7 +673,7 @@ StickComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__[
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵloadQuery"]()) && (ctx.nipplejshost = _t.first);
     } }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵNgOnChangesFeature"]], decls: 2, vars: 0, consts: [[1, "stick-host"], ["nipplejshost", ""]], template: function StickComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelement"](0, "div", 0, 1);
-    } }, styles: ["[_nghost-%COMP%] {\n  width: 160px;\n  height: 160px;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.stick-host[_ngcontent-%COMP%] {\n  position: relative;\n  width: 160px;\n  height: 160px;\n}\n\n.stick-host[_ngcontent-%COMP%]    > div.nipple[_ngcontent-%COMP%] {\n  position: relative !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0aWNrLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FBQ0Y7O0FBQ0E7RUFFSSxrQkFBQTtFQUNBLFlBQUE7RUFDQSxhQUFBO0FBQ0o7O0FBQ0E7RUFDSSw2QkFBQTtBQUVKIiwiZmlsZSI6InN0aWNrLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xuICB3aWR0aDogMTYwcHg7XG4gIGhlaWdodDogMTYwcHg7XG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xuICBtYXJnaW4tcmlnaHQ6IGF1dG87XG59XG4uc3RpY2staG9zdFxue1xuICAgIHBvc2l0aW9uOnJlbGF0aXZlO1xuICAgIHdpZHRoOjE2MHB4O1xuICAgIGhlaWdodDoxNjBweDtcbn1cbi5zdGljay1ob3N0ID4gZGl2Lm5pcHBsZXtcbiAgICBwb3NpdGlvbjpyZWxhdGl2ZSAhaW1wb3J0YW50O1xufVxuIl19 */"] });
+    } }, styles: ["[_nghost-%COMP%] {\n  width: 160px;\n  height: 160px;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.stick-host[_ngcontent-%COMP%] {\n  position: relative;\n  width: 160px;\n  height: 160px;\n}\n\n.stick-host[_ngcontent-%COMP%]    > div.nipple[_ngcontent-%COMP%] {\n  position: relative !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0aWNrLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FBQ0Y7O0FBQ0E7RUFFSSxrQkFBQTtFQUNBLFlBQUE7RUFDQSxhQUFBO0FBQ0o7O0FBQ0E7RUFDSSw2QkFBQTtBQUVKIiwiZmlsZSI6InN0aWNrLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xyXG4gIHdpZHRoOiAxNjBweDtcclxuICBoZWlnaHQ6IDE2MHB4O1xyXG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xyXG4gIG1hcmdpbi1yaWdodDogYXV0bztcclxufVxyXG4uc3RpY2staG9zdFxyXG57XHJcbiAgICBwb3NpdGlvbjpyZWxhdGl2ZTtcclxuICAgIHdpZHRoOjE2MHB4O1xyXG4gICAgaGVpZ2h0OjE2MHB4O1xyXG59XHJcbi5zdGljay1ob3N0ID4gZGl2Lm5pcHBsZXtcclxuICAgIHBvc2l0aW9uOnJlbGF0aXZlICFpbXBvcnRhbnQ7XHJcbn1cclxuIl19 */"] });
 
 
 /***/ }),
@@ -758,6 +758,35 @@ JwtInterceptor.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1__
 
 /***/ }),
 
+/***/ 7767:
+/*!**************************************************************************************!*\
+  !*** ./src/app/materials/capabilities/turret/turret-absolute-position-capability.ts ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TurretAbsolutePositionCapability": () => (/* binding */ TurretAbsolutePositionCapability)
+/* harmony export */ });
+class TurretAbsolutePositionCapability {
+    constructor(settingCapability) {
+        this.pan = 0;
+        this.tilt = 0;
+        this.id = settingCapability.id;
+        this.capabilityType = "TurretAbsolutePosition" /* TurretAbsolutePosition */;
+    }
+    setState(valueState) {
+        if (valueState.$type === 'TurretAbsolutePositionState') {
+            let turretAbsolutePositionState = valueState;
+            this.pan = turretAbsolutePositionState.pan;
+            this.tilt = turretAbsolutePositionState.tilt;
+        }
+    }
+}
+
+
+/***/ }),
+
 /***/ 3620:
 /*!**********************************************************************************!*\
   !*** ./src/app/materials/capabilities/turret/turret-move-absolute-capability.ts ***!
@@ -770,8 +799,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 class TurretMoveAbsoluteCapability {
     constructor(settingCapability) {
+        this.pan = 0;
+        this.tilt = 0;
         this.id = settingCapability.id;
         this.capabilityType = "TurretMoveAbsolute" /* TurretMoveAbsolute */;
+    }
+    setState(valueState) {
     }
 }
 
@@ -801,6 +834,8 @@ class TurretMoveSpeedCapability {
             return;
         (_a = this.material) === null || _a === void 0 ? void 0 : _a.wsService.turretMoveSpeed(this.material.unit.id, this.material.id, axisX, axisY);
     }
+    setState(valueState) {
+    }
 }
 
 
@@ -821,6 +856,8 @@ class UnitRebootCapability {
         this.id = settingCapability.id;
         this.capabilityType = "UnitReboot" /* UnitReboot */;
     }
+    setState(valueState) {
+    }
 }
 
 
@@ -836,10 +873,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "DayCamera": () => (/* binding */ DayCamera)
 /* harmony export */ });
-/* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
-
 class DayCamera {
-    constructor(settingMaterial, site, unit, wsService) {
+    constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
@@ -848,7 +883,6 @@ class DayCamera {
         this.wsService = wsService;
         this.materialType = "DayCamera" /* DayCamera */;
         this.displayName = settingMaterial.displayName;
-        let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
             let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
@@ -857,6 +891,20 @@ class DayCamera {
             let capability = factory.createCapability(settingCapability);
             capability.material = this;
             this.capabilities.push(capability);
+        });
+    }
+    setState(state) {
+        state.capabilities.forEach((valueState) => {
+            let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
+            if (cap != null) {
+                cap.setState(valueState);
+            }
+        });
+        state.materials.forEach((valueState) => {
+            let mat = this.materials.find((valueMat) => { return valueMat.id === valueState.id; });
+            if (mat != null) {
+                mat.setState(valueState);
+            }
         });
     }
 }
@@ -883,6 +931,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _capabilities_turret_turret_move_speed_capability__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./capabilities/turret/turret-move-speed-capability */ 1687);
 /* harmony import */ var _capabilities_unit_unit_reboot_capability__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./capabilities/unit/unit-reboot-capability */ 4386);
 /* harmony import */ var _capabilities_turret_turret_move_absolute_capability__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./capabilities/turret/turret-move-absolute-capability */ 3620);
+/* harmony import */ var _capabilities_turret_turret_absolute_position_capability__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./capabilities/turret/turret-absolute-position-capability */ 7767);
+
 
 
 
@@ -893,6 +943,44 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Factory {
+    createMessage(data) {
+        let typeName = data.$type;
+        switch (typeName) {
+            case 'WsGetStateResponse':
+                let response = data;
+                response.site.capabilities = response.site.capabilities.map((value) => { return this.mapCapabilityState(value); });
+                response.site.units = response.site.units.map((value) => { return this.mapUnitState(value); });
+                response.site.units.forEach((unitState) => {
+                    unitState.capabilities = unitState.capabilities.map((value) => { return this.mapCapabilityState(value); });
+                    unitState.materials = unitState.materials.map((value) => { return this.mapMaterialState(value); });
+                    unitState.materials.forEach((valueMat) => {
+                        this.recurseCreateMaterialState(valueMat);
+                    });
+                });
+                return response;
+            default:
+                console.error("No creation implemtation in facotry for type " + typeName);
+                throw "No creation implemtation in facotry for type " + typeName;
+        }
+    }
+    mapMaterialState(value) {
+        return value;
+    }
+    mapUnitState(value) {
+        return value;
+    }
+    mapCapabilityState(value) {
+        if (value.$type === 'TurretAbsolutePositionState') {
+            let state = value;
+            return state;
+        }
+        return value;
+    }
+    recurseCreateMaterialState(materailState) {
+        materailState.materials = materailState.materials.map((childMaterialState) => { return childMaterialState; });
+        materailState.capabilities = materailState.capabilities.map((value) => { return this.mapCapabilityState(value); });
+        materailState.materials.forEach((childMaterialState) => { this.recurseCreateMaterialState(childMaterialState); });
+    }
     createCapability(settingCapability) {
         let capability = null;
         switch (settingCapability.capabilityType) {
@@ -905,31 +993,36 @@ class Factory {
             case "UnitReboot" /* UnitReboot */:
                 capability = new _capabilities_unit_unit_reboot_capability__WEBPACK_IMPORTED_MODULE_7__.UnitRebootCapability(settingCapability);
                 break;
+            case "TurretAbsolutePosition" /* TurretAbsolutePosition */:
+                capability = new _capabilities_turret_turret_absolute_position_capability__WEBPACK_IMPORTED_MODULE_9__.TurretAbsolutePositionCapability(settingCapability);
+                break;
         }
-        if (capability == null)
+        if (capability == null) {
+            console.error('Capability ' + settingCapability.capabilityType + ' not implemented !!!');
             throw 'Capability ' + settingCapability.capabilityType + ' not implemented !!!';
+        }
         return capability;
     }
     createMaterial(settingMaterial, site, unit, wsService) {
         let material = null;
         switch (settingMaterial.materialType) {
             case "DayCamera" /* DayCamera */:
-                material = new _day_camera__WEBPACK_IMPORTED_MODULE_0__.DayCamera(settingMaterial, site, unit, wsService);
+                material = new _day_camera__WEBPACK_IMPORTED_MODULE_0__.DayCamera(settingMaterial, site, unit, wsService, this);
                 break;
             case "ThermalCamera" /* ThermalCamera */:
-                material = new _thermal_camera__WEBPACK_IMPORTED_MODULE_1__.ThermalCamera(settingMaterial, site, unit, wsService);
+                material = new _thermal_camera__WEBPACK_IMPORTED_MODULE_1__.ThermalCamera(settingMaterial, site, unit, wsService, this);
                 break;
             case "InertialMeasurement" /* InertialMeasurement */:
-                material = new _inertial_measurement__WEBPACK_IMPORTED_MODULE_2__.InertialMeasurement(settingMaterial, site, unit, wsService);
+                material = new _inertial_measurement__WEBPACK_IMPORTED_MODULE_2__.InertialMeasurement(settingMaterial, site, unit, wsService, this);
                 break;
             case "LazerMeasurement" /* LazerMeasurement */:
-                material = new _lazer_measurement__WEBPACK_IMPORTED_MODULE_3__.LazerMeasurement(settingMaterial, site, unit, wsService);
+                material = new _lazer_measurement__WEBPACK_IMPORTED_MODULE_3__.LazerMeasurement(settingMaterial, site, unit, wsService, this);
                 break;
             case "Unit" /* Unit */:
-                material = new _unit__WEBPACK_IMPORTED_MODULE_4__.Unit(settingMaterial, site, wsService);
+                material = new _unit__WEBPACK_IMPORTED_MODULE_4__.Unit(settingMaterial, site, wsService, this);
                 break;
             case "Turret" /* Turret */:
-                material = new _turret__WEBPACK_IMPORTED_MODULE_5__.Turret(settingMaterial, site, unit, wsService);
+                material = new _turret__WEBPACK_IMPORTED_MODULE_5__.Turret(settingMaterial, site, unit, wsService, this);
                 break;
         }
         if (material == null)
@@ -951,10 +1044,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "InertialMeasurement": () => (/* binding */ InertialMeasurement)
 /* harmony export */ });
-/* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
-
 class InertialMeasurement {
-    constructor(settingMaterial, site, unit, wsService) {
+    constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
@@ -963,7 +1054,6 @@ class InertialMeasurement {
         this.unit = unit;
         this.materialType = "InertialMeasurement" /* InertialMeasurement */;
         this.displayName = settingMaterial.displayName;
-        let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
             let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
@@ -972,6 +1062,20 @@ class InertialMeasurement {
             let capability = factory.createCapability(settingCapability);
             capability.material = this;
             this.capabilities.push(capability);
+        });
+    }
+    setState(state) {
+        state.capabilities.forEach((valueState) => {
+            let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
+            if (cap != null) {
+                cap.setState(valueState);
+            }
+        });
+        state.materials.forEach((valueState) => {
+            let mat = this.materials.find((valueMat) => { return valueMat.id === valueState.id; });
+            if (mat != null) {
+                mat.setState(valueState);
+            }
         });
     }
 }
@@ -989,10 +1093,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LazerMeasurement": () => (/* binding */ LazerMeasurement)
 /* harmony export */ });
-/* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
-
 class LazerMeasurement {
-    constructor(settingMaterial, site, unit, wsService) {
+    constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
@@ -1001,7 +1103,6 @@ class LazerMeasurement {
         this.unit = unit;
         this.materialType = "LazerMeasurement" /* LazerMeasurement */;
         this.displayName = settingMaterial.displayName;
-        let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
             let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
@@ -1010,6 +1111,20 @@ class LazerMeasurement {
             let capability = factory.createCapability(settingCapability);
             capability.material = this;
             this.capabilities.push(capability);
+        });
+    }
+    setState(state) {
+        state.capabilities.forEach((valueState) => {
+            let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
+            if (cap != null) {
+                cap.setState(valueState);
+            }
+        });
+        state.materials.forEach((valueState) => {
+            let mat = this.materials.find((valueMat) => { return valueMat.id === valueState.id; });
+            if (mat != null) {
+                mat.setState(valueState);
+            }
         });
     }
 }
@@ -1027,23 +1142,34 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Site": () => (/* binding */ Site)
 /* harmony export */ });
-/* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
-/* harmony import */ var _unit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./unit */ 5396);
-
+/* harmony import */ var _unit__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./unit */ 5396);
 
 class Site {
-    constructor(settingSite, wsService) {
+    constructor(settingSite, wsService, factory) {
         this.units = [];
         this.capabilities = [];
         this.id = settingSite.id;
-        let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingSite.units.forEach((settingUnit) => {
-            let unit = new _unit__WEBPACK_IMPORTED_MODULE_1__.Unit(settingUnit, this, wsService);
+            let unit = new _unit__WEBPACK_IMPORTED_MODULE_0__.Unit(settingUnit, this, wsService, factory);
             this.units.push(unit);
         });
         settingSite.capabilities.forEach((settingCapability) => {
             let capability = factory.createCapability(settingCapability);
             this.capabilities.push(capability);
+        });
+    }
+    setState(siteState) {
+        siteState.units.forEach((valueState) => {
+            let unit = this.units.find((valueUnit) => { return valueUnit.id === valueState.id; });
+            if (unit != null) {
+                unit.setState(valueState);
+            }
+        });
+        siteState.capabilities.forEach((valueState) => {
+            let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
+            if (cap != null) {
+                cap.setState(valueState);
+            }
         });
     }
 }
@@ -1061,10 +1187,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "ThermalCamera": () => (/* binding */ ThermalCamera)
 /* harmony export */ });
-/* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
-
 class ThermalCamera {
-    constructor(settingMaterial, site, unit, wsService) {
+    constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
@@ -1073,7 +1197,6 @@ class ThermalCamera {
         this.wsService = wsService;
         this.materialType = "ThermalCamera" /* ThermalCamera */;
         this.displayName = settingMaterial.displayName;
-        let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
             let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
@@ -1082,6 +1205,20 @@ class ThermalCamera {
             let capability = factory.createCapability(settingCapability);
             capability.material = this;
             this.capabilities.push(capability);
+        });
+    }
+    setState(state) {
+        state.capabilities.forEach((valueState) => {
+            let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
+            if (cap != null) {
+                cap.setState(valueState);
+            }
+        });
+        state.materials.forEach((valueState) => {
+            let mat = this.materials.find((valueMat) => { return valueMat.id === valueState.id; });
+            if (mat != null) {
+                mat.setState(valueState);
+            }
         });
     }
 }
@@ -1099,10 +1236,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Turret": () => (/* binding */ Turret)
 /* harmony export */ });
-/* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
-
 class Turret {
-    constructor(settingMaterial, site, unit, wsService) {
+    constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
         this.id = settingMaterial.id;
         this.materials = [];
@@ -1111,7 +1246,6 @@ class Turret {
         this.materialType = "Turret" /* Turret */;
         this.wsService = wsService;
         this.displayName = settingMaterial.displayName;
-        let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         settingMaterial.materials.forEach((settingMaterialChild) => {
             let material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
             this.materials.push(material);
@@ -1120,6 +1254,20 @@ class Turret {
             let capability = factory.createCapability(settingCapability);
             capability.material = this;
             this.capabilities.push(capability);
+        });
+    }
+    setState(state) {
+        state.capabilities.forEach((valueState) => {
+            let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
+            if (cap != null) {
+                cap.setState(valueState);
+            }
+        });
+        state.materials.forEach((valueState) => {
+            let mat = this.materials.find((valueMat) => { return valueMat.id === valueState.id; });
+            if (mat != null) {
+                mat.setState(valueState);
+            }
         });
     }
 }
@@ -1137,12 +1285,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "Unit": () => (/* binding */ Unit)
 /* harmony export */ });
-/* harmony import */ var _factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./factory */ 7568);
-
 class Unit {
-    constructor(settingMaterial, site, wsService) {
+    constructor(settingMaterial, site, wsService, factory) {
         this.capabilities = [];
-        let factory = new _factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
         this.unit = this;
         this.site = site;
         this.id = settingMaterial.id;
@@ -1187,6 +1332,20 @@ class Unit {
     }
     getMaterial(materialType) {
         return this.materials.find((value) => { return value.materialType == materialType; });
+    }
+    setState(unitState) {
+        unitState.capabilities.forEach((valueState) => {
+            let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
+            if (cap != null) {
+                cap.setState(valueState);
+            }
+        });
+        unitState.materials.forEach((valueState) => {
+            let mat = this.materials.find((valueMat) => { return valueMat.id === valueState.id; });
+            if (mat != null) {
+                mat.setState(valueState);
+            }
+        });
     }
 }
 
@@ -1753,7 +1912,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LoginComponent": () => (/* binding */ LoginComponent)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js-sha512 */ 2414);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(js_sha512__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 3184);
@@ -1814,7 +1973,7 @@ class LoginComponent {
   onConnectButtonClick() {
     var _this = this;
 
-    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this.loginRunning = true;
 
       _this.userService.clearToken();
@@ -2001,10 +2160,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "SiteService": () => (/* binding */ SiteService)
 /* harmony export */ });
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ 228);
-/* harmony import */ var _materials_site__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../materials/site */ 4753);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/core */ 3184);
-/* harmony import */ var _ws_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ws.service */ 4885);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var _materials_factory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../materials/factory */ 7568);
+/* harmony import */ var _materials_site__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../materials/site */ 4753);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _ws_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./ws.service */ 4885);
+
 
 
 
@@ -2012,8 +2173,9 @@ __webpack_require__.r(__webpack_exports__);
 class SiteService {
     constructor(wsService) {
         this.wsService = wsService;
-        this.siteLoadedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
-        this.unitSelectedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__.Subject();
+        this.siteStateSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
+        this.siteLoadedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
+        this.unitSelectedSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
         this.site = undefined;
         this.selectedUnit = undefined;
         this.siteSetting = {
@@ -2023,12 +2185,20 @@ class SiteService {
             type: 'Site',
             displayName: 'Site'
         };
+        this.wsService.siteStateSubject.subscribe((value) => { this.onStateChange(value); });
+    }
+    onStateChange(siteState) {
+        if (this.site != null) {
+            this.site.setState(siteState);
+            this.siteStateSubject.next(this.site);
+        }
     }
     createSite(response) {
         this.site = undefined;
         if (response.site != null) {
             this.siteSetting = response.site;
-            this.site = new _materials_site__WEBPACK_IMPORTED_MODULE_0__.Site(response.site, this.wsService);
+            let factory = new _materials_factory__WEBPACK_IMPORTED_MODULE_0__.Factory();
+            this.site = new _materials_site__WEBPACK_IMPORTED_MODULE_1__.Site(response.site, this.wsService, factory);
         }
         if (this.site != null && this.site.units.length > 0) {
             this.selectUnitById(this.site.units[0].id);
@@ -2044,8 +2214,8 @@ class SiteService {
         this.unitSelectedSubject.next(unit);
     }
 }
-SiteService.ɵfac = function SiteService_Factory(t) { return new (t || SiteService)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵinject"](_ws_service__WEBPACK_IMPORTED_MODULE_1__.WsService)); };
-SiteService.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineInjectable"]({ token: SiteService, factory: SiteService.ɵfac, providedIn: 'root' });
+SiteService.ɵfac = function SiteService_Factory(t) { return new (t || SiteService)(_angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵinject"](_ws_service__WEBPACK_IMPORTED_MODULE_2__.WsService)); };
+SiteService.ɵprov = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_4__["ɵɵdefineInjectable"]({ token: SiteService, factory: SiteService.ɵfac, providedIn: 'root' });
 
 
 /***/ }),
@@ -2097,10 +2267,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "WsService": () => (/* binding */ WsService)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
-/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! uuid */ 2535);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/core */ 3184);
-/* harmony import */ var _user_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./user.service */ 3071);
+/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! uuid */ 2535);
+/* harmony import */ var _materials_factory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../materials/factory */ 7568);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _user_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./user.service */ 3071);
+
+
 
 
 
@@ -2108,6 +2282,7 @@ __webpack_require__.r(__webpack_exports__);
 class WsService {
   constructor(userService) {
     this.userService = userService;
+    this.siteStateSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
     this.stateInterval = 100;
     this.socket = null;
   }
@@ -2136,7 +2311,7 @@ class WsService {
     };
 
     this.socket.onclose = /*#__PURE__*/function () {
-      var _ref = (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
+      var _ref = (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
         _this.wsClose(event);
       });
 
@@ -2163,11 +2338,22 @@ class WsService {
   }
 
   wsMessage(event) {
-    console.log("Message ", event);
+    if (event.data != null) {
+      let obj = JSON.parse(event.data);
+
+      if (obj.$type != null) {
+        let factory = new _materials_factory__WEBPACK_IMPORTED_MODULE_1__.Factory();
+        let response = factory.createMessage(obj);
+
+        if (response.$type === 'WsGetStateResponse') {
+          this.siteStateSubject.next(response.site);
+        }
+      }
+    }
   }
 
   wsClose(event) {
-    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       console.log("wsClose", event);
     })();
   }
@@ -2190,7 +2376,7 @@ class WsService {
     if (this.userService.token == null) return;
     let request = {
       $type: "WsGetStateRequest",
-      requestId: uuid__WEBPACK_IMPORTED_MODULE_2__["default"](),
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
       token: this.userService.token
     };
     let data = JSON.stringify(request);
@@ -2203,7 +2389,7 @@ class WsService {
     if (this.userService.token == null) return;
     let request = {
       $type: "WsTurretMoveSpeedRequest",
-      requestId: uuid__WEBPACK_IMPORTED_MODULE_2__["default"](),
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
       unitId: unitId,
       materialId: materialId,
       axisX: axisX,
@@ -2217,10 +2403,10 @@ class WsService {
 }
 
 WsService.ɵfac = function WsService_Factory(t) {
-  return new (t || WsService)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵinject"](_user_service__WEBPACK_IMPORTED_MODULE_1__.UserService));
+  return new (t || WsService)(_angular_core__WEBPACK_IMPORTED_MODULE_5__["ɵɵinject"](_user_service__WEBPACK_IMPORTED_MODULE_2__.UserService));
 };
 
-WsService.ɵprov = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineInjectable"]({
+WsService.ɵprov = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_5__["ɵɵdefineInjectable"]({
   token: WsService,
   factory: WsService.ɵfac,
   providedIn: 'root'

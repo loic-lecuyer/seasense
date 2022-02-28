@@ -22,12 +22,14 @@
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-state-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-get-state-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-move-speed-request.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability-type.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\turret\turret-absolute-position-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-move-absolute-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-move-speed-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
@@ -38,6 +40,11 @@
     <None Remove="Client\src\app\materials\settings\setting-site.ts" />
     <None Remove="Client\src\app\materials\settings\setting-unit.ts" />
     <None Remove="Client\src\app\materials\site.ts" />
+    <None Remove="Client\src\app\materials\states\capability-state.ts" />
+    <None Remove="Client\src\app\materials\states\material-state.ts" />
+    <None Remove="Client\src\app\materials\states\site-state.ts" />
+    <None Remove="Client\src\app\materials\states\turret\turret-absolute-position-state.ts" />
+    <None Remove="Client\src\app\materials\states\unit-state.ts" />
     <None Remove="Client\src\app\materials\unit.ts" />
     <None Remove="Client\src\app\models\unit-type.ts" />
     <None Remove="Client\src\app\models\user.ts" />
@@ -65,6 +72,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Exavision.Seasense.Api.Http\Exavision.Seasense.Api.Http.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Api.WebSocket\Exavision.Seasense.Api.WebSocket.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
 
@@ -92,6 +100,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-state-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-state-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -107,6 +118,9 @@
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-absolute-position-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-move-absolute-capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -114,6 +128,17 @@
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\factory.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\material.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\states\capability-state.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\states\material-state.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\states\turret\turret-absolute-position-state.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\states\unit-state.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\states\site-state.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\unit.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

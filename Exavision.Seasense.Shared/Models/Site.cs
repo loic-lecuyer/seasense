@@ -54,7 +54,7 @@ namespace Exavision.Seasense.Shared.Models {
             });
             this.Capabilities.ForEach((ICapability capability) => {
                 CapabilityState capabilityState = capability.GetState();
-                state.Capabilies.Add(capabilityState);
+                state.Capabilities.Add(capabilityState);
             });
             return state;
         }

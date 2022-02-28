@@ -3,8 +3,8 @@ using Exavision.Seasense.Shared.Materials;
 using System;
 
 namespace Exavision.Seasense.Server.Materials.Seamos {
-    public class SeamosDayCamera : DayCamera<SettingSeamosDayCamera> {
-        public SeamosDayCamera() {
+    public class SeamosDayCamera : DayCamera<SettingSeamosDayCamera, SeamosUnit> {
+        public SeamosDayCamera(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Day Camera";
         }
         public override SettingSeamosDayCamera GetSetting(SettingSeamosDayCamera setting) {

@@ -3,8 +3,8 @@ using Exavision.Seasense.Shared.Materials;
 using System;
 
 namespace Exavision.Seasense.Server.Materials.Seamos {
-    public class SeamosInertialMeasurement : InertialMeasurement<SettingSeamosInertialMeasurement> {
-        public SeamosInertialMeasurement() {
+    public class SeamosInertialMeasurement : InertialMeasurement<SettingSeamosInertialMeasurement, SeamosUnit> {
+        public SeamosInertialMeasurement(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Inertial Measurement";
         }
         public override SettingSeamosInertialMeasurement GetSetting(SettingSeamosInertialMeasurement setting) {

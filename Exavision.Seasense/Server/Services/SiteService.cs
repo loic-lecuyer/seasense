@@ -57,7 +57,7 @@ namespace Exavision.Seasense.Server.Services {
                     ContractResolver = new DefaultContractResolver {
                         NamingStrategy = new CamelCaseNamingStrategy()
                     },
-                    SerializationBinder = new HttpSerializationBinder()
+                    SerializationBinder = new SerializationBinder()
                 };
                 return JsonConvert.DeserializeObject<SettingSite>(content, JsonSerializerSettings);
             }
@@ -78,7 +78,7 @@ namespace Exavision.Seasense.Server.Services {
                     NamingStrategy = new CamelCaseNamingStrategy()
                 },
 
-                SerializationBinder = new HttpSerializationBinder()
+                SerializationBinder = new SerializationBinder()
             };
             JsonSerializerSettings.Converters.Add(new StringEnumConverter());
 

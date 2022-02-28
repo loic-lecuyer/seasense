@@ -8,8 +8,12 @@ import { MaterialType } from "./material-type";
 import { SettingCapability } from "./settings/setting-capability";
 import { SettingMaterial } from "./settings/setting-material";
 import { Site } from "./site";
+import { CapabilityState } from "./states/capability-state";
+import { MaterialState } from "./states/material-state";
+import { UnitState } from "./states/unit-state";
 
 export class Unit implements Material {
+  
   id: string;
   materials: Material[];
   capabilities: Capability[] = [];
@@ -18,8 +22,8 @@ export class Unit implements Material {
   wsService: WsService;
   site: Site;
   unit: Unit;
-  constructor(settingMaterial: SettingMaterial,site : Site, wsService: WsService) {
-    let factory: Factory = new Factory();
+  constructor(settingMaterial: SettingMaterial, site: Site, wsService: WsService, factory: Factory ) {
+ 
     this.unit = this;
     this.site = site;
     this.id = settingMaterial.id;
@@ -76,6 +80,20 @@ export class Unit implements Material {
   }
 
  
-
+  setState(unitState: UnitState) {
+    unitState.capabilities.forEach((valueState: CapabilityState) => {
+      let cap: Capability | undefined = this.capabilities.find((valueCap: Capability) => { return valueCap.id === valueState.id; });
+      if (cap != null) {
+        cap.setState(valueState);
+      }
+    });
+    unitState.materials.forEach((valueState: MaterialState) => {
+      let mat: Material | undefined = this.materials.find((valueMat: Material) => { return valueMat.id === valueState.id; });
+      if (mat != null) {
+        mat.setState(valueState);
+      }
+    });
+  
+  }
 
 }
