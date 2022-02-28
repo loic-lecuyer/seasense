@@ -1,0 +1,71 @@
+﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
+    using Exavision.Seamos.Materials.Infrastructure.Enums;
+    using Exavision.Seasense.Protocols.Seamos.Commands;
+    using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Defines the <see cref="SeamosCameraRunSystemCommandRequest" />.
+    /// </summary>
+    public class SeamosCameraRunSystemCommandRequest : SeamosPascalCommand, ICameraRunSystemCommandRequest
+    {
+        /// <summary>
+        /// Gets or sets the SystemCommand.
+        /// </summary>
+        public SystemCommand SystemCommand { get; set; }
+
+        /// <summary>
+        /// Gets the CommandByte.
+        /// </summary>
+        public override byte CommandByte2 => 0x2D;
+        public override byte CommandByte1 => 0x00;
+
+        /// <summary>
+        /// Gets or sets the MaterialTarget.
+        /// </summary>
+        public override MaterialTarget MaterialTarget { get; set; } = MaterialTarget.ThermalCamera;
+
+        /// <summary>
+        /// The DeserializeBytes.
+        /// </summary>
+        /// <param name="data">The data<see cref="byte[]"/>.</param>
+        public override void DeserializeBytes(byte[] data)
+        {
+        }
+
+        /// <summary>
+        /// The SerializeBytes.
+        /// </summary>
+        /// <returns>The <see cref="byte[]"/>.</returns>
+        public override byte[] SerializeBytes()
+        {
+            List<byte> bytes = new List<byte>
+            {
+                CommandByte1,
+                CommandByte2
+            };
+            switch (SystemCommand)
+            {
+                case SystemCommand.ResetFactory:
+                    bytes.Add(1);
+                    break;
+                case SystemCommand.Shutdown:
+                    bytes.Add(2);
+                    break;
+                case SystemCommand.Reboot:
+                    bytes.Add(4);
+                    break;
+                case SystemCommand.StopProgram:
+                    bytes.Add(8);
+                    break;
+                case SystemCommand.ShutdownEmergency:
+                    bytes.Add(16);
+                    break;
+                default:
+                    bytes.Add(64);
+                    break;
+            }
+            return bytes.ToArray();
+        }
+    }
+}

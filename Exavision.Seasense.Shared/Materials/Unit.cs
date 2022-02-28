@@ -1,10 +1,13 @@
 ﻿using Exavision.Seasense.Shared.Capabilities;
+using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
 using Exavision.Seasense.Shared.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Exavision.Seasense.Shared.Materials {
     public abstract class Unit<S> : IUnit where S : SettingMaterial, new() {
@@ -56,10 +59,47 @@ namespace Exavision.Seasense.Shared.Materials {
             settingMaterial.Id = this.Id;
             return settingMaterial;
         }
+        private CancellationTokenSource pollingCanceller;
+        public virtual void Start() {
+            this.pollingCanceller = new CancellationTokenSource();
+            Task.Factory.StartNew(PollingLoop, this.pollingCanceller.Token);
 
-        public abstract void Start();
+        }
+        private Dictionary<PollingAction, DateTime> pollingActionDates = new Dictionary<PollingAction, DateTime>();
+        private async Task PollingLoop() {
+            while (!pollingCanceller.IsCancellationRequested) {
+                List<PollingAction> actions = new List<PollingAction>();
+                this.Capabilities.ForEach((ICapability capabilities) => {
+                    actions.AddRange(capabilities.GetPollingActions());
+                });
+                this.Materials.ForEach((IMaterial material) => {
+                    material.Capabilities.ForEach((ICapability capabilities) => {
+                        actions.AddRange(capabilities.GetPollingActions());
+                    });
+                });
 
-        public abstract void Stop();
+                foreach (PollingAction action in actions) {
+                    if (!pollingActionDates.ContainsKey(action)) {
+                        action.Action.Invoke();
+                        pollingActionDates.Add(action, DateTime.Now);
+                    }
+                    else {
+                        TimeSpan span = DateTime.Now - pollingActionDates[action];
+                        if (span.TotalMilliseconds > action.Delay) {
+                            action.Action.Invoke();
+                            pollingActionDates[action] = DateTime.Now;
+                        }
+                    }
+                }
+
+                await Task.Delay(10);
+
+            }
+        }
+
+        public virtual void Stop() {
+            this.pollingCanceller.Cancel();
+        }
 
         public IMaterial GetMaterialById(string materialId) {
             return (from m in this.Materials where m.Id.Equals(materialId) select m).FirstOrDefault();

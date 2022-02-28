@@ -1,4 +1,5 @@
 ﻿using Exavision.Seasense.Core.Network;
+using Exavision.Seasense.Protocols.Seamos;
 using Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit;
 using Exavision.Seasense.Server.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Materials;
@@ -8,8 +9,12 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
     public class SeamosUnit : Unit<SettingSeamosUnit> {
         public string HardwareCardIp { get; private set; }
         public string HardwareCardPort { get; private set; }
+        public SeamosProtocol Protocol { get; private set; }
+
+        public TcpCoreStringClient Client { get; private set; }
         public SeamosUnit() {
             this.DisplayName = "Seamos Unit";
+            this.Protocol = new SeamosStandardProtocol();
             this.Materials.Add(new SeamosTurret(this));
             this.Materials.Add(new SeamosDayCamera(this));
             this.Materials.Add(new SeamosThermalCamera(this));
@@ -30,15 +35,17 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         }
 
         public override void Start() {
-            this.client = new TcpCoreStringClient();
+            this.Client = new TcpCoreStringClient();
             if (IPAddress.TryParse(this.HardwareCardIp, out IPAddress address) && int.TryParse(this.HardwareCardPort, out int port)) {
-                this.client.Start(new IPEndPoint(address, port), "\r\n");
+                this.Client.Start(new IPEndPoint(address, port), "\r\n");
             }
+            base.Start();
 
         }
-        private TcpCoreStringClient client;
+
         public override void Stop() {
-            this.client.Stop();
+            base.Stop();
+            this.Client.Stop();
         }
     }
 }

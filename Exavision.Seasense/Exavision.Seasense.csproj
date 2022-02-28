@@ -73,6 +73,7 @@
     <ProjectReference Include="..\Exavision.Seasense.Api.Http\Exavision.Seasense.Api.Http.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Api.WebSocket\Exavision.Seasense.Api.WebSocket.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
 
