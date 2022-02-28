@@ -1,5 +1,6 @@
 ﻿using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Settings;
+using Exavision.Seasense.Shared.States;
 using System.Collections.Generic;
 
 namespace Exavision.Seasense.Shared.Materials {
@@ -15,5 +16,6 @@ namespace Exavision.Seasense.Shared.Materials {
         public string DisplayName { get; }
 
         T GetCapability<T>() where T : ICapability;
+        MaterialState GetState();
     }
 }

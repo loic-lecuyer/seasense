@@ -1,7 +1,9 @@
-﻿using Exavision.Seasense.Server.Materials.Seamos;
+﻿using Exavision.Seasense.Api.WebSocket.States;
+using Exavision.Seasense.Server.Materials.Seamos;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
+using Exavision.Seasense.Shared.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -93,5 +95,11 @@ namespace Exavision.Seasense.Server.Services {
         public IUnit FindUnitById(string unitId) {
             return (from u in this.site.Units where u.Id.Equals(unitId) select u).FirstOrDefault();
         }
+
+        public SiteState GetState() {
+            return this.site.GetState();
+        }
+
+       
     }
 }

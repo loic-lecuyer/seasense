@@ -21,6 +21,7 @@
     <None Remove="Client\src\app\api\http\unit-create-empty-response.ts" />
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
+    <None Remove="Client\src\app\api\ws\ws-get-state-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-move-speed-request.ts" />
@@ -91,6 +92,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-state-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-turret-move-speed-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

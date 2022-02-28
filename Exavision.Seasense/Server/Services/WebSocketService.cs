@@ -1,4 +1,5 @@
 ﻿using Exavision.Seasense.Api.WebSocket.Core;
+using Exavision.Seasense.Api.WebSocket.States;
 using Exavision.Seasense.Api.WebSocket.Turret;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Materials;
@@ -61,9 +62,8 @@ namespace Exavision.Seasense.Server.Services {
                 if (this.tokenService.IsTokenValid(request.Token, out string userId)) {
                     User user = this.userRepository.FindUserById(userId);
                     if (user == null) throw new InvalidOperationException("Invalid user Id");
-                    IUnit unit = this.siteService.FindUnitById(request.UnitId);
-                    IMaterial material = unit.GetMaterialById(request.MaterialId);
-                    this.ProcessRequest(request, unit, material, user);
+                    
+                    this.ProcessRequest(request,  user,e.Client);
 
 
                 }
@@ -81,15 +81,31 @@ namespace Exavision.Seasense.Server.Services {
 
         }
 
-        private void ProcessRequest(WsRequest request, IUnit unit, IMaterial material, User user) {
-            if (request is WsTurretMoveSpeedRequest req) {
+        private void ProcessRequest(WsRequest request, User user, WebSocketClient client) {
+            
+            if (request is WsTurretMoveSpeedRequest reqTurretMoveSpeed) {
 
+                IUnit unit = this.siteService.FindUnitById(reqTurretMoveSpeed.UnitId);
+                IMaterial material = unit.GetMaterialById(reqTurretMoveSpeed.MaterialId);
                 if (unit == null) throw new InvalidOperationException("Invalid unit Id");
                 if (material == null) throw new InvalidOperationException("Invalid material Id");
                 ITurretMoveSpeedCapability capability = material.GetCapability<ITurretMoveSpeedCapability>();
                 if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
-                capability.MoveSpeed(req.AxisX, req.AxisY);
+                capability.MoveSpeed(reqTurretMoveSpeed.AxisX, reqTurretMoveSpeed.AxisY);
+                this.SendValid(request.RequestId, client);
+
+            } else if (request is WsGetStateRequest reqGetState) {
+                WsGetStateResponse response = new WsGetStateResponse() { RequestId = request.RequestId, Site = this.siteService.GetState() };
             }
+            
+        }
+
+        private void SendValid(string requestId, WebSocketClient client) {
+            WsValidResponse response = new WsValidResponse() {
+                RequestId = requestId               
+            };
+            string responseText = JsonConvert.SerializeObject(response);
+            client.Send(responseText);
         }
 
         private void SendError(WebSocketClient client, string requestId, string errorMessage) {

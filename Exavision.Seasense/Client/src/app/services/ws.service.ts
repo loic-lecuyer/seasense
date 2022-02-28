@@ -2,13 +2,23 @@ import { Injectable } from '@angular/core';
 import { WsTurretMoveSpeedRequest } from '../api/ws/ws-turret-move-speed-request';
 import { UserService } from './user.service';
 import * as uuid from 'uuid';
+import { WsGetStateRequest } from '../api/ws/ws-get-state-request';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
- 
 
-  constructor(private userService: UserService) { }
+  private stateTimer: any;
+  private stateInterval: number = 100;
+
+  constructor(private userService: UserService) {
+   
+  }
+  tryGetState() {
+    try { this.getStates(); }
+    catch {}
+
+  }
 
  
   private socket: WebSocket | null = null;
@@ -23,6 +33,7 @@ export class WsService {
     let connectionUrl = scheme + "://" + document.location.hostname + port + "/ws";
     this.socket = new WebSocket(connectionUrl);
     this.socket.onopen = (event) => {
+
       this.wsOpen(event);
     };
     this.socket.onclose = async (event) => {
@@ -34,6 +45,7 @@ export class WsService {
     this.socket.onerror = (event) => {
       this.wsError(event);
     };
+    this.stateTimer = setInterval(() => { this.tryGetState(); }, this.stateInterval);
   }
   wsError(event: Event) {
     console.error("wsError", event);
@@ -55,6 +67,18 @@ export class WsService {
     if (this.socket != null) {
       this.socket.close();
     }
+    clearInterval(this.stateTimer);
+  }
+  getStates() {
+    if (this.userService.token == null) return;
+    let request: WsGetStateRequest = {
+      $type: "WsGetStateRequest",
+      requestId: uuid.v4(),  
+      token: this.userService.token
+    };
+    let data: string = JSON.stringify(request);
+ 
+    this.socket?.send(data);
   }
 
   turretMoveSpeed(unitId: string, materialId: string, axisX: number, axisY: number) {
@@ -68,8 +92,7 @@ export class WsService {
       axisY: axisX,
       token: this.userService.token    
     };
-    let data: string = JSON.stringify(request);
-    console.log("WbeSocket Send ", request);
+    let data: string = JSON.stringify(request);   
     this.socket?.send(data);
 
   }

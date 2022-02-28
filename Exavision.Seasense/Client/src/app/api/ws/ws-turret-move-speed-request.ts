@@ -1,10 +1,8 @@
-export interface WsTurretMoveSpeedRequest {
-  $type: string;
-  token: string;
+import { WsRequest } from "./ws-request";
+
+export interface WsTurretMoveSpeedRequest extends WsRequest {  
   materialId: string;
   unitId: string;
   axisX: number;
   axisY: number;
-  requestId: string;
-
 }

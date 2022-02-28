@@ -1,5 +1,6 @@
 ﻿using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Settings;
+using Exavision.Seasense.Shared.States;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,6 +62,19 @@ namespace Exavision.Seasense.Shared.Materials {
 
         public T GetCapability<T>() where T : ICapability {
             return (T)(from c in this.Capabilities where typeof(T).IsAssignableFrom(c.GetType()) select c).FirstOrDefault();
+        }
+        public MaterialState GetState() {
+            MaterialState materialState = new MaterialState();
+            materialState.Id = this.Id;
+            this.Materials.ForEach((IMaterial material) => {
+                MaterialState materialStateChild = material.GetState();
+                materialState.Materials.Add(materialState);
+            });
+            this.Capabilities.ForEach((ICapability capability) => {
+                CapabilityState capabilityState = capability.GetState();
+                materialState.Capabilies.Add(capabilityState);
+            });
+            return materialState;
         }
     }
 }
