@@ -1,9 +1,10 @@
-﻿using Exavision.Seasense.Protocols.Seamos.Commands;
+﻿using Exavision.Seasense.Core.Extensions;
+using Exavision.Seasense.Protocols.Seamos.Commands;
+using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
 using Exavision.Seasense.Protocols.Seamos.Standard.Turret;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Models;
 using System.Collections.Generic;
-
 namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
     public class SeamosTurretAbsolutePositionCapability : TurretAbsolutePositionCapability<SettingSeamosTurretAbsolutePositionCapability>, ISeamosCapability {
         private readonly SeamosUnit unit;
@@ -11,7 +12,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
         public SeamosTurretAbsolutePositionCapability(SeamosUnit unit) {
             this.unit = unit;
 
-            /*
+
             actions.Add(new PollingAction() {
                 Delay = 100,
                 Action = () => {
@@ -26,7 +27,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
                 }
 
             });
-            */
+
         }
 
         public override SettingSeamosTurretAbsolutePositionCapability GetSetting(SettingSeamosTurretAbsolutePositionCapability setting) {

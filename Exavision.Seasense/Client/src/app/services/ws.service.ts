@@ -107,10 +107,14 @@ export class WsService {
       requestId: uuid.v4(),
       unitId: unitId,
       materialId: materialId,
-      axisX: axisX,
-      axisY: axisX,
+      speed: {
+        x: axisX,
+        y: axisY
+      },
+    
       token: this.userService.token    
     };
+    console.log("wsService send turretMoveSpeed " + axisX + " " + axisY);
     let data: string = JSON.stringify(request);   
     this.socket?.send(data);
 

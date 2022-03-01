@@ -91,7 +91,7 @@ namespace Exavision.Seasense.Server.Services {
                 if (material == null) throw new InvalidOperationException("Invalid material Id");
                 ITurretMoveSpeedCapability capability = material.GetCapability<ITurretMoveSpeedCapability>();
                 if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
-                capability.MoveSpeed(reqTurretMoveSpeed.AxisX, reqTurretMoveSpeed.AxisY);
+                capability.MoveSpeed(reqTurretMoveSpeed.Speed.X, reqTurretMoveSpeed.Speed.Y);
                 this.SendValid(request.RequestId, client);
 
             }

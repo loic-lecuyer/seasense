@@ -21,6 +21,7 @@ export class TurretMoveSpeedCapability implements Capability {
   moveSpeed(axisX: number, axisY: number) {
     if (this.material == null) return;
     if (this.material.unit == null) return;
+    console.log("Call wsService.turretMoveSpeed " + axisX + " " + axisY);
     this.material?.wsService.turretMoveSpeed(this.material.unit.id, this.material.id, axisX, axisY);
     
   }

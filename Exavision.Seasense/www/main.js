@@ -217,24 +217,56 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "CompassComponent": () => (/* binding */ CompassComponent)
 /* harmony export */ });
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _services_site_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/site.service */ 6633);
 
+
+const _c0 = ["svgTurret"];
+const _c1 = ["svgDirection"];
 class CompassComponent {
-    constructor() { }
+    constructor(renderer, siteService) {
+        this.renderer = renderer;
+        this.siteService = siteService;
+        this.svgTurret = null;
+        this.svgDirection = null;
+        this.siteStateSubscription = this.siteService.siteStateSubject.subscribe(() => { this.updateUi(); });
+    }
+    updateUi() {
+        if (this.siteService.selectedUnit != null) {
+            let cap = this.siteService.selectedUnit.getMaterialCapability("Turret" /* Turret */, "TurretAbsolutePosition" /* TurretAbsolutePosition */);
+            if (cap != null) {
+                let rotateInfoTurret = "rotate(" + cap.pan.toFixed(0) + "deg)";
+                if (this.svgTurret != null) {
+                    this.renderer.setStyle(this.svgTurret.nativeElement, 'transform', rotateInfoTurret);
+                }
+            }
+        }
+    }
+    ngOnDestroy() {
+        this.siteStateSubscription.unsubscribe();
+    }
     ngOnInit() {
+        this.updateUi();
     }
 }
-CompassComponent.ɵfac = function CompassComponent_Factory(t) { return new (t || CompassComponent)(); };
-CompassComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: CompassComponent, selectors: [["app-compass"]], decls: 9, vars: 0, consts: [[1, "container"], [1, "svg-center"], ["alt", "compass background", "src", "assets/compass-next-fond.svg"], ["alt", "compass turret", "src", "assets/compass-next-turret.svg"], ["svgTurret", ""], ["alt", "compase rose", "src", "assets/compass-next-rose.svg"], ["svgDirection", ""]], template: function CompassComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0)(1, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "img", 3, 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "img", 5, 6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]()();
+CompassComponent.ɵfac = function CompassComponent_Factory(t) { return new (t || CompassComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_1__.Renderer2), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_services_site_service__WEBPACK_IMPORTED_MODULE_0__.SiteService)); };
+CompassComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: CompassComponent, selectors: [["app-compass"]], viewQuery: function CompassComponent_Query(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵviewQuery"](_c0, 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵviewQuery"](_c1, 5);
+    } if (rf & 2) {
+        let _t;
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.svgTurret = _t.first);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.svgDirection = _t.first);
+    } }, decls: 9, vars: 0, consts: [[1, "container"], [1, "svg-center"], ["alt", "compass background", "src", "assets/compass-next-fond.svg"], ["alt", "compass turret", "src", "assets/compass-next-turret.svg"], ["svgTurret", ""], ["alt", "compase rose", "src", "assets/compass-next-rose.svg"], ["svgDirection", ""]], template: function CompassComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 0)(1, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "img", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](4, "img", 3, 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "img", 5, 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()();
     } }, styles: [".container[_ngcontent-%COMP%] {\n  -webkit-user-select: none;\n          user-select: none;\n  height: 136px;\n  width: 136px;\n  padding: 0px;\n  margin-left: auto;\n  margin-right: auto;\n  margin-top: 16px;\n}\n\n.svg-center[_ngcontent-%COMP%] {\n  position: absolute;\n  -webkit-user-select: none;\n          user-select: none;\n  height: 120px;\n  width: 120px;\n  margin: 0px;\n  padding: 0px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbXBhc3MuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFDRSx5QkFBQTtVQUFBLGlCQUFBO0VBQ0EsYUFBQTtFQUNBLFlBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxrQkFBQTtFQUNBLGdCQUFBO0FBQUY7O0FBRUE7RUFDRSxrQkFBQTtFQUNBLHlCQUFBO1VBQUEsaUJBQUE7RUFDQSxhQUFBO0VBQ0EsWUFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0FBQ0YiLCJmaWxlIjoiY29tcGFzcy5jb21wb25lbnQuc2NzcyIsInNvdXJjZXNDb250ZW50IjpbIlxyXG4uY29udGFpbmVyIHtcclxuICB1c2VyLXNlbGVjdDogbm9uZTtcclxuICBoZWlnaHQ6IDEzNnB4O1xyXG4gIHdpZHRoOiAxMzZweDtcclxuICBwYWRkaW5nOiAwcHg7XHJcbiAgbWFyZ2luLWxlZnQ6YXV0bztcclxuICBtYXJnaW4tcmlnaHQ6YXV0bztcclxuICBtYXJnaW4tdG9wOjE2cHg7XHJcbn1cclxuLnN2Zy1jZW50ZXIge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICB1c2VyLXNlbGVjdDogbm9uZTtcclxuICBoZWlnaHQ6IDEyMHB4O1xyXG4gIHdpZHRoOiAxMjBweDtcclxuICBtYXJnaW46IDBweDtcclxuICBwYWRkaW5nOjBweDtcclxufVxyXG4iXX0= */"] });
 
 
@@ -625,6 +657,7 @@ class StickComponent {
     updateStickInfos() {
         if (this.lastSendAxisX != this.axisX || this.lastSendAxisY != this.axisY) {
             if (this.turretMoveSpeedCapability != null) {
+                console.log("Call turretMoveSpeedCapability.moveSpeed " + this.axisX + " " + this.axisY);
                 this.turretMoveSpeedCapability.moveSpeed(this.axisX, this.axisY);
             }
         }
@@ -832,6 +865,7 @@ class TurretMoveSpeedCapability {
             return;
         if (this.material.unit == null)
             return;
+        console.log("Call wsService.turretMoveSpeed " + axisX + " " + axisY);
         (_a = this.material) === null || _a === void 0 ? void 0 : _a.wsService.turretMoveSpeed(this.material.unit.id, this.material.id, axisX, axisY);
     }
     setState(valueState) {
@@ -2392,10 +2426,13 @@ class WsService {
       requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
       unitId: unitId,
       materialId: materialId,
-      axisX: axisX,
-      axisY: axisX,
+      speed: {
+        x: axisX,
+        y: axisY
+      },
       token: this.userService.token
     };
+    console.log("wsService send turretMoveSpeed " + axisX + " " + axisY);
     let data = JSON.stringify(request);
     (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
   }

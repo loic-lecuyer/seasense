@@ -9,13 +9,14 @@ using System.Reflection;
 
 namespace Exavision.Seasense.Shared.Materials {
     public abstract class Material<S, U> : IMaterial where S : SettingMaterial, new() where U : IUnit, new() {
-        protected readonly U unit;
+        private readonly U unit;
 
         public string DisplayName { get; protected set; }
         public string Id { get; private set; } = Guid.NewGuid().ToString();
         public List<IMaterial> Materials { get; set; } = new List<IMaterial>();
         public List<ICapability> Capabilities { get; set; } = new List<ICapability>();
 
+        public U Unit => this.unit;
 
         public Material(U unit) {
             this.unit = unit;

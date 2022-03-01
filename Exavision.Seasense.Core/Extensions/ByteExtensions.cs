@@ -267,17 +267,6 @@ namespace Exavision.Seasense.Core.Extensions {
             return new BitArray(new byte[] { data }).Get(index);
         }
 
-        /// <summary>
-        /// Extract unsigned short from byte array in most significant bit first order
-        /// </summary>
-        /// <param name="data">Source byte array</param>
-        /// <param name="index">Start index</param>
-        /// <returns>Unisgned short value</returns>
-        public static ushort GetMsbUnsignedShort(this byte[] data, int index) {
-            ushort result = (ushort)((((int)data[index]) << 8) + (int)data[index + 1]);
-            return result;
-
-        }
 
 
         /// <summary>
@@ -311,6 +300,17 @@ namespace Exavision.Seasense.Core.Extensions {
         public static void SetMsbUnsignedShort(this byte[] data, int index, ushort value) {
             data[index] = (byte)(value >> 8);
             data[index + 1] = (byte)(value & 0xFF);
+        }
+        /// <summary>
+        /// Extract unsigned short from byte array in most significant bit first order
+        /// </summary>
+        /// <param name="data">Source byte array</param>
+        /// <param name="index">Start index</param>
+        /// <returns>Unisgned short value</returns>
+        public static ushort GetMsbUnsignedShort(this byte[] data, int index) {
+            ushort result = (ushort)((((int)data[index]) << 8) + (int)data[index + 1]);
+            return result;
+
         }
 
 

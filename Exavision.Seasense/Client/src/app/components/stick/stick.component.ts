@@ -43,7 +43,9 @@ export class StickComponent implements AfterViewInit, OnInit, OnChanges, AfterCo
 
     if (this.lastSendAxisX != this.axisX || this.lastSendAxisY != this.axisY) {
       if (this.turretMoveSpeedCapability != null) {
+        console.log("Call turretMoveSpeedCapability.moveSpeed " + this.axisX + " " + this.axisY);
         this.turretMoveSpeedCapability.moveSpeed(this.axisX, this.axisY);
+
       }
     }
     this.lastSendAxisX = this.axisX;

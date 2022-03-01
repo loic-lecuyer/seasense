@@ -5,7 +5,6 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
     <None Remove=".gitignore" />
   </ItemGroup>
@@ -20,5 +19,8 @@
     <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>
