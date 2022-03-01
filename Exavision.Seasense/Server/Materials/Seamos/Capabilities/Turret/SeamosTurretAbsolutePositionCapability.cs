@@ -1,17 +1,17 @@
-﻿using Exavision.Seasense.Core.Extensions;
-using Exavision.Seasense.Protocols.Seamos.Commands;
-using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
+﻿using Exavision.Seasense.Protocols.Seamos.Commands;
+using Exavision.Seasense.Protocols.Seamos.Standard.Turret;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Models;
 using System.Collections.Generic;
 
 namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
-    public class SeamosTurretAbsolutePositionCapability : TurretAbsolutePositionCapability<SettingSeamosTurretAbsolutePositionCapability> {
+    public class SeamosTurretAbsolutePositionCapability : TurretAbsolutePositionCapability<SettingSeamosTurretAbsolutePositionCapability>, ISeamosCapability {
         private readonly SeamosUnit unit;
         private readonly List<PollingAction> actions = new List<PollingAction>();
         public SeamosTurretAbsolutePositionCapability(SeamosUnit unit) {
             this.unit = unit;
 
+            /*
             actions.Add(new PollingAction() {
                 Delay = 100,
                 Action = () => {
@@ -26,6 +26,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
                 }
 
             });
+            */
         }
 
         public override SettingSeamosTurretAbsolutePositionCapability GetSetting(SettingSeamosTurretAbsolutePositionCapability setting) {
@@ -44,7 +45,13 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
             return actions;
         }
 
+        public void ProcessHardwareResponse(ISeamosCommand command) {
+            if (command is SeamosTurretAbsolutePositionExatrack2Response commandExatrack) {
 
+                this.Pan = commandExatrack.Pan;
+                this.Tilt = commandExatrack.Tilt;
 
+            }
+        }
     }
 }

@@ -1,7 +1,11 @@
-﻿using Exavision.Seasense.Core.Network;
+﻿using Exavision.Seasense.Core.Extensions;
+using Exavision.Seasense.Core.Network;
 using Exavision.Seasense.Protocols.Seamos;
+using Exavision.Seasense.Protocols.Seamos.Commands;
+using Exavision.Seasense.Server.Materials.Seamos.Capabilities;
 using Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit;
 using Exavision.Seasense.Server.Materials.Seamos.Settings;
+using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Materials;
 using System.Net;
 
@@ -37,13 +41,36 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         public override void Start() {
             this.Client = new TcpCoreStringClient();
             if (IPAddress.TryParse(this.HardwareCardIp, out IPAddress address) && int.TryParse(this.HardwareCardPort, out int port)) {
+                this.Client.OnMessageReceived += this.Client_OnMessageReceived;
                 this.Client.Start(new IPEndPoint(address, port), "\r\n");
             }
             base.Start();
 
         }
 
+        private void Client_OnMessageReceived(object sender, string e) {
+
+            byte[] data = e.HexStringToBytesArray();
+            ISeamosCommand command = this.Protocol.Deserialize(data);
+            if (command != null) {
+                this.Capabilities.ForEach((ICapability cap) => {
+                    if (cap is ISeamosCapability) {
+                        (cap as ISeamosCapability).ProcessHardwareResponse(command);
+                    }
+                });
+
+                this.Materials.ForEach((IMaterial material) => {
+                    material.Capabilities.ForEach((ICapability cap) => {
+                        if (cap is ISeamosCapability) {
+                            (cap as ISeamosCapability).ProcessHardwareResponse(command);
+                        }
+                    });
+                });
+            }
+        }
+
         public override void Stop() {
+            this.Client.OnMessageReceived -= this.Client_OnMessageReceived;
             base.Stop();
             this.Client.Stop();
         }

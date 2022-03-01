@@ -1,5 +1,4 @@
 ﻿using Exavision.Seasense.Shared.Settings;
-using System;
 
 namespace Exavision.Seasense.Shared.Capabilities.Turret {
     public abstract class TurretMoveSpeedCapability<S> : Capability<S>, ITurretMoveSpeedCapability where S : SettingCapability, new() {
@@ -12,8 +11,6 @@ namespace Exavision.Seasense.Shared.Capabilities.Turret {
             return setting;
         }
 
-        public void MoveSpeed(double axisX, double axisY) {
-            Console.WriteLine("MoveSpeed " + axisX + " " + axisY);
-        }
+        public abstract void MoveSpeed(double axisX, double axisY);
     }
 }

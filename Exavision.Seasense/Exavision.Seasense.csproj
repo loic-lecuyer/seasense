@@ -52,6 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Server\Materials\Seamos\Capabilities\Camera\Gige\" />
     <Folder Include="www\" />
   </ItemGroup>
 

@@ -1,4 +1,5 @@
 ﻿using Exavision.Seasense.Shared.Capabilities;
+using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
 using Exavision.Seasense.Shared.States;
 using System.Collections.Generic;
@@ -17,5 +18,7 @@ namespace Exavision.Seasense.Shared.Materials {
 
         T GetCapability<T>() where T : ICapability;
         MaterialState GetState();
+
+        List<PollingAction> GetPollingActions();
     }
 }

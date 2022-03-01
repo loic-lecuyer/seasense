@@ -4,8 +4,8 @@ using Exavision.Seasense.Shared.States.Turret;
 
 namespace Exavision.Seasense.Shared.Capabilities.Turret {
     public class TurretAbsolutePositionCapability<S> : Capability<S>, ITurretAbsolutePositionCapability where S : SettingCapability, new() {
-        public double Pan { get; private set; }
-        public double Tilt { get; private set; }
+        public double Pan { get; protected set; }
+        public double Tilt { get; protected set; }
 
         public TurretAbsolutePositionCapability() {
 

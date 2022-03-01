@@ -68,11 +68,14 @@ namespace Exavision.Seasense.Shared.Materials {
         private Dictionary<PollingAction, DateTime> pollingActionDates = new Dictionary<PollingAction, DateTime>();
         private async Task PollingLoop() {
             while (!pollingCanceller.IsCancellationRequested) {
+
                 List<PollingAction> actions = new List<PollingAction>();
+                actions.AddRange(this.GetPollingActions());
                 this.Capabilities.ForEach((ICapability capabilities) => {
                     actions.AddRange(capabilities.GetPollingActions());
                 });
                 this.Materials.ForEach((IMaterial material) => {
+                    actions.AddRange(material.GetPollingActions());
                     material.Capabilities.ForEach((ICapability capabilities) => {
                         actions.AddRange(capabilities.GetPollingActions());
                     });
@@ -121,6 +124,8 @@ namespace Exavision.Seasense.Shared.Materials {
             return unitState;
         }
 
-
+        public virtual List<PollingAction> GetPollingActions() {
+            return new List<PollingAction>();
+        }
     }
 }

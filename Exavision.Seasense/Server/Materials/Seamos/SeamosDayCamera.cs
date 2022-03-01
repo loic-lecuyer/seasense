@@ -6,7 +6,12 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
     public class SeamosDayCamera : DayCamera<SettingSeamosDayCamera, SeamosUnit> {
         public SeamosDayCamera(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Day Camera";
+
         }
+
+        public override int ImageWidth { get => 1980; }
+        public override int ImageHeight { get => 1080; }
+
         public override SettingSeamosDayCamera GetSetting(SettingSeamosDayCamera setting) {
             return setting;
         }

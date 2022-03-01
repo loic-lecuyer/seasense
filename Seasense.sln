@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Api.WebS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Core", "Exavision.Seasense.Core\Exavision.Seasense.Core.csproj", "{80802D87-E85E-4912-8CCE-B80841A92E25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exavision.Seasense.Protocols.Seamos", "Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj", "{FA19B40E-67C5-4F86-8015-C28821B863B2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Protocols.Seamos", "Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj", "{FA19B40E-67C5-4F86-8015-C28821B863B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exavision.Seasense.Mock.Seamos", "Exavision.Seasense.Mock.Seamos\Exavision.Seasense.Mock.Seamos.csproj", "{FDC1637B-C851-4239-9FA6-7102DA4E32D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,18 @@ Global
 		{FA19B40E-67C5-4F86-8015-C28821B863B2}.Release|x64.Build.0 = Release|Any CPU
 		{FA19B40E-67C5-4F86-8015-C28821B863B2}.Release|x86.ActiveCfg = Release|Any CPU
 		{FA19B40E-67C5-4F86-8015-C28821B863B2}.Release|x86.Build.0 = Release|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Debug|x64.Build.0 = Debug|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Debug|x86.Build.0 = Debug|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|x64.ActiveCfg = Release|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|x64.Build.0 = Release|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|x86.ActiveCfg = Release|Any CPU
+		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

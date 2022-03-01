@@ -2,6 +2,9 @@
 
 namespace Exavision.Seasense.Shared.Materials {
     public abstract class Camera<S, U> : Material<S, U> where S : SettingMaterial, new() where U : IUnit, new() {
+
+        public abstract int ImageWidth { get;  }
+        public abstract int ImageHeight { get;  }
         public Camera(U unit) : base(unit) {
 
         }

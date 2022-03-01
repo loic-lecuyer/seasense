@@ -8,7 +8,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
 
         public SeamosTurret(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Turret";
-            this.Capabilities.Add(new SeamosTurretMoveSpeedCapability() { });
+            this.Capabilities.Add(new SeamosTurretMoveSpeedCapability(this.unit));
             this.Capabilities.Add(new SeamosTurretMoveAbsoluteCapability());
             this.Capabilities.Add(new SeamosTurretAbsolutePositionCapability(this.unit));
         }

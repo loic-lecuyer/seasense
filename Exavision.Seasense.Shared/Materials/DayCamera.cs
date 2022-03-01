@@ -1,7 +1,8 @@
 ﻿using Exavision.Seasense.Shared.Settings;
 
 namespace Exavision.Seasense.Shared.Materials {
-    public abstract class DayCamera<S, U> : Material<S, U> where S : SettingMaterial, new() where U : IUnit, new() {
+    public abstract class DayCamera<S, U> : Camera<S, U> where S : SettingMaterial, new() where U : IUnit, new() {
+
 
         public DayCamera(U unit) : base(unit) {
 

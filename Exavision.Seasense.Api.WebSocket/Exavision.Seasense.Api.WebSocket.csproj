@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
 

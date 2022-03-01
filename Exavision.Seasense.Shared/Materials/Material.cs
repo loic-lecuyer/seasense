@@ -1,4 +1,5 @@
 ﻿using Exavision.Seasense.Shared.Capabilities;
+using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
 using Exavision.Seasense.Shared.States;
 using System;
@@ -40,9 +41,13 @@ namespace Exavision.Seasense.Shared.Materials {
             this.DisplayName = setting.DisplayName;
             foreach (ICapability capability in this.Capabilities) {
                 if (capability.GetType().BaseType.GenericTypeArguments.Length > 0) {
-                    SettingCapability settingCapability = (from sm in setting.Capabilities where capability.GetType().BaseType.GenericTypeArguments.Contains(sm.GetType()) select sm).FirstOrDefault();
-                    MethodInfo setSettingMethod = capability.GetType().GetMethod("SetSetting", new Type[] { settingCapability.GetType() });
-                    setSettingMethod.Invoke(capability, new object[] { settingCapability });
+                    Type[] genericTypes = capability.GetType().BaseType.GenericTypeArguments;
+                    SettingCapability settingCapability = (from sm in setting.Capabilities where genericTypes.Contains(sm.GetType()) select sm).FirstOrDefault();
+                    if (settingCapability != null) {
+                        MethodInfo setSettingMethod = capability.GetType().GetMethod("SetSetting", new Type[] { settingCapability.GetType() });
+                        setSettingMethod.Invoke(capability, new object[] { settingCapability });
+                    }
+
                 }
             }
             foreach (IMaterial material in this.Materials) {
@@ -79,6 +84,10 @@ namespace Exavision.Seasense.Shared.Materials {
                 materialState.Capabilities.Add(capabilityState);
             });
             return materialState;
+        }
+
+        public virtual List<PollingAction> GetPollingActions() {
+            return new List<PollingAction>();
         }
     }
 }

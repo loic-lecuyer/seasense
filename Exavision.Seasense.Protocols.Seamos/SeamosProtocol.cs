@@ -180,7 +180,9 @@
         /// <param name="data">The data<see cref="byte[]"/>.</param>
         /// <returns>The <see cref="ISeamosCommand"/>.</returns>
         public ISeamosCommand Deserialize(byte[] data) {
-            return this.Deserialize(System.Text.Encoding.ASCII.GetString(data));
+
+            string text = data.ToHexString();
+            return this.Deserialize(text);
         }
 
         /// <summary>
