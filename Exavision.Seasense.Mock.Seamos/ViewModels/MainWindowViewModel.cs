@@ -37,8 +37,9 @@ namespace Exavision.Seasense.Mock.Seamos.ViewModels {
                     res.SystemTarget = SystemTarget.Computer;
                     this.SendCommand(res, e.Item1);
                 }
-                else if (extatrackRequestPosition.MoveMode == MoveModeExatrack2.Speed) {
-                    System.Diagnostics.Debug.WriteLine("Receive command " + command.GetType());
+                else if (extatrackRequestPosition.PanTiltZoomMode == PtModeExatrack2.Speed) {
+
+                    System.Diagnostics.Debug.WriteLine("Receive speed command " + extatrackRequestPosition.PanSpeed+" "+ extatrackRequestPosition.TiltSpeed);
                 }
             }
             else { System.Diagnostics.Debug.WriteLine("Receive null  command "); }

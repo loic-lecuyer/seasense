@@ -177,58 +177,6 @@
         /// </summary>
         public override ProtocolType ProtocolType => ProtocolType.Exatrack2;
 
-        /// <summary>
-        /// The Serialize.
-        /// </summary>
-        /// <returns>The <see cref="byte[]"/>.</returns>
-        public byte[] Serialize() {
-            StringBuilder data = new StringBuilder();
-            data.Append(SeamosProtocol.PROTOCOL_SEAMAOS_START);
-            if (this.SystemTarget == SystemTarget.Computer) { data.Append(SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_COMPUTER); }
-            else if (this.SystemTarget == SystemTarget.ElectronicCard) { data.Append(SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_ELECTRONIC_CARD); }
-            else throw new NotImplementedException();
-            string nbBytes = ((byte)15).ToHexString();
-            data.Append(nbBytes);
-            data.Append(((int)this.MaterialTarget).ToString("0") + ((int)this.ProtocolType).ToString("0"));
-            this.PanTiltZoomMode = this.FromMoveMode();
-            this.ConvertPositionAndSpeed(this.SpeedUnit, out ushort pan, out ushort tilt, out ushort panSpeed, out ushort tiltSpeed);
-            byte[] exatrackBytes = new byte[16];
-            exatrackBytes[0] = (byte)this.CommandTarget;
-            exatrackBytes[1] = this.GetModeByte();
-            exatrackBytes[2] = this.GetMode2Byte();
-            if (this.PanTiltZoomMode == PtModeExatrack2.Speed) {
-                this.SerializeSpeed(exatrackBytes, panSpeed, tiltSpeed);
-            }
-            else if (this.PanTiltZoomMode == PtModeExatrack2.Absolute) {
-                this.SerializeAbsolute(exatrackBytes, tilt, pan);
-            }
-            else if (this.PanTiltZoomMode == PtModeExatrack2.Ignore) {
-                this.MoveMode = MoveModeExatrack2.IgnoreData;
-                exatrackBytes[1] = this.GetModeByte();
-                exatrackBytes[2] = this.GetMode2Byte();
-                exatrackBytes[3] = 0x00;
-                exatrackBytes[4] = 0x00;
-                exatrackBytes[5] = 0x00;
-                exatrackBytes[6] = 0x00;
-                exatrackBytes[7] = 0x00;
-                exatrackBytes[8] = 0x00;
-                exatrackBytes[9] = 0x00;
-                exatrackBytes[10] = 0x00;
-                exatrackBytes[11] = 0x00;
-                exatrackBytes[12] = 0x00;
-                exatrackBytes[13] = 0x00;
-                exatrackBytes[14] = 0x00;
-
-            }
-            else throw new NotImplementedException();
-            byte checkSumm = 0;
-            for (int i = 1; i <= 14; i++) { checkSumm += exatrackBytes[i]; }
-            checkSumm += 127;
-            exatrackBytes[15] = checkSumm;
-            data.Append(exatrackBytes.ToHexString());
-            data.Append(data.ToString().GetSeamosCheckSum());
-            return data.ToString().HexStringToBytesArray();
-        }
 
 
 
@@ -246,8 +194,7 @@
             pan = (ushort)Math.Abs(panPelco);
             if (tiltPelco > 0) {
                 tilt = (ushort)(36000 - tiltPelco);
-            }
-            else {
+            } else {
                 tilt = (ushort)-tiltPelco;
             }
             panSpeed = 0;
@@ -282,8 +229,7 @@
         private PtModeExatrack2 FromMoveMode() {
             if (this.MoveMode == MoveModeExatrack2.Absolute) {
                 return PtModeExatrack2.Absolute;
-            }
-            else if (this.MoveMode == MoveModeExatrack2.Speed) {
+            } else if (this.MoveMode == MoveModeExatrack2.Speed) {
                 return PtModeExatrack2.Speed;
             }
             return PtModeExatrack2.Ignore;
@@ -299,8 +245,8 @@
         /// <param name="panSpeed">The panSpeed<see cref="int"/>.</param>
         private void SerializeAbsolute(byte[] exatrackBytes, ushort tilt, ushort pan) {
             exatrackBytes[0] = (byte)this.CommandTarget;
-            exatrackBytes[1] = this.GetModeByte();
-            exatrackBytes[2] = this.GetMode2Byte();
+            exatrackBytes[1] = this.SerializeModeByte();
+            exatrackBytes[2] = this.SerializeMode2Byte();
             exatrackBytes.SetMsbUnsignedShort(3, tilt);
             exatrackBytes.SetMsbUnsignedShort(7, pan);
             ushort panSpeeed = 0;
@@ -339,27 +285,23 @@
         private void SerializeSpeed(byte[] exatrackBytes, ushort panSpeed, ushort tiltSpeed) {
 
             exatrackBytes[0] = (byte)this.CommandTarget;
-            exatrackBytes[1] = this.GetModeByte();
-            exatrackBytes[2] = this.GetMode2Byte();
+            exatrackBytes[1] = this.SerializeModeByte();
+            exatrackBytes[2] = this.SerializeMode2Byte();
             exatrackBytes[3] = 0x00;
             if (TiltSpeed > 0) {
                 exatrackBytes[4] = 0x01;
-            }
-            else if (TiltSpeed < 0) {
+            } else if (TiltSpeed < 0) {
                 exatrackBytes[4] = 0x02;
-            }
-            else {
+            } else {
                 exatrackBytes[4] = 0x00;
             }
             exatrackBytes[7] = 0x00;
             // Pan direction          
             if (PanSpeed > 0) {
                 exatrackBytes[8] = 0x01;
-            }
-            else if (PanSpeed < 0) {
+            } else if (PanSpeed < 0) {
                 exatrackBytes[8] = 0x02;
-            }
-            else {
+            } else {
                 exatrackBytes[8] = 0x00;
             }
 
@@ -376,7 +318,64 @@
             return result;
         }
 
-        private byte GetMode2Byte() {
+
+        private void DeserializeMode2Byte(byte data1, byte data2) {
+            BitArray bitsPrev = new BitArray(new byte[] { data1 });
+            BitArray bits = new BitArray(new byte[] { data2 });
+            if (bits.Get(0) == false && bits.Get(1) == false) {
+                this.ZoomModeDay = ZoomModeDayExatrack2.Ignore;
+            }
+            else if (bits.Get(0) == true && bits.Get(1) == false) {
+                this.ZoomModeDay = ZoomModeDayExatrack2.Speed;
+            }
+            else if (bits.Get(0) == false && bits.Get(1) == true) {
+                this.ZoomModeDay = ZoomModeDayExatrack2.Absolute;
+            }
+            if (bits.Get(2) == false && bits.Get(3) == false) {
+                this.ZoomModeThemral = ZoomModeThermalExatrack2.Ignore;
+            } else if (bits.Get(2) == true && bits.Get(3) == false) {
+                this.ZoomModeThemral = ZoomModeThermalExatrack2.Speed;
+            } else if (bits.Get(2) == false && bits.Get(3) == true) {
+                this.ZoomModeThemral = ZoomModeThermalExatrack2.Absolute;
+            }
+
+            
+
+            if (bitsPrev.Get(5) == false && 
+                bits.Get(4) == false && 
+                bits.Get(5) == false && 
+                bits.Get(6) == false && 
+                bits.Get(7) == false) {
+                this.RebootAction = RebootAction.None;
+            } else if (bitsPrev.Get(5) == true &&
+                bits.Get(4) == true &&
+                bits.Get(5) == false &&
+                bits.Get(6) == false &&
+                bits.Get(7) == false) {
+                this.RebootAction = RebootAction.Shutdown;
+            } else if (bitsPrev.Get(5) == true &&
+              bits.Get(4) == false &&
+              bits.Get(5) == true &&
+              bits.Get(6) == false &&
+              bits.Get(7) == false) {
+                this.RebootAction = RebootAction.Reboot;
+            } else if (bitsPrev.Get(5) == false &&
+            bits.Get(4) == false &&
+            bits.Get(5) == false &&
+            bits.Get(6) == true &&
+            bits.Get(7) == false) {
+                this.RebootAction = RebootAction.Sleep;
+            } else if (bitsPrev.Get(5) == false &&
+              bits.Get(4) == false &&
+              bits.Get(5) == false &&
+              bits.Get(6) == false &&
+              bits.Get(7) == true) {
+                this.RebootAction = RebootAction.WakeUp;
+            }
+
+        }
+
+        private byte SerializeMode2Byte() {
             BitArray bits = new BitArray(8);
             switch (this.ZoomModeDay) {
                 case ZoomModeDayExatrack2.Ignore:
@@ -447,11 +446,41 @@
             return bytes[0];
         }
 
+        private void DeserializeModeByte(byte data) {
+            BitArray bits = new BitArray(new byte[] { data });
+            if (bits.Get(0) == false && bits.Get(1) == false && bits.Get(2) == false && bits.Get(3) == false) {
+                this.PanTiltZoomMode = PtModeExatrack2.Ignore;
+            } else if (bits.Get(0) == true && bits.Get(1) == false && bits.Get(2) == false && bits.Get(3) == false) {
+                this.PanTiltZoomMode = PtModeExatrack2.Speed;
+            } else if (bits.Get(0) == false && bits.Get(1) == true && bits.Get(2) == false && bits.Get(3) == false) {
+                this.PanTiltZoomMode = PtModeExatrack2.Absolute;
+            } else if (bits.Get(0) == true && bits.Get(1) == true && bits.Get(2) == false && bits.Get(3) == false) {
+                this.PanTiltZoomMode = PtModeExatrack2.Relative;
+            } else if (bits.Get(0) == false && bits.Get(1) == false && bits.Get(2) == true && bits.Get(3) == false) {
+                this.PanTiltZoomMode = PtModeExatrack2.Interpolated;
+            }
+
+            if (bits.Get(4)) {
+                this.StabilizationState = StabilizationStateExatrack2.On;
+            } else {
+                this.StabilizationState = StabilizationStateExatrack2.Off;
+            }
+
+            if (bits.Get(6) == false && bits.Get(7) == false) {
+                this.SpeedUnit = SpeedUnitExatrack2.Pelco;
+            } else if (bits.Get(6) == true && bits.Get(7) == false) {
+                this.SpeedUnit = SpeedUnitExatrack2.CentiDegreePerSecond;
+            } else if (bits.Get(6) == false && bits.Get(7) == true) {
+                this.SpeedUnit = SpeedUnitExatrack2.BinaryMotor;
+            }
+
+
+        }
         /// <summary>
         /// The GetModeByte.
         /// </summary>
         /// <returns>The <see cref="byte"/>.</returns>
-        private byte GetModeByte() {
+        private byte SerializeModeByte() {
             BitArray bits = new BitArray(8);
             switch (this.PanTiltZoomMode) {
                 case PtModeExatrack2.Ignore:
@@ -525,13 +554,55 @@
             bits.CopyTo(bytes, 0);
             return bytes[0];
         }
-
         /// <summary>
-        /// The Deserialize.
+        /// The Serialize.
         /// </summary>
-        /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public void Deserialize(byte[] data) {
+        /// <returns>The <see cref="byte[]"/>.</returns>
+        public byte[] Serialize() {
+            StringBuilder data = new StringBuilder();
+            data.Append(SeamosProtocol.PROTOCOL_SEAMAOS_START);
+            if (this.SystemTarget == SystemTarget.Computer) { data.Append(SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_COMPUTER); } else if (this.SystemTarget == SystemTarget.ElectronicCard) { data.Append(SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_ELECTRONIC_CARD); } else throw new NotImplementedException();
+            string nbBytes = ((byte)15).ToHexString();
+            data.Append(nbBytes);
+            data.Append(((int)this.MaterialTarget).ToString("0") + ((int)this.ProtocolType).ToString("0"));
+            this.PanTiltZoomMode = this.FromMoveMode();
+            this.ConvertPositionAndSpeed(this.SpeedUnit, out ushort pan, out ushort tilt, out ushort panSpeed, out ushort tiltSpeed);
+            byte[] exatrackBytes = new byte[16];
+            exatrackBytes[0] = (byte)this.CommandTarget;
+            exatrackBytes[1] = this.SerializeModeByte();
+            exatrackBytes[2] = this.SerializeMode2Byte();
+            if (this.PanTiltZoomMode == PtModeExatrack2.Speed) {
+                this.SerializeSpeed(exatrackBytes, panSpeed, tiltSpeed);
+            } else if (this.PanTiltZoomMode == PtModeExatrack2.Absolute) {
+                this.SerializeAbsolute(exatrackBytes, tilt, pan);
+            } else if (this.PanTiltZoomMode == PtModeExatrack2.Ignore) {
+                this.MoveMode = MoveModeExatrack2.IgnoreData;
+                exatrackBytes[1] = this.SerializeModeByte();
+                exatrackBytes[2] = this.SerializeMode2Byte();
+                exatrackBytes[3] = 0x00;
+                exatrackBytes[4] = 0x00;
+                exatrackBytes[5] = 0x00;
+                exatrackBytes[6] = 0x00;
+                exatrackBytes[7] = 0x00;
+                exatrackBytes[8] = 0x00;
+                exatrackBytes[9] = 0x00;
+                exatrackBytes[10] = 0x00;
+                exatrackBytes[11] = 0x00;
+                exatrackBytes[12] = 0x00;
+                exatrackBytes[13] = 0x00;
+                exatrackBytes[14] = 0x00;
 
+            } else throw new NotImplementedException();
+            byte checkSumm = 0;
+            for (int i = 1; i <= 14; i++) { checkSumm += exatrackBytes[i]; }
+            checkSumm += 127;
+            exatrackBytes[15] = checkSumm;
+            data.Append(exatrackBytes.ToHexString());
+            data.Append(data.ToString().GetSeamosCheckSum());
+            return data.ToString().HexStringToBytesArray();
+        }
+        public void DeserializeOld(byte[] data) {
+            this.DeserializeModeByte(data[1]);
             BitArray modeBits = new BitArray(new byte[] { data[2] });
             this.PanTiltZoomMode = this.ParsePanTiltZoomMode(modeBits);
 
@@ -559,8 +630,7 @@
                 this.DeserializeTiltAndPanSpeed(data, panDirection, tiltDirection, out double panSpeed, out double tiltSpeed);
                 this.PanSpeed = panSpeed;
                 this.TiltSpeed = tiltSpeed;
-            }
-            else if (this.PanTiltZoomMode == PtModeExatrack2.Absolute) {
+            } else if (this.PanTiltZoomMode == PtModeExatrack2.Absolute) {
                 this.ZoomDay = data.GetMsbUnsignedShort(11);
                 this.ZoomThermal = data.GetMsbUnsignedShort(13);
 
@@ -568,13 +638,40 @@
 
         }
 
+        /// <summary>
+        /// The Deserialize.
+        /// </summary>
+        /// <param name="data">The data<see cref="byte[]"/>.</param>
+        public void Deserialize(byte[] data) {
+            this.DeserializeModeByte(data[1]);
+            this.DeserializeMode2Byte(data[1], data[2]);
+           
+            this.DeserializePanAndTiltPosition(data, out double pan, out double tilt);
+            this.Pan = pan;
+            this.Tilt = tilt;
+
+
+            if (this.PanTiltZoomMode == PtModeExatrack2.Speed) {
+                this.DeserializePanTiltDirection(data, out int tiltDirection, out int panDirection);
+                this.DeserializeTiltAndPanSpeed(data, panDirection, tiltDirection, out double panSpeed, out double tiltSpeed);
+                this.PanSpeed = panSpeed;
+                this.TiltSpeed = tiltSpeed;
+            } else if (this.PanTiltZoomMode == PtModeExatrack2.Absolute) {
+                this.ZoomDay = data.GetMsbUnsignedShort(11);
+                this.ZoomThermal = data.GetMsbUnsignedShort(13);
+
+            }
+
+        }
+
+
+
         private void DeserializePanAndTiltPosition(byte[] data, out double panPosition, out double tiltPosition) {
             int tilt = data.GetMsbUnsignedShort(3);
             int pan = data.GetMsbUnsignedShort(7);
             if (tilt < 18000) {
                 tilt = -tilt;
-            }
-            else {
+            } else {
                 tilt = 36000 - tilt;
             }
             panPosition = pan / 100D;
@@ -608,15 +705,13 @@
             tiltDirection = 0;
             if (data[4] == 0x01) {
                 tiltDirection = -1;
-            }
-            else if (data[4] == 0x02) {
+            } else if (data[4] == 0x02) {
                 tiltDirection = 1;
             }
             panDirection = 0;
             if (data[8] == 0x01) {
                 panDirection = -1;
-            }
-            else if (data[8] == 0x02) {
+            } else if (data[8] == 0x02) {
                 panDirection = 1;
             }
         }
@@ -624,11 +719,9 @@
         private ZoomModeThermalExatrack2 ParseZoomThermal(BitArray mode2Bits) {
             if (!mode2Bits.Get(2) && !mode2Bits.Get(3)) {
                 return ZoomModeThermalExatrack2.Ignore;
-            }
-            else if (mode2Bits.Get(2) && !mode2Bits.Get(3)) {
+            } else if (mode2Bits.Get(2) && !mode2Bits.Get(3)) {
                 return ZoomModeThermalExatrack2.Speed;
-            }
-            else if (!mode2Bits.Get(2) && mode2Bits.Get(3)) {
+            } else if (!mode2Bits.Get(2) && mode2Bits.Get(3)) {
                 return ZoomModeThermalExatrack2.Absolute;
             }
             return ZoomModeThermalExatrack2.Ignore;
@@ -638,11 +731,9 @@
             this.ZoomModeDay = ZoomModeDayExatrack2.Ignore;
             if (!mode2Bits.Get(0) && !mode2Bits.Get(1)) {
                 return ZoomModeDayExatrack2.Ignore;
-            }
-            else if (mode2Bits.Get(0) && !mode2Bits.Get(1)) {
+            } else if (mode2Bits.Get(0) && !mode2Bits.Get(1)) {
                 return ZoomModeDayExatrack2.Speed;
-            }
-            else if (!mode2Bits.Get(0) && mode2Bits.Get(1)) {
+            } else if (!mode2Bits.Get(0) && mode2Bits.Get(1)) {
                 return ZoomModeDayExatrack2.Absolute;
             }
             return ZoomModeDayExatrack2.Ignore;
@@ -651,11 +742,9 @@
         private SpeedUnitExatrack2 ParseSpeedUnit(BitArray modeBits) {
             if (!modeBits.Get(6) && !modeBits.Get(7)) {
                 return SpeedUnitExatrack2.Pelco;
-            }
-            else if (modeBits.Get(6) && !modeBits.Get(7)) {
+            } else if (modeBits.Get(6) && !modeBits.Get(7)) {
                 return SpeedUnitExatrack2.CentiDegreePerSecond;
-            }
-            else if (!modeBits.Get(6) && modeBits.Get(7)) {
+            } else if (!modeBits.Get(6) && modeBits.Get(7)) {
                 return SpeedUnitExatrack2.BinaryMotor;
             }
             return SpeedUnitExatrack2.CentiDegreePerSecond;
@@ -668,26 +757,23 @@
                 !modeBits.Get(2) &&
                 !modeBits.Get(3)) {
                 return PtModeExatrack2.Ignore;
-            }
-            else if (
-                modeBits.Get(0) &&
-                !modeBits.Get(1) &&
-                !modeBits.Get(2) &&
-                !modeBits.Get(3)) {
+            } else if (
+                  modeBits.Get(0) &&
+                  !modeBits.Get(1) &&
+                  !modeBits.Get(2) &&
+                  !modeBits.Get(3)) {
                 return PtModeExatrack2.Speed;
-            }
-            else if (
-                !modeBits.Get(0) &&
-                 modeBits.Get(1) &&
-                !modeBits.Get(2) &&
-                !modeBits.Get(3)) {
+            } else if (
+                  !modeBits.Get(0) &&
+                   modeBits.Get(1) &&
+                  !modeBits.Get(2) &&
+                  !modeBits.Get(3)) {
                 return PtModeExatrack2.Absolute;
-            }
-            else if (
-               modeBits.Get(0) &&
-               modeBits.Get(1) &&
-               !modeBits.Get(2) &&
-               !modeBits.Get(3)) {
+            } else if (
+                 modeBits.Get(0) &&
+                 modeBits.Get(1) &&
+                 !modeBits.Get(2) &&
+                 !modeBits.Get(3)) {
                 return PtModeExatrack2.Relative;
             }
             return PtModeExatrack2.Ignore;

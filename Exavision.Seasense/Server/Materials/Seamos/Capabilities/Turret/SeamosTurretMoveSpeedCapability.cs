@@ -37,11 +37,11 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
             command.StabilizationState = StabilizationStateExatrack2.Off;
             command.SpeedUnit = SpeedUnitExatrack2.CentiDegreePerSecond;
             // Application de la courbe ²
-            double panSpeed = axisX * this.MaxPanSpeed;
-            double tiltSpeed = axisY * this.MaxTiltSpeed;
-            command.PanSpeed = (panSpeed * panSpeed) * Math.Sign(panSpeed) * -1;
-            command.TiltSpeed = (tiltSpeed * tiltSpeed) * Math.Sign(tiltSpeed);
-
+           
+            command.PanSpeed = (axisX * axisX) * Math.Sign(axisX) * -1;
+            command.TiltSpeed = (axisY * axisY) * Math.Sign(axisY);
+            command.PanSpeed *= this.MaxPanSpeed;
+            command.TiltSpeed *= this.MaxTiltSpeed;
             byte[] commandBytes = this.unit.Protocol.Serialize(command);
             string data = commandBytes.ToHexString();
             this.unit.Client.Send(data);
