@@ -1,14 +1,14 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
-    using Exavision.Seamos.Materials.Infrastructure.Enums;
+
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
+    using Exavision.Seasense.Protocols.Seamos.Enums;
     using System.Collections.Generic;
 
     /// <summary>
     /// Defines the <see cref="SeamosCameraRunSystemCommandRequest" />.
     /// </summary>
-    public class SeamosCameraRunSystemCommandRequest : SeamosPascalCommand, ICameraRunSystemCommandRequest
-    {
+    public class SeamosCameraRunSystemCommandRequest : SeamosPascalCommand, ICameraRunSystemCommandRequest {
         /// <summary>
         /// Gets or sets the SystemCommand.
         /// </summary>
@@ -29,23 +29,20 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
+        public override void DeserializeBytes(byte[] data) {
         }
 
         /// <summary>
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
+        public override byte[] SerializeBytes() {
             List<byte> bytes = new List<byte>
             {
                 CommandByte1,
                 CommandByte2
             };
-            switch (SystemCommand)
-            {
+            switch (SystemCommand) {
                 case SystemCommand.ResetFactory:
                     bytes.Add(1);
                     break;

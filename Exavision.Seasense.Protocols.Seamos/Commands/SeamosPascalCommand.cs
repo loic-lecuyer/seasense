@@ -1,18 +1,17 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Commands {
-    using Exavision.Seamos.Core.Extensions;
+    using Exavision.Seasense.Core.Extensions;
     using System;
 
     /// <summary>
     /// Defines the <see cref="SeamosPascalCommand" />.
     /// </summary>
-    public abstract class SeamosPascalCommand : SeamosCommand
-    {
+    public abstract class SeamosPascalCommand : SeamosCommand {
         /// <summary>
         /// Gets the CommandByte.
         /// </summary>
         public abstract byte CommandByte2 { get; }
 
-       public abstract byte CommandByte1 { get; }
+        public abstract byte CommandByte1 { get; }
 
 
 
@@ -25,13 +24,10 @@
         /// The Serialize.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public byte[] Serialize()
-        {
+        public byte[] Serialize() {
             string data = SeamosProtocol.PROTOCOL_SEAMAOS_START;
-            if (this.SystemTarget == SystemTarget.Computer)
-            { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_COMPUTER; }
-            else if (this.SystemTarget == SystemTarget.ElectronicCard)
-            { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_ELECTRONIC_CARD; }
+            if (this.SystemTarget == SystemTarget.Computer) { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_COMPUTER; }
+            else if (this.SystemTarget == SystemTarget.ElectronicCard) { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_ELECTRONIC_CARD; }
             else throw new NotImplementedException();
             // Materiel Cible et protocol
             string dataBody = ((int)this.MaterialTarget).ToString("0") + ((int)this.ProtocolType).ToString("0");

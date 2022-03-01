@@ -1,11 +1,10 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
-    using Exavision.Seamos.Core.Extensions;
+    using Exavision.Seasense.Core.Extensions;
 
     /// <summary>
     /// Defines the <see cref="Rect" />.
     /// </summary>
-    public struct Rect
-    {
+    public struct Rect {
         /// <summary>
         /// Gets or sets the Width.
         /// </summary>
@@ -30,17 +29,14 @@
     /// <summary>
     /// Defines the <see cref="SeamosCameraUtils" />.
     /// </summary>
-    public static class SeamosCameraUtils
-    {
+    public static class SeamosCameraUtils {
         /// <summary>
         /// The RectFromBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
         /// <returns>The <see cref="Rect"/>.</returns>
-        public static Rect RectFromBytes(byte[] data)
-        {
-            Rect rect = new Rect
-            {
+        public static Rect RectFromBytes(byte[] data) {
+            Rect rect = new Rect {
                 X = data.GetMsbUnsignedShort(0),
                 Y = data.GetMsbUnsignedShort(2),
                 Width = data.GetMsbUnsignedShort(4),
@@ -54,8 +50,7 @@
         /// </summary>
         /// <param name="rect">The rect<see cref="Rect"/>.</param>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public static byte[] BytesFromRect(Rect rect)
-        {
+        public static byte[] BytesFromRect(Rect rect) {
             byte[] result = new byte[8];
             result[0] = (byte)((int)rect.X);
             result[1] = (byte)((int)rect.X >> 8);

@@ -1,7 +1,7 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
-    using Exavision.Seamos.Materials.Infrastructure.Enums;
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
+    using Exavision.Seasense.Protocols.Seamos.Enums;
 
     /// <summary>
     /// Defines the <see cref="SeamosCameraSetReticuleModeRequest" />.

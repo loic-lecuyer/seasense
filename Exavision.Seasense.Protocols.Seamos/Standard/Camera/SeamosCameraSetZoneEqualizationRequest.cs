@@ -1,12 +1,11 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
-    using Exavision.Seamos.Core.Extensions;
+    using Exavision.Seasense.Core.Extensions;
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
     /// <summary>
     /// Defines the <see cref="SeamosCameraSetZoneEqualizationRequest" />.
     /// </summary>
-    public class SeamosCameraSetZoneEqualizationRequest : SeamosPascalCommand, ICameraSetZoneEqualizationRequest
-    {
+    public class SeamosCameraSetZoneEqualizationRequest : SeamosPascalCommand, ICameraSetZoneEqualizationRequest {
         /// <summary>
         /// Gets or sets the X.
         /// </summary>
@@ -44,8 +43,7 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
+        public override void DeserializeBytes(byte[] data) {
             this.X = data.GetMsbUnsignedShort(2);
             this.Y = data.GetMsbUnsignedShort(2);
             this.Width = data.GetMsbUnsignedShort(4);
@@ -56,8 +54,7 @@
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
+        public override byte[] SerializeBytes() {
             return new byte[] {
                 CommandByte1,
                 CommandByte2,

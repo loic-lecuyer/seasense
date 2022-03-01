@@ -1,12 +1,11 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Commands {
-    using Exavision.Seamos.Core.Extensions;
+    using Exavision.Seasense.Core.Extensions;
     using System;
 
     /// <summary>
     /// Defines the <see cref="SeamosPelcoCommand" />.
     /// </summary>
-    public abstract class SeamosPelcoCommand : SeamosCommand
-    {
+    public abstract class SeamosPelcoCommand : SeamosCommand {
         /// <summary>
         /// Gets the CommandByte1.
         /// </summary>
@@ -36,8 +35,7 @@
         /// The GetIntValue.
         /// </summary>
         /// <returns>The <see cref="int"/>.</returns>
-        public int GetIntValue()
-        {
+        public int GetIntValue() {
             return ((int)this.DataByte1 << 8) + (int)this.DataByte2;
         }
 
@@ -46,8 +44,7 @@
         /// </summary>
         /// <param name="channel">The channel<see cref="byte"/>.</param>
         /// <returns>The <see cref="SeamosPelcoCommand"/>.</returns>
-        public SeamosPelcoCommand SetChannel(byte channel)
-        {
+        public SeamosPelcoCommand SetChannel(byte channel) {
             this.ChannelByte = channel;
             return this;
         }
@@ -57,8 +54,7 @@
         /// </summary>
         /// <param name="value">The value<see cref="int"/>.</param>
         /// <returns>The <see cref="SeamosPelcoCommand"/>.</returns>
-        public SeamosPelcoCommand SetIntValue(int value)
-        {
+        public SeamosPelcoCommand SetIntValue(int value) {
             this.DataByte1 = (byte)(value >> 8);
             this.DataByte2 = (byte)(value);
             return this;
@@ -78,13 +74,10 @@
         /// The Serialize.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public byte[] Serialize()
-        {
+        public byte[] Serialize() {
             string data = SeamosProtocol.PROTOCOL_SEAMAOS_START;
-            if (this.SystemTarget == SystemTarget.Computer)
-            { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_COMPUTER; }
-            else if (this.SystemTarget == SystemTarget.ElectronicCard)
-            { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_ELECTRONIC_CARD; }
+            if (this.SystemTarget == SystemTarget.Computer) { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_COMPUTER; }
+            else if (this.SystemTarget == SystemTarget.ElectronicCard) { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_ELECTRONIC_CARD; }
             else throw new NotImplementedException();
             string nbBytes = ((byte)12).ToHexString();
             data += nbBytes;

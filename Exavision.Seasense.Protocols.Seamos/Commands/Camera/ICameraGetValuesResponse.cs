@@ -1,12 +1,12 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Commands.Camera {
-    using Exavision.Seamos.Materials.Infrastructure.Enums;
+
+    using Exavision.Seasense.Protocols.Seamos.Enums;
     using System.Collections.Generic;
 
     /// <summary>
     /// Defines the <see cref="ICameraGetValuesResponse" />.
     /// </summary>
-    public interface ICameraGetValuesResponse : ISeamosCommand
-    {
+    public interface ICameraGetValuesResponse : ISeamosCommand {
         /// <summary>
         /// Gets or sets the ShutterInfo.
         /// </summary>

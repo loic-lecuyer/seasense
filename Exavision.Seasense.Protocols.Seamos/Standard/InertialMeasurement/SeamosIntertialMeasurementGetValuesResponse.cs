@@ -1,8 +1,7 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.InertialMeasurement {
-    using Exavision.Seamos.Core.Extensions;
+    using Exavision.Seasense.Core.Extensions;
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.InertialMeasurement;
-
     /// <summary>
     /// Defines the <see cref="SeamosIntertialMeasurementGetValuesResponse" />.
     /// </summary>

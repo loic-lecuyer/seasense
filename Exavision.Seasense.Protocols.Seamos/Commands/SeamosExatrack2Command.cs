@@ -1,5 +1,5 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Commands {
-    using Exavision.Seamos.Core.Extensions;
+    using Exavision.Seasense.Core.Extensions;
     using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
     using Serilog;
     using System;

@@ -1,6 +1,7 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
+    using Exavision.Seasense.Protocols.Seamos.Enums;
     using System;
     using System.Collections;
     using System.Collections.Generic;

@@ -1,5 +1,7 @@
-﻿namespace Exavision.Seasense.Protocols.Seamos.Commands.Camera {
-    using Exavision.Seamos.Materials.Infrastructure.Enums;
+﻿using Exavision.Seasense.Protocols.Seamos.Enums;
+
+namespace Exavision.Seasense.Protocols.Seamos.Commands.Camera {
+
 
     /// <summary>
     /// Defines the <see cref="ICameraGetStateResponse" />.
