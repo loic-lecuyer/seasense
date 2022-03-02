@@ -8,10 +8,14 @@ import { Factory } from '../materials/factory';
 import { WsResponse } from '../api/ws/ws-response';
 import { SiteState } from '../materials/states/site-state';
 import { Subject } from 'rxjs';
+import { WsCameraZoomOutStartRequest } from '../api/ws/ws-camera-zoom-out-start-request';
+import { WsCameraZoomStopRequest } from '../api/ws/ws-camera-zoom-stop-request';
+import { WsCameraZoomInStartRequest } from '../api/ws/ws-camera-zoom-in-start-request';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
+ 
 
   public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
   private stateTimer: any;
@@ -89,6 +93,7 @@ export class WsService {
     clearInterval(this.stateTimer);
   }
   getStates() {
+    
     if (this.userService.token == null) return;
     let request: WsGetStateRequest = {
       $type: "WsGetStateRequest",
@@ -98,6 +103,7 @@ export class WsService {
     let data: string = JSON.stringify(request);
  
     this.socket?.send(data);
+    
   }
 
   turretMoveSpeed(unitId: string, materialId: string, axisX: number, axisY: number) {
@@ -118,6 +124,48 @@ export class WsService {
     let data: string = JSON.stringify(request);   
     this.socket?.send(data);
 
+  }
+
+  cameraZoomStop(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraZoomStopRequest = {
+      $type: "WsCameraZoomStopRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token
+     
+    };
+    console.log("WebSocket send stopZoom");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
+  cameraZoomInStart(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraZoomInStartRequest = {
+      $type: "WsCameraZoomInStartRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token
+    
+    };
+    console.log("WebSocket send cameraZoomInStart");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
+  cameraZoomOutStart(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraZoomOutStartRequest = {
+      $type: "WsCameraZoomOutStartRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token    
+    };
+    console.log("WebSocket send cameraZoomOutStart");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
   }
 
 }

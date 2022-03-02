@@ -7,5 +7,10 @@ namespace Exavision.Seasense.Shared.Capabilities.Camera {
         public abstract void ZoomOutStart();
 
         public abstract void ZoomStop();
+
+        public override S GetSetting(S setting) {
+            setting.CapabilityType = CapabilityType.CameraZoomContinuous;
+            return setting;
+        }
     }
 }

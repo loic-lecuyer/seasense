@@ -45,6 +45,16 @@ export class Unit implements Material {
     });
   }
 
+  hasCapability(capabilityType: CapabilityType): boolean {
+    let cap: Capability | undefined = this.capabilities.find((value: Capability) => { return value.capabilityType === capabilityType; });
+    return cap !== undefined;
+
+  }
+  getCapability<T extends Capability>(capabilityType: CapabilityType): T | undefined {
+    let cap: Capability | undefined = this.capabilities.find((value: Capability) => { return value.capabilityType === capabilityType; });
+    return <T>cap;
+
+  }
   // Pour coder cette methode il faut au mmoins une deuxième capability qui ne soit pas du type recherché
   hasMaterialWithCapability( materialType: MaterialType,capabilityType: CapabilityType) {
   

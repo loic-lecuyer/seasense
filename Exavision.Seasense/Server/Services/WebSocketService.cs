@@ -1,6 +1,7 @@
 ﻿using Exavision.Seasense.Api.WebSocket.Core;
 using Exavision.Seasense.Api.WebSocket.States;
 using Exavision.Seasense.Api.WebSocket.Turret;
+using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
@@ -98,6 +99,36 @@ namespace Exavision.Seasense.Server.Services {
             else if (request is WsGetStateRequest reqGetState) {
                 WsResponse response = new WsGetStateResponse() { RequestId = request.RequestId, Site = this.siteService.GetState() };
                 this.SendResponse(response, client);
+            }
+            else if (request is WsCameraZoomStopRequest cameraZoomStopRequest) {
+                IUnit unit = this.siteService.FindUnitById(cameraZoomStopRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraZoomStopRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ICameraZoomContinuousCapability capability = material.GetCapability<ICameraZoomContinuousCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
+                capability.ZoomStop();
+                this.SendValid(request.RequestId, client);
+            }
+            else if (request is WsCameraZoomInStartRequest cameraZoomInStartRequest) {
+                IUnit unit = this.siteService.FindUnitById(cameraZoomInStartRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraZoomInStartRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ICameraZoomContinuousCapability capability = material.GetCapability<ICameraZoomContinuousCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
+                capability.ZoomInStart();
+                this.SendValid(request.RequestId, client);
+            }
+            else if (request is WsCameraZoomOutStartRequest cameraZoomOutStartRequest) {
+                IUnit unit = this.siteService.FindUnitById(cameraZoomOutStartRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraZoomOutStartRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ICameraZoomContinuousCapability capability = material.GetCapability<ICameraZoomContinuousCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
+                capability.ZoomOutStart();
+                this.SendValid(request.RequestId, client);
             }
 
         }

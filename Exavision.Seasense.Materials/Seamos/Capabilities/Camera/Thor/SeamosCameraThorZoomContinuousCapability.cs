@@ -14,7 +14,8 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Thor {
             this.camera = camera;
         }
         public override SettingSeamosCameraThorZoomContinuousCapability GetSetting(SettingSeamosCameraThorZoomContinuousCapability setting) {
-            return new SettingSeamosCameraThorZoomContinuousCapability();
+            base.GetSetting(setting);
+            return setting;
         }
 
         public void ProcessHardwareResponse(ISeamosCommand command) {

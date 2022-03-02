@@ -29,7 +29,8 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Thor {
         }
 
         public override SettingSeamosCameraThorZoomAbsolutePositionCapability GetSetting(SettingSeamosCameraThorZoomAbsolutePositionCapability setting) {
-            return new SettingSeamosCameraThorZoomAbsolutePositionCapability();
+            base.GetSetting(setting);
+            return setting;
         }
 
         public override void SetSetting(SettingSeamosCameraThorZoomAbsolutePositionCapability setting) {

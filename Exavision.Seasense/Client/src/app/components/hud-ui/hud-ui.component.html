@@ -1,17 +1,65 @@
-<div *ngIf="isLeftToRight" class="hud-column">
+<div *ngIf="isLeftToRight" class="hud-column flex-dir-col">
+  <div class="spacer">
+
+  </div>
+  <!-- Button LRF -->
+  <app-hud-button>
+    LRF
+  </app-hud-button>
+
+  <!-- Zoom In -->
+  <app-hud-button  (buttonDown)="onZoomInDown()"  (buttonUp)="onZoomUp()" *ngIf="hasZoomContinuousCapability">
+    <mat-icon  class="hud-button-icon" [inline]="true" matTooltip="Zoom In" aria-hidden="false" aria-label="Zoom In">zoom_in</mat-icon>
+  </app-hud-button>
+
+  <!-- Zoom PIP -->
+  <app-hud-button>
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Switch Zoom Center On/Off" aria-hidden="false" aria-label="Switch Zoom Center On/Off">crop_free</mat-icon>
+  </app-hud-button>
+
+
+  <!-- Zoom Out -->
+  <app-hud-button  (buttonDown)="onZoomOutDown()"  (buttonUp)="onZoomUp()"   *ngIf="hasZoomContinuousCapability">
+    <mat-icon   class="hud-button-icon" [inline]="true" matTooltip="Zoom Out" aria-hidden="false" aria-label="Zoom Out">zoom_out</mat-icon>
+  </app-hud-button>
+
+
+  <!-- Auto Focus -->
+  <app-hud-button>
+    <div matTooltip="Auto Focus">AF</div>
+  </app-hud-button>
+
+  <!-- Focus Near -->
+  <app-hud-button>
+      <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Focus Near" aria-hidden="false" aria-label="Focus Near">portrait</mat-icon> 
+  </app-hud-button>
+
+  <!-- Focus Far -->
+  <app-hud-button>
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Focus Far" aria-hidden="false" aria-label="Focus Far">panorama</mat-icon>
+  </app-hud-button>
+
+  <div class="spacer">
+
+  </div>
 
 </div>
-<div *ngIf="!isLeftToRight" class="hud-column">
+<div *ngIf="!isLeftToRight" class="hud-column flex-dir-col">
 
 </div>
 <div class="spacer">
 
 </div>
+
+
 <div *ngIf="isLeftToRight" class="hud-column flex-dir-col">
   <app-compass></app-compass>
+  <app-hud-button></app-hud-button>
   <div class="flex-1"></div>
   <app-stick *ngIf="hasMoveSpeedCapability"></app-stick>
 </div>
-<div *ngIf="!isLeftToRight" class="hud-column">
+
+
+<div *ngIf="!isLeftToRight" class="hud-column flex-dir-col">
 
 </div>

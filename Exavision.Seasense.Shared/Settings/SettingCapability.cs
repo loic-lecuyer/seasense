@@ -5,7 +5,9 @@ namespace Exavision.Seasense.Shared.Settings {
         UnitReboot,
         TurretMoveSpeed,
         TurretMoveAbsolute,
-        TurretAbsolutePosition
+        TurretAbsolutePosition,
+        CameraZoomAbsolutePosition,
+        CameraZoomContinuous
     }
     public abstract class SettingCapability : SettingBase {
 

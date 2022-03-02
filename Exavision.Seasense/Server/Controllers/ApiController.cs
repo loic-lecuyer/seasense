@@ -39,6 +39,7 @@
         public GetSettingResponse Setting([FromBody] GetSettingRequest request) {
             GetSettingResponse settingResponse = new GetSettingResponse();
             settingResponse.Site = this.siteService.LoadSetting();
+
             return settingResponse;
         }
 

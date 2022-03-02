@@ -1,5 +1,6 @@
 import { WsService } from "../services/ws.service";
 import { Capability } from "./capabilities/capability";
+import { CapabilityType } from "./capabilities/capability-type";
 import { Factory } from "./factory";
 import { Material } from "./material";
 import { MaterialType } from "./material-type";
@@ -37,6 +38,11 @@ export class InertialMeasurement implements Material {
       this.capabilities.push(capability);
     });
   }
+  getCapability<T extends Capability>(capabilityType: CapabilityType): T | undefined {
+    let cap: Capability | undefined = this.capabilities.find((value: Capability) => { return value.capabilityType === capabilityType; });
+    return <T>cap;
+
+  }
   setState(state: MaterialState): void {
     state.capabilities.forEach((valueState: CapabilityState) => {
       let cap: Capability | undefined = this.capabilities.find((valueCap: Capability) => { return valueCap.id === valueState.id; });
@@ -50,6 +56,11 @@ export class InertialMeasurement implements Material {
         mat.setState(valueState);
       }
     });
+  }
+  hasCapability(capabilityType: CapabilityType): boolean {
+    let cap: Capability | undefined = this.capabilities.find((value: Capability) => { return value.capabilityType === capabilityType; });
+    return cap !== undefined;
+
   }
   
 }

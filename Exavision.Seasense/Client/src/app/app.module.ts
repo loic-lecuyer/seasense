@@ -32,6 +32,8 @@ import { HudTiltRullerComponent } from './components/hud-tilt-ruller/hud-tilt-ru
 import { HudStatusComponent } from './components/hud-status/hud-status.component';
 import { CompassComponent } from './components/compass/compass.component';
 import { StickComponent } from './components/stick/stick.component';
+import { HudButtonComponent } from './components/hud-button/hud-button.component';
+import { MatRippleModule } from '@angular/material/core';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -47,7 +49,7 @@ export const httpInterceptorProviders = [
     HudStreamComponent,
     HudPanRullerComponent,
     HudTiltRullerComponent,    
-    HudStatusComponent, CompassComponent, StickComponent    
+    HudStatusComponent, CompassComponent, StickComponent, HudButtonComponent    
   ],
   imports: [
     BrowserModule,
@@ -55,6 +57,7 @@ export const httpInterceptorProviders = [
     BrowserAnimationsModule,
     MatButtonModule,
     MatSelectModule,
+    MatRippleModule,
     ScrollingModule,
     MatListModule,
     MatTreeModule,

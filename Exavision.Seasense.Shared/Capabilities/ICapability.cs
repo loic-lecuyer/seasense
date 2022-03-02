@@ -8,7 +8,7 @@ namespace Exavision.Seasense.Shared.Capabilities {
         public string Id { get; }
         SettingCapability GetSettingCapability();
         CapabilityState GetState();
-
         List<PollingAction> GetPollingActions();
+
     }
 }

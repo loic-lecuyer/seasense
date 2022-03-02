@@ -22,12 +22,17 @@
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
     <None Remove="Client\src\app\api\ws\speed-vector.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-zoom-in-start-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-state-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-state-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-move-speed-request.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
+    <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-absolute-position-capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-continuous-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability-type.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-absolute-position-capability.ts" />
@@ -41,6 +46,7 @@
     <None Remove="Client\src\app\materials\settings\setting-site.ts" />
     <None Remove="Client\src\app\materials\settings\setting-unit.ts" />
     <None Remove="Client\src\app\materials\site.ts" />
+    <None Remove="Client\src\app\materials\states\camera\camera-zoom-absolute-position-state.ts" />
     <None Remove="Client\src\app\materials\states\capability-state.ts" />
     <None Remove="Client\src\app\materials\states\material-state.ts" />
     <None Remove="Client\src\app\materials\states\site-state.ts" />
@@ -53,7 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Server\Materials\Seamos\Capabilities\Camera\Gige\" />
     <Folder Include="www\" />
   </ItemGroup>
 
@@ -75,6 +80,7 @@
     <ProjectReference Include="..\Exavision.Seasense.Api.Http\Exavision.Seasense.Api.Http.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Api.WebSocket\Exavision.Seasense.Api.WebSocket.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Materials\Exavision.Seasense.Materials.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
@@ -104,10 +110,19 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\ws\speed-vector.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-in-start-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-state-response.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-state-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-turret-move-speed-request.ts">
@@ -118,6 +133,12 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-request.ts" />
     <TypeScriptCompile Include="Client\src\app\interceptor\jwt-interceptor.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\camera\camera-zoom-continuous-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\camera\camera-zoom-absolute-position-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability-type.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability.ts">
       <SubType>Code</SubType>
@@ -132,6 +153,9 @@
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\factory.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\material.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\states\camera\camera-zoom-absolute-position-state.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\states\capability-state.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

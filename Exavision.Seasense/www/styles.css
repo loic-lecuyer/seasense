@@ -3225,4 +3225,13 @@ body {
   user-select: none;
 }
 
+.hud-button-icon {
+  margin-left: auto;
+  margin-right: auto;
+  color: white;
+  font-size: 32px !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
 /*# sourceMappingURL=styles.css.map*/

@@ -7,7 +7,6 @@
     using Serilog;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
 
     /// <summary>
     /// Defines the <see cref="SeamosProtocol" />.
@@ -378,7 +377,7 @@
 
         private byte[] SerializeExatrack2(SeamosExatrack2Command seamosExatrack2Command) {
             byte[] data = seamosExatrack2Command.Serialize();
-            Debug.WriteLine("PelcoDec 2 Exatrack => " + data.ToHexString());
+            // Debug.WriteLine("PelcoDec 2 Exatrack => " + data.ToHexString());
             return data;
         }
 

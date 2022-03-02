@@ -3,6 +3,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
@@ -19,6 +20,7 @@
     <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Spinnaker.Shared\Exavision.Seasense.Spinnaker.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />

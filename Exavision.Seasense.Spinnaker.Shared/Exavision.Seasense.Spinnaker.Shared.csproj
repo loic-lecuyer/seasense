@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Platforms>x64;x86;AnyCPU</Platforms>
+    <AssemblyName>Exavision.Seasense.Spinnaker.Shared</AssemblyName>
+    <RootNamespace>Exavision.Seasense.Spinnaker.Shared</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+</Project>

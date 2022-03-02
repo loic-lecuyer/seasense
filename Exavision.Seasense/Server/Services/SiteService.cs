@@ -1,5 +1,4 @@
-﻿using Exavision.Seasense.Api.WebSocket.States;
-using Exavision.Seasense.Server.Materials.Seamos;
+﻿using Exavision.Seasense.Server.Materials.Seamos;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
@@ -22,11 +21,14 @@ namespace Exavision.Seasense.Server.Services {
             this.site.Units.ForEach((IUnit unit) => {
                 unit.Start();
             });
+            // To get new capability or material implemented beetween version
+            settingSite = this.site.GetSetting();
+            this.SaveSetting(settingSite);
         }
 
         public Type GetTypeFromSetting(Type settingType) {
 
-            Type[] types = this.GetType().Assembly.GetTypes();
+            Type[] types = typeof(SeamosUnit).Assembly.GetTypes();
             foreach (Type type in types) {
                 if (typeof(IMaterial).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {
                     if (type.BaseType.GenericTypeArguments.Length > 0 && type.BaseType.GenericTypeArguments.Contains(settingType)) {
@@ -65,6 +67,7 @@ namespace Exavision.Seasense.Server.Services {
                 Site site = new Site();
                 SeamosUnit unit = new SeamosUnit();
                 site.Units.Add(unit);
+
                 SettingSite settingSite = site.GetSetting();
                 this.SaveSetting(settingSite);
                 return settingSite;
@@ -100,6 +103,6 @@ namespace Exavision.Seasense.Server.Services {
             return this.site.GetState();
         }
 
-       
+
     }
 }

@@ -22,6 +22,8 @@ import { UnitState } from "./states/unit-state";
 import { MaterialState } from "./states/material-state";
 import { TurretAbsolutePositionState } from "./states/turret/turret-absolute-position-state";
 import { TurretAbsolutePositionCapability } from "./capabilities/turret/turret-absolute-position-capability";
+import { CameraZoomAbsolutePositionCapability } from "./capabilities/camera/camera-zoom-absolute-position-capability";
+import { CameraZoomContinuousCapability } from "./capabilities/camera/camera-zoom-continuous-capability";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -77,6 +79,12 @@ export class Factory {
 
       case CapabilityType.TurretAbsolutePosition:
         capability = new TurretAbsolutePositionCapability(settingCapability);
+        break;
+      case CapabilityType.CameraZoomAbsolutePosition:
+        capability = new CameraZoomAbsolutePositionCapability(settingCapability);
+        break;
+      case CapabilityType.CameraZoomContinuous:
+        capability = new CameraZoomContinuousCapability(settingCapability);
         break;
     }
     if (capability == null) {

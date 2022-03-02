@@ -1,5 +1,6 @@
 ﻿
 using Exavision.Seasense.Api.WebSocket.Core;
+using Exavision.Seasense.Server.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Settings;
 using Exavision.Seasense.Shared.States;
 using Newtonsoft.Json.Serialization;
@@ -15,6 +16,13 @@ namespace Exavision.Seasense.Server.Services {
         public SerializationBinder() {
             Type[] types = this.GetType().Assembly.GetTypes();
             foreach (Type type in types) {
+                if (typeof(SettingBase).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {
+                    knowTypes.Add(type);
+                }
+            }
+
+            Type[] typesSettingSeamos = typeof(SettingSeamosUnit).Assembly.GetTypes();
+            foreach (Type type in typesSettingSeamos) {
                 if (typeof(SettingBase).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {
                     knowTypes.Add(type);
                 }

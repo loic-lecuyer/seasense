@@ -15,8 +15,10 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         public SeamosThermalCamera(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Thermal Camera";
             this.Capabilities.Add(new SeamosCameraThorZoomAbsolutePositionCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorZoomContinuousCapability(this));
         }
         public override SettingSeamosThermalCamera GetSetting(SettingSeamosThermalCamera setting) {
+
             return setting;
         }
         public override void SetSetting(SettingSeamosThermalCamera setting) {

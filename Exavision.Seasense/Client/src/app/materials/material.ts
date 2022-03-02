@@ -1,5 +1,6 @@
 import { WsService } from "../services/ws.service";
 import { Capability } from "./capabilities/capability";
+import { CapabilityType } from "./capabilities/capability-type";
 import { MaterialType } from "./material-type";
 import { Site } from "./site";
 import { MaterialState } from "./states/material-state";
@@ -16,4 +17,6 @@ export interface Material {
   wsService: WsService;
   site: Site;
   unit: Unit;
+  hasCapability(capabilityType: CapabilityType): boolean;
+  getCapability<T extends Capability>(capabilityType: CapabilityType): T | undefined;
 }

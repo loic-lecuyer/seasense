@@ -1,5 +1,6 @@
 import { WsService } from "../services/ws.service";
 import { Capability } from "./capabilities/capability";
+import { CapabilityType } from "./capabilities/capability-type";
 import { Factory } from "./factory";
 import { Material } from "./material";
 import { MaterialType } from "./material-type";
@@ -39,6 +40,16 @@ export class Turret implements Material {
       capability.material = this;
       this.capabilities.push(capability);
     });
+  }
+  hasCapability(capabilityType: CapabilityType): boolean {
+    let cap: Capability | undefined = this.capabilities.find((value: Capability) => { return value.capabilityType === capabilityType; });
+    return cap !== undefined;
+
+  }
+  getCapability<T extends Capability>(capabilityType: CapabilityType): T | undefined {
+    let cap: Capability | undefined = this.capabilities.find((value: Capability) => { return value.capabilityType === capabilityType; });
+    return <T>cap;
+
   }
   setState(state: MaterialState): void {
     state.capabilities.forEach((valueState: CapabilityState) => {

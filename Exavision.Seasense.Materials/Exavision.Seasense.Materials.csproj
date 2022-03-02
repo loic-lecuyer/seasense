@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Spinnaker.Shared\Exavision.Seasense.Spinnaker.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
