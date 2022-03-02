@@ -178,7 +178,7 @@ namespace Exavision.Seasense.Streaming {
                     stream = response.GetResponseStream();
                     Log.Verbose("MjpegReader GetResponseStream Ok");
                     this.LoopJpeg(stream);
-
+                  
                 }
                 catch (Exception ex) {
                     this.HasError = true;
@@ -188,6 +188,9 @@ namespace Exavision.Seasense.Streaming {
                     this.CloseResponse();
                     this.canceller.Token.WaitHandle.WaitOne(2000);
                     fpsTimer.Stop();
+                    lock (ImageBytesLocker) {
+                        this.imageBytes = null;
+                    }
                 }
                 if (!this.AutoReconnect) break;
             }
@@ -262,7 +265,7 @@ namespace Exavision.Seasense.Streaming {
                         if (datas.Count > BufferSize * 10) {
                             datas.Clear();
                         }
-                        canceller.Token.WaitHandle.WaitOne(1);
+                        canceller.Token.WaitHandle.WaitOne(this.DesiredFps / 1000);
                     }
                     catch (Exception ex) {
                         this.frameErrorCount++;

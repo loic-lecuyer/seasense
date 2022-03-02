@@ -41,6 +41,7 @@
     <None Remove="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
     <None Remove="Client\src\app\materials\factory.ts" />
     <None Remove="Client\src\app\materials\material.ts" />
+    <None Remove="Client\src\app\materials\settings\setting-camera.ts" />
     <None Remove="Client\src\app\materials\settings\setting-capability.ts" />
     <None Remove="Client\src\app\materials\settings\setting-material.ts" />
     <None Remove="Client\src\app\materials\settings\setting-site.ts" />
@@ -155,6 +156,9 @@
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\factory.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\material.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\settings\setting-camera.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\states\camera\camera-zoom-absolute-position-state.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

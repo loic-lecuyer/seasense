@@ -1,1 +1,6 @@
-<img class="flex-1 main-stream" *ngIf="mainStream !== undefined" [src]="mainStream.url"  />
+<img
+     [style.width.px]="mainStream.displayWidth"
+     [style.height.px]="mainStream.displayHeight"
+     [style.top.px]="mainStream.displayTop"
+     [style.left.px]="mainStream.displayLeft"
+     class="main-stream" *ngIf="mainStream !== undefined" [src]="mainStream.url"  />

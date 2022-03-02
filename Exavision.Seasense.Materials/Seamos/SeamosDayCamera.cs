@@ -63,12 +63,14 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         public override SettingSeamosDayCamera GetSetting(SettingSeamosDayCamera setting) {
             setting.BaseUrl = this.baseUrl;
             setting.StreamUrl = this.streamUrl;
+            setting.StreamWidth = this.ImageWidth;
+            setting.StreamHeight = this.ImageHeight;
             return setting;
         }
 
         public override void SetSetting(SettingSeamosDayCamera setting) {
             this.baseUrl = setting.BaseUrl;
-            this.streamUrl = setting.StreamUrl;
+            this.streamUrl = setting.StreamUrl;         
             base.SetSetting(setting);
             Console.WriteLine("SeamosDayCamera SetSetting");
         }

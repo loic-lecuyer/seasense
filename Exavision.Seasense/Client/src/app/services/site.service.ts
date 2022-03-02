@@ -15,6 +15,7 @@ import { WsService } from './ws.service';
   providedIn: 'root'
 })
 export class SiteService {
+ 
 
   public siteStateSubject: Subject<Site | undefined> = new Subject<Site | undefined>();
   public siteLoadedSubject: Subject<Site | undefined> = new Subject<Site | undefined>();
@@ -39,6 +40,27 @@ export class SiteService {
       this.site.setState(siteState);
       this.siteStateSubject.next(this.site);
     }   
+  }
+  selectNextCamera() {
+    if (this.selectedUnit == null) return;
+    if (this.selectedCamera == null) return;
+  
+    let cameraCount = 0;
+    let cameras: Camera[] = [];
+    this.selectedUnit.materials.forEach((value: Material) => {
+      if (value.materialType == MaterialType.DayCamera || value.materialType == MaterialType.ThermalCamera) {
+        cameraCount++;
+        cameras.push(<Camera>value);
+      }
+    });
+    let index: number = cameras.indexOf(this.selectedCamera);
+    if (index == -1) return;
+    let targetIndex: number = index + 1;
+    if (targetIndex > cameraCount -1) {
+      targetIndex = 0;
+    }
+    this.selectedCamera = cameras[targetIndex];
+    this.cameraSelectedSubject.next(this.selectedCamera);
   }
   createSite(response: GetSettingResponse) {
     this.site = undefined;    

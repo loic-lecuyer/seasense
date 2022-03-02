@@ -28,19 +28,16 @@ namespace Exavision.Seasense.Server.Services {
                             provider = new RtspImageByteProvider(camera.StreamUrl);
                         }
                     }
-
-                }
-                if (provider == null) return null;
-                else {
-                    provider.Start();
-                    ImageByteStreamer streamer = new ImageByteStreamer(provider);
-                    streamers.Add(materialId, streamer);
-                    return streamer;
-                }
-
+                    if (provider == null) return null;
+                    else {
+                        provider.Start();
+                        ImageByteStreamer streamer = new ImageByteStreamer(provider,camera.ImageWidth,camera.ImageHeight);
+                        streamers.Add(materialId, streamer);
+                        return streamer;
+                    }
+                }  
             }
-
-
+            return null;
         }
     }
 }

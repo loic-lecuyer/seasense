@@ -1,8 +1,6 @@
-:host {
-  display: flex;
-  flex: 1;
-
-}
-.main-stream {
-  object-fit: contain;
+.main-stream{
+    position:absolute;
+    left:0px;
+    right:0px;
+   
 }

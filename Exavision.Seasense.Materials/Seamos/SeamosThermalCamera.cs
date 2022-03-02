@@ -22,6 +22,8 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         }
         public override SettingSeamosThermalCamera GetSetting(SettingSeamosThermalCamera setting) {
             setting.StreamUrl = this.streamUrl;
+            setting.StreamWidth = this.ImageWidth;
+            setting.StreamHeight = this.ImageHeight;
             return setting;
         }
         public override void SetSetting(SettingSeamosThermalCamera setting) {

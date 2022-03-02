@@ -2,10 +2,10 @@
 
 namespace Exavision.Seasense.Server.Materials.Seamos.Settings {
 
-    public class SettingSeamosDayCamera : SettingMaterial {
+    public class SettingSeamosDayCamera : SettingCamera {
         public string BaseUrl { get; set; }
 
-        public string StreamUrl { get; set; }
+     
 
 
 

@@ -4,6 +4,7 @@ import { CapabilityType } from "./capabilities/capability-type";
 import { Factory } from "./factory";
 import { Material } from "./material";
 import { MaterialType } from "./material-type";
+import { SettingCamera } from "./settings/setting-camera";
 import { SettingCapability } from "./settings/setting-capability";
 import { SettingMaterial } from "./settings/setting-material";
 import { Site } from "./site";
@@ -20,6 +21,8 @@ export abstract class Camera implements Material  {
   wsService: WsService;
   site: Site;
   unit: Unit;
+  streamWidth: number;
+  streamHeight: number;
   constructor(settingMaterial: SettingMaterial, site: Site, unit: Unit, wsService: WsService, factory: Factory) {
     this.id = settingMaterial.id;
     this.materials = [];
@@ -28,7 +31,11 @@ export abstract class Camera implements Material  {
     this.wsService = wsService;
     this.materialType = MaterialType.DayCamera;
     this.displayName = settingMaterial.displayName;
- 
+
+    let settingCamera: SettingCamera = <SettingCamera>settingMaterial;
+    this.streamWidth = settingCamera.streamWidth;
+    this.streamHeight = settingCamera.streamHeight;
+  
     settingMaterial.materials.forEach((settingMaterialChild: SettingMaterial) => {
       let material: Material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
       this.materials.push(material);
