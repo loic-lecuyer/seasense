@@ -37,6 +37,7 @@ namespace Exavision.Seasense.Server {
             services.AddSingleton<ITokenService, TokenService>();
             services.AddSingleton<ISiteService, SiteService>();
             services.AddSingleton<IWebSocketService, WebSocketService>();
+            services.AddSingleton<IStreamingService, StreamingService>();
             services.AddControllers().AddNewtonsoftJson(options => {
                 options.SerializerSettings.TypeNameHandling = TypeNameHandling.Auto;
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver {
@@ -80,9 +81,11 @@ namespace Exavision.Seasense.Server {
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISiteService siteService, IWebSocketService webSocketService) {
             siteService.Start();
+
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseMiddleware<StreamMiddleware>();
             app.UseMiddleware<JwtMiddleware>();
             app.UseRouting();
             app.UseSpaStaticFiles(new StaticFileOptions {

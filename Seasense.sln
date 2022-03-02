@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Mock.Sea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Spinnaker.Shared", "Exavision.Seasense.Spinnaker.Shared\Exavision.Seasense.Spinnaker.Shared.csproj", "{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exavision.Seasense.Materials", "Exavision.Seasense.Materials\Exavision.Seasense.Materials.csproj", "{371EB48B-6C54-4111-9B99-C51C6069BDE6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Materials", "Exavision.Seasense.Materials\Exavision.Seasense.Materials.csproj", "{371EB48B-6C54-4111-9B99-C51C6069BDE6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exavision.Seasense.Streaming", "Exavision.Seasense.Streaming\Exavision.Seasense.Streaming.csproj", "{57746F68-317C-4A17-9698-9A406F4E2B48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -135,6 +137,18 @@ Global
 		{371EB48B-6C54-4111-9B99-C51C6069BDE6}.Release|x64.Build.0 = Release|Any CPU
 		{371EB48B-6C54-4111-9B99-C51C6069BDE6}.Release|x86.ActiveCfg = Release|Any CPU
 		{371EB48B-6C54-4111-9B99-C51C6069BDE6}.Release|x86.Build.0 = Release|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Debug|x64.Build.0 = Debug|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Debug|x86.Build.0 = Debug|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|x64.ActiveCfg = Release|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|x64.Build.0 = Release|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|x86.ActiveCfg = Release|Any CPU
+		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -12,16 +12,20 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         public override int ImageWidth { get => 800; }
         public override int ImageHeight { get => 600; }
 
+        private string streamUrl;
+        public override string StreamUrl { get => streamUrl; }
+
         public SeamosThermalCamera(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Thermal Camera";
             this.Capabilities.Add(new SeamosCameraThorZoomAbsolutePositionCapability(this));
             this.Capabilities.Add(new SeamosCameraThorZoomContinuousCapability(this));
         }
         public override SettingSeamosThermalCamera GetSetting(SettingSeamosThermalCamera setting) {
-
+            setting.StreamUrl = this.streamUrl;
             return setting;
         }
         public override void SetSetting(SettingSeamosThermalCamera setting) {
+            this.streamUrl = setting.StreamUrl;
             base.SetSetting(setting);
             Console.WriteLine("SeamosThermalCamera SetSetting");
         }

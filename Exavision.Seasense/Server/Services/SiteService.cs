@@ -103,6 +103,22 @@ namespace Exavision.Seasense.Server.Services {
             return this.site.GetState();
         }
 
-
+        public IMaterial FindMaterialById(string materialId) {
+            IMaterial result = null;
+            this.site.Units.ForEach((IUnit unit) => {
+                if (unit.Id.Equals(materialId)) {
+                    result = unit;
+                }
+                else {
+                    foreach (IMaterial material in unit.Materials) {
+                        if (material.Id.Equals(materialId)) {
+                            result = material;
+                            break;
+                        }
+                    }
+                }
+            });
+            return result;
+        }
     }
 }

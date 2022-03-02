@@ -24,6 +24,8 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         private HttpClient client;
         private GetValuesRequest requestGetValues;
         private SetValuesRequest requestSetValues;
+        private string streamUrl;
+        public override string StreamUrl { get => streamUrl; }
         public SeamosDayCamera(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Day Camera";
             this.Capabilities.Add(new SeamosCameraGigeZoomAbsolutePositionCapability(this));
@@ -59,12 +61,14 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
         public JsonSerializerSettings JsonSerializerSettings { get; }
 
         public override SettingSeamosDayCamera GetSetting(SettingSeamosDayCamera setting) {
-            setting.baseUrl = this.baseUrl;
+            setting.BaseUrl = this.baseUrl;
+            setting.StreamUrl = this.streamUrl;
             return setting;
         }
 
         public override void SetSetting(SettingSeamosDayCamera setting) {
-            this.baseUrl = setting.baseUrl;
+            this.baseUrl = setting.BaseUrl;
+            this.streamUrl = setting.StreamUrl;
             base.SetSetting(setting);
             Console.WriteLine("SeamosDayCamera SetSetting");
         }

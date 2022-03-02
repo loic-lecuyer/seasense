@@ -53,6 +53,7 @@
     <None Remove="Client\src\app\materials\states\turret\turret-absolute-position-state.ts" />
     <None Remove="Client\src\app\materials\states\unit-state.ts" />
     <None Remove="Client\src\app\materials\unit.ts" />
+    <None Remove="Client\src\app\models\stream.ts" />
     <None Remove="Client\src\app\models\unit-type.ts" />
     <None Remove="Client\src\app\models\user.ts" />
     <None Remove="Client\src\app\pages\configuration\configuration-node.ts" />
@@ -83,6 +84,7 @@
     <ProjectReference Include="..\Exavision.Seasense.Materials\Exavision.Seasense.Materials.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Streaming\Exavision.Seasense.Streaming.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -182,6 +184,9 @@
     <TypeScriptCompile Include="Client\src\app\materials\settings\setting-site.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\site.ts" />
     <TypeScriptCompile Include="Client\src\app\models\unit-type.ts" />
+    <TypeScriptCompile Include="Client\src\app\models\stream.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\models\user.ts" />
     <TypeScriptCompile Include="Client\src\app\pages\configuration\configuration-node.ts" />
   </ItemGroup>

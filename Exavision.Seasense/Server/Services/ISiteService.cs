@@ -10,5 +10,6 @@ namespace Exavision.Seasense.Server.Services {
         void SaveSetting(SettingSite site);
         IUnit FindUnitById(string unitId);
         SiteState GetState();
+        IMaterial FindMaterialById(string materialId);
     }
 }
