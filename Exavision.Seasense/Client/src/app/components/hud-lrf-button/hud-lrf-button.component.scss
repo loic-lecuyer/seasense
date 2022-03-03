@@ -1,0 +1,49 @@
+:host {
+  user-select: none !important;
+  margin: 8px;
+  z-index: 200;
+  width: 81px;
+  height: 71px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hexagon-checked {
+  cursor: pointer;
+  user-select: none !important;
+  background-image: url("/assets/hud-check-checked-off.png");
+  width: 81px;
+  height: 71px;
+  background-color: transparent;
+  border-width: 0px !important;
+  outline: none !important;
+  box-shadow: none !important;
+  display: flex;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.hexagon-checked:hover {
+  background-image: url("/assets/hud-check-checked-hover.png");
+}
+
+.hexagon-unchecked {
+  cursor: pointer;
+  user-select: none !important;
+  background-image: url("/assets/hud-check-unchecked-off.png");
+  width: 81px;
+  height: 71px;
+  background-color: transparent;
+  border-width: 0px !important;
+  outline: none !important;
+  box-shadow: none !important;
+  display: flex;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.hexagon-unchecked:hover {
+  background-image: url("/assets/hud-check-unchecked-hover.png");
+}

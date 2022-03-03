@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
+import { Camera } from '../../materials/camera';
 import { CameraAutoFocusOnePushCapability } from '../../materials/capabilities/camera/camera-auto-focus-one-push-capability';
 import { CameraZoomContinuousCapability } from '../../materials/capabilities/camera/camera-zoom-continuous-capability';
 import { CapabilityType } from '../../materials/capabilities/capability-type';
@@ -36,7 +38,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
   private siteStateSubscription: Subscription;
-  constructor(private siteService: SiteService) {
+  constructor(private siteService: SiteService, private snackBar: MatSnackBar) {
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.siteStateSubscription = this.siteService.siteStateSubject.subscribe(() => {
@@ -134,7 +136,13 @@ export class HudUiComponent implements OnInit, OnDestroy {
   }
 
   onSwitchCameraDown() {
-    this.siteService.selectNextCamera();
+    let camera: Camera | undefined = this.siteService.selectNextCamera();
+    if (camera == null) return;
+
+    this.snackBar.open("Display : " + camera.displayName,"", {
+      duration: 3000,
+      panelClass: 'seasense-snackbar'
+    });
   }
   onStablizationCheckChange(enabled: boolean) {
     if (this.siteService.selectedUnit == null) return;

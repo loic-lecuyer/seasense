@@ -41,7 +41,7 @@ export class SiteService {
       this.siteStateSubject.next(this.site);
     }   
   }
-  selectNextCamera() {
+  selectNextCamera(): Camera | undefined{
     if (this.selectedUnit == null) return;
     if (this.selectedCamera == null) return;
   
@@ -61,6 +61,7 @@ export class SiteService {
     }
     this.selectedCamera = cameras[targetIndex];
     this.cameraSelectedSubject.next(this.selectedCamera);
+    return this.selectedCamera;
   }
   createSite(response: GetSettingResponse) {
     this.site = undefined;    
