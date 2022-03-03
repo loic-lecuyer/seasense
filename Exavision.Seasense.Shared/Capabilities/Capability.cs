@@ -8,10 +8,6 @@ namespace Exavision.Seasense.Shared.Capabilities {
     public abstract class Capability<S> : ICapability
         where S : SettingCapability, new() {
 
-
-
-
-
         public string Id { get; protected set; } = Guid.NewGuid().ToString();
 
         public Capability() {

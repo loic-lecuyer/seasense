@@ -27,6 +27,12 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosUnitRebootCapability());
         }
 
+        internal void SendCommand(ISeamosCommand command) {
+            byte[] bytes = this.Protocol.Serialize(command);
+            string text = bytes.ToHexString();
+            this.Client.Send(text);
+        }
+
         public override SettingSeamosUnit GetSetting(SettingSeamosUnit setting) {
             setting.HardwareCardIp = this.HardwareCardIp;
             setting.HardwareCardPort = this.HardwareCardPort;

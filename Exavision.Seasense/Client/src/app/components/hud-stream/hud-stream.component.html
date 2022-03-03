@@ -4,3 +4,22 @@
      [style.top.px]="mainStream.displayTop"
      [style.left.px]="mainStream.displayLeft"
      class="main-stream" *ngIf="mainStream !== undefined" [src]="mainStream.url"  />
+
+
+<div *ngIf="showMagnifier && mainStream !== undefined">
+  <div [style.width.px]="mainStream.displayWidth / 2"
+
+       [style.height.px]="mainStream.displayHeight / 2"
+       [style.top.px]="mainStream.displayTop +(mainStream.displayHeight / 4)"
+       [style.left.px]="mainStream.displayLeft +(mainStream.displayWidth / 4)"
+       class="stream-div-zoom" >
+    <img alt="stream zoom image"
+         referrerpolicy="unsafe-url"
+         [style.top.px]="(mainStream.displayHeight / -4)"
+         [style.left.px]="(mainStream.displayWidth / -4)"
+         [style.width.px]="mainStream.displayWidth"
+         [style.height.px]="mainStream.displayHeight"    
+         [src]="mainStream.url"
+         class="stream-img-zoom" />
+  </div>
+</div>

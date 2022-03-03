@@ -5,7 +5,7 @@
     </button>
     <mat-menu #menu="matMenu">
       <button (click)="onConfigurationButtonClick()" mat-menu-item>Configuration</button>
-      <button mat-menu-item>Camera</button>
+      <button (click)="onCameraButtonClick()" mat-menu-item>Camera</button>
       <button mat-menu-item>Sav</button>
     </mat-menu>
     <div matTooltip="Go to home page" (click)="onHomeClick()" class="title">Seasens</div>

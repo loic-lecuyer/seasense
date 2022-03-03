@@ -1,4 +1,4 @@
-<div (click)="onMouseClick()" (mouseDown)="onMouseDown()" (mouseUp)="onMouseUp()" [ngClass]="isChecked ? 'hexagon-checked' : 'hexagon-unchecked'">
+<div (click)="onMouseClick()" (mousedown)="onMouseDown()" (mouseup)="onMouseUp()" [ngClass]="isContinuousMode ? 'continuous-mode-enabled' : 'continuous-mode-disabled'">
   <div class="flex-1"></div>
   <div class="display-flex flex-dir-col">
     <div class="flex-1"></div>

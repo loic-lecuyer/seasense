@@ -1,5 +1,4 @@
-﻿using Exavision.Seasense.Core.Extensions;
-using Exavision.Seasense.Protocols.Seamos.Commands;
+﻿using Exavision.Seasense.Protocols.Seamos.Commands;
 using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Materials;
@@ -59,9 +58,8 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
             command.PanSpeed = panSpeed;
             command.TiltSpeed = tiltSpeed;
             command.StabilizationState = enabled ? StabilizationStateExatrack2.On : StabilizationStateExatrack2.Off;
-            byte[] commandBytes = this.unit.Protocol.Serialize(command);
-            string data = commandBytes.ToHexString();
-            this.unit.Client.Send(data);
+            this.unit.SendCommand(command);
+
         }
     }
 }

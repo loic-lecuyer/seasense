@@ -1,5 +1,4 @@
-﻿using Exavision.Seasense.Core.Extensions;
-using Exavision.Seasense.Protocols.Seamos.Commands;
+﻿using Exavision.Seasense.Protocols.Seamos.Commands;
 using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
 using Exavision.Seasense.Protocols.Seamos.Standard.Turret;
 using Exavision.Seasense.Shared.Capabilities.Turret;
@@ -21,9 +20,8 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
                     cmdAbsolutePosition.MoveMode = MoveModeExatrack2.IgnoreData;
                     cmdAbsolutePosition.MaterialTarget = MaterialTarget.Turret;
                     //  cmdAbsolutePosition.StabilizationState = this.GetCapability<ITurretStabilization>().IsStabilizationEnabled ? StabilizationStateExatrack2.On : StabilizationStateExatrack2.Off;
-                    byte[] commandBytes = this.unit.Protocol.Serialize(cmdAbsolutePosition);
-                    string data = commandBytes.ToHexString();
-                    this.unit.Client.Send(data);
+                    this.unit.SendCommand(cmdAbsolutePosition);
+
                 }
 
             });

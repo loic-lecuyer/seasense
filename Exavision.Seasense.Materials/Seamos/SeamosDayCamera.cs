@@ -30,6 +30,7 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.DisplayName = "Seamos Day Camera";
             this.Capabilities.Add(new SeamosCameraGigeZoomAbsolutePositionCapability(this));
             this.Capabilities.Add(new SeamosCameraGigeZoomContinuousCapability(this));
+            this.Capabilities.Add(new SeamosCameraGigeQualityCapability(this));
             this.CreateDefaultSpinnakerValues();
             this.JsonSerializerSettings = new JsonSerializerSettings() {
                 TypeNameHandling = TypeNameHandling.Auto,

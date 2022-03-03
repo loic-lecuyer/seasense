@@ -55,15 +55,7 @@
             this.bufferedSeamosCommands = new Dictionary<Tuple<byte, byte, MaterialTarget>, Func<SeamosCommand>>();
             this.bufferePelcoCommands = new Dictionary<Tuple<byte, byte, MaterialTarget>, Func<SeamosCommand>>();
         }
-        public void SendToClient(IStringClient client, ISeamosCommand command) {
-            byte[] commandBytes = this.Serialize(command);
-            string commandString = commandBytes.ToHexString();
-            if (!client.Send(commandString)) {
-                string log = "Seamos Can't send command " + commandString + " to socket";
-                Log.Warning(log);
-            }
-
-        }
+        
         /// <summary>
         /// The RegisterType.
         /// </summary>

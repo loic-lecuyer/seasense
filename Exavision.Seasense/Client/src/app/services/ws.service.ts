@@ -13,10 +13,12 @@ import { WsCameraZoomStopRequest } from '../api/ws/ws-camera-zoom-stop-request';
 import { WsCameraZoomInStartRequest } from '../api/ws/ws-camera-zoom-in-start-request';
 import { WsTurretGyrostabilizationRequest } from '../api/ws/ws-turret-gyrostabilization-request';
 import { WsCameraAutoFocusOnePushRequest } from '../api/ws/ws-camera-auto-focus-one-push-request';
+import { WsLazerMeasurementShootRequest } from '../api/ws/ws-lazer-measurement-shoot-request';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
+ 
  
 
   public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
@@ -199,7 +201,19 @@ export class WsService {
     this.socket?.send(data);
   }
 
-
+  lazerMeasurementShoot(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsLazerMeasurementShootRequest = {
+      $type: "WsLazerMeasurementShootRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token
+    };
+    console.log("WebSocket send WsLazerMeasurementShootRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
 
 
 }

@@ -24,7 +24,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             request.Width = request.Width.Clamp(0, this.camera.ImageWidth - 1 - request.X);
             request.Height = request.Height.Clamp(0, this.camera.ImageHeight - 1 - request.Y);
             request.IsEnabled = true;
-            this.camera.Unit.Protocol.SendToClient(this.camera.Unit.Client, request);
+            this.camera.Unit.SendCommand(request);
         }
 
         public override SettingSeamosCameraThorAutoFocusOnePushCapability GetSetting(SettingSeamosCameraThorAutoFocusOnePushCapability setting) {

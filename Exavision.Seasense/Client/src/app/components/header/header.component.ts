@@ -7,6 +7,7 @@ import { Site } from '../../materials/site';
 import { Unit } from '../../materials/unit';
 import { HttpService } from '../../services/http.service';
 import { SiteService } from '../../services/site.service';
+import { UiService } from '../../services/ui.service';
 import { UserService } from '../../services/user.service';
 import { WsService } from '../../services/ws.service';
 
@@ -19,12 +20,15 @@ export class HeaderComponent implements OnInit {
   private siteLoadedSubscription: Subscription;
   public units: Unit[] = [];
   public selectedUnitId: string | undefined = undefined;
-  constructor(public userService: UserService, private httpService: HttpService, private router: Router, private siteService: SiteService, private wsService: WsService) {
+  constructor(public userService: UserService, private httpService: HttpService, private router: Router, private siteService: SiteService, private wsService: WsService, private uiService: UiService) {
     this.siteLoadedSubscription = this.siteService.siteLoadedSubject.subscribe((site: Site | undefined) => {
       if (site == null) this.units = [];
       else this.units = site.units;
       this.selectedUnitId = this.siteService.selectedUnit?.id;
     });
+  }
+  onCameraButtonClick() {
+    this.uiService.showPanelCamera();
   }
   onConfigurationButtonClick() {
     this.router.navigate(['/configuration'])

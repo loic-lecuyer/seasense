@@ -49,7 +49,8 @@ namespace Exavision.Seasense.Server.Services {
         }
 
         public Type BindToType(string assemblyName, string typeName) {
-            return (from t in knowTypes where t.Name.Equals(typeName) select t).FirstOrDefault();
+            Type type = (from t in knowTypes where t.Name.Equals(typeName) select t).FirstOrDefault();
+            return type;
         }
     }
 }

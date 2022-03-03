@@ -8,10 +8,10 @@
   margin-right: auto;
 }
 
-.hexagon-checked {
+.continuous-mode-enabled {
   cursor: pointer;
   user-select: none !important;
-  background-image: url("/assets/hud-check-checked-off.png");
+  background-image: url("/assets/hud-lrf-continuous-off.png");
   width: 81px;
   height: 71px;
   background-color: transparent;
@@ -24,14 +24,14 @@
   font-weight: bold;
 }
 
-.hexagon-checked:hover {
-  background-image: url("/assets/hud-check-checked-hover.png");
+.continuous-mode-enabled:hover {
+  background-image: url("/assets/hud-lrf-continuous-hover.png");
 }
 
-.hexagon-unchecked {
+.continuous-mode-disabled {
   cursor: pointer;
   user-select: none !important;
-  background-image: url("/assets/hud-check-unchecked-off.png");
+  background-image: url("/assets/hud-button-off.png");
   width: 81px;
   height: 71px;
   background-color: transparent;
@@ -44,6 +44,6 @@
   font-weight: bold;
 }
 
-.hexagon-unchecked:hover {
-  background-image: url("/assets/hud-check-unchecked-hover.png");
+.continuous-mode-disabled:hover {
+  background-image: url("/assets/hud-button-hover.png");
 }

@@ -1,9 +1,7 @@
-﻿using Exavision.Seasense.Core.Extensions;
-using Exavision.Seasense.Protocols.Seamos.Commands;
+﻿using Exavision.Seasense.Protocols.Seamos.Commands;
 using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Materials;
-using Serilog;
 using System;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
@@ -62,14 +60,9 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
             this.currentTiltSpeed = command.TiltSpeed;
             // command.PanSpeed *= this.MaxPanSpeed;
             //   command.TiltSpeed *= this.MaxTiltSpeed;
+            this.unit.SendCommand(command);
 
-            byte[] commandBytes = this.unit.Protocol.Serialize(command);
-            string data = commandBytes.ToHexString();
-            this.unit.Client.Send(data);
-            // division par le multiplicateur de zoom
-            // command.PanSpeed /= zoomMultiplier;
-            //  command.TiltSpeed /= zoomMultiplier;
-            Log.Information("SetSpeed Command " + command.PanSpeed + " " + command);
+
         }
 
         public override void SetSetting(SettingSeamosTurretMoveSpeedCapability setting) {

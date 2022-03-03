@@ -4,6 +4,7 @@ using Exavision.Seasense.Mock.Seamos.ViewModels;
 using Exavision.Seasense.Protocols.Seamos;
 using Exavision.Seasense.Protocols.Seamos.Commands;
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
+using Exavision.Seasense.Protocols.Seamos.Commands.Telemeter;
 using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Spinnaker.Shared.Api;
@@ -266,6 +267,13 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
                 }
                 this.SendCommand(res, e.Item1);
 
+            }
+            else if (command is ITelemeterActionShootRequest TelemeterActionShootRequest) {
+                Random rnd = new Random();
+                ITelemeterActionShootResponse response = this.protocol.Resolve<ITelemeterActionShootResponse>(MaterialTarget.Telemeter);
+                response.DistanceMetter = rnd.Next(50, 2000);
+                response.SystemTarget = SystemTarget.Computer;
+                this.SendCommand(response, e.Item1);
             }
             else throw new System.Exception("No implementation for command " + command.GetType().Name);
 

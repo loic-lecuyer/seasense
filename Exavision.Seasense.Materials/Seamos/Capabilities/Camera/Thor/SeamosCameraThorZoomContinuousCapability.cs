@@ -1,5 +1,4 @@
-﻿using Exavision.Seasense.Core.Extensions;
-using Exavision.Seasense.Protocols.Seamos.Commands;
+﻿using Exavision.Seasense.Protocols.Seamos.Commands;
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Models;
@@ -52,15 +51,12 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             requestZoomZone.Y = zoomRoi.Y;
             requestZoomZone.Width = zoomRoi.Width;
             requestZoomZone.Height = zoomRoi.Height;
-            byte[] commandBytesRequestZoomZone = this.camera.Unit.Protocol.Serialize(requestZoomZone);
-            string dataRequestZoomZone = commandBytesRequestZoomZone.ToHexString();
-            this.camera.Unit.Client.Send(dataRequestZoomZone);
+            this.camera.Unit.SendCommand(requestZoomZone);
 
             ICameraSetZoneZoomEnabledRequest requestZoomZoneEnable = this.camera.Unit.Protocol.Resolve<ICameraSetZoneZoomEnabledRequest>(MaterialTarget.ThermalCamera);
             requestZoomZoneEnable.IsEnabled = true;
-            byte[] commandBytesRequestZoomEnabled = this.camera.Unit.Protocol.Serialize(requestZoomZone);
-            string dataRequestZoomZoneEnabled = commandBytesRequestZoomEnabled.ToHexString();
-            this.camera.Unit.Client.Send(dataRequestZoomZoneEnabled);
+            this.camera.Unit.SendCommand(requestZoomZoneEnable);
+
         }
 
         public override void ZoomOutStart() {

@@ -28,7 +28,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { HudUiComponent } from './components/hud-ui/hud-ui.component';
 import { HudStreamComponent } from './components/hud-stream/hud-stream.component';
-
+import { MatSliderModule } from '@angular/material/slider';
 import { HudStatusComponent } from './components/hud-status/hud-status.component';
 import { CompassComponent } from './components/compass/compass.component';
 import { StickComponent } from './components/stick/stick.component';
@@ -38,6 +38,8 @@ import { HudCheckComponent } from './components/hud-check/hud-check.component';
 import { HudRullerPanComponent } from './components/hud-ruller-pan/hud-ruller-pan.component';
 import { HudRullerTiltComponent } from './components/hud-ruller-tilt/hud-ruller-tilt.component';
 import { HudLrfButtonComponent } from './components/hud-lrf-button/hud-lrf-button.component';
+import { PanelCameraComponent } from './components/panel-camera/panel-camera.component';
+import { UiService } from './services/ui.service';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -58,13 +60,15 @@ export const httpInterceptorProviders = [
     HudCheckComponent,
     HudRullerPanComponent,
     HudRullerTiltComponent,
-    HudLrfButtonComponent    
+    HudLrfButtonComponent,
+    PanelCameraComponent    
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     MatButtonModule,
+    MatSliderModule,
     MatSelectModule,
     MatRippleModule,
     ScrollingModule,
@@ -81,7 +85,7 @@ export const httpInterceptorProviders = [
     FormsModule,
     HttpClientModule
   ],
-  providers: [HttpService, UserService, httpInterceptorProviders],
+  providers: [HttpService, UserService, UiService, httpInterceptorProviders],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

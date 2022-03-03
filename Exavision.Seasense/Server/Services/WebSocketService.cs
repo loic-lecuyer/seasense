@@ -1,8 +1,10 @@
 ﻿using Exavision.Seasense.Api.WebSocket.Camera;
 using Exavision.Seasense.Api.WebSocket.Core;
+using Exavision.Seasense.Api.WebSocket.LazerMeasurement;
 using Exavision.Seasense.Api.WebSocket.States;
 using Exavision.Seasense.Api.WebSocket.Turret;
 using Exavision.Seasense.Shared.Capabilities.Camera;
+using Exavision.Seasense.Shared.Capabilities.LazerMeasurement;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
@@ -152,8 +154,19 @@ namespace Exavision.Seasense.Server.Services {
                 if (capability == null) throw new InvalidOperationException("No capability of type ITurretGyrostabilizationCapability on material");
                 capability.AutoFocusOnePush();
                 this.SendValid(request.RequestId, client);
-
             }
+
+            else if (request is WsLazerMeasurementShootRequest lazerMeasurementShootRequest) {
+                IUnit unit = this.siteService.FindUnitById(lazerMeasurementShootRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(lazerMeasurementShootRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ILazerMeasurementShootCapability capability = material.GetCapability<ILazerMeasurementShootCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretGyrostabilizationCapability on material");
+                capability.ShootMeasurement();
+                this.SendValid(request.RequestId, client);
+            }
+
             else {
                 this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);
             }

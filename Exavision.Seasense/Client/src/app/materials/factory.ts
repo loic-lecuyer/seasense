@@ -26,6 +26,9 @@ import { CameraZoomAbsolutePositionCapability } from "./capabilities/camera/came
 import { CameraZoomContinuousCapability } from "./capabilities/camera/camera-zoom-continuous-capability";
 import { TurretGyrostabilizationCapability } from "./capabilities/turret/turret-gyrostabilization-capability";
 import { CameraAutoFocusOnePushCapability } from "./capabilities/camera/camera-auto-focus-one-push-capability";
+import { LazerMeasurementShootCapability } from "./capabilities/lazer-measurement/lazer-measurement-shoot-capability";
+import { SettingDoubleValueCapability } from "./settings/setting-double-value-capability";
+import { DoubleValueCapability } from "./capabilities/double-value-capability";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -94,6 +97,13 @@ export class Factory {
 
       case CapabilityType.CameraAutoFocusOnePush:
         capability = new CameraAutoFocusOnePushCapability(settingCapability);
+        break;
+      case CapabilityType.LazerMeasurementShootCapability:
+        capability = new LazerMeasurementShootCapability(settingCapability);
+        break;
+     
+      case CapabilityType.DoubleValue:
+        capability = new DoubleValueCapability(<SettingDoubleValueCapability>settingCapability);
         break;
     }
     if (capability == null) {

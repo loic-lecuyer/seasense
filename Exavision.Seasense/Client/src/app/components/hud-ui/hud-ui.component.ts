@@ -1,15 +1,18 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Data } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Camera } from '../../materials/camera';
 import { CameraAutoFocusOnePushCapability } from '../../materials/capabilities/camera/camera-auto-focus-one-push-capability';
 import { CameraZoomContinuousCapability } from '../../materials/capabilities/camera/camera-zoom-continuous-capability';
 import { CapabilityType } from '../../materials/capabilities/capability-type';
+import { LazerMeasurementShootCapability } from '../../materials/capabilities/lazer-measurement/lazer-measurement-shoot-capability';
 import { TurretGyrostabilizationCapability } from '../../materials/capabilities/turret/turret-gyrostabilization-capability';
 import { TurretMoveSpeedCapability } from '../../materials/capabilities/turret/turret-move-speed-capability';
 import { Material } from '../../materials/material';
 import { MaterialType } from '../../materials/material-type';
 import { SiteService } from '../../services/site.service';
+import { UiService } from '../../services/ui.service';
 
 @Component({
   selector: 'app-hud-ui',
@@ -18,9 +21,14 @@ import { SiteService } from '../../services/site.service';
   host: { 'class': 'hud-layer' }
 })
 export class HudUiComponent implements OnInit, OnDestroy {
+
+ 
+
+
   public isLeftToRight: boolean = true;
   public hasPipZoom: boolean = false;
   public hasMultipleCamera: boolean = false;
+  public lrfInfo: string = "";
 
   public hasMoveSpeedCapability: boolean = false;
   public hasZoomContinuousCapability: boolean = false;
@@ -38,13 +46,17 @@ export class HudUiComponent implements OnInit, OnDestroy {
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
   private siteStateSubscription: Subscription;
-  constructor(private siteService: SiteService, private snackBar: MatSnackBar) {
+  constructor(private siteService: SiteService, private snackBar: MatSnackBar, private uiService: UiService) {
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.siteStateSubscription = this.siteService.siteStateSubject.subscribe(() => {
       this.updateCheckState();
       this.updateSwitchState();
+      this.updateLrfInfo();
     });
+  }
+  onPipZoomButtonDown() {
+    this.uiService.showHidePipZoom();  
   }
  
   ngOnDestroy() {
@@ -157,6 +169,48 @@ export class HudUiComponent implements OnInit, OnDestroy {
     if (this.siteService.selectedCamera == undefined) return;
     let cap: CameraAutoFocusOnePushCapability | undefined = this.siteService.selectedCamera.getCapability<CameraAutoFocusOnePushCapability>(CapabilityType.CameraAutoFocusOnePush);
     if (cap != null) cap.autoFocusOnePush();
+  }
+
+  updateLrfInfo() {
+    if (this.siteService.selectedUnit == null) {
+      this.lrfInfo = "";
+      return;
+    }
+    let lazer: Material | undefined = this.siteService.selectedUnit.getMaterial(MaterialType.LazerMeasurement);
+    if (lazer == null) {
+      this.lrfInfo = "";
+      return;
+    }
+    let cap: LazerMeasurementShootCapability | undefined = lazer.getCapability<LazerMeasurementShootCapability>(CapabilityType.LazerMeasurementShootCapability);
+    if (cap == null) {
+      this.lrfInfo = "";
+      return;
+    }
+    if (cap.lastShootDate == null) {
+      this.lrfInfo = "";
+      return;
+    }
+    if (cap.isOn === false) {
+      this.lrfInfo = "";
+      return;
+    }
+    let today: Date = new Date();
+    let shootDate: Date = cap.lastShootDate;
+    let seconds: number = (today.getTime() - cap.lastShootDate.getTime()) / 1000;
+    if (seconds < 5) {
+      if (cap.lastShootDistance != null) {
+        this.lrfInfo = cap.lastShootDistance + " m";
+      }
+      else if (cap.error != null) {
+        this.lrfInfo = cap.error;
+      }
+      else {
+        this.lrfInfo = "";
+      }
+    } else {
+      this.lrfInfo = "";
+    }
+
   }
 
 }

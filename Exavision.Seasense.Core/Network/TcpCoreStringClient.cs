@@ -25,6 +25,7 @@
         /// </summary>
         private readonly ConcurrentQueue<string> sendQueue = new ConcurrentQueue<string>();
 
+
         /// <summary>
         /// Defines the latestMessages.
         /// </summary>

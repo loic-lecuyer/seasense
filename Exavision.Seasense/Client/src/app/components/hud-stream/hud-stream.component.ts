@@ -1,10 +1,11 @@
-import { Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, Renderer2, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { IStream } from '../../models/stream';
 import { SiteService } from '../../services/site.service';
 import { Material } from '../../materials/material';
 import { MaterialType } from '../../materials/material-type';
 import { Camera } from '../../materials/camera';
+import { UiService } from '../../services/ui.service';
 
 
 @Component({
@@ -16,13 +17,19 @@ import { Camera } from '../../materials/camera';
 export class HudStreamComponent implements OnInit, OnDestroy {
 
 
+  @Input() showMagnifier: boolean = false;
+
+
   public mainStream: IStream | undefined = undefined;
   private streams: IStream[] = [];
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
-  constructor(private siteService: SiteService, private el: ElementRef, private renderer: Renderer2) {
+  private showPipZoomSubscription: Subscription;
+  constructor(private siteService: SiteService, private el: ElementRef, private renderer: Renderer2, private uiService: UiService) {
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateStreamList(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateStreamList(); });
+    this.showPipZoomSubscription = this.uiService.showPipZoomSubject.subscribe((value: boolean) => { this.showMagnifier = value; })
+
   }
   updateStreamList() {
     this.streams = [];
@@ -101,6 +108,7 @@ export class HudStreamComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.unitSelectedSubscription.unsubscribe();
     this.cameraSelectedSubscription.unsubscribe();
+    this.showPipZoomSubscription.unsubscribe();
 
   }
   ngOnInit(): void {

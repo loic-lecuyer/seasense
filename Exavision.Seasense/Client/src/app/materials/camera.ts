@@ -1,6 +1,8 @@
 import { WsService } from "../services/ws.service";
 import { Capability } from "./capabilities/capability";
 import { CapabilityType } from "./capabilities/capability-type";
+import { DoubleValueCapability } from "./capabilities/double-value-capability";
+import { DoubleValueType } from "./capabilities/double-value-type";
 import { Factory } from "./factory";
 import { Material } from "./material";
 import { MaterialType } from "./material-type";
@@ -13,6 +15,7 @@ import { MaterialState } from "./states/material-state";
 import { Unit } from "./unit";
 
 export abstract class Camera implements Material  {
+ 
   id: string;
   materials: Material[];
   capabilities: Capability[] = [];
@@ -69,6 +72,13 @@ export abstract class Camera implements Material  {
     let cap: Capability | undefined = this.capabilities.find((value: Capability) => { return value.capabilityType === capabilityType; });
     return cap !== undefined;
 
+  }
+
+  getValueCapability(type: DoubleValueType): DoubleValueCapability | undefined {
+    return <DoubleValueCapability>this.capabilities.find((val: Capability) => {
+      return (val.capabilityType == CapabilityType.DoubleValue && (<DoubleValueCapability>val).doubleValueType == type);
+    });
+   
   }
 
   

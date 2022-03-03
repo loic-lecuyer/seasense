@@ -10,7 +10,10 @@ namespace Exavision.Seasense.Shared.Settings {
         CameraZoomContinuous,
         CameraFocusContinuous,
         TurretGyrostabilization,
-        CameraAutoFocusOnePush
+        CameraAutoFocusOnePush,
+        IntValue,
+        DoubleValue,
+        LazerMeasurementShootCapability
     }
     public abstract class SettingCapability : SettingBase {
 

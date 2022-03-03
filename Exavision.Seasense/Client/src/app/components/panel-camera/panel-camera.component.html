@@ -1,0 +1,20 @@
+<mat-card class="card-login">
+  <mat-card-header>
+    <mat-card-title><mat-icon class="icon-title">camera_enhance</mat-icon>Camera Advanced Parameters</mat-card-title>
+    <mat-card-subtitle>Be carefull with this settings</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="qualityCapability != null">
+
+      <div>Quality</div>
+      <mat-slider [min]="qualityCapability.minValue" [max]="qualityCapability.maxValue" aria-label="Quality %"></mat-slider>
+    </div>
+    
+  </mat-card-content>
+  <mat-card-actions>
+    <button class="full-width" (click)="onCloseClick()" mat-button>Close</button>
+
+  </mat-card-actions>
+</mat-card>
+
+
