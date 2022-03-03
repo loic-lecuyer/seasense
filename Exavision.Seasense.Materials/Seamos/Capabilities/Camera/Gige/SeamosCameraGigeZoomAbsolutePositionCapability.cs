@@ -1,11 +1,9 @@
 ﻿using Exavision.Seasense.Shared.Capabilities.Camera;
-using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Spinnaker.Shared.Models;
 
-namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Gige {
+namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
     public class SeamosCameraGigeZoomAbsolutePositionCapability : CameraZoomAbsolutePositionCapability<SettingSeamosCameraGigeZoomAbsolutePositionCapability>, ISeamosGigeCapability {
         private readonly SeamosDayCamera camera;
-        private IntRect zoomRoi = null;
         public double MinHorizontalFieldOfView { get; private set; }
         public double MaxHorizontalFieldOfView { get; private set; }
 

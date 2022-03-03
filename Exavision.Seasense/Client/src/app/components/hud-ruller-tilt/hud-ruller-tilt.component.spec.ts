@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HudPanRullerComponent } from './hud-pan-ruller.component';
+import { HudRullerTiltComponent } from './hud-ruller-tilt.component';
 
-describe('HudPanRullerComponent', () => {
-  let component: HudPanRullerComponent;
-  let fixture: ComponentFixture<HudPanRullerComponent>;
+describe('HudRullerTiltComponent', () => {
+  let component: HudRullerTiltComponent;
+  let fixture: ComponentFixture<HudRullerTiltComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ HudPanRullerComponent ]
+      declarations: [ HudRullerTiltComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HudPanRullerComponent);
+    fixture = TestBed.createComponent(HudRullerTiltComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

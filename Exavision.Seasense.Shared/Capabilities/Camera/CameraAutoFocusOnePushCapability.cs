@@ -1,11 +1,13 @@
 ﻿using Exavision.Seasense.Shared.Settings;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Exavision.Seasense.Shared.Capabilities.Camera {
-    public abstract class CameraAutoFocusOnePushCapabilityy<S> : Capability<S>, ICameraAutoFocusOnePushCapability where S : SettingCapability, new() {
-        public abstract void FocusOnePush();
+    public abstract class CameraAutoFocusOnePushCapability<S> : Capability<S>, ICameraAutoFocusOnePushCapability where S : SettingCapability, new() {
+        public abstract void AutoFocusOnePush();
+
+        public override S GetSetting(S setting) {
+            setting.CapabilityType = CapabilityType.CameraAutoFocusOnePush;
+            return setting;
+        }
 
     }
 }

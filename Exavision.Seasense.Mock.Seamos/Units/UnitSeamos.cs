@@ -25,9 +25,11 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
 
         public double Tilt { get => this.tilt; set => this.RaiseAndSetIfChanged(ref tilt, value); }
         public Values SpinnakerValues { get => this.spinnakerValues; set => this.RaiseAndSetIfChanged(ref spinnakerValues, value); }
+        public bool IsGyrostabilizationEnabled { get => this.isGyrostabilizationEnabled; set => this.RaiseAndSetIfChanged(ref isGyrostabilizationEnabled, value); }
 
         private double pan;
         private double tilt;
+        private bool isGyrostabilizationEnabled;
         private string ip = "127.0.0.1";
         private int port = 5000;
         private TcpCoreStringServer server;
@@ -36,6 +38,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
         private double tilSpeed = 0;
         private double degreePerSecond = 15;
         private IntRect thermalRoiZoom = null;
+
         private HttpListener spinnakerListener;
         private readonly string spinnakerUrlListen = "http://127.0.0.1:8000/";
 
@@ -234,11 +237,12 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
                     res.Pan = this.Pan;
                     res.PanTiltZoomMode = PtModeExatrack2.Absolute;
                     res.Tilt = this.Tilt;
+                    res.StabilizationState = isGyrostabilizationEnabled ? StabilizationStateExatrack2.On : StabilizationStateExatrack2.Off;
                     res.SystemTarget = SystemTarget.Computer;
                     this.SendCommand(res, e.Item1);
                 }
                 else if (extatrackRequestPosition.PanTiltZoomMode == PtModeExatrack2.Speed) {
-
+                    this.IsGyrostabilizationEnabled = extatrackRequestPosition.StabilizationState == StabilizationStateExatrack2.On;
                     this.panSpeed = extatrackRequestPosition.PanSpeed;
                     this.tilSpeed = extatrackRequestPosition.TiltSpeed;
                     System.Diagnostics.Debug.WriteLine("Receive speed command " + extatrackRequestPosition.PanSpeed + " " + extatrackRequestPosition.TiltSpeed);

@@ -3,8 +3,8 @@
     using Exavision.Seasense.Api.Http.Logout;
     using Exavision.Seasense.Api.Http.Setting;
     using Exavision.Seasense.Api.Http.Token;
+    using Exavision.Seasense.Materials.Seamos;
     using Exavision.Seasense.Server.Attributes;
-    using Exavision.Seasense.Server.Materials.Seamos;
     using Exavision.Seasense.Server.Services;
     using Exavision.Seasense.Shared.Models;
     using Exavision.Seasense.Shared.Settings;

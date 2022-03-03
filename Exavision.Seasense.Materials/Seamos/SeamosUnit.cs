@@ -1,15 +1,15 @@
 ﻿using Exavision.Seasense.Core.Extensions;
 using Exavision.Seasense.Core.Network;
+using Exavision.Seasense.Materials.Seamos.Capabilities;
+using Exavision.Seasense.Materials.Seamos.Capabilities.Unit;
+using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Protocols.Seamos;
 using Exavision.Seasense.Protocols.Seamos.Commands;
-using Exavision.Seasense.Server.Materials.Seamos.Capabilities;
-using Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit;
-using Exavision.Seasense.Server.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Materials;
 using System.Net;
 
-namespace Exavision.Seasense.Server.Materials.Seamos {
+namespace Exavision.Seasense.Materials.Seamos {
     public class SeamosUnit : Unit<SettingSeamosUnit> {
         public string HardwareCardIp { get; private set; }
         public string HardwareCardPort { get; private set; }

@@ -11,6 +11,8 @@ import { Subject } from 'rxjs';
 import { WsCameraZoomOutStartRequest } from '../api/ws/ws-camera-zoom-out-start-request';
 import { WsCameraZoomStopRequest } from '../api/ws/ws-camera-zoom-stop-request';
 import { WsCameraZoomInStartRequest } from '../api/ws/ws-camera-zoom-in-start-request';
+import { WsTurretGyrostabilizationRequest } from '../api/ws/ws-turret-gyrostabilization-request';
+import { WsCameraAutoFocusOnePushRequest } from '../api/ws/ws-camera-auto-focus-one-push-request';
 @Injectable({
   providedIn: 'root'
 })
@@ -167,5 +169,37 @@ export class WsService {
     let data: string = JSON.stringify(request);
     this.socket?.send(data);
   }
+
+  turretGyrostabilization(unitId: string, materialId: string, enabled: boolean) {
+    if (this.userService.token == null) return;
+    let request: WsTurretGyrostabilizationRequest = {
+      $type: "WsTurretGyrostabilizationRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token,
+      enabled:enabled
+    };
+    console.log("WebSocket send WsTurretGyrostabilizationRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
+
+  cameraAutoFocusOnePush(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraAutoFocusOnePushRequest = {
+      $type: "WsCameraAutoFocusOnePushRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token      
+    };
+    console.log("WebSocket send WsCameraAutoFocusOnePushRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
+
+
+
 
 }

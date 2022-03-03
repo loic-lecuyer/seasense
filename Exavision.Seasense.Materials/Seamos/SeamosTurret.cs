@@ -1,9 +1,9 @@
-﻿using Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret;
-using Exavision.Seasense.Server.Materials.Seamos.Settings;
+﻿using Exavision.Seasense.Materials.Seamos.Capabilities.Turret;
+using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Materials;
 using System;
 
-namespace Exavision.Seasense.Server.Materials.Seamos {
+namespace Exavision.Seasense.Materials.Seamos {
     public class SeamosTurret : Turret<SettingSeamosTurret, SeamosUnit> {
 
         public SeamosTurret(SeamosUnit unit) : base(unit) {
@@ -11,6 +11,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
             this.Capabilities.Add(new SeamosTurretMoveSpeedCapability(this.Unit));
             this.Capabilities.Add(new SeamosTurretMoveAbsoluteCapability());
             this.Capabilities.Add(new SeamosTurretAbsolutePositionCapability(this.Unit));
+            this.Capabilities.Add(new SeamosTurretGyrostabilizationCapability(this.Unit));
         }
         public override SettingSeamosTurret GetSetting(SettingSeamosTurret setting) {
             return setting;

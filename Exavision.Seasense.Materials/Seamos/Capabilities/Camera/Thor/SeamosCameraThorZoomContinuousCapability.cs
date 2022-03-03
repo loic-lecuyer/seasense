@@ -5,10 +5,11 @@ using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Models;
 using System.Threading;
 using System.Threading.Tasks;
-namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Thor {
+namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
     public class SeamosCameraThorZoomContinuousCapability : CameraZoomContinuousCapability<SettingSeamosCameraThorZoomContinuousCapability>, ISeamosCapability {
         private readonly SeamosThermalCamera camera;
-
+        private CancellationTokenSource cancellerZoomIn;
+        private CancellationTokenSource cancellerZoomOut;
 
         public SeamosCameraThorZoomContinuousCapability(SeamosThermalCamera camera) {
             this.camera = camera;
@@ -21,8 +22,6 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Thor {
         public void ProcessHardwareResponse(ISeamosCommand command) {
 
         }
-        private CancellationTokenSource cancellerZoomIn;
-        private CancellationTokenSource cancellerZoomOut;
 
         public override void ZoomInStart() {
             this.cancellerZoomIn = new CancellationTokenSource();
@@ -43,8 +42,6 @@ namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Thor {
                 zoomRoi.X = (this.camera.ImageWidth - zoomRoi.Width) / 2;
                 zoomRoi.Y = (this.camera.ImageHeight - zoomRoi.Height) / 2;
                 this.SendZoom(zoomRoi);
-
-
                 await Task.Delay(100, cancellerZoomIn.Token);
             }
         }

@@ -3,8 +3,10 @@
 
   </div>
   <!-- Button LRF -->
-  <app-hud-button  *ngIf="hasLrf" >
-    LRF
+  <app-hud-button *ngIf="hasLrf">
+   
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Lazer Measurement" aria-hidden="false" aria-label="Lazer Measurement">sensors</mat-icon>
+    
   </app-hud-button>
 
   <!-- Zoom In -->
@@ -25,8 +27,10 @@
 
 
   <!-- Auto Focus -->
-  <app-hud-button  *ngIf="hasCameraAutoFocusCapability">
+  <app-hud-button (buttonDown)="onAutoFocusButtonDown()" *ngIf="hasCameraAutoFocusCapability">
     <div matTooltip="Auto Focus">AF</div>
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Auto Focus" aria-hidden="false" aria-label="Auto Focus"> filter_center_focus</mat-icon>
+   
   </app-hud-button>
 
   <!-- Focus Near -->
@@ -57,8 +61,9 @@
  
   <div class="spacer"></div>
   <!-- Wash -->
-  <app-hud-button  *ngIf="hasWasherCapability">
-    Wash
+  <app-hud-button *ngIf="hasWasherCapability">
+    
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">cleaning_services</mat-icon>
   </app-hud-button>
 
   <!-- Record -->
@@ -70,12 +75,16 @@
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Screenshot" aria-hidden="false" aria-label="Screenshot">photo_camera</mat-icon>
   </app-hud-button>
   <!-- Switch -->
-  <app-hud-button  *ngIf="hasMultipleCamera" (buttonDown)="onSwitchCameraDown()"  >
-    Switch
+  <app-hud-button *ngIf="hasMultipleCamera" (buttonDown)="onSwitchCameraDown()">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Switch to next camera" aria-hidden="false" aria-label="Switch to next camera">swap_horizontal_circle</mat-icon>   
+    
   </app-hud-button>
-  <app-hud-button  *ngIf="hasStabilizationCapability">
-    Stab
-  </app-hud-button>
+
+  <!--Stabilization -->
+  <app-hud-check (checkChange)="onStablizationCheckChange($event)" [isChecked]="isTurretGyroStabilizationEnabled" *ngIf="hasGyroStabilizationCapability">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Gyrostabilization" aria-hidden="false" aria-label="Gyrostabilization">video_stable</mat-icon>
+
+  </app-hud-check>
 
   <div class="spacer"></div>
   <app-stick *ngIf="hasMoveSpeedCapability"></app-stick>

@@ -1,4 +1,5 @@
-﻿using Exavision.Seasense.Api.WebSocket.Core;
+﻿using Exavision.Seasense.Api.WebSocket.Camera;
+using Exavision.Seasense.Api.WebSocket.Core;
 using Exavision.Seasense.Api.WebSocket.States;
 using Exavision.Seasense.Api.WebSocket.Turret;
 using Exavision.Seasense.Shared.Capabilities.Camera;
@@ -129,6 +130,32 @@ namespace Exavision.Seasense.Server.Services {
                 if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
                 capability.ZoomOutStart();
                 this.SendValid(request.RequestId, client);
+            }
+
+            else if (request is WsTurretGyrostabilizationRequest turretGyrostabilizationRequest) {
+                IUnit unit = this.siteService.FindUnitById(turretGyrostabilizationRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(turretGyrostabilizationRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ITurretGyrostabilizationCapability capability = material.GetCapability<ITurretGyrostabilizationCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretGyrostabilizationCapability on material");
+                capability.SetGyrostabilization(turretGyrostabilizationRequest.Enabled);
+                this.SendValid(request.RequestId, client);
+            }
+            else if (request is WsCameraAutoFocusOnePushRequest cameraAutoFocusOnePushRequest) {
+
+                IUnit unit = this.siteService.FindUnitById(cameraAutoFocusOnePushRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraAutoFocusOnePushRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ICameraAutoFocusOnePushCapability capability = material.GetCapability<ICameraAutoFocusOnePushCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretGyrostabilizationCapability on material");
+                capability.AutoFocusOnePush();
+                this.SendValid(request.RequestId, client);
+
+            }
+            else {
+                this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);
             }
 
         }

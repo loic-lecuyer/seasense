@@ -5,7 +5,7 @@ using Exavision.Seasense.Protocols.Seamos.Standard.Turret;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Models;
 using System.Collections.Generic;
-namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
+namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
     public class SeamosTurretAbsolutePositionCapability : TurretAbsolutePositionCapability<SettingSeamosTurretAbsolutePositionCapability>, ISeamosCapability {
         private readonly SeamosUnit unit;
         private readonly List<PollingAction> actions = new List<PollingAction>();

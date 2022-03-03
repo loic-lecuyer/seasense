@@ -1,0 +1,8 @@
+<svg   *ngIf="isVisible"  height="100%" width="64">
+  <line class="compas-tick" [attr.x1]="tick.x1" [style.opacity]="tick.opacity" [attr.x2]="tick.x2" [attr.y1]="tick.y1" [attr.y2]="tick.y2" *ngFor="let tick of ticks"></line>
+  <text [style.opacity]="text.opacity" class="compas-text" *ngFor="let text of texts" [attr.x]="text.x" [attr.y]="text.y">
+    {{text.text}}
+  </text>
+
+</svg>
+

@@ -8,7 +8,9 @@ namespace Exavision.Seasense.Shared.Settings {
         TurretAbsolutePosition,
         CameraZoomAbsolutePosition,
         CameraZoomContinuous,
-        CameraFocusContinuous
+        CameraFocusContinuous,
+        TurretGyrostabilization,
+        CameraAutoFocusOnePush
     }
     public abstract class SettingCapability : SettingBase {
 

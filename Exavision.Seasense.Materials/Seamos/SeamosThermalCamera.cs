@@ -1,12 +1,12 @@
 ﻿using Exavision.Seasense.Core.Extensions;
+using Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor;
+using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
-using Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Thor;
-using Exavision.Seasense.Server.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
 using System;
 using System.Collections.Generic;
-namespace Exavision.Seasense.Server.Materials.Seamos {
+namespace Exavision.Seasense.Materials.Seamos {
     public class SeamosThermalCamera : ThermalCamera<SettingSeamosThermalCamera, SeamosUnit> {
 
         public override int ImageWidth { get => 800; }
@@ -19,6 +19,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
             this.DisplayName = "Seamos Thermal Camera";
             this.Capabilities.Add(new SeamosCameraThorZoomAbsolutePositionCapability(this));
             this.Capabilities.Add(new SeamosCameraThorZoomContinuousCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorAutoFocusOnePushCapability(this));
         }
         public override SettingSeamosThermalCamera GetSetting(SettingSeamosThermalCamera setting) {
             setting.StreamUrl = this.streamUrl;

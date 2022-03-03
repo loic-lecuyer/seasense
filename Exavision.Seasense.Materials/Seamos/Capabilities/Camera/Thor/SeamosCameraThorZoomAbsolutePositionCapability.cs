@@ -3,7 +3,7 @@ using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Models;
 
-namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Thor {
+namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
     public class SeamosCameraThorZoomAbsolutePositionCapability : CameraZoomAbsolutePositionCapability<SettingSeamosCameraThorZoomAbsolutePositionCapability>, ISeamosCapability {
         private readonly SeamosThermalCamera camera;
         private IntRect zoomRoi = null;

@@ -1,4 +1,4 @@
-﻿using Exavision.Seasense.Server.Materials.Seamos;
+﻿using Exavision.Seasense.Materials.Seamos;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;

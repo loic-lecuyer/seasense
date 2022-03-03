@@ -27,13 +27,15 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { HudUiComponent } from './components/hud-ui/hud-ui.component';
 import { HudStreamComponent } from './components/hud-stream/hud-stream.component';
-import { HudPanRullerComponent } from './components/hud-pan-ruller/hud-pan-ruller.component';
-import { HudTiltRullerComponent } from './components/hud-tilt-ruller/hud-tilt-ruller.component';
+
 import { HudStatusComponent } from './components/hud-status/hud-status.component';
 import { CompassComponent } from './components/compass/compass.component';
 import { StickComponent } from './components/stick/stick.component';
 import { HudButtonComponent } from './components/hud-button/hud-button.component';
 import { MatRippleModule } from '@angular/material/core';
+import { HudCheckComponent } from './components/hud-check/hud-check.component';
+import { HudRullerPanComponent } from './components/hud-ruller-pan/hud-ruller-pan.component';
+import { HudRullerTiltComponent } from './components/hud-ruller-tilt/hud-ruller-tilt.component';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -46,10 +48,14 @@ export const httpInterceptorProviders = [
     ConfigurationComponent,
     HeaderComponent,
     HudUiComponent,
-    HudStreamComponent,
-    HudPanRullerComponent,
-    HudTiltRullerComponent,    
-    HudStatusComponent, CompassComponent, StickComponent, HudButtonComponent    
+    HudStreamComponent,    
+    HudStatusComponent,
+    CompassComponent,
+    StickComponent,
+    HudButtonComponent,
+    HudCheckComponent,
+    HudRullerPanComponent,
+    HudRullerTiltComponent    
   ],
   imports: [
     BrowserModule,

@@ -1,7 +1,7 @@
 ﻿using Exavision.Seasense.Shared.Capabilities.Unit;
 using System;
 
-namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Unit {
+namespace Exavision.Seasense.Materials.Seamos.Capabilities.Unit {
     public class SeamosUnitRebootCapability : UnitRebootCapability<SettingSeamosUnitRebootCapability> {
 
 

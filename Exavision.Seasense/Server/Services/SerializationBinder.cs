@@ -1,6 +1,6 @@
 ﻿
 using Exavision.Seasense.Api.WebSocket.Core;
-using Exavision.Seasense.Server.Materials.Seamos.Settings;
+using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Settings;
 using Exavision.Seasense.Shared.States;
 using Newtonsoft.Json.Serialization;

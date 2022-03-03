@@ -22,6 +22,7 @@
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
     <None Remove="Client\src\app\api\ws\speed-vector.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-auto-focus-one-push-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-in-start-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts" />
@@ -29,13 +30,16 @@
     <None Remove="Client\src\app\api\ws\ws-get-state-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-response.ts" />
+    <None Remove="Client\src\app\api\ws\ws-turret-gyrostabilization-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-move-speed-request.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
+    <None Remove="Client\src\app\materials\capabilities\camera\camera-auto-focus-one-push-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-absolute-position-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-continuous-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability-type.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-absolute-position-capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\turret\turret-gyrostabilization-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-move-absolute-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-move-speed-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\unit\unit-reboot-capability.ts" />
@@ -52,6 +56,7 @@
     <None Remove="Client\src\app\materials\states\material-state.ts" />
     <None Remove="Client\src\app\materials\states\site-state.ts" />
     <None Remove="Client\src\app\materials\states\turret\turret-absolute-position-state.ts" />
+    <None Remove="Client\src\app\materials\states\turret\turret-gyrostabilization-state.ts" />
     <None Remove="Client\src\app\materials\states\unit-state.ts" />
     <None Remove="Client\src\app\materials\unit.ts" />
     <None Remove="Client\src\app\models\stream.ts" />
@@ -113,6 +118,9 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\ws\speed-vector.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-auto-focus-one-push-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -128,6 +136,9 @@
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-turret-gyrostabilization-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-turret-move-speed-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -136,6 +147,9 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-request.ts" />
     <TypeScriptCompile Include="Client\src\app\interceptor\jwt-interceptor.ts" />
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\camera\camera-auto-focus-one-push-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\camera\camera-zoom-continuous-capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -147,6 +161,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-absolute-position-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-gyrostabilization-capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\turret\turret-move-absolute-capability.ts">
@@ -166,6 +183,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\states\material-state.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\states\turret\turret-gyrostabilization-state.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\states\turret\turret-absolute-position-state.ts" />

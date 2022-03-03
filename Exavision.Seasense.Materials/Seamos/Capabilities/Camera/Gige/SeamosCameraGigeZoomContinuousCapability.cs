@@ -3,7 +3,7 @@ using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Spinnaker.Shared.Models;
 using System.Threading;
 using System.Threading.Tasks;
-namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Gige {
+namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
     public class SeamosCameraGigeZoomContinuousCapability : CameraZoomContinuousCapability<SettingSeamosCameraGigeZoomContinuousCapability>, ISeamosGigeCapability {
         private readonly SeamosDayCamera camera;
 

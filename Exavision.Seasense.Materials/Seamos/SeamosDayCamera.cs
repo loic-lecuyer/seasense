@@ -1,5 +1,5 @@
-﻿using Exavision.Seasense.Server.Materials.Seamos.Capabilities.Camera.Gige;
-using Exavision.Seasense.Server.Materials.Seamos.Settings;
+﻿using Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige;
+using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
@@ -14,7 +14,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Exavision.Seasense.Server.Materials.Seamos {
+namespace Exavision.Seasense.Materials.Seamos {
     public class SeamosDayCamera : DayCamera<SettingSeamosDayCamera, SeamosUnit> {
 
         private Values spinnakerValues;
@@ -70,7 +70,7 @@ namespace Exavision.Seasense.Server.Materials.Seamos {
 
         public override void SetSetting(SettingSeamosDayCamera setting) {
             this.baseUrl = setting.BaseUrl;
-            this.streamUrl = setting.StreamUrl;         
+            this.streamUrl = setting.StreamUrl;
             base.SetSetting(setting);
             Console.WriteLine("SeamosDayCamera SetSetting");
         }

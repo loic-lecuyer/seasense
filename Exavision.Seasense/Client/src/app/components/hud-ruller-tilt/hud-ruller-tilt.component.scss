@@ -1,0 +1,27 @@
+:host {
+  position: absolute;
+  top: 64px;
+  width: 64px !important;
+  min-width: 64px !important;
+  max-width: 64px !important;
+  height: calc(100% - 64px);
+  opacity: 0.8;
+  overflow: hidden;
+  user-select: none;
+  z-index: 4;
+  mask-image: linear-gradient(to top, transparent 0%, transparent 10%, black 35%, black 65%, transparent 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, transparent 0%, transparent 10%, black 35%, black 65%, transparent 90%, transparent 100%);
+}
+
+.compas-tick {
+  stroke: white;
+  stroke-width: 1;
+}
+
+.compas-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  fill: white;
+}
+

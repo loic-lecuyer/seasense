@@ -1,6 +1,6 @@
 ﻿using Exavision.Seasense.Shared.Capabilities.Turret;
 
-namespace Exavision.Seasense.Server.Materials.Seamos.Capabilities.Turret {
+namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
     public class SeamosTurretMoveAbsoluteCapability : TurretMoveAbsoluteCapability<SettingSeamosTurretMoveAbsoluteCapability> {
 
 

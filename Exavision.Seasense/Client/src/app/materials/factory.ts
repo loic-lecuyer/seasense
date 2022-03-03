@@ -24,6 +24,8 @@ import { TurretAbsolutePositionState } from "./states/turret/turret-absolute-pos
 import { TurretAbsolutePositionCapability } from "./capabilities/turret/turret-absolute-position-capability";
 import { CameraZoomAbsolutePositionCapability } from "./capabilities/camera/camera-zoom-absolute-position-capability";
 import { CameraZoomContinuousCapability } from "./capabilities/camera/camera-zoom-continuous-capability";
+import { TurretGyrostabilizationCapability } from "./capabilities/turret/turret-gyrostabilization-capability";
+import { CameraAutoFocusOnePushCapability } from "./capabilities/camera/camera-auto-focus-one-push-capability";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -85,6 +87,13 @@ export class Factory {
         break;
       case CapabilityType.CameraZoomContinuous:
         capability = new CameraZoomContinuousCapability(settingCapability);
+        break;
+      case CapabilityType.TurretGyrostabilization:
+        capability = new TurretGyrostabilizationCapability(settingCapability);
+        break;
+
+      case CapabilityType.CameraAutoFocusOnePush:
+        capability = new CameraAutoFocusOnePushCapability(settingCapability);
         break;
     }
     if (capability == null) {
