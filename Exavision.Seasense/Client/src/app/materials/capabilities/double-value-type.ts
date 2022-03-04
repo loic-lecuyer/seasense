@@ -4,6 +4,6 @@ export enum DoubleValueType {
   Saturation = "Saturation",
   Quality = "Quality",
   BlackLevel = "BlackLevel",
-  ExposureTime = "ExposureTime"
-
+  ExposureTime = "ExposureTime",
+  Gain="Gain"
 }

@@ -35,7 +35,8 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosCameraGigeExposureTimeModeCapability(this));
             this.Capabilities.Add(new SeamosCameraGigeExposureTimeCapability(this));
 
-
+            this.Capabilities.Add(new SeamosCameraGigeGainModeCapability(this));
+            this.Capabilities.Add(new SeamosCameraGigeGainCapability(this));
             this.CreateDefaultSpinnakerValues();
             this.JsonSerializerSettings = new JsonSerializerSettings() {
                 TypeNameHandling = TypeNameHandling.Auto,

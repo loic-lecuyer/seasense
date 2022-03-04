@@ -1844,7 +1844,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function PanelCameraComponent_app_async_slider_10_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 10);
   }
 
   if (rf & 2) {
@@ -1855,7 +1855,7 @@ function PanelCameraComponent_app_async_slider_10_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_11_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 11);
   }
 
   if (rf & 2) {
@@ -1866,7 +1866,7 @@ function PanelCameraComponent_app_async_slider_11_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_toggle_group_12_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 12);
   }
 
   if (rf & 2) {
@@ -1877,12 +1877,34 @@ function PanelCameraComponent_app_async_toggle_group_12_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_13_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 13);
   }
 
   if (rf & 2) {
     const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r3.exposureTimeCapability);
+  }
+}
+
+function PanelCameraComponent_app_async_toggle_group_14_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 14);
+  }
+
+  if (rf & 2) {
+    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r4.gainModeCapability);
+  }
+}
+
+function PanelCameraComponent_app_async_slider_15_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 15);
+  }
+
+  if (rf & 2) {
+    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r5.gainCapability);
   }
 }
 
@@ -1895,6 +1917,8 @@ class PanelCameraComponent {
     this.blackLevelCapability = undefined;
     this.exposureTimeModeCapability = undefined;
     this.exposureTimeCapability = undefined;
+    this.gainModeCapability = undefined;
+    this.gainCapability = undefined;
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
       this.camera = this.siteService.selectedCamera;
       this.updateVisibilityFlags();
@@ -1912,10 +1936,16 @@ class PanelCameraComponent {
       if (this.exposureTimeModeCapability != null) this.exposureTimeModeCapability.beginEdit();
       this.exposureTimeCapability = this.camera.getValueCapability(_materials_capabilities_double_value_type__WEBPACK_IMPORTED_MODULE_0__.DoubleValueType.ExposureTime);
       if (this.exposureTimeCapability != null) this.exposureTimeCapability.beginEdit();
+      this.gainModeCapability = this.camera.getSwitchCapability(_materials_capabilities_switch_value_type__WEBPACK_IMPORTED_MODULE_1__.SwitchValueType.GainMode);
+      if (this.gainModeCapability != null) this.gainModeCapability.beginEdit();
+      this.gainCapability = this.camera.getValueCapability(_materials_capabilities_double_value_type__WEBPACK_IMPORTED_MODULE_0__.DoubleValueType.Gain);
+      if (this.gainCapability != null) this.gainCapability.beginEdit();
     } else {
       this.qualityCapability = undefined;
       this.blackLevelCapability = undefined;
       this.exposureTimeCapability = undefined;
+      this.gainModeCapability = undefined;
+      this.gainCapability = undefined;
     }
   }
 
@@ -1942,9 +1972,9 @@ PanelCameraComponent.ɵfac = function PanelCameraComponent_Factory(t) {
 PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineComponent"]({
   type: PanelCameraComponent,
   selectors: [["app-panel-camera"]],
-  decls: 17,
-  vars: 4,
-  consts: [[1, "card-login"], [1, "icon-title"], [1, "card-content-container"], ["displayName", "Quality", 3, "capability", 4, "ngIf"], ["displayName", "Black level", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time Mode", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time", 3, "capability", 4, "ngIf"], ["mat-button", "", 1, "full-width", 3, "click"], ["displayName", "Quality", 3, "capability"], ["displayName", "Black level", 3, "capability"], ["displayName", "Exposure Time Mode", 3, "capability"], ["displayName", "Exposure Time", 3, "capability"]],
+  decls: 19,
+  vars: 6,
+  consts: [[1, "card-login"], [1, "icon-title"], [1, "card-content-container"], ["displayName", "Quality", 3, "capability", 4, "ngIf"], ["displayName", "Black level", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time Mode", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time", 3, "capability", 4, "ngIf"], ["displayName", "Gain Mode", 3, "capability", 4, "ngIf"], ["displayName", "Gain", 3, "capability", 4, "ngIf"], ["mat-button", "", 1, "full-width", 3, "click"], ["displayName", "Quality", 3, "capability"], ["displayName", "Black level", 3, "capability"], ["displayName", "Exposure Time Mode", 3, "capability"], ["displayName", "Exposure Time", 3, "capability"], ["displayName", "Gain Mode", 3, "capability"], ["displayName", "Gain", 3, "capability"]],
   template: function PanelCameraComponent_Template(rf, ctx) {
     if (rf & 1) {
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title")(3, "mat-icon", 1);
@@ -1960,12 +1990,14 @@ PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](11, PanelCameraComponent_app_async_slider_11_Template, 1, 1, "app-async-slider", 4);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](12, PanelCameraComponent_app_async_toggle_group_12_Template, 1, 1, "app-async-toggle-group", 5);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](13, PanelCameraComponent_app_async_slider_13_Template, 1, 1, "app-async-slider", 6);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](14, PanelCameraComponent_app_async_toggle_group_14_Template, 1, 1, "app-async-toggle-group", 7);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](15, PanelCameraComponent_app_async_slider_15_Template, 1, 1, "app-async-slider", 8);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](14, "mat-card-actions")(15, "button", 7);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵlistener"]("click", function PanelCameraComponent_Template_button_click_15_listener() {
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](16, "mat-card-actions")(17, "button", 9);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵlistener"]("click", function PanelCameraComponent_Template_button_click_17_listener() {
         return ctx.onCloseClick();
       });
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtext"](16, "Close");
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtext"](18, "Close");
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementEnd"]()()();
     }
 
@@ -1978,6 +2010,10 @@ PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.exposureTimeModeCapability != null);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.exposureTimeCapability != null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.gainModeCapability != null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.gainCapability != null);
     }
   },
   directives: [_angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCard, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardHeader, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardTitle, _angular_material_icon__WEBPACK_IMPORTED_MODULE_8__.MatIcon, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardSubtitle, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardContent, _angular_common__WEBPACK_IMPORTED_MODULE_9__.NgIf, _async_slider_async_slider_component__WEBPACK_IMPORTED_MODULE_4__.AsyncSliderComponent, _async_toggle_group_async_toggle_group_component__WEBPACK_IMPORTED_MODULE_5__.AsyncToggleGroupComponent, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardActions, _angular_material_button__WEBPACK_IMPORTED_MODULE_10__.MatButton],
@@ -2087,7 +2123,7 @@ StickComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__[
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵloadQuery"]()) && (ctx.nipplejshost = _t.first);
     } }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵNgOnChangesFeature"]], decls: 2, vars: 0, consts: [[1, "stick-host"], ["nipplejshost", ""]], template: function StickComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelement"](0, "div", 0, 1);
-    } }, styles: ["[_nghost-%COMP%] {\n  width: 160px;\n  height: 160px;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.stick-host[_ngcontent-%COMP%] {\n  position: relative;\n  width: 160px;\n  height: 160px;\n}\n\n.stick-host[_ngcontent-%COMP%]    > div.nipple[_ngcontent-%COMP%] {\n  position: relative !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0aWNrLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FBQ0Y7O0FBQ0E7RUFFSSxrQkFBQTtFQUNBLFlBQUE7RUFDQSxhQUFBO0FBQ0o7O0FBQ0E7RUFDSSw2QkFBQTtBQUVKIiwiZmlsZSI6InN0aWNrLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xyXG4gIHdpZHRoOiAxNjBweDtcclxuICBoZWlnaHQ6IDE2MHB4O1xyXG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xyXG4gIG1hcmdpbi1yaWdodDogYXV0bztcclxufVxyXG4uc3RpY2staG9zdFxyXG57XHJcbiAgICBwb3NpdGlvbjpyZWxhdGl2ZTtcclxuICAgIHdpZHRoOjE2MHB4O1xyXG4gICAgaGVpZ2h0OjE2MHB4O1xyXG59XHJcbi5zdGljay1ob3N0ID4gZGl2Lm5pcHBsZXtcclxuICAgIHBvc2l0aW9uOnJlbGF0aXZlICFpbXBvcnRhbnQ7XHJcbn1cclxuIl19 */"] });
+    } }, styles: ["[_nghost-%COMP%] {\n  width: 160px;\n  height: 160px;\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.stick-host[_ngcontent-%COMP%] {\n  position: relative;\n  width: 160px;\n  height: 160px;\n}\n\n.stick-host[_ngcontent-%COMP%]    > div.nipple[_ngcontent-%COMP%] {\n  position: relative !important;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0aWNrLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBQTtFQUNBLGFBQUE7RUFDQSxpQkFBQTtFQUNBLGtCQUFBO0FBQ0Y7O0FBQ0E7RUFFSSxrQkFBQTtFQUNBLFlBQUE7RUFDQSxhQUFBO0FBQ0o7O0FBQ0E7RUFDSSw2QkFBQTtBQUVKIiwiZmlsZSI6InN0aWNrLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiOmhvc3Qge1xuICB3aWR0aDogMTYwcHg7XG4gIGhlaWdodDogMTYwcHg7XG4gIG1hcmdpbi1sZWZ0OiBhdXRvO1xuICBtYXJnaW4tcmlnaHQ6IGF1dG87XG59XG4uc3RpY2staG9zdFxue1xuICAgIHBvc2l0aW9uOnJlbGF0aXZlO1xuICAgIHdpZHRoOjE2MHB4O1xuICAgIGhlaWdodDoxNjBweDtcbn1cbi5zdGljay1ob3N0ID4gZGl2Lm5pcHBsZXtcbiAgICBwb3NpdGlvbjpyZWxhdGl2ZSAhaW1wb3J0YW50O1xufVxuIl19 */"] });
 
 
 /***/ }),
@@ -2413,6 +2449,7 @@ var DoubleValueType;
     DoubleValueType["Quality"] = "Quality";
     DoubleValueType["BlackLevel"] = "BlackLevel";
     DoubleValueType["ExposureTime"] = "ExposureTime";
+    DoubleValueType["Gain"] = "Gain";
 })(DoubleValueType || (DoubleValueType = {}));
 
 
@@ -2517,6 +2554,7 @@ __webpack_require__.r(__webpack_exports__);
 var SwitchValueType;
 (function (SwitchValueType) {
     SwitchValueType["ExposureTimeMode"] = "ExposureTimeMode";
+    SwitchValueType["GainMode"] = "GainMode";
 })(SwitchValueType || (SwitchValueType = {}));
 
 
@@ -3742,7 +3780,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LoginComponent": () => (/* binding */ LoginComponent)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js-sha512 */ 2414);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(js_sha512__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 3184);
@@ -3803,7 +3841,7 @@ class LoginComponent {
   onConnectButtonClick() {
     var _this = this;
 
-    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this.loginRunning = true;
 
       _this.userService.clearToken();
@@ -4179,7 +4217,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "WsService": () => (/* binding */ WsService)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! uuid */ 2535);
 /* harmony import */ var _materials_factory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../materials/factory */ 7568);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
@@ -4223,7 +4261,7 @@ class WsService {
     };
 
     this.socket.onclose = /*#__PURE__*/function () {
-      var _ref = (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
+      var _ref = (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
         _this.wsClose(event);
       });
 
@@ -4265,7 +4303,7 @@ class WsService {
   }
 
   wsClose(event) {
-    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       console.log("wsClose", event);
     })();
   }

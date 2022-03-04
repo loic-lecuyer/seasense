@@ -8,7 +8,7 @@ namespace Exavision.Seasense.Shared.Capabilities {
         public List<SwitchValue> Values { get; protected set; } = new List<SwitchValue>();
 
         public SwitchValue Value { get; protected set; }
-        public SwitchValueType SwitchValueType { get; set; }
+        public virtual SwitchValueType SwitchValueType { get; protected set; }
         public override SettingSwitchValueCapability GetSetting(SettingSwitchValueCapability setting) {
             setting.Values = this.Values;
             setting.Id = this.Id;

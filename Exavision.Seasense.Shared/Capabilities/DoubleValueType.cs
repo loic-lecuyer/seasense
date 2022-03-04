@@ -5,6 +5,7 @@
         Saturation,
         Quality,
         BlackLevel,
-        ExposureTime
+        ExposureTime,
+        Gain
     }
 }

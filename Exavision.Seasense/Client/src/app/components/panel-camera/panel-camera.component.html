@@ -8,7 +8,10 @@
       <app-async-slider *ngIf="qualityCapability != null" displayName="Quality" [capability]="qualityCapability"> </app-async-slider>
       <app-async-slider *ngIf="blackLevelCapability != null" displayName="Black level" [capability]="blackLevelCapability"> </app-async-slider>
       <app-async-toggle-group *ngIf="exposureTimeModeCapability != null" displayName="Exposure Time Mode" [capability]="exposureTimeModeCapability"></app-async-toggle-group>
-      <app-async-slider *ngIf="exposureTimeCapability != null" displayName="Exposure Time" [capability]="exposureTimeCapability"> </app-async-slider>     
+      <app-async-slider *ngIf="exposureTimeCapability != null" displayName="Exposure Time" [capability]="exposureTimeCapability"> </app-async-slider>
+
+      <app-async-toggle-group *ngIf="gainModeCapability != null" displayName="Gain Mode" [capability]="gainModeCapability"></app-async-toggle-group>
+      <app-async-slider *ngIf="gainCapability != null" displayName="Gain" [capability]="gainCapability"> </app-async-slider>
     </div>
     
 

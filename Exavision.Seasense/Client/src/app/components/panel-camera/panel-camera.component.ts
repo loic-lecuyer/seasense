@@ -21,6 +21,9 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
   public blackLevelCapability: DoubleValueCapability | undefined = undefined;
   public exposureTimeModeCapability: SwitchValueCapability | undefined = undefined;
   public exposureTimeCapability: DoubleValueCapability | undefined = undefined;
+  public gainModeCapability: SwitchValueCapability | undefined = undefined;
+  public gainCapability: DoubleValueCapability | undefined = undefined;
+
   constructor(private uiService: UiService, private siteService: SiteService) {
 
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
@@ -40,14 +43,21 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       this.exposureTimeModeCapability = this.camera.getSwitchCapability(SwitchValueType.ExposureTimeMode);
       if (this.exposureTimeModeCapability != null) this.exposureTimeModeCapability.beginEdit();
 
-
       this.exposureTimeCapability = this.camera.getValueCapability(DoubleValueType.ExposureTime);
       if (this.exposureTimeCapability != null) this.exposureTimeCapability.beginEdit();
+
+      this.gainModeCapability = this.camera.getSwitchCapability(SwitchValueType.GainMode);
+      if (this.gainModeCapability != null) this.gainModeCapability.beginEdit();
+
+      this.gainCapability = this.camera.getValueCapability(DoubleValueType.Gain);
+      if (this.gainCapability != null) this.gainCapability.beginEdit();
     }
     else {
       this.qualityCapability = undefined;
       this.blackLevelCapability = undefined;
       this.exposureTimeCapability = undefined;
+      this.gainModeCapability = undefined;
+      this.gainCapability = undefined;
     }
   }
 
