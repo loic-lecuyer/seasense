@@ -2634,6 +2634,7 @@ var SwitchValueType;
     SwitchValueType["ExposureTimeMode"] = "ExposureTimeMode";
     SwitchValueType["GainMode"] = "GainMode";
     SwitchValueType["WhiteBalanceMode"] = "WhiteBalanceMode";
+    SwitchValueType["PolarityMode"] = "PolarityMode";
 })(SwitchValueType || (SwitchValueType = {}));
 
 

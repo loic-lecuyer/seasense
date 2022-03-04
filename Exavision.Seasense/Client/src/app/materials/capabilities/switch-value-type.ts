@@ -1,7 +1,8 @@
 export enum SwitchValueType {
   ExposureTimeMode = "ExposureTimeMode",
   GainMode = "GainMode",
-  WhiteBalanceMode ="WhiteBalanceMode"
+  WhiteBalanceMode = "WhiteBalanceMode",
+  PolarityMode = "PolarityMode"
 
 
 }

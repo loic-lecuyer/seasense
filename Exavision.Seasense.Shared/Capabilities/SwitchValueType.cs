@@ -2,6 +2,11 @@
     public enum SwitchValueType {
         ExposureTimeMode,
         GainMode,
-        WhiteBalanceMode
+        WhiteBalanceMode,
+        PolarityMode,
+        MeteoWeather,
+        MeteoTime,
+        MeteoLocation
+
     }
 }
