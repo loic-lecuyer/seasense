@@ -40,7 +40,7 @@
         /// <summary>
         /// Gets or sets the Brightness.
         /// </summary>
-        public byte Brightness { get; set; }
+        public byte Luminosity { get; set; }
 
         /// <summary>
         /// Gets or sets the Contrast.
@@ -218,7 +218,7 @@
             this.EnqueueInt(this.RoiHistoY, data);
             this.EnqueueInt(this.RoiHistoWidth, data);
             this.EnqueueInt(this.RoiHistoHeight, data);
-            this.EnqueueByte(this.Brightness, data);
+            this.EnqueueByte(this.Luminosity, data);
             this.EnqueueByte(this.Contrast, data);
             this.EnqueueInt(this.Gamma, data);
             this.EnqueueBool(this.GammaCorrection, data);
@@ -260,7 +260,7 @@
             this.RoiHistoY = this.DequeueInt(lst);
             this.RoiHistoWidth = this.DequeueInt(lst);
             this.RoiHistoHeight = this.DequeueInt(lst);
-            this.Brightness = this.DequeueByte(lst);
+            this.Luminosity = this.DequeueByte(lst);
             this.Contrast = this.DequeueByte(lst);
             this.Gamma = this.DequeueInt(lst);
             this.GammaCorrection = this.DequeueBool(lst);

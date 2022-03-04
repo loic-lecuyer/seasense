@@ -19,6 +19,28 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosCameraThorZoomAbsolutePositionCapability(this));
             this.Capabilities.Add(new SeamosCameraThorZoomContinuousCapability(this));
             this.Capabilities.Add(new SeamosCameraThorAutoFocusOnePushCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorContrastCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorGammaCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorLuminosityCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorQualityCapability(this));
+            /*
+             * this.Capabilities.Add(new SeamosThermalZoomable(tcpStringClient, protocol));
+            this.Capabilities.Add(new SeamosThermalLuminosity(tcpStringClient, protocol));
+            this.Capabilities.Add(new SeamosThermalContrast(tcpStringClient, protocol));
+            this.Capabilities.Add(new SeamosThermalGamma(tcpStringClient, protocol)); + mode
+            this.Capabilities.Add(new SeamosThermalImageQuality(tcpStringClient, protocol)); 
+            this.Capabilities.Add(new SeamosThermalShutter(tcpStringClient, protocol)); only mode
+            this.Capabilities.Add(new SeamosThermalReticule(tcpStringClient, protocol)); only mode
+            this.Capabilities.Add(new SeamosThermalColorMode(tcpStringClient, protocol)); only mode
+            this.Capabilities.Add(new SeamosThermalFocus(tcpStringClient, protocol)); chaud patate
+            this.Capabilities.Add(new SeamosThermalPolarity(tcpStringClient, protocol)); only mode
+            this.Capabilities.Add(new SeamosThermalZoneHisto(tcpStringClient, protocol));
+            this.Capabilities.Add(new SeamosThermalCameraSystemCommand(tcpStringClient, protocol));
+            this.Capabilities.Add(new SeamosThermalMeteoPreset(tcpStringClient, protocol)); only mode
+            this.Capabilities.Add(new SeamosThermalVersionInfo(tcpStringClient, protocol));
+            this.Capabilities.Add(new MaterialPollingManager(this));
+            this.Capabilities.Add(new CameraStitchCapability(this));
+             * */
         }
         public override SettingSeamosThermalCamera GetSetting(SettingSeamosThermalCamera setting) {
             setting.StreamUrl = this.streamUrl;

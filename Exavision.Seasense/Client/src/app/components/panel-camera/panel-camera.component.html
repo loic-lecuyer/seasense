@@ -7,6 +7,9 @@
     <div class="card-content-container">
       <app-async-slider *ngIf="qualityCapability != null" displayName="Quality" [capability]="qualityCapability"> </app-async-slider>
       <app-async-slider *ngIf="blackLevelCapability != null" displayName="Black level" [capability]="blackLevelCapability"> </app-async-slider>
+      <app-async-slider *ngIf="luminosityCapability != null" displayName="Luminosity" [capability]="luminosityCapability"> </app-async-slider>
+
+
       <app-async-slider *ngIf="gammaCapability != null" displayName="Gamma" [capability]="gammaCapability"> </app-async-slider>
       <app-async-toggle-group *ngIf="exposureTimeModeCapability != null" displayName="Exposure Time Mode" [capability]="exposureTimeModeCapability"></app-async-toggle-group>
       <app-async-slider *ngIf="exposureTimeCapability != null" displayName="Exposure Time" [capability]="exposureTimeCapability"> </app-async-slider>
@@ -14,6 +17,8 @@
       <app-async-slider *ngIf="gainCapability != null" displayName="Gain" [capability]="gainCapability"> </app-async-slider>
       <app-async-toggle-group *ngIf="whiteBalanceModeCapability != null" displayName="White Balance Mode" [capability]="whiteBalanceModeCapability"></app-async-toggle-group>
       <app-async-slider *ngIf="whiteBalanceCapability != null" displayName="White Balance" [capability]="whiteBalanceCapability"> </app-async-slider>
+
+
     </div>
   </mat-card-content>
   <mat-card-actions>

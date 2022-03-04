@@ -1848,7 +1848,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function PanelCameraComponent_app_async_slider_10_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 14);
   }
 
   if (rf & 2) {
@@ -1859,7 +1859,7 @@ function PanelCameraComponent_app_async_slider_10_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_11_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 15);
   }
 
   if (rf & 2) {
@@ -1870,78 +1870,89 @@ function PanelCameraComponent_app_async_slider_11_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_12_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 16);
   }
 
   if (rf & 2) {
     const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r2.gammaCapability);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r2.luminosityCapability);
   }
 }
 
-function PanelCameraComponent_app_async_toggle_group_13_Template(rf, ctx) {
-  if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 16);
-  }
-
-  if (rf & 2) {
-    const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r3.exposureTimeModeCapability);
-  }
-}
-
-function PanelCameraComponent_app_async_slider_14_Template(rf, ctx) {
+function PanelCameraComponent_app_async_slider_13_Template(rf, ctx) {
   if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 17);
   }
 
   if (rf & 2) {
-    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r4.exposureTimeCapability);
+    const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r3.gammaCapability);
   }
 }
 
-function PanelCameraComponent_app_async_toggle_group_15_Template(rf, ctx) {
+function PanelCameraComponent_app_async_toggle_group_14_Template(rf, ctx) {
   if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 18);
   }
 
   if (rf & 2) {
-    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r5.gainModeCapability);
+    const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r4.exposureTimeModeCapability);
   }
 }
 
-function PanelCameraComponent_app_async_slider_16_Template(rf, ctx) {
+function PanelCameraComponent_app_async_slider_15_Template(rf, ctx) {
   if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 19);
   }
 
   if (rf & 2) {
-    const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r6.gainCapability);
+    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r5.exposureTimeCapability);
   }
 }
 
-function PanelCameraComponent_app_async_toggle_group_17_Template(rf, ctx) {
+function PanelCameraComponent_app_async_toggle_group_16_Template(rf, ctx) {
   if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 20);
   }
 
   if (rf & 2) {
-    const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r7.whiteBalanceModeCapability);
+    const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r6.gainModeCapability);
   }
 }
 
-function PanelCameraComponent_app_async_slider_18_Template(rf, ctx) {
+function PanelCameraComponent_app_async_slider_17_Template(rf, ctx) {
   if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 21);
   }
 
   if (rf & 2) {
+    const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r7.gainCapability);
+  }
+}
+
+function PanelCameraComponent_app_async_toggle_group_18_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 22);
+  }
+
+  if (rf & 2) {
     const ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r8.whiteBalanceCapability);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r8.whiteBalanceModeCapability);
+  }
+}
+
+function PanelCameraComponent_app_async_slider_19_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 23);
+  }
+
+  if (rf & 2) {
+    const ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r9.whiteBalanceCapability);
   }
 }
 
@@ -1959,6 +1970,7 @@ class PanelCameraComponent {
     this.gammaCapability = undefined;
     this.whiteBalanceModeCapability = undefined;
     this.whiteBalanceCapability = undefined;
+    this.luminosityCapability = undefined;
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
       this.camera = this.siteService.selectedCamera;
       this.updateVisibilityFlags();
@@ -1986,6 +1998,8 @@ class PanelCameraComponent {
       if (this.whiteBalanceCapability != null) this.whiteBalanceCapability.beginEdit();
       this.whiteBalanceModeCapability = this.camera.getSwitchCapability(_materials_capabilities_switch_value_type__WEBPACK_IMPORTED_MODULE_1__.SwitchValueType.WhiteBalanceMode);
       if (this.whiteBalanceModeCapability != null) this.whiteBalanceModeCapability.beginEdit();
+      this.luminosityCapability = this.camera.getValueCapability(_materials_capabilities_double_value_type__WEBPACK_IMPORTED_MODULE_0__.DoubleValueType.Luminosity);
+      if (this.luminosityCapability != null) this.luminosityCapability.beginEdit();
     } else {
       this.gammaCapability = undefined;
       this.whiteBalanceCapability = undefined;
@@ -1995,6 +2009,7 @@ class PanelCameraComponent {
       this.exposureTimeCapability = undefined;
       this.gainModeCapability = undefined;
       this.gainCapability = undefined;
+      this.luminosityCapability = undefined;
     }
   }
 
@@ -2021,9 +2036,9 @@ PanelCameraComponent.ɵfac = function PanelCameraComponent_Factory(t) {
 PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineComponent"]({
   type: PanelCameraComponent,
   selectors: [["app-panel-camera"]],
-  decls: 22,
-  vars: 9,
-  consts: [[1, "card-login"], [1, "icon-title"], [1, "card-content-container"], ["displayName", "Quality", 3, "capability", 4, "ngIf"], ["displayName", "Black level", 3, "capability", 4, "ngIf"], ["displayName", "Gamma", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time Mode", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time", 3, "capability", 4, "ngIf"], ["displayName", "Gain Mode", 3, "capability", 4, "ngIf"], ["displayName", "Gain", 3, "capability", 4, "ngIf"], ["displayName", "White Balance Mode", 3, "capability", 4, "ngIf"], ["displayName", "White Balance", 3, "capability", 4, "ngIf"], ["mat-button", "", 1, "full-width", 3, "click"], ["displayName", "Quality", 3, "capability"], ["displayName", "Black level", 3, "capability"], ["displayName", "Gamma", 3, "capability"], ["displayName", "Exposure Time Mode", 3, "capability"], ["displayName", "Exposure Time", 3, "capability"], ["displayName", "Gain Mode", 3, "capability"], ["displayName", "Gain", 3, "capability"], ["displayName", "White Balance Mode", 3, "capability"], ["displayName", "White Balance", 3, "capability"]],
+  decls: 23,
+  vars: 10,
+  consts: [[1, "card-login"], [1, "icon-title"], [1, "card-content-container"], ["displayName", "Quality", 3, "capability", 4, "ngIf"], ["displayName", "Black level", 3, "capability", 4, "ngIf"], ["displayName", "Luminosity", 3, "capability", 4, "ngIf"], ["displayName", "Gamma", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time Mode", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time", 3, "capability", 4, "ngIf"], ["displayName", "Gain Mode", 3, "capability", 4, "ngIf"], ["displayName", "Gain", 3, "capability", 4, "ngIf"], ["displayName", "White Balance Mode", 3, "capability", 4, "ngIf"], ["displayName", "White Balance", 3, "capability", 4, "ngIf"], ["mat-button", "", 1, "full-width", 3, "click"], ["displayName", "Quality", 3, "capability"], ["displayName", "Black level", 3, "capability"], ["displayName", "Luminosity", 3, "capability"], ["displayName", "Gamma", 3, "capability"], ["displayName", "Exposure Time Mode", 3, "capability"], ["displayName", "Exposure Time", 3, "capability"], ["displayName", "Gain Mode", 3, "capability"], ["displayName", "Gain", 3, "capability"], ["displayName", "White Balance Mode", 3, "capability"], ["displayName", "White Balance", 3, "capability"]],
   template: function PanelCameraComponent_Template(rf, ctx) {
     if (rf & 1) {
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title")(3, "mat-icon", 1);
@@ -2038,18 +2053,19 @@ PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](10, PanelCameraComponent_app_async_slider_10_Template, 1, 1, "app-async-slider", 3);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](11, PanelCameraComponent_app_async_slider_11_Template, 1, 1, "app-async-slider", 4);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](12, PanelCameraComponent_app_async_slider_12_Template, 1, 1, "app-async-slider", 5);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](13, PanelCameraComponent_app_async_toggle_group_13_Template, 1, 1, "app-async-toggle-group", 6);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](14, PanelCameraComponent_app_async_slider_14_Template, 1, 1, "app-async-slider", 7);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](15, PanelCameraComponent_app_async_toggle_group_15_Template, 1, 1, "app-async-toggle-group", 8);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](16, PanelCameraComponent_app_async_slider_16_Template, 1, 1, "app-async-slider", 9);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](17, PanelCameraComponent_app_async_toggle_group_17_Template, 1, 1, "app-async-toggle-group", 10);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](18, PanelCameraComponent_app_async_slider_18_Template, 1, 1, "app-async-slider", 11);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](13, PanelCameraComponent_app_async_slider_13_Template, 1, 1, "app-async-slider", 6);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](14, PanelCameraComponent_app_async_toggle_group_14_Template, 1, 1, "app-async-toggle-group", 7);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](15, PanelCameraComponent_app_async_slider_15_Template, 1, 1, "app-async-slider", 8);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](16, PanelCameraComponent_app_async_toggle_group_16_Template, 1, 1, "app-async-toggle-group", 9);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](17, PanelCameraComponent_app_async_slider_17_Template, 1, 1, "app-async-slider", 10);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](18, PanelCameraComponent_app_async_toggle_group_18_Template, 1, 1, "app-async-toggle-group", 11);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](19, PanelCameraComponent_app_async_slider_19_Template, 1, 1, "app-async-slider", 12);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](19, "mat-card-actions")(20, "button", 12);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵlistener"]("click", function PanelCameraComponent_Template_button_click_20_listener() {
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](20, "mat-card-actions")(21, "button", 13);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵlistener"]("click", function PanelCameraComponent_Template_button_click_21_listener() {
         return ctx.onCloseClick();
       });
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtext"](21, "Close");
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtext"](22, "Close");
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementEnd"]()()();
     }
 
@@ -2058,6 +2074,8 @@ PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.qualityCapability != null);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.blackLevelCapability != null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.luminosityCapability != null);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.gammaCapability != null);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);

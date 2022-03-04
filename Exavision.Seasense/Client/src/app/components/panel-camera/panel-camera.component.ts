@@ -26,7 +26,7 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
   public gammaCapability: DoubleValueCapability | undefined = undefined;
   public whiteBalanceModeCapability: SwitchValueCapability | undefined = undefined;
   public whiteBalanceCapability: DoubleValueCapability | undefined = undefined;
-
+  public luminosityCapability: DoubleValueCapability | undefined = undefined;
   constructor(private uiService: UiService, private siteService: SiteService) {
 
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
@@ -65,6 +65,10 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       this.whiteBalanceModeCapability = this.camera.getSwitchCapability(SwitchValueType.WhiteBalanceMode);
       if (this.whiteBalanceModeCapability != null) this.whiteBalanceModeCapability.beginEdit();
 
+      this.luminosityCapability = this.camera.getValueCapability(DoubleValueType.Luminosity);
+      if (this.luminosityCapability != null) this.luminosityCapability.beginEdit();
+
+
     }
     else {
       this.gammaCapability = undefined;
@@ -75,6 +79,7 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       this.exposureTimeCapability = undefined;
       this.gainModeCapability = undefined;
       this.gainCapability = undefined;
+      this.luminosityCapability = undefined;
     }
   }
 

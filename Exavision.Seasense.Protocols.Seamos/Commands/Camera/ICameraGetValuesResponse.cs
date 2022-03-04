@@ -30,7 +30,7 @@
         /// <summary>
         /// Gets or sets the Brightness.
         /// </summary>
-        byte Brightness { get; set; }
+        byte Luminosity { get; set; }
 
         /// <summary>
         /// Gets or sets the Contrast.
