@@ -4,12 +4,14 @@
     <mat-card-subtitle>Be carefull with this settings</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <div *ngIf="qualityCapability != null">
-
-      <div>Quality</div>
-      <mat-slider [min]="qualityCapability.minValue" [max]="qualityCapability.maxValue" aria-label="Quality %"></mat-slider>
+    <div class="card-content-container">
+      <app-async-slider *ngIf="qualityCapability != null" displayName="Quality" [capability]="qualityCapability"> </app-async-slider>
+      <app-async-slider *ngIf="blackLevelCapability != null" displayName="Black level" [capability]="blackLevelCapability"> </app-async-slider>
+      <app-async-toggle-group *ngIf="exposureTimeModeCapability != null" displayName="Exposure Time Mode" [capability]="exposureTimeModeCapability"></app-async-toggle-group>
+      <app-async-slider *ngIf="exposureTimeCapability != null" displayName="Exposure Time" [capability]="exposureTimeCapability"> </app-async-slider>     
     </div>
     
+
   </mat-card-content>
   <mat-card-actions>
     <button class="full-width" (click)="onCloseClick()" mat-button>Close</button>

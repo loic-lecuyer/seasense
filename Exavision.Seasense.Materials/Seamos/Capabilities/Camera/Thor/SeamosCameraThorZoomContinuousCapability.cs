@@ -5,7 +5,7 @@ using Exavision.Seasense.Shared.Models;
 using System.Threading;
 using System.Threading.Tasks;
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
-    public class SeamosCameraThorZoomContinuousCapability : CameraZoomContinuousCapability<SettingSeamosCameraThorZoomContinuousCapability>, ISeamosCapability {
+    public class SeamosCameraThorZoomContinuousCapability : CameraZoomContinuousCapability, ISeamosCapability {
         private readonly SeamosThermalCamera camera;
         private CancellationTokenSource cancellerZoomIn;
         private CancellationTokenSource cancellerZoomOut;
@@ -13,10 +13,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
         public SeamosCameraThorZoomContinuousCapability(SeamosThermalCamera camera) {
             this.camera = camera;
         }
-        public override SettingSeamosCameraThorZoomContinuousCapability GetSetting(SettingSeamosCameraThorZoomContinuousCapability setting) {
-            base.GetSetting(setting);
-            return setting;
-        }
+
 
         public void ProcessHardwareResponse(ISeamosCommand command) {
 

@@ -29,6 +29,8 @@ import { CameraAutoFocusOnePushCapability } from "./capabilities/camera/camera-a
 import { LazerMeasurementShootCapability } from "./capabilities/lazer-measurement/lazer-measurement-shoot-capability";
 import { SettingDoubleValueCapability } from "./settings/setting-double-value-capability";
 import { DoubleValueCapability } from "./capabilities/double-value-capability";
+import { SwitchValueCapability } from "./capabilities/switch-value-capability";
+import { SettingSwitchValueCapability } from "./settings/setting-switch-value-capability";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -104,6 +106,9 @@ export class Factory {
      
       case CapabilityType.DoubleValue:
         capability = new DoubleValueCapability(<SettingDoubleValueCapability>settingCapability);
+        break;
+      case CapabilityType.SwitchValue:
+        capability = new SwitchValueCapability(<SettingSwitchValueCapability>settingCapability);
         break;
     }
     if (capability == null) {

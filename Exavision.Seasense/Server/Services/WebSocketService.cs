@@ -3,6 +3,7 @@ using Exavision.Seasense.Api.WebSocket.Core;
 using Exavision.Seasense.Api.WebSocket.LazerMeasurement;
 using Exavision.Seasense.Api.WebSocket.States;
 using Exavision.Seasense.Api.WebSocket.Turret;
+using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Capabilities.LazerMeasurement;
 using Exavision.Seasense.Shared.Capabilities.Turret;
@@ -15,6 +16,7 @@ using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 
@@ -166,6 +168,38 @@ namespace Exavision.Seasense.Server.Services {
                 capability.ShootMeasurement();
                 this.SendValid(request.RequestId, client);
             }
+            else if (request is WsDoubleValueSetRequest doubleValueSetRequest) {
+                IUnit unit = this.siteService.FindUnitById(doubleValueSetRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(doubleValueSetRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+
+                ICapability capability = material.GetCapabilityById(doubleValueSetRequest.CapabilityId);
+                if (capability == null) throw new InvalidOperationException("No capability  on material");
+                if (capability is DoubleValueCapability doubleValueCapability) {
+                    doubleValueCapability.SetValue(doubleValueSetRequest.Value);
+                    this.SendValid(request.RequestId, client);
+                }
+                else this.SendError(client, request.RequestId, "Invalid capability type");
+
+            }
+            else if (request is WsSwitchValueSetRequest switchValueSetRequest) {
+                IUnit unit = this.siteService.FindUnitById(switchValueSetRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(switchValueSetRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+
+                ICapability capability = material.GetCapabilityById(switchValueSetRequest.CapabilityId);
+                if (capability == null) throw new InvalidOperationException("No capability  on material");
+                if (capability is SwitchValueCapability switchValueCapability) {
+                    SwitchValue val = (from v in switchValueCapability.Values where v.Value.Equals(switchValueSetRequest.Value) select v).FirstOrDefault();
+                    switchValueCapability.SetValue(val);
+                    this.SendValid(request.RequestId, client);
+                }
+                else this.SendError(client, request.RequestId, "Invalid capability type");
+
+            }
+
 
             else {
                 this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);

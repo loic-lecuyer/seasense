@@ -3,6 +3,8 @@ import { Capability } from "./capabilities/capability";
 import { CapabilityType } from "./capabilities/capability-type";
 import { DoubleValueCapability } from "./capabilities/double-value-capability";
 import { DoubleValueType } from "./capabilities/double-value-type";
+import { SwitchValueCapability } from "./capabilities/switch-value-capability";
+import { SwitchValueType } from "./capabilities/switch-value-type";
 import { Factory } from "./factory";
 import { Material } from "./material";
 import { MaterialType } from "./material-type";
@@ -15,6 +17,7 @@ import { MaterialState } from "./states/material-state";
 import { Unit } from "./unit";
 
 export abstract class Camera implements Material  {
+  
  
   id: string;
   materials: Material[];
@@ -79,6 +82,19 @@ export abstract class Camera implements Material  {
       return (val.capabilityType == CapabilityType.DoubleValue && (<DoubleValueCapability>val).doubleValueType == type);
     });
    
+  }
+
+  getSwitchCapability(type: SwitchValueType): SwitchValueCapability | undefined {
+    let result: SwitchValueCapability | undefined = undefined;
+    this.capabilities.forEach((val: Capability) => {
+      if (val.capabilityType === CapabilityType.SwitchValue) {
+        let cap: SwitchValueCapability = <SwitchValueCapability>val;
+        if (cap.switchValueType === type) {
+          result = cap;
+        }
+      }
+    });
+    return result;
   }
 
   

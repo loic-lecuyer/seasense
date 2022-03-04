@@ -1,0 +1,56 @@
+:host {
+  width: 120px;
+  height: 48px;
+  min-width: 120px;
+  max-width: 120px;
+  min-height: 48px;
+  max-height: 48px;
+  padding: 0px !important;
+  margin: 0px !important;
+  margin-bottom:8px;
+}
+
+.sliders-container {
+  position: relative;
+  width: 120px;
+  height: 48px;
+  min-width: 120px;
+  max-width: 120px;
+  min-height: 48px;
+  max-height: 48px;
+  display: flex;
+  padding: 0px !important;
+  margin: 0px !important;
+}
+.slider-value {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  flex: 1;
+  padding: 0px !important;
+  margin: 0px !important;
+  height: 48px !important;
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+}
+.slider-edit {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  flex: 1;
+  padding: 0px !important;
+  margin: 0px !important;
+  height: 48px !important;
+  width: 120px !important;
+  min-width: 120px !important;
+  max-width: 120px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+}
+.slider-label {
+  margin-bottom: -12px;
+  margin-left: 8px;
+}

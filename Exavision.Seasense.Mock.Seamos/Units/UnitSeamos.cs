@@ -194,7 +194,6 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
                 string content = new StreamReader(context.Request.InputStream).ReadToEnd();
 
                 SetValuesRequest request = JsonConvert.DeserializeObject<SetValuesRequest>(content, this.spinnakerjsonSerializerSettings);
-                Log.Information("SpinnakerProcessSetValuesRequest Zoom " + request.Values.Zoom.Value);
                 this.SpinnakerValues = request.Values;
                 context.Response.StatusCode = 200;
                 context.Response.Close();

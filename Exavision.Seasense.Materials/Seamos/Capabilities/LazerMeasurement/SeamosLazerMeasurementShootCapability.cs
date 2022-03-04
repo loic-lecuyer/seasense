@@ -1,6 +1,7 @@
 ﻿using Exavision.Seasense.Protocols.Seamos.Commands;
 using Exavision.Seasense.Protocols.Seamos.Commands.Telemeter;
 using Exavision.Seasense.Shared.Capabilities.LazerMeasurement;
+using Exavision.Seasense.Shared.Settings;
 using Exavision.Seasense.Shared.States;
 using Exavision.Seasense.Shared.States.LazerMeasurement;
 using System;
@@ -8,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.LazerMeasurement {
-    public class SeamosLazerMeasurementShootCapability : LazerMeasurementShootCapability<SettingSeamosLazerMeasurementShootCapability>, ISeamosCapability {
+    public class SeamosLazerMeasurementShootCapability : LazerMeasurementShootCapability, ISeamosCapability {
         private readonly SeamosUnit unit;
         public Nullable<int> ErrorCode { get; private set; }
         public Nullable<Double> LastShootDistance { get; private set; }
@@ -19,11 +20,6 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.LazerMeasurement {
         public SeamosLazerMeasurementShootCapability(SeamosUnit unit) {
             this.unit = unit;
         }
-        public override SettingSeamosLazerMeasurementShootCapability GetSetting(SettingSeamosLazerMeasurementShootCapability setting) {
-            setting.CapabilityType = Shared.Settings.CapabilityType.LazerMeasurementShootCapability;
-            return setting;
-        }
-
 
         public override void ShootMeasurement() {
             if (!this.IsOn) {
@@ -66,6 +62,11 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.LazerMeasurement {
             state.IsOn = this.IsOn;
             state.LastShootDistance = this.LastShootDistance;
             return state;
+        }
+
+        public override SettingCapabilityEmpty GetSetting(SettingCapabilityEmpty setting) {
+            SettingCapabilityEmpty set = base.GetSetting(setting);
+            return set;
         }
     }
 }

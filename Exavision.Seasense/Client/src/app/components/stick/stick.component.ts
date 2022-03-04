@@ -32,8 +32,16 @@ export class StickComponent implements AfterViewInit, OnInit, OnChanges, AfterCo
 
   }
   findTurretMoveSpeedCapability() {
-    this.turretMoveSpeedCapability = this.siteService.selectedUnit?.getMaterialCapability(MaterialType.Turret, CapabilityType.TurretMoveSpeed);
-    console.log("findTurretMoveSpeedCapability ", this.turretMoveSpeedCapability);
+    if (this.siteService == null) {
+      this.turretMoveSpeedCapability = undefined;
+      return;
+    }
+    if (this.siteService.selectedUnit == null) {
+      this.turretMoveSpeedCapability = undefined;
+      return;
+    }
+    this.turretMoveSpeedCapability = this.siteService.selectedUnit.getMaterialCapability(MaterialType.Turret, CapabilityType.TurretMoveSpeed);
+    
   }
   ngOnInit(): void {
 

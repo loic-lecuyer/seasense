@@ -18,6 +18,7 @@ namespace Exavision.Seasense.Shared.Models {
             SettingSite settingSite = new SettingSite();
             settingSite.Id = this.Id;
             settingSite.DisplayName = DisplayName;
+            settingSite.ImplementationType = this.GetType().Name;
             foreach (ICapability capability in this.Capabilities) {
                 SettingCapability settingCapability = capability.GetSettingCapability();
                 settingSite.Capabilities.Add(settingCapability);
@@ -32,17 +33,16 @@ namespace Exavision.Seasense.Shared.Models {
             this.Id = settingSite.Id;
             this.DisplayName = settingSite.DisplayName;
             foreach (IUnit unit in this.Units) {
-                if (unit.GetType().BaseType.GenericTypeArguments.Length > 0) {
-                    SettingMaterial settingMateiral = (from sm in settingSite.Units where unit.GetType().BaseType.GenericTypeArguments.Contains(sm.GetType()) select sm).FirstOrDefault();
-                    unit.GetType().GetMethod("SetSetting", new Type[] { settingMateiral.GetType() }).Invoke(unit, new object[] { settingMateiral });
-                }
+
+                SettingMaterial settingMateiral = (from sm in settingSite.Units where sm.ImplementationType.Equals(unit.GetType().Name) select sm).FirstOrDefault();
+                MethodInfo setsettingMethod = unit.GetType().GetMethod("SetSetting", new Type[] { settingMateiral.GetType() });
+                setsettingMethod.Invoke(unit, new object[] { settingMateiral });
             }
             foreach (ICapability capability in this.Capabilities) {
-                if (capability.GetType().BaseType.GenericTypeArguments.Length > 0) {
-                    SettingCapability settingCapability = (from sm in settingSite.Capabilities where capability.GetType().BaseType.GenericTypeArguments.Contains(sm.GetType()) select sm).FirstOrDefault();
-                    MethodInfo setSettingMethod = capability.GetType().GetMethod("SetSetting", new Type[] { settingCapability.GetType() });
-                    setSettingMethod.Invoke(capability, new object[] { settingCapability });
-                }
+
+                SettingCapability settingCapability = (from sm in settingSite.Capabilities where sm.ImplementationType.Equals(capability.GetType().Name) select sm).FirstOrDefault();
+                MethodInfo setSettingMethod = capability.GetType().GetMethod("SetSetting", new Type[] { settingCapability.GetType() });
+                setSettingMethod.Invoke(capability, new object[] { settingCapability });
             }
         }
 

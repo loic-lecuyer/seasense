@@ -24,6 +24,7 @@ namespace Exavision.Seasense.Shared.Capabilities {
         }
         public S GetSetting() {
             S setting = new S();
+            setting.ImplementationType = this.GetType().Name;
             setting.Id = this.Id;
             setting = this.GetSetting(setting);
             return setting;

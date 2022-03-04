@@ -13,6 +13,7 @@ namespace Exavision.Seasense.Shared.Settings {
         CameraAutoFocusOnePush,
         IntValue,
         DoubleValue,
+        SwitchValue,
         LazerMeasurementShootCapability
     }
     public abstract class SettingCapability : SettingBase {
@@ -21,6 +22,9 @@ namespace Exavision.Seasense.Shared.Settings {
         public CapabilityType CapabilityType { get => this.capabilityType; set { this.capabilityType = value; this.DisplayName = this.capabilityType.ToString(); } }
 
         private CapabilityType capabilityType;
+
+
+
 
         public SettingCapability() {
 

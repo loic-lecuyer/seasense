@@ -1,0 +1,10 @@
+<div class="container">
+  <div class="toggle-group-label">{{displayName}}</div>
+  <div class="toggle-group-container">
+    <mat-button-toggle-group [(ngModel)]="currentValue" (change)="onToggleChnage($event)" [name]="capability.id" aria-label="Font Style">
+      <mat-button-toggle *ngFor="let item of capability.values" [value]="item.value">{{item.displayName}}</mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+</div>
+
+

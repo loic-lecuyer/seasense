@@ -3,6 +3,8 @@
         Luminosity,
         Contrast,
         Saturation,
-        Quality
+        Quality,
+        BlackLevel,
+        ExposureTime
     }
 }

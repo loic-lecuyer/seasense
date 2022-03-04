@@ -31,6 +31,11 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosCameraGigeZoomAbsolutePositionCapability(this));
             this.Capabilities.Add(new SeamosCameraGigeZoomContinuousCapability(this));
             this.Capabilities.Add(new SeamosCameraGigeQualityCapability(this));
+            this.Capabilities.Add(new SeamosCameraGigeBlackLevelCapability(this));
+            this.Capabilities.Add(new SeamosCameraGigeExposureTimeModeCapability(this));
+            this.Capabilities.Add(new SeamosCameraGigeExposureTimeCapability(this));
+
+
             this.CreateDefaultSpinnakerValues();
             this.JsonSerializerSettings = new JsonSerializerSettings() {
                 TypeNameHandling = TypeNameHandling.Auto,

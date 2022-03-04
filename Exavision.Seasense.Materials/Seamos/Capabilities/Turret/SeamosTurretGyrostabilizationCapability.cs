@@ -4,7 +4,7 @@ using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Materials;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
-    public class SeamosTurretGyrostabilizationCapability : TurretGyrostabilizationCapability<SettingSeamosTurretGyrostabilizationCapability>, ISeamosCapability {
+    public class SeamosTurretGyrostabilizationCapability : TurretGyrostabilizationCapability, ISeamosCapability {
         private SeamosUnit unit;
         private bool isEnabled = false;
         public SeamosTurretGyrostabilizationCapability(SeamosUnit unit) {
@@ -13,10 +13,6 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
 
         public override bool IsEnabled => isEnabled;
 
-        public override SettingSeamosTurretGyrostabilizationCapability GetSetting(SettingSeamosTurretGyrostabilizationCapability setting) {
-            base.GetSetting(setting);
-            return setting;
-        }
 
         public void ProcessHardwareResponse(ISeamosCommand command) {
             if (command is ITurretGetPositionExatrack2Absolute) {

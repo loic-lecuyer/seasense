@@ -5,6 +5,8 @@ import { SiteService } from '../../services/site.service';
 import { UiService } from '../../services/ui.service';
 import { DoubleValueType } from '../../materials/capabilities/double-value-type';
 import { DoubleValueCapability } from '../../materials/capabilities/double-value-capability';
+import { SwitchValueCapability } from '../../materials/capabilities/switch-value-capability';
+import { SwitchValueType } from '../../materials/capabilities/switch-value-type';
 
 @Component({
   selector: 'app-panel-camera',
@@ -16,7 +18,9 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
   public camera: Camera | undefined = undefined;
   private cameraSelectedSubscription: Subscription;
   public qualityCapability: DoubleValueCapability | undefined = undefined;
-
+  public blackLevelCapability: DoubleValueCapability | undefined = undefined;
+  public exposureTimeModeCapability: SwitchValueCapability | undefined = undefined;
+  public exposureTimeCapability: DoubleValueCapability | undefined = undefined;
   constructor(private uiService: UiService, private siteService: SiteService) {
 
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
@@ -27,10 +31,23 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
   }
   updateVisibilityFlags() {
     if (this.camera != null) {
-      this.qualityCapability = this.camera.getValueCapability(DoubleValueType.Quality);     
+      this.qualityCapability = this.camera.getValueCapability(DoubleValueType.Quality);
+      if (this.qualityCapability != null) this.qualityCapability.beginEdit();
+
+      this.blackLevelCapability = this.camera.getValueCapability(DoubleValueType.BlackLevel);
+      if (this.blackLevelCapability != null) this.blackLevelCapability.beginEdit();
+
+      this.exposureTimeModeCapability = this.camera.getSwitchCapability(SwitchValueType.ExposureTimeMode);
+      if (this.exposureTimeModeCapability != null) this.exposureTimeModeCapability.beginEdit();
+
+
+      this.exposureTimeCapability = this.camera.getValueCapability(DoubleValueType.ExposureTime);
+      if (this.exposureTimeCapability != null) this.exposureTimeCapability.beginEdit();
     }
     else {
       this.qualityCapability = undefined;
+      this.blackLevelCapability = undefined;
+      this.exposureTimeCapability = undefined;
     }
   }
 
@@ -40,6 +57,7 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
   }
   ngOnInit(): void {
     this.camera = this.siteService.selectedCamera;
+    this.updateVisibilityFlags();
     console.log("Current camera ", this.camera);
   }
 

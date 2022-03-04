@@ -2,7 +2,7 @@
 using Exavision.Seasense.Shared.States;
 
 namespace Exavision.Seasense.Shared.Capabilities {
-    public abstract class DoubleValueCapability<S> : Capability<S> where S : SettingDoubleValueCapability, new() {
+    public abstract class DoubleValueCapability : Capability<SettingDoubleValueCapability> {
 
         public double MinValue { get; protected set; }
 
@@ -12,16 +12,17 @@ namespace Exavision.Seasense.Shared.Capabilities {
 
         public abstract DoubleValueType DoubleValueType { get; }
 
-        public override S GetSetting(S setting) {
+        public override SettingDoubleValueCapability GetSetting(SettingDoubleValueCapability setting) {
             setting.MaxValue = this.MaxValue;
             setting.MinValue = this.MinValue;
             setting.Id = this.Id;
             setting.CapabilityType = CapabilityType.DoubleValue;
             setting.DoubleValueType = this.DoubleValueType;
+            setting.DisplayName = this.DoubleValueType.ToString();
             return setting;
         }
 
-        public override void SetSetting(S setting) {
+        public override void SetSetting(SettingDoubleValueCapability setting) {
             base.SetSetting(setting);
             this.MaxValue = setting.MaxValue;
             this.MinValue = setting.MinValue;

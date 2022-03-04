@@ -8,6 +8,7 @@ export const enum CapabilityType {
   TurretGyrostabilization = "TurretGyrostabilization",
   CameraAutoFocusOnePush = "CameraAutoFocusOnePush",
   LazerMeasurementShootCapability = "LazerMeasurementShootCapability",
-  DoubleValue ="DoubleValue"
+  DoubleValue = "DoubleValue",
+  SwitchValue ="SwitchValue"
 
 }

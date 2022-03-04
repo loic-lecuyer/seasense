@@ -21,6 +21,14 @@ namespace Exavision.Seasense.Server.Services {
                 }
             }
 
+
+            Type[] settingBaseTypes = typeof(SettingBase).Assembly.GetTypes();
+            foreach (Type type in settingBaseTypes) {
+                if (typeof(SettingBase).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {
+                    knowTypes.Add(type);
+                }
+            }
+
             Type[] typesSettingSeamos = typeof(SettingSeamosUnit).Assembly.GetTypes();
             foreach (Type type in typesSettingSeamos) {
                 if (typeof(SettingBase).IsAssignableFrom(type) && !type.IsAbstract && !type.IsInterface && type.IsClass) {

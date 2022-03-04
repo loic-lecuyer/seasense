@@ -14,6 +14,9 @@ import { WsCameraZoomInStartRequest } from '../api/ws/ws-camera-zoom-in-start-re
 import { WsTurretGyrostabilizationRequest } from '../api/ws/ws-turret-gyrostabilization-request';
 import { WsCameraAutoFocusOnePushRequest } from '../api/ws/ws-camera-auto-focus-one-push-request';
 import { WsLazerMeasurementShootRequest } from '../api/ws/ws-lazer-measurement-shoot-request';
+import { WsDoubleValueSetRequest } from '../api/ws/ws-double-value-set-request';
+import { SwitchValue } from '../models/switch-value';
+import { WsSwitchValueSetRequest } from '../api/ws/ws-switch-value-set-request';
 @Injectable({
   providedIn: 'root'
 })
@@ -215,5 +218,39 @@ export class WsService {
     this.socket?.send(data);
   }
 
+  doubleValueSet(unitId: string, materialId: string,capabilityId : string, value: number) {
+    if (this.userService.token == null) return;
+    let request: WsDoubleValueSetRequest = {
+      $type: "WsDoubleValueSetRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token,
+      capabilityId: capabilityId,
+      value: value
+    };
+    console.log("WebSocket send WsDoubleValueSetRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
 
+  }
+
+  switchValueSet(unitId: string, materialId: string, capabilityId: string, value: SwitchValue) {
+
+    if (this.userService.token == null) return;
+    let request: WsSwitchValueSetRequest = {
+      $type: "WsSwitchValueSetRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token,
+      capabilityId: capabilityId,
+      value: value.value
+    };
+    console.log("WebSocket send WsSwitchValueSetRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+    
+
+  }
 }

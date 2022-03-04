@@ -40,6 +40,9 @@ import { HudRullerTiltComponent } from './components/hud-ruller-tilt/hud-ruller-
 import { HudLrfButtonComponent } from './components/hud-lrf-button/hud-lrf-button.component';
 import { PanelCameraComponent } from './components/panel-camera/panel-camera.component';
 import { UiService } from './services/ui.service';
+import { AsyncSliderComponent } from './components/async-slider/async-slider.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { AsyncToggleGroupComponent } from './components/async-toggle-group/async-toggle-group.component';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -61,12 +64,16 @@ export const httpInterceptorProviders = [
     HudRullerPanComponent,
     HudRullerTiltComponent,
     HudLrfButtonComponent,
-    PanelCameraComponent    
+    PanelCameraComponent,
+    AsyncSliderComponent,
+    AsyncToggleGroupComponent    
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
+    AppRoutingModule,    
     BrowserAnimationsModule,
+    HttpClientModule,
+    FormsModule,
     MatButtonModule,
     MatSliderModule,
     MatSelectModule,
@@ -81,9 +88,8 @@ export const httpInterceptorProviders = [
     MatSnackBarModule,
     MatMenuModule,
     MatFormFieldModule,
-    MatInputModule ,
-    FormsModule,
-    HttpClientModule
+    MatInputModule,    
+    MatButtonToggleModule
   ],
   providers: [HttpService, UserService, UiService, httpInterceptorProviders],
   bootstrap: [AppComponent]

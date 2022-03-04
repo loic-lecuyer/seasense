@@ -22,6 +22,7 @@ namespace Exavision.Seasense.Shared.Materials {
             S setting = new S();
             setting.MaterialType = this.MaterialType;
             setting.Id = this.Id;
+            setting.ImplementationType = this.GetType().Name;
             setting.DisplayName = this.DisplayName;
             foreach (ICapability capability in this.Capabilities) {
                 SettingCapability settingCapability = capability.GetSettingCapability();
@@ -38,21 +39,20 @@ namespace Exavision.Seasense.Shared.Materials {
         public virtual void SetSetting(S setting) {
             this.Id = setting.Id;
             this.DisplayName = setting.DisplayName;
-            foreach (ICapability capability in this.Capabilities) {
-                if (capability.GetType().BaseType.GenericTypeArguments.Length > 0) {
-                    SettingCapability settingCapability = (from sm in setting.Capabilities where capability.GetType().BaseType.GenericTypeArguments.Contains(sm.GetType()) select sm).FirstOrDefault();
-                    MethodInfo setSettingMethod = capability.GetType().GetMethod("SetSetting", new Type[] { settingCapability.GetType() });
-                    setSettingMethod.Invoke(capability, new object[] { settingCapability });
-                }
-            }
-            foreach (IMaterial material in this.Materials) {
-                if (material.GetType().BaseType.GenericTypeArguments.Length > 0) {
-                    SettingMaterial settingMaterial = (from sm in setting.Materials where material.GetType().BaseType.GenericTypeArguments.Contains(sm.GetType()) select sm).FirstOrDefault();
-                    MethodInfo setSettingMethod = material.GetType().GetMethod("SetSetting", new Type[] { settingMaterial.GetType() });
-                    setSettingMethod.Invoke(material, new object[] { settingMaterial });
-                }
-            }
 
+
+            foreach (IMaterial material in this.Materials) {
+
+                SettingMaterial settingMateiral = (from sm in setting.Materials where sm.ImplementationType.Equals(material.GetType().Name) select sm).FirstOrDefault();
+                MethodInfo setsettingMethod = material.GetType().GetMethod("SetSetting", new Type[] { settingMateiral.GetType() });
+                setsettingMethod.Invoke(material, new object[] { settingMateiral });
+            }
+            foreach (ICapability capability in this.Capabilities) {
+
+                SettingCapability settingCapability = (from sm in setting.Capabilities where sm.ImplementationType.Equals(capability.GetType().Name) select sm).FirstOrDefault();
+                MethodInfo setSettingMethod = capability.GetType().GetMethod("SetSetting", new Type[] { settingCapability.GetType() });
+                setSettingMethod.Invoke(capability, new object[] { settingCapability });
+            }
         }
         public SettingMaterial GetSettingMaterial() {
             SettingMaterial settingMaterial = this.GetSetting();
@@ -127,7 +127,9 @@ namespace Exavision.Seasense.Shared.Materials {
             });
             return unitState;
         }
-
+        public ICapability GetCapabilityById(string capabilityId) {
+            return (from c in this.Capabilities where c.Id.Equals(capabilityId) select c).FirstOrDefault();
+        }
         public virtual List<PollingAction> GetPollingActions() {
             return new List<PollingAction>();
         }

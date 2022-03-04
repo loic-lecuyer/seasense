@@ -4,7 +4,7 @@ using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Shared.Capabilities.Camera;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
-    public class SeamosCameraThorAutoFocusOnePushCapability : CameraAutoFocusOnePushCapability<SettingSeamosCameraThorAutoFocusOnePushCapability> {
+    public class SeamosCameraThorAutoFocusOnePushCapability : CameraAutoFocusOnePushCapability {
         private SeamosThermalCamera camera;
 
         public SeamosCameraThorAutoFocusOnePushCapability(SeamosThermalCamera camera) {
@@ -27,9 +27,6 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             this.camera.Unit.SendCommand(request);
         }
 
-        public override SettingSeamosCameraThorAutoFocusOnePushCapability GetSetting(SettingSeamosCameraThorAutoFocusOnePushCapability setting) {
-            base.GetSetting(setting);
-            return setting;
-        }
+
     }
 }

@@ -3,7 +3,7 @@ using Exavision.Seasense.Shared.States;
 using Exavision.Seasense.Shared.States.Turret;
 
 namespace Exavision.Seasense.Shared.Capabilities.Turret {
-    public class TurretAbsolutePositionCapability<S> : Capability<S>, ITurretAbsolutePositionCapability where S : SettingCapability, new() {
+    public class TurretAbsolutePositionCapability : Capability<SettingCapabilityEmpty>, ITurretAbsolutePositionCapability {
         public double Pan { get; protected set; }
         public double Tilt { get; protected set; }
 
@@ -11,7 +11,7 @@ namespace Exavision.Seasense.Shared.Capabilities.Turret {
 
         }
 
-        public override S GetSetting(S setting) {
+        public override SettingCapabilityEmpty GetSetting(SettingCapabilityEmpty setting) {
 
             setting.CapabilityType = CapabilityType.TurretAbsolutePosition;
             return setting;

@@ -1,14 +1,14 @@
 ﻿using Exavision.Seasense.Shared.Settings;
 
 namespace Exavision.Seasense.Shared.Capabilities.Camera {
-    public abstract class CameraFocusContinuousCapability<S> : Capability<S>, ICameraFocusContinuousCapability where S : SettingCapability, new() {
+    public abstract class CameraFocusContinuousCapability : Capability<SettingCapabilityEmpty>, ICameraFocusContinuousCapability {
         public abstract void FocusInStart();
 
         public abstract void FocusOutStart();
 
         public abstract void FocusStop();
 
-        public override S GetSetting(S setting) {
+        public override SettingCapabilityEmpty GetSetting(SettingCapabilityEmpty setting) {
             setting.CapabilityType = CapabilityType.CameraFocusContinuous;
             return setting;
         }

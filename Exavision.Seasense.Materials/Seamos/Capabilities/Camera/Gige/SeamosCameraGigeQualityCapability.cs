@@ -2,7 +2,7 @@
 using Exavision.Seasense.Spinnaker.Shared.Models;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
-    public class SeamosCameraGigeQualityCapability : DoubleValueCapability<SettingSeamosCameraGigeQualityCapability>, ISeamosGigeCapability {
+    public class SeamosCameraGigeQualityCapability : DoubleValueCapability, ISeamosGigeCapability {
 
         public SeamosCameraGigeQualityCapability(SeamosDayCamera camera) {
             this.Camera = camera;
@@ -12,6 +12,9 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
         public override DoubleValueType DoubleValueType => DoubleValueType.Quality;
 
         public SeamosDayCamera Camera { get; }
+
+
+
 
         public void ProcessHarwareResponseValues(Values values) {
             this.Value = values.Quality.Value;

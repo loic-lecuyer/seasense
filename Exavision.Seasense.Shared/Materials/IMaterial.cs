@@ -20,5 +20,6 @@ namespace Exavision.Seasense.Shared.Materials {
         MaterialState GetState();
 
         List<PollingAction> GetPollingActions();
+        ICapability GetCapabilityById(string capabilityId);
     }
 }

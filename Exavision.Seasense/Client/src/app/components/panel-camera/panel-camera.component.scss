@@ -11,3 +11,11 @@
   width: 400px;
   height: 600px;
 }
+.card-content-container{
+    display:flex;
+    flex-direction:column;
+}
+
+.capability-container{
+    margin-bottom:8px;
+}

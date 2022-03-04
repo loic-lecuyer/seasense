@@ -4,17 +4,14 @@ using Exavision.Seasense.Spinnaker.Shared.Models;
 using System.Threading;
 using System.Threading.Tasks;
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
-    public class SeamosCameraGigeZoomContinuousCapability : CameraZoomContinuousCapability<SettingSeamosCameraGigeZoomContinuousCapability>, ISeamosGigeCapability {
+    public class SeamosCameraGigeZoomContinuousCapability : CameraZoomContinuousCapability, ISeamosGigeCapability {
         private readonly SeamosDayCamera camera;
 
 
         public SeamosCameraGigeZoomContinuousCapability(SeamosDayCamera camera) {
             this.camera = camera;
         }
-        public override SettingSeamosCameraGigeZoomContinuousCapability GetSetting(SettingSeamosCameraGigeZoomContinuousCapability setting) {
-            base.GetSetting(setting);
-            return setting;
-        }
+
 
         public void ProcessHardwareResponse(ISeamosCommand command) {
 
