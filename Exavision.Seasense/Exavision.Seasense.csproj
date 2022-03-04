@@ -27,6 +27,7 @@
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-double-value-set-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-error-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-state-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-state-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-lazer-measurement-shoot-request.ts" />
@@ -35,6 +36,7 @@
     <None Remove="Client\src\app\api\ws\ws-switch-value-set-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-gyrostabilization-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-move-speed-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-valid-response.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
     <None Remove="Client\src\app\materials\capabilities\camera\camera-auto-focus-one-push-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-absolute-position-capability.ts" />
@@ -135,6 +137,12 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-in-start-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-error-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-valid-response.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-switch-value-set-request.ts">

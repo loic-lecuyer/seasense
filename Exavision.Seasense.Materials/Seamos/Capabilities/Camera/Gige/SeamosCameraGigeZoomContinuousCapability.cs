@@ -1,6 +1,6 @@
 ﻿using Exavision.Seasense.Protocols.Seamos.Commands;
+using Exavision.Seasense.Protocols.Spinnaker.Models;
 using Exavision.Seasense.Shared.Capabilities.Camera;
-using Exavision.Seasense.Spinnaker.Shared.Models;
 using System.Threading;
 using System.Threading.Tasks;
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {

@@ -1,5 +1,5 @@
-﻿namespace Exavision.Seasense.Spinnaker.Shared.Models {
-    using Exavision.Seasense.Spinnaker.Shared.Api;
+﻿namespace Exavision.Seasense.Protocols.Spinnaker.Models {
+    using Exavision.Seasense.Protocols.Spinnaker.Api;
     using Newtonsoft.Json.Serialization;
     using System;
 

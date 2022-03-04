@@ -1,4 +1,4 @@
-﻿namespace Exavision.Seasense.Spinnaker.Shared.Models {
+﻿namespace Exavision.Seasense.Protocols.Spinnaker.Models {
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
     using System;

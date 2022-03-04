@@ -1,5 +1,5 @@
-﻿namespace Exavision.Seasense.Spinnaker.Shared.Api {
-    using Exavision.Seasense.Spinnaker.Shared.Models;
+﻿namespace Exavision.Seasense.Protocols.Spinnaker.Api {
+    using Exavision.Seasense.Protocols.Spinnaker.Models;
 
     /// <summary>
     /// Defines the <see cref="SetValuesRequest" />.

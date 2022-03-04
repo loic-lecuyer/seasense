@@ -1,4 +1,4 @@
-﻿namespace Exavision.Seasense.Spinnaker.Shared.Api {
+﻿namespace Exavision.Seasense.Protocols.Spinnaker.Api {
     /// <summary>
     /// Defines the <see cref="SetConfigurationResponse" />.
     /// </summary>

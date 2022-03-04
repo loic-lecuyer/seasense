@@ -11,5 +11,7 @@ namespace Exavision.Seasense.Shared.Materials {
         public Camera(U unit) : base(unit) {
 
         }
+
+
     }
 }

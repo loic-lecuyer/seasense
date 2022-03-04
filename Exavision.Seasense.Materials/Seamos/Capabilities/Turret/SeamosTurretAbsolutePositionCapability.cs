@@ -20,7 +20,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
                     cmdAbsolutePosition.MoveMode = MoveModeExatrack2.IgnoreData;
                     cmdAbsolutePosition.MaterialTarget = MaterialTarget.Turret;
                     //  cmdAbsolutePosition.StabilizationState = this.GetCapability<ITurretStabilization>().IsStabilizationEnabled ? StabilizationStateExatrack2.On : StabilizationStateExatrack2.Off;
-                    this.unit.SendCommand(cmdAbsolutePosition);
+                    this.unit.Client.Send(cmdAbsolutePosition);
 
                 }
 

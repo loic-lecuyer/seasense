@@ -1,9 +1,14 @@
-<div class="container">
-  <div class="slider-label">{{displayName}}</div>
-  <div class="sliders-container">
-    <mat-slider [min]="capability.minValue" [max]="capability.maxValue" [(ngModel)]="capability.value" [disabled]="true" class="slider-value"></mat-slider>
-    <mat-slider [min]="capability.minValue" [max]="capability.maxValue" [(ngModel)]="capability.editValue" class="slider-edit"></mat-slider>
+
+  <mat-label class="slider-label">{{displayName}}</mat-label>
+  <div class="container">   
+    <div class="sliders-container">
+      <mat-slider [min]="capability.minValue" [max]="capability.maxValue" [(ngModel)]="capability.value" [disabled]="true" class="slider-value"></mat-slider>
+      <mat-slider matInput [min]="capability.minValue" [max]="capability.maxValue" [(ngModel)]="capability.editValue" class="slider-edit"></mat-slider>
+    </div>
   </div>
-</div>
+
+
+
+
 
 

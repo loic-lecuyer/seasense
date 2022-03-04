@@ -1,5 +1,6 @@
-﻿using Exavision.Seasense.Shared.Capabilities;
-using Exavision.Seasense.Spinnaker.Shared.Models;
+﻿using Exavision.Seasense.Protocols.Spinnaker.Models;
+using Exavision.Seasense.Shared.Capabilities;
+
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
     public class SeamosCameraGigeGainCapability : DoubleValueCapability, ISeamosGigeCapability {

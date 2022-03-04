@@ -1,5 +1,6 @@
-﻿using Exavision.Seasense.Shared.Capabilities;
-using Exavision.Seasense.Spinnaker.Shared.Models;
+﻿using Exavision.Seasense.Protocols.Spinnaker.Models;
+using Exavision.Seasense.Shared.Capabilities;
+
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
     public class SeamosCameraGigeBlackLevelCapability : DoubleValueCapability, ISeamosGigeCapability {
@@ -22,7 +23,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
 
         public override void SetValue(double value) {
             base.SetValue(value);
-            this.Camera.SpinnakerValues.BlackLevel = new Spinnaker.Shared.Models.BlackLevel() { Value = this.Value };
+            this.Camera.SpinnakerValues.BlackLevel.Value = this.Value;
             this.Camera.SendValues();
 
         }

@@ -1,9 +1,8 @@
-﻿namespace Exavision.Seasense.Spinnaker.Shared.Models {
+﻿namespace Exavision.Seasense.Protocols.Spinnaker.Models {
     /// <summary>
     /// Defines the <see cref="Values" />.
     /// </summary>
-    public class Values
-    {
+    public class Values {
         /// <summary>
         /// Gets or sets the Fps.
         /// </summary>
@@ -53,5 +52,20 @@
         /// Gets or sets the Version.
         /// </summary>
         public Version Version { get; set; }
+
+        public Values() {
+
+            BlackLevel = new BlackLevel() { Value = 10 };
+            ExposureTime = new ExposureTime() { Mode = ExposureTimeMode.Off, Value = 0 };
+            Fps = 25;
+            Gain = new Gain() { Mode = GainMode.Off, Value = 5, Type = "GainMode" };
+            Gamma = new Gamma();
+            Quality = new Quality();
+            Type = "Values";
+            Version = new Exavision.Seasense.Protocols.Spinnaker.Models.Version();
+            WhiteBalance = new WhiteBalance();
+            Zoom = new Zoom() { Value = 1 };
+
+        }
     }
 }

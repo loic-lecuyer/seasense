@@ -1,10 +1,10 @@
-﻿namespace Exavision.Seasense.Spinnaker.Shared.Models {
+﻿namespace Exavision.Seasense.Protocols.Spinnaker.Models {
     using System;
 
     /// <summary>
-    /// Defines the <see cref="Quality" />.
+    /// Defines the <see cref="BlackLevel" />.
     /// </summary>
-    public class Quality
+    public class BlackLevel
     {
         /// <summary>
         /// Gets or sets the Value.

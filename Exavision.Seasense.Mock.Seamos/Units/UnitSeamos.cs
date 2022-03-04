@@ -6,9 +6,9 @@ using Exavision.Seasense.Protocols.Seamos.Commands;
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Protocols.Seamos.Commands.Telemeter;
 using Exavision.Seasense.Protocols.Seamos.Commands.Turret;
+using Exavision.Seasense.Protocols.Spinnaker.Api;
+using Exavision.Seasense.Protocols.Spinnaker.Models;
 using Exavision.Seasense.Shared.Models;
-using Exavision.Seasense.Spinnaker.Shared.Api;
-using Exavision.Seasense.Spinnaker.Shared.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ReactiveUI;
@@ -139,7 +139,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
                 Gamma = new Gamma(),
                 Quality = new Quality(),
                 Type = "Values",
-                Version = new Spinnaker.Shared.Models.Version(),
+                Version = new Exavision.Seasense.Protocols.Spinnaker.Models.Version(),
                 WhiteBalance = new WhiteBalance(),
                 Zoom = new Zoom() { Value = 1 }
             };

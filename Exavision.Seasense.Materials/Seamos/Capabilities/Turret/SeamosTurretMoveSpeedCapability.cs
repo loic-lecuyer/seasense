@@ -60,7 +60,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
             this.currentTiltSpeed = command.TiltSpeed;
             // command.PanSpeed *= this.MaxPanSpeed;
             //   command.TiltSpeed *= this.MaxTiltSpeed;
-            this.unit.SendCommand(command);
+            this.unit.Client.Send(command);
 
 
         }

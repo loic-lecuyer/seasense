@@ -1,5 +1,5 @@
-﻿using Exavision.Seasense.Shared.Capabilities.Camera;
-using Exavision.Seasense.Spinnaker.Shared.Models;
+﻿using Exavision.Seasense.Protocols.Spinnaker.Models;
+using Exavision.Seasense.Shared.Capabilities.Camera;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
     public class SeamosCameraGigeZoomAbsolutePositionCapability : CameraZoomAbsolutePositionCapability<SettingSeamosCameraGigeZoomAbsolutePositionCapability>, ISeamosGigeCapability {

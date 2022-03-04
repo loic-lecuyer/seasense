@@ -17,11 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Protocol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Mock.Seamos", "Exavision.Seasense.Mock.Seamos\Exavision.Seasense.Mock.Seamos.csproj", "{FDC1637B-C851-4239-9FA6-7102DA4E32D4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Spinnaker.Shared", "Exavision.Seasense.Spinnaker.Shared\Exavision.Seasense.Spinnaker.Shared.csproj", "{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Materials", "Exavision.Seasense.Materials\Exavision.Seasense.Materials.csproj", "{371EB48B-6C54-4111-9B99-C51C6069BDE6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Exavision.Seasense.Streaming", "Exavision.Seasense.Streaming\Exavision.Seasense.Streaming.csproj", "{57746F68-317C-4A17-9698-9A406F4E2B48}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Streaming", "Exavision.Seasense.Streaming\Exavision.Seasense.Streaming.csproj", "{57746F68-317C-4A17-9698-9A406F4E2B48}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Protocols.Spinnaker", "Exavision.Seasense.Protocols.Spinnaker\Exavision.Seasense.Protocols.Spinnaker.csproj", "{336B0132-B601-4CFC-B853-BED69629953D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,16 +115,6 @@ Global
 		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|x64.Build.0 = Release|Any CPU
 		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|x86.ActiveCfg = Release|Any CPU
 		{FDC1637B-C851-4239-9FA6-7102DA4E32D4}.Release|x86.Build.0 = Release|Any CPU
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Debug|x64.ActiveCfg = Debug|x64
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Debug|x64.Build.0 = Debug|x64
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Debug|x86.ActiveCfg = Debug|x86
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Debug|x86.Build.0 = Debug|x86
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Release|Any CPU.ActiveCfg = Release|x86
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Release|x64.ActiveCfg = Release|x64
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Release|x64.Build.0 = Release|x64
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Release|x86.ActiveCfg = Release|x86
-		{65B15ED7-6BA4-41C5-9B34-DAF385BFD8BB}.Release|x86.Build.0 = Release|x86
 		{371EB48B-6C54-4111-9B99-C51C6069BDE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{371EB48B-6C54-4111-9B99-C51C6069BDE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{371EB48B-6C54-4111-9B99-C51C6069BDE6}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -149,6 +139,18 @@ Global
 		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|x64.Build.0 = Release|Any CPU
 		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|x86.ActiveCfg = Release|Any CPU
 		{57746F68-317C-4A17-9698-9A406F4E2B48}.Release|x86.Build.0 = Release|Any CPU
+		{336B0132-B601-4CFC-B853-BED69629953D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{336B0132-B601-4CFC-B853-BED69629953D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{336B0132-B601-4CFC-B853-BED69629953D}.Debug|x64.ActiveCfg = Debug|x64
+		{336B0132-B601-4CFC-B853-BED69629953D}.Debug|x64.Build.0 = Debug|x64
+		{336B0132-B601-4CFC-B853-BED69629953D}.Debug|x86.ActiveCfg = Debug|x86
+		{336B0132-B601-4CFC-B853-BED69629953D}.Debug|x86.Build.0 = Debug|x86
+		{336B0132-B601-4CFC-B853-BED69629953D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{336B0132-B601-4CFC-B853-BED69629953D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{336B0132-B601-4CFC-B853-BED69629953D}.Release|x64.ActiveCfg = Release|x64
+		{336B0132-B601-4CFC-B853-BED69629953D}.Release|x64.Build.0 = Release|x64
+		{336B0132-B601-4CFC-B853-BED69629953D}.Release|x86.ActiveCfg = Release|x86
+		{336B0132-B601-4CFC-B853-BED69629953D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

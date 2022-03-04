@@ -1,7 +1,6 @@
 ﻿using Exavision.Seasense.Materials.Seamos.Capabilities.Turret;
 using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Materials;
-using System;
 
 namespace Exavision.Seasense.Materials.Seamos {
     public class SeamosTurret : Turret<SettingSeamosTurret, SeamosUnit> {
@@ -19,7 +18,7 @@ namespace Exavision.Seasense.Materials.Seamos {
 
         public override void SetSetting(SettingSeamosTurret setting) {
             base.SetSetting(setting);
-            Console.WriteLine("SeamosTurret SetSetting");
+
         }
     }
 }

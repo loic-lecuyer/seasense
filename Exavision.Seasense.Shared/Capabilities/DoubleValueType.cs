@@ -6,6 +6,8 @@
         Quality,
         BlackLevel,
         ExposureTime,
-        Gain
+        Gain,
+        Gamma,
+        WhiteBalance
     }
 }

@@ -54,7 +54,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
             command.PanSpeed = panSpeed;
             command.TiltSpeed = tiltSpeed;
             command.StabilizationState = enabled ? StabilizationStateExatrack2.On : StabilizationStateExatrack2.Off;
-            this.unit.SendCommand(command);
+            this.unit.Client.Send(command);
 
         }
     }

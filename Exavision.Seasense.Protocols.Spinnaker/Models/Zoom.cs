@@ -1,4 +1,4 @@
-﻿namespace Exavision.Seasense.Spinnaker.Shared.Models {
+﻿namespace Exavision.Seasense.Protocols.Spinnaker.Models {
     /// <summary>
     /// Defines the <see cref="Zoom" />.
     /// </summary>

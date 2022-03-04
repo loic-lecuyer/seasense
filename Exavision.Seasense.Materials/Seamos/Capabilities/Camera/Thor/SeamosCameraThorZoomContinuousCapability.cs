@@ -48,11 +48,11 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             requestZoomZone.Y = zoomRoi.Y;
             requestZoomZone.Width = zoomRoi.Width;
             requestZoomZone.Height = zoomRoi.Height;
-            this.camera.Unit.SendCommand(requestZoomZone);
+            this.camera.Unit.Client.Send(requestZoomZone);
 
             ICameraSetZoneZoomEnabledRequest requestZoomZoneEnable = this.camera.Unit.Protocol.Resolve<ICameraSetZoneZoomEnabledRequest>(MaterialTarget.ThermalCamera);
             requestZoomZoneEnable.IsEnabled = true;
-            this.camera.Unit.SendCommand(requestZoomZoneEnable);
+            this.camera.Unit.Client.Send(requestZoomZoneEnable);
 
         }
 

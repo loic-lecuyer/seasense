@@ -124,3 +124,10 @@ body {
   border-style:solid;
   border-width:4px;
 }
+.mat-button-toggle-button {
+  height: 2rem; // the modified height that I wanted.
+}
+
+.mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  line-height: 1rem; // default value is 48px. I wanted the height to be 2rem, but had to adjust this line-height to 1rem so that the icons were vertically centered.
+}

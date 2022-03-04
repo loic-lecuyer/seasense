@@ -31,6 +31,8 @@ import { SettingDoubleValueCapability } from "./settings/setting-double-value-ca
 import { DoubleValueCapability } from "./capabilities/double-value-capability";
 import { SwitchValueCapability } from "./capabilities/switch-value-capability";
 import { SettingSwitchValueCapability } from "./settings/setting-switch-value-capability";
+import { WsValidResponse } from "../api/ws/ws-valid-response";
+import { WsErrorResponse } from "../api/ws/ws-error-response";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -48,6 +50,15 @@ export class Factory {
           });
         });
         return response;
+      case "WsValidResponse":
+        let validResponse: WsValidResponse = <WsValidResponse>data;
+        return validResponse;
+        break;
+
+      case "WsErrorResponse":
+        let errorResponse: WsErrorResponse = <WsErrorResponse>data;
+        return errorResponse;
+        break;
       default:
         console.error("No creation implemtation in facotry for type " + typeName);
         throw "No creation implemtation in facotry for type " + typeName;

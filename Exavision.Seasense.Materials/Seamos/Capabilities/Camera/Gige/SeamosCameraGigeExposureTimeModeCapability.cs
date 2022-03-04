@@ -1,9 +1,7 @@
-﻿using Exavision.Seasense.Shared.Capabilities;
+﻿using Exavision.Seasense.Protocols.Spinnaker.Models;
+using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Models;
-using Exavision.Seasense.Shared.Settings;
-using Exavision.Seasense.Spinnaker.Shared.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
@@ -13,7 +11,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
         public SeamosCameraGigeExposureTimeModeCapability(SeamosDayCamera camera) {
             this.camera = camera;
             this.Values = SwitchValue.FromEnum<ExposureTimeMode>();
-          
+
         }
 
         public override SwitchValueType SwitchValueType {
@@ -21,7 +19,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
                 return SwitchValueType.ExposureTimeMode;
             }
 
-            
+
         }
 
         private bool ignoreHardwareResponse = false;

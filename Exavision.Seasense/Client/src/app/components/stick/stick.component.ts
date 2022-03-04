@@ -78,7 +78,7 @@ export class StickComponent implements AfterViewInit, OnInit, OnChanges, AfterCo
         mode: 'static',
         position: { left: '80px', top: '80px' },
         color: 'blue',
-        restOpacity: 0.8,
+        restOpacity:1,
         
       });
       this.nippleControl.on('start', (evt, data) => {       

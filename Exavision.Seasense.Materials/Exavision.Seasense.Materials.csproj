@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Exavision.Seasense.Protocols.Seamos\Exavision.Seasense.Protocols.Seamos.csproj" />
-    <ProjectReference Include="..\Exavision.Seasense.Spinnaker.Shared\Exavision.Seasense.Spinnaker.Shared.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Protocols.Spinnaker\Exavision.Seasense.Protocols.Spinnaker.csproj" />
   </ItemGroup>
 
 </Project>

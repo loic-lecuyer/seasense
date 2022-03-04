@@ -25,11 +25,11 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.LazerMeasurement {
             if (!this.IsOn) {
 
                 ITelemeterSetOnRequest commandOnOff = this.unit.Protocol.Resolve<ITelemeterSetOnRequest>(MaterialTarget.Telemeter);
-                this.unit.SendCommand(commandOnOff);
+                this.unit.Client.Send(commandOnOff);
                 this.IsOn = true;
             }
             ITelemeterActionShootRequest request = this.unit.Protocol.Resolve<ITelemeterActionShootRequest>(MaterialTarget.Telemeter);
-            this.unit.SendCommand(request);
+            this.unit.Client.Send(request);
             if (autoOffCanceller != null) autoOffCanceller.Cancel();
             autoOffCanceller = new CancellationTokenSource();
             Task.Factory.StartNew(AutoOff, autoOffCanceller.Token);
@@ -39,7 +39,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.LazerMeasurement {
             await Task.Delay(3000, autoOffCanceller.Token);
             if (!autoOffCanceller.IsCancellationRequested) {
                 ITelemeterSetOnRequest commandOnOff = this.unit.Protocol.Resolve<ITelemeterSetOnRequest>(MaterialTarget.Telemeter);
-                this.unit.SendCommand(commandOnOff);
+                this.unit.Client.Send(commandOnOff);
                 this.IsOn = false;
             }
         }

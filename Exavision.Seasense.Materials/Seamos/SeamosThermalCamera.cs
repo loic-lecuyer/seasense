@@ -1,5 +1,4 @@
-﻿using Exavision.Seasense.Core.Extensions;
-using Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor;
+﻿using Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor;
 using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Shared.Materials;
@@ -36,19 +35,14 @@ namespace Exavision.Seasense.Materials.Seamos {
 
         public override List<PollingAction> GetPollingActions() {
             List<PollingAction> actions = new List<PollingAction>();
-
             actions.Add(new PollingAction() {
                 Action = () => {
                     ICameraGetValuesRequest request = this.Unit.Protocol.Resolve<ICameraGetValuesRequest>(Protocols.Seamos.Commands.MaterialTarget.ThermalCamera);
-                    byte[] commandBytes = this.Unit.Protocol.Serialize(request);
-                    string data = commandBytes.ToHexString();
-                    this.Unit.Client.Send(data);
+
+                    this.Unit.Client.Send(request);
                 },
                 Delay = 100
-
             });
-
-
             return actions;
         }
     }
