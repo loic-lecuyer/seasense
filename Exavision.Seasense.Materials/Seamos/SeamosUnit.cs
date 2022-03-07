@@ -14,6 +14,7 @@ namespace Exavision.Seasense.Materials.Seamos {
         public SeamosUnit() {
             this.DisplayName = "Seamos Unit";
             this.Protocol = new SeamosStandardProtocol();
+            this.Client = new SeamosClient(this.Protocol);
             this.Materials.Add(new SeamosTurret(this));
             this.Materials.Add(new SeamosDayCamera(this));
             this.Materials.Add(new SeamosThermalCamera(this));
@@ -35,10 +36,8 @@ namespace Exavision.Seasense.Materials.Seamos {
 
         public override void Start() {
             base.Start();
-            this.Client = new SeamosClient(this.HardwareCardIp, this.HardwareCardPort, this.Protocol);
             this.Client.OnCommandReceive += this.Client_OnCommandReceive;
-            this.Client.Start();
-
+            this.Client.Start(this.HardwareCardIp, this.HardwareCardPort);
 
         }
 
@@ -51,7 +50,7 @@ namespace Exavision.Seasense.Materials.Seamos {
             if (this.Client != null) {
                 this.Client.OnCommandReceive -= this.Client_OnCommandReceive;
                 this.Client.Stop();
-            }          
+            }
         }
     }
 }

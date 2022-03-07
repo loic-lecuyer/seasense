@@ -2,18 +2,20 @@
     position:absolute;
     top:100px;
     left:100px;
-    width:400px;
+    width:600px;
     height:600px;
     z-index:10000;
 }
 .camera-card {
   position:relative;
-  width: 400px;
+  width: 600px;
   height: 600px;
 }
-.card-content-container{
-    display:flex;
-    flex-direction:column;
+.tab-content-container {
+  margin:16px;
+  flex:1;
+  display: flex;
+  flex-direction: column;
 }
 
 .capability-container{

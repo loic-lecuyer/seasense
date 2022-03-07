@@ -8,8 +8,8 @@ using System.Collections.Generic;
 namespace Exavision.Seasense.Materials.Seamos {
     public class SeamosThermalCamera : ThermalCamera<SettingSeamosThermalCamera, SeamosUnit> {
 
-        public override int ImageWidth { get => 800; }
-        public override int ImageHeight { get => 600; }
+        public override int ImageWidth { get => 640; }
+        public override int ImageHeight { get => 480; }
 
         private string streamUrl;
         public override string StreamUrl { get => streamUrl; }

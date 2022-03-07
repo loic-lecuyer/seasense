@@ -60,6 +60,7 @@ export class HudStreamComponent implements OnInit, OnDestroy {
             displayLeft: 0,
             displayTop:0
           };
+          console.log("Add stream info ", stream);
           if (isSelectedCamera) {
             this.mainStream = stream;
           }

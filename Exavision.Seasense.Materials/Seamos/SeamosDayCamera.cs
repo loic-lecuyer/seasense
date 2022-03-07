@@ -62,7 +62,7 @@ namespace Exavision.Seasense.Materials.Seamos {
                     Values values = await this.client.GetValues();
                     this.ProcessHarwareResponseValues(values);
                 },
-                Delay = 100
+                Delay = 250
             });
 
 

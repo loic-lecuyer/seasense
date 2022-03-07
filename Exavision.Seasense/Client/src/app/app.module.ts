@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
 import { HttpService } from './services/http.service';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UserService } from './services/user.service';
@@ -83,6 +84,7 @@ export const httpInterceptorProviders = [
     MatTreeModule,
     MatToolbarModule,
     MatCardModule,
+    MatTabsModule,
     MatIconModule,
     MatDividerModule,
     MatSnackBarModule,

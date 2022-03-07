@@ -6,19 +6,20 @@ using System.Net;
 
 namespace Exavision.Seasense.Protocols.Seamos {
     public class SeamosClient {
-        private readonly string ipStr;
-        private readonly string portStr;
+        private string ipStr;
+        private string portStr;
         private readonly SeamosProtocol protocol;
         private TcpCoreStringClient client;
         public event EventHandler<ISeamosCommand> OnCommandReceive;
 
-        public SeamosClient(string ip, string port, SeamosProtocol protocol) {
-            this.ipStr = ip;
-            this.portStr = port;
+        public SeamosClient(SeamosProtocol protocol) {
+
             this.protocol = protocol;
         }
 
-        public void Start() {
+        public void Start(string ipStr, string portStr) {
+            this.ipStr = ipStr;
+            this.portStr = portStr;
             if (IPAddress.TryParse(this.ipStr, out IPAddress address) && int.TryParse(this.portStr, out int port)) {
                 this.client = new TcpCoreStringClient();
                 this.client.OnMessageReceived += this.Client_OnMessageReceived;
