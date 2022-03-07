@@ -29,6 +29,7 @@ export class SwitchValueCapability implements Capability {
     this.values = settingCapability.values;
     this.value = this.values[0];
     this._editValue = this.values[0];
+   
   
   }
   get editValue(): SwitchValue {
@@ -44,10 +45,13 @@ export class SwitchValueCapability implements Capability {
   setState(valueState: CapabilityState): void {
     let state: SwitchValueState = <SwitchValueState>valueState;
     let value: SwitchValue | undefined = this.values.find((val: SwitchValue) => {
-      return val.value === state.value.value;
+      return val.value != null && state.value != null && state.value.value != null &&  val.value === state.value.value;
     });    
     if (value != null) {
       this.value = value;
+    }
+    else {
+      console.log("null value for set state of capability " + this.capabilityType + " " + this.switchValueType);
     }
  
   }

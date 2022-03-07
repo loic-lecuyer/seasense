@@ -8,6 +8,7 @@ import { DoubleValueCapability } from '../../materials/capabilities/double-value
 import { SwitchValueCapability } from '../../materials/capabilities/switch-value-capability';
 import { SwitchValueType } from '../../materials/capabilities/switch-value-type';
 
+
 @Component({
   selector: 'app-panel-camera',
   templateUrl: './panel-camera.component.html',
@@ -24,15 +25,16 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
   public gainModeCapability: SwitchValueCapability | undefined = undefined;
   public gainCapability: DoubleValueCapability | undefined = undefined;
   public gammaCapability: DoubleValueCapability | undefined = undefined;
+  public contrastCapability: DoubleValueCapability | undefined = undefined;
   public whiteBalanceModeCapability: SwitchValueCapability | undefined = undefined;
   public whiteBalanceCapability: DoubleValueCapability | undefined = undefined;
   public luminosityCapability: DoubleValueCapability | undefined = undefined;
-
-
   public meteoLocationCapability: SwitchValueCapability | undefined = undefined;
   public meteoTimeCapability: SwitchValueCapability | undefined = undefined;
   public meteoWeatherCapability: SwitchValueCapability | undefined = undefined;
-
+  public shutterModeCapability: SwitchValueCapability | undefined = undefined;
+  public reticuleModeCapability: SwitchValueCapability | undefined = undefined;
+  public colorModeCapability: SwitchValueCapability | undefined = undefined;
   constructor(private uiService: UiService, private siteService: SiteService) {
 
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
@@ -64,6 +66,10 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       this.gammaCapability = this.camera.getValueCapability(DoubleValueType.Gamma);
       if (this.gammaCapability != null) this.gammaCapability.beginEdit();
 
+      this.contrastCapability = this.camera.getValueCapability(DoubleValueType.Contrast);
+      if (this.contrastCapability != null) this.contrastCapability.beginEdit();
+
+
       this.whiteBalanceCapability = this.camera.getValueCapability(DoubleValueType.WhiteBalance);
       if (this.whiteBalanceCapability != null) this.whiteBalanceCapability.beginEdit();
 
@@ -85,6 +91,20 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       this.meteoWeatherCapability = this.camera.getSwitchCapability(SwitchValueType.MeteoWeather);
       this.meteoWeatherCapability?.beginEdit();
 
+      this.reticuleModeCapability = this.camera.getSwitchCapability(SwitchValueType.ReticuleMode);
+      this.reticuleModeCapability?.beginEdit();
+      if (this.reticuleModeCapability != null) {
+        console.log("reticuleMode values ", this.reticuleModeCapability.values);
+      }
+
+      this.shutterModeCapability = this.camera.getSwitchCapability(SwitchValueType.ShutterMode);
+      this.shutterModeCapability?.beginEdit();
+
+      this.colorModeCapability = this.camera.getSwitchCapability(SwitchValueType.ColorMode);
+      this.colorModeCapability?.beginEdit();
+
+
+
     }
     else {
       this.gammaCapability = undefined;
@@ -99,6 +119,10 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       this.meteoLocationCapability = undefined;
       this.meteoTimeCapability = undefined;
       this.meteoWeatherCapability = undefined;
+      this.reticuleModeCapability = undefined;
+      this.shutterModeCapability = undefined;
+      this.colorModeCapability = undefined;
+      this.contrastCapability = undefined;
     }
   }
 

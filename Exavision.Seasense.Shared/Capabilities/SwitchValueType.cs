@@ -6,7 +6,10 @@
         PolarityMode,
         MeteoWeather,
         MeteoTime,
-        MeteoLocation
+        MeteoLocation,
+        ShutterMode,
+        ReticuleMode,
+        ColorMode
 
     }
 }

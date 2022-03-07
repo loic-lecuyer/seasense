@@ -32,6 +32,7 @@ namespace Exavision.Seasense.Protocols.Spinnaker {
 
         public async Task<Values> GetValues() {
             try {
+                if (String.IsNullOrEmpty(this.BaseUrl)) return null;
                 if (this.apiHttpAddress == null) {
                     var baseAddress = this.BaseUrl;
                     if (baseAddress.EndsWith("/")) {
@@ -79,7 +80,7 @@ namespace Exavision.Seasense.Protocols.Spinnaker {
                     }
                     this.apiHttpAddress = baseAddress;
                 }
-               
+
                 if (this.client == null) {
                     this.client = new HttpClient();
                     this.client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json");
@@ -95,7 +96,7 @@ namespace Exavision.Seasense.Protocols.Spinnaker {
                 //result = await message.Content.ReadAsStringAsync();
             }
             catch (Exception ex) {
-                Log.Error("Error when send values to spinnaker "+ex.Message);
+                Log.Error("Error when send values to spinnaker " + ex.Message);
             }
 
         }

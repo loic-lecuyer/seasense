@@ -5,8 +5,7 @@
     /// <summary>
     /// Defines the <see cref="SeamosCameraSetGammaRequest" />.
     /// </summary>
-    public class SeamosCameraSetGammaRequest : SeamosPascalCommand, ICameraSetGammaRequest
-    {
+    public class SeamosCameraSetGammaRequest : SeamosPascalCommand, ICameraSetGammaRequest {
         /// <summary>
         /// Gets the CommandByte.
         /// </summary>
@@ -28,17 +27,15 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
-            this.Gamma = (((int)data[0]) << 8) + (int)data[1];
+        public override void DeserializeBytes(byte[] data) {
+            this.Gamma = (((int)data[1]) << 8) + (int)data[0];
         }
 
         /// <summary>
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
+        public override byte[] SerializeBytes() {
             return new byte[] { CommandByte1, this.CommandByte2, (byte)((int)Gamma), (byte)((int)Gamma >> 8) };
         }
     }

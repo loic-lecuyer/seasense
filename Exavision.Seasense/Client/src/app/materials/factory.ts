@@ -33,6 +33,7 @@ import { SwitchValueCapability } from "./capabilities/switch-value-capability";
 import { SettingSwitchValueCapability } from "./settings/setting-switch-value-capability";
 import { WsValidResponse } from "../api/ws/ws-valid-response";
 import { WsErrorResponse } from "../api/ws/ws-error-response";
+import { SwitchValueType } from "./capabilities/switch-value-type";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -119,7 +120,8 @@ export class Factory {
         capability = new DoubleValueCapability(<SettingDoubleValueCapability>settingCapability);
         break;
       case CapabilityType.SwitchValue:
-        capability = new SwitchValueCapability(<SettingSwitchValueCapability>settingCapability);
+        let settingSwitchValueCapability: SettingSwitchValueCapability = <SettingSwitchValueCapability>settingCapability;        
+        capability = new SwitchValueCapability(settingSwitchValueCapability);
         break;
     }
     if (capability == null) {

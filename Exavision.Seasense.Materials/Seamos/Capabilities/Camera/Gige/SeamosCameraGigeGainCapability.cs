@@ -22,7 +22,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
         public override void SetValue(double value) {
             base.SetValue(value);
             this.Camera.SpinnakerValues.Gain.Value = value;
-            this.Camera.SendValues().Start();
+            this.Camera.SendValues();
 
         }
 

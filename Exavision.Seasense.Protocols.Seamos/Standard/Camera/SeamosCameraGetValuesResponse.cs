@@ -244,12 +244,14 @@
         /// <param name="data">The data<see cref="byte[]"/>.</param>
         public override void DeserializeBytes(byte[] data) {
             List<byte> lst = new List<byte>(data);
+            /*
             if (lst[0] == this.CommandByte1) {
                 lst.RemoveAt(0);
             }
             if (lst[0] == this.CommandByte2) {
                 lst.RemoveAt(0);
             }
+            */
             this.ReticuleX = this.DequeueInt(lst);
             this.ReticuleY = this.DequeueInt(lst);
             this.RoiZoomX = this.DequeueInt(lst);

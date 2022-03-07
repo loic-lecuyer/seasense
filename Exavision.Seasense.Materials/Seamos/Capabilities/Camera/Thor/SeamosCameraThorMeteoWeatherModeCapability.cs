@@ -36,7 +36,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             SwitchValueCapability capabilityMeteoLocation = (from c in this.camera.Capabilities where c is SwitchValueCapability && (c as SwitchValueCapability).SwitchValueType == SwitchValueType.MeteoLocation select c as SwitchValueCapability).FirstOrDefault();
             MeteoPresetLocation loc = capabilityMeteoLocation.Value.Value.ToEnum<MeteoPresetLocation>();
             MeteoPresetTime time = capabilityMeteoTime.Value.Value.ToEnum<MeteoPresetTime>();
-            MeteoPresetWeather weather = capabilityMeteoWeather.Value.Value.ToEnum<MeteoPresetWeather>();
+            MeteoPresetWeather weather = value.Value.ToEnum<MeteoPresetWeather>();
             request.Weather = weather;
             request.Time = time;
             request.Location = loc;

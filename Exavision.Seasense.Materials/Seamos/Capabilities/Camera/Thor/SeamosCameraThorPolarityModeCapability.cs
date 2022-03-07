@@ -8,6 +8,7 @@ using System.Linq;
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
     public class SeamosCameraThorPolarityModeCapability : SwitchValueCapability, ISeamosCapability {
         private SeamosThermalCamera camera;
+        private bool ignoreHardwareResponse = false;
 
         public SeamosCameraThorPolarityModeCapability(SeamosThermalCamera camera) {
             this.camera = camera;
@@ -23,19 +24,19 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
 
         }
 
-        private bool ignoreHardwareResponse = false;
+
 
 
         public override void SetValue(SwitchValue value) {
 
             ignoreHardwareResponse = true;
             ICameraSetPolarityRequest request = this.camera.Unit.Protocol.Resolve<ICameraSetPolarityRequest>(MaterialTarget.ThermalCamera);
-            if (this.Value.Equals(Polarity.BlackHot.ToString())) {
+            if (value.Value.Equals(Polarity.BlackHot.ToString())) {
                 request.IsWhiteHot = false;
                 base.SetValue(value);
                 this.camera.Unit.Client.Send(request);
             }
-            else if (this.Value.Equals(Polarity.WhiteHot.ToString())) {
+            else if (value.Value.Equals(Polarity.WhiteHot.ToString())) {
                 request.IsWhiteHot = true;
                 base.SetValue(value);
                 this.camera.Unit.Client.Send(request);

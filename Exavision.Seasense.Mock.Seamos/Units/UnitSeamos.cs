@@ -39,7 +39,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
         private double tilSpeed = 0;
         private double degreePerSecond = 15;
         private IntRect? thermalRoiZoom = null;
-
+        private ICameraGetValuesResponse thorValueResponse;
         private HttpListener? spinnakerListener;
         private readonly string spinnakerUrlListen = "http://127.0.0.1:8000/";
 
@@ -47,6 +47,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
         public UnitSeamos() {
             server = new TcpCoreStringServer();
             protocol = new SeamosStandardProtocol();
+            thorValueResponse = this.protocol.Resolve<ICameraGetValuesResponse>(MaterialTarget.ThermalCamera);
             IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(ip), port);
             server.OnMessageReceived += this.Server_OnMessageReceived;
             server.Start(endpoint, "\r\n");
@@ -144,7 +145,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
             this.SpinnakerEndResponse(context, 500);
         }
         private Values spinnakerValues;
-        
+
         /// <summary>
         /// The ProcessGetValuesRequest.
         /// </summary>
@@ -253,19 +254,19 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
                 System.Diagnostics.Debug.WriteLine("Receive null  command ");
             }
             else if (command is ICameraGetValuesRequest cameraGetValuesRequest) {
-                ICameraGetValuesResponse res = this.protocol.Resolve<ICameraGetValuesResponse>(MaterialTarget.ThermalCamera);
-                res.SystemTarget = SystemTarget.Computer;
+
+                this.thorValueResponse.SystemTarget = SystemTarget.Computer;
                 if (thermalRoiZoom == null) {
-                    res.RoiZoomEnable = false;
+                    this.thorValueResponse.RoiZoomEnable = false;
                 }
                 else {
-                    res.RoiZoomEnable = true;
-                    res.RoiZoomX = this.thermalRoiZoom.X;
-                    res.RoiZoomY = this.thermalRoiZoom.Y;
-                    res.RoiZoomWidth = this.thermalRoiZoom.Width;
-                    res.RoiZoomHeight = this.thermalRoiZoom.Height;
+                    this.thorValueResponse.RoiZoomEnable = true;
+                    this.thorValueResponse.RoiZoomX = this.thermalRoiZoom.X;
+                    this.thorValueResponse.RoiZoomY = this.thermalRoiZoom.Y;
+                    this.thorValueResponse.RoiZoomWidth = this.thermalRoiZoom.Width;
+                    this.thorValueResponse.RoiZoomHeight = this.thermalRoiZoom.Height;
                 }
-                this.SendCommand(res, e.Item1);
+                this.SendCommand(this.thorValueResponse, e.Item1);
 
             }
             else if (command is ITelemeterActionShootRequest TelemeterActionShootRequest) {
@@ -274,6 +275,38 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
                 response.DistanceMetter = rnd.Next(50, 2000);
                 response.SystemTarget = SystemTarget.Computer;
                 this.SendCommand(response, e.Item1);
+            }
+            else if (command is ICameraSetColorModeRequest cameraSetColorModeRequest) {
+                this.thorValueResponse.ColorRepresentation = cameraSetColorModeRequest.ColorMode;
+            }
+            else if (command is ICameraSetContrastRequest cameraSetContrastRequest) {
+                this.thorValueResponse.Contrast = (byte)cameraSetContrastRequest.Contrast;
+            }
+            else if (command is ICameraSetGammaRequest cameraSetGammaRequest) {
+                this.thorValueResponse.Gamma = (int)cameraSetGammaRequest.Gamma;
+            }
+            else if (command is ICameraSetLuminosityRequest cameraSetLuminosityRequest) {
+                this.thorValueResponse.Luminosity = (byte)cameraSetLuminosityRequest.Lunimosity;
+            }
+            else if (command is ICameraSetMeteoPresetRequest cameraSetMeteoPresetRequest) {
+                this.thorValueResponse.MeteoPresetLocation = cameraSetMeteoPresetRequest.Location;
+                this.thorValueResponse.MeteoPresetTime = cameraSetMeteoPresetRequest.Time;
+                this.thorValueResponse.MeteoPresetWeather = cameraSetMeteoPresetRequest.Weather;
+            }
+            else if (command is ICameraSetPolarityRequest cameraSetPolarityRequest) {
+                this.thorValueResponse.Polarity = cameraSetPolarityRequest.IsWhiteHot;
+            }
+            else if (command is ICameraSetQualityRequest cameraSetQualityRequest) {
+                this.thorValueResponse.ImageQuality = (byte)cameraSetQualityRequest.Quality;
+            }
+            else if (command is ICameraSetReticuleEnabedRequest cameraSetReticuleEnabedRequest) {
+                this.thorValueResponse.Reticule = cameraSetReticuleEnabedRequest.IsVisible; ;
+            }
+            else if (command is ICameraSetReticuleModeRequest cameraSetReticuleModeRequest) {
+                this.thorValueResponse.ReticuleMode = cameraSetReticuleModeRequest.Mode;
+            }
+            else if (command is ICameraSetShutterEnabledRequest cameraSetShutterEnabledRequest) {
+                this.thorValueResponse.ShutterInfo.IsShutterOpen = cameraSetShutterEnabledRequest.IsEnabled;
             }
             else throw new System.Exception("No implementation for command " + command.GetType().Name);
 
