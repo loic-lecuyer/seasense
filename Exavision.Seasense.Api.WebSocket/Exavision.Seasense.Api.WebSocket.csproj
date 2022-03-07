@@ -8,5 +8,9 @@
     <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
     <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.11.0" />
+  </ItemGroup>
+
 
 </Project>

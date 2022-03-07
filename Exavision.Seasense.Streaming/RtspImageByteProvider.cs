@@ -1,4 +1,6 @@
-﻿namespace Exavision.Seasense.Streaming {
+﻿using Exavision.Seasense.Shared.Streaming;
+
+namespace Exavision.Seasense.Streaming {
     public class RtspImageByteProvider : IImageByteProvider {
         private string streamUrl;
 
@@ -10,11 +12,11 @@
             return null;
         }
 
-        public void Start() {
+        public void StartProvider() {
 
         }
 
-        public void Stop() {
+        public void StopProvider() {
 
         }
     }

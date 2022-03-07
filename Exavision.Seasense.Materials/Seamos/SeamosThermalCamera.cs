@@ -23,6 +23,9 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosCameraThorGammaCapability(this));
             this.Capabilities.Add(new SeamosCameraThorLuminosityCapability(this));
             this.Capabilities.Add(new SeamosCameraThorQualityCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorMeteoLocationModeCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorMeteoWeatherModeCapability(this));
+            this.Capabilities.Add(new SeamosCameraThorMeteoTimeModeCapability(this));
             /*
              * this.Capabilities.Add(new SeamosThermalZoomable(tcpStringClient, protocol));
             this.Capabilities.Add(new SeamosThermalLuminosity(tcpStringClient, protocol));
@@ -60,7 +63,6 @@ namespace Exavision.Seasense.Materials.Seamos {
             actions.Add(new PollingAction() {
                 Action = () => {
                     ICameraGetValuesRequest request = this.Unit.Protocol.Resolve<ICameraGetValuesRequest>(Protocols.Seamos.Commands.MaterialTarget.ThermalCamera);
-
                     this.Unit.Client.Send(request);
                 },
                 Delay = 100

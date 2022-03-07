@@ -48,8 +48,10 @@ namespace Exavision.Seasense.Materials.Seamos {
 
 
         public override void Stop() {
-            this.Client.OnCommandReceive -= this.Client_OnCommandReceive;
-            this.Client.Stop();
+            if (this.Client != null) {
+                this.Client.OnCommandReceive -= this.Client_OnCommandReceive;
+                this.Client.Stop();
+            }          
         }
     }
 }

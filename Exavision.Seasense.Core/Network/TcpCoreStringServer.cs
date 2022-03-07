@@ -162,8 +162,7 @@
 
             this.clients.Clear();
             try { this.server?.Stop(); } catch (Exception ex) { Log.Verbose("TcpCoreStringServer Ingorable error " + ex.Message); }
-            if (this.cancelSource != null) this.cancelSource.Cancel();
-            if (this.task != null && this.task.Status == TaskStatus.Running) this.task.Wait();
+            if (this.cancelSource != null) this.cancelSource.Cancel();     
             this.task = null;
             this.server = null;
         }

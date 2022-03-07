@@ -337,8 +337,7 @@
             catch (Exception ex) { Log.Verbose("TcpCoreStringClient Ignorable Client.Close() error " + ex.Message); }
             try { this.Client.Dispose(); }
             catch (Exception ex) { Log.Verbose("TcpCoreStringClient Ignorable Client.Dispose() error " + ex.Message); }
-            if (this.receiveTask != null && this.receiveTask.Status == TaskStatus.Running) this.receiveTask.Wait();
-            if (this.sendTask != null && this.sendTask.Status == TaskStatus.Running) this.sendTask.Wait();
+        
             this.receiveTask = null;
             this.sendTask = null;
             this.reader = null;

@@ -10,7 +10,7 @@ namespace Exavision.Seasense.Mock.Seamos.ViewModels {
         private UnitSeamos unitSeamos;
 
         public MainWindowViewModel() {
-            this.UnitSeamos = new UnitSeamos();
+            this.unitSeamos = new UnitSeamos();
 
 
         }

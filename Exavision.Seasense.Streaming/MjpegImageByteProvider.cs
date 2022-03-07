@@ -1,4 +1,5 @@
 ﻿using Exavision.Seasense.Core.Extensions;
+using Exavision.Seasense.Shared.Streaming;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Exavision.Seasense.Streaming {
             this.Url = streamUrl;
         }
 
-        public event EventHandler<byte[]> OnFrameReceived;
+
         /// <summary>
         /// Gets or sets the AutoReconnect.
         /// </summary>
@@ -106,7 +107,7 @@ namespace Exavision.Seasense.Streaming {
         /// <summary>
         /// The Start.
         /// </summary>
-        public void Start() {
+        public void StartProvider() {
             this.stopping = false;
             this.hasFirstFrame = false;
             this.fpsTimer.Start();
@@ -127,8 +128,8 @@ namespace Exavision.Seasense.Streaming {
 
                 if (this.hasFirstFrame && this.lastValidFrameTimer.Elapsed.TotalSeconds > 1 && this.AutoReconnect && !this.stopping) {
                     Log.Warning("MjpegReader : Hardware no send frame from 1 second but Keep copnnection open => start stop ");
-                    this.Stop();
-                    this.Start();
+                    this.StopProvider();
+                    this.StartProvider();
                 }
 
                 this.canceller.Token.WaitHandle.WaitOne(500);
@@ -261,6 +262,15 @@ namespace Exavision.Seasense.Streaming {
                                 }
 
                             }
+                        } else if (contentLength != -1){
+                            int startSearchJpegHeader = contentTypeBytesIndex + contentTypeBytes.Length;
+                            int jpegHeaderPos = datas.Find(startSearchJpegHeader, JpegHeader);
+                            byte[] jpeg = new byte[contentLength];
+                            Array.Copy(dataArray, jpegHeaderPos, jpeg, 0, contentLength);
+                            lock (ImageBytesLocker) {
+                                this.imageBytes = jpeg;
+                            }
+                            datas.RemoveRange(0, jpegHeaderPos + contentLength);
                         }
                         if (datas.Count > BufferSize * 10) {
                             datas.Clear();
@@ -440,7 +450,7 @@ namespace Exavision.Seasense.Streaming {
         /// <summary>
         /// The Stop.
         /// </summary>
-        public void Stop() {
+        public void StopProvider() {
             this.stopping = true;
             this.hasFirstFrame = false;
             this.lastValidFrameTimer.Stop();

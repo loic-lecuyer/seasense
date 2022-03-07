@@ -70,6 +70,7 @@ namespace Exavision.Seasense.Materials.Seamos {
         }
 
         private void ProcessHarwareResponseValues(Values values) {
+            if (values == null) return;
             this.spinnakerValues.BlackLevel.Value = values.BlackLevel.Value;
             this.spinnakerValues.ExposureTime.Mode = values.ExposureTime.Mode;
             this.spinnakerValues.ExposureTime.Value = values.ExposureTime.Value;

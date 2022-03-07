@@ -209,7 +209,7 @@ namespace Exavision.Seasense.Server.Services {
         private void SendResponse(WsResponse response, WebSocketClient client) {
             try {
                 string responseText = JsonConvert.SerializeObject(response, this.serializationSetting);
-                client.Send(responseText);
+                client.Send(responseText).Start();
             }
             catch (Exception ex) {
                 Log.Error("WebSocketService Error when send response " + ex.Message);
@@ -221,7 +221,7 @@ namespace Exavision.Seasense.Server.Services {
                 RequestId = requestId
             };
             string responseText = JsonConvert.SerializeObject(response);
-            client.Send(responseText);
+            client.Send(responseText).Start();
         }
 
         private void SendError(WebSocketClient client, string requestId, string errorMessage) {
@@ -230,7 +230,7 @@ namespace Exavision.Seasense.Server.Services {
                 ErrorMessage = errorMessage
             };
             string responseText = JsonConvert.SerializeObject(response);
-            client.Send(responseText);
+            client.Send(responseText).Start();
         }
 
         private void Client_OnDisconnected(object sender, WebSocketClient e) {

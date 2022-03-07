@@ -16,6 +16,11 @@
       <app-async-toggle-group *ngIf="whiteBalanceModeCapability != null" displayName="White Balance Mode" [capability]="whiteBalanceModeCapability"></app-async-toggle-group>
       <app-async-slider *ngIf="whiteBalanceCapability != null" displayName="White Balance" [capability]="whiteBalanceCapability"> </app-async-slider>
 
+      <app-async-toggle-group *ngIf="meteoLocationCapability != null" displayName="Meteo Location" [capability]="meteoLocationCapability"> </app-async-toggle-group>
+      <app-async-toggle-group *ngIf="meteoTimeCapability != null" displayName="Meteo Timer" [capability]="meteoTimeCapability"> </app-async-toggle-group>
+      <app-async-toggle-group *ngIf="meteoWeatherCapability != null" displayName="Meteo Weather" [capability]="meteoWeatherCapability"> </app-async-toggle-group>
+
+
 
     </div>
   </mat-card-content>

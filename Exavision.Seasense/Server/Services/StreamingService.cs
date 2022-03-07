@@ -1,4 +1,5 @@
 ﻿using Exavision.Seasense.Shared.Materials;
+using Exavision.Seasense.Shared.Streaming;
 using Exavision.Seasense.Streaming;
 using System.Collections.Generic;
 
@@ -30,7 +31,7 @@ namespace Exavision.Seasense.Server.Services {
                     }
                     if (provider == null) return null;
                     else {
-                        provider.Start();
+                        provider.StartProvider();
                         ImageByteStreamer streamer = new ImageByteStreamer(provider,camera.ImageWidth,camera.ImageHeight);
                         streamers.Add(materialId, streamer);
                         return streamer;

@@ -27,6 +27,12 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
   public whiteBalanceModeCapability: SwitchValueCapability | undefined = undefined;
   public whiteBalanceCapability: DoubleValueCapability | undefined = undefined;
   public luminosityCapability: DoubleValueCapability | undefined = undefined;
+
+
+  public meteoLocationCapability: SwitchValueCapability | undefined = undefined;
+  public meteoTimeCapability: SwitchValueCapability | undefined = undefined;
+  public meteoWeatherCapability: SwitchValueCapability | undefined = undefined;
+
   constructor(private uiService: UiService, private siteService: SiteService) {
 
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
@@ -69,6 +75,16 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       if (this.luminosityCapability != null) this.luminosityCapability.beginEdit();
 
 
+      this.meteoLocationCapability = this.camera.getSwitchCapability(SwitchValueType.MeteoLocation);
+      this.meteoLocationCapability?.beginEdit();
+
+      this.meteoTimeCapability = this.camera.getSwitchCapability(SwitchValueType.MeteoTime);
+      this.meteoTimeCapability?.beginEdit();
+
+
+      this.meteoWeatherCapability = this.camera.getSwitchCapability(SwitchValueType.MeteoWeather);
+      this.meteoWeatherCapability?.beginEdit();
+
     }
     else {
       this.gammaCapability = undefined;
@@ -80,6 +96,9 @@ export class PanelCameraComponent implements OnInit, OnDestroy {
       this.gainModeCapability = undefined;
       this.gainCapability = undefined;
       this.luminosityCapability = undefined;
+      this.meteoLocationCapability = undefined;
+      this.meteoTimeCapability = undefined;
+      this.meteoWeatherCapability = undefined;
     }
   }
 

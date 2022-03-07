@@ -38,9 +38,9 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
         private double panSpeed = 0;
         private double tilSpeed = 0;
         private double degreePerSecond = 15;
-        private IntRect thermalRoiZoom = null;
+        private IntRect? thermalRoiZoom = null;
 
-        private HttpListener spinnakerListener;
+        private HttpListener? spinnakerListener;
         private readonly string spinnakerUrlListen = "http://127.0.0.1:8000/";
 
         private readonly JsonSerializerSettings spinnakerjsonSerializerSettings;
@@ -55,7 +55,18 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
                 ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
                 SerializationBinder = new SerializationBinder()
             };
-            this.CreateDefaultSpinnakerValues();
+            this.spinnakerValues = new Values() {
+                BlackLevel = new BlackLevel() { Value = 10 },
+                ExposureTime = new ExposureTime() { Mode = ExposureTimeMode.Off, Value = 0 },
+                Fps = 25,
+                Gain = new Gain() { Mode = GainMode.Off, Value = 5, Type = "GainMode" },
+                Gamma = new Gamma(),
+                Quality = new Quality(),
+                Type = "Values",
+                Version = new Exavision.Seasense.Protocols.Spinnaker.Models.Version(),
+                WhiteBalance = new WhiteBalance(),
+                Zoom = new Zoom() { Value = 1 }
+            };
             Task.Factory.StartNew(LoopTurret);
             Task.Factory.StartNew(LoopDayCamera);
 
@@ -65,6 +76,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
         private async Task LoopDayCamera() {
             try {
                 if (this.spinnakerListener == null) { this.spinnakerListener = new HttpListener(); }
+                await Task.Delay(0);
                 this.spinnakerListener.Prefixes.Add(spinnakerUrlListen);
                 this.spinnakerListener.Start();
                 this.spinnakerListener.BeginGetContext(new AsyncCallback(SpinnakerWebRequestCallback), this.spinnakerListener);
@@ -76,6 +88,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
 
         }
         protected void SpinnakerWebRequestCallback(IAsyncResult result) {
+            if (this.spinnakerListener == null) return;
             HttpListenerContext contextMjpeg = this.spinnakerListener.EndGetContext(result);
             this.spinnakerListener.BeginGetContext(new AsyncCallback(SpinnakerWebRequestCallback), this.spinnakerListener);
             this.SpinnakerProcessWebRequest(contextMjpeg);
@@ -83,6 +96,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
 
         private void SpinnakerProcessWebRequest(HttpListenerContext context) {
             string method = context.Request.HttpMethod.ToUpper();
+            if (context.Request.Url == null) return;
             string url = context.Request.Url.ToString();
             if (method.Equals("POST")) {
                 if (url.IndexOf("values") != -1) {
@@ -130,21 +144,7 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
             this.SpinnakerEndResponse(context, 500);
         }
         private Values spinnakerValues;
-        private void CreateDefaultSpinnakerValues() {
-            this.SpinnakerValues = new Values() {
-                BlackLevel = new BlackLevel() { Value = 10 },
-                ExposureTime = new ExposureTime() { Mode = ExposureTimeMode.Off, Value = 0 },
-                Fps = 25,
-                Gain = new Gain() { Mode = GainMode.Off, Value = 5, Type = "GainMode" },
-                Gamma = new Gamma(),
-                Quality = new Quality(),
-                Type = "Values",
-                Version = new Exavision.Seasense.Protocols.Spinnaker.Models.Version(),
-                WhiteBalance = new WhiteBalance(),
-                Zoom = new Zoom() { Value = 1 }
-            };
-        }
-
+        
         /// <summary>
         /// The ProcessGetValuesRequest.
         /// </summary>
@@ -193,7 +193,8 @@ namespace Exavision.Seasense.Mock.Seamos.Units {
 
                 string content = new StreamReader(context.Request.InputStream).ReadToEnd();
 
-                SetValuesRequest request = JsonConvert.DeserializeObject<SetValuesRequest>(content, this.spinnakerjsonSerializerSettings);
+                SetValuesRequest? request = JsonConvert.DeserializeObject<SetValuesRequest>(content, this.spinnakerjsonSerializerSettings);
+                if (request == null) return;
                 this.SpinnakerValues = request.Values;
                 context.Response.StatusCode = 200;
                 context.Response.Close();

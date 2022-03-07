@@ -1848,7 +1848,7 @@ __webpack_require__.r(__webpack_exports__);
 
 function PanelCameraComponent_app_async_slider_10_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 17);
   }
 
   if (rf & 2) {
@@ -1859,7 +1859,7 @@ function PanelCameraComponent_app_async_slider_10_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_11_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 18);
   }
 
   if (rf & 2) {
@@ -1870,7 +1870,7 @@ function PanelCameraComponent_app_async_slider_11_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_12_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 19);
   }
 
   if (rf & 2) {
@@ -1881,7 +1881,7 @@ function PanelCameraComponent_app_async_slider_12_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_13_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 20);
   }
 
   if (rf & 2) {
@@ -1892,7 +1892,7 @@ function PanelCameraComponent_app_async_slider_13_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_toggle_group_14_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 21);
   }
 
   if (rf & 2) {
@@ -1903,7 +1903,7 @@ function PanelCameraComponent_app_async_toggle_group_14_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_15_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 22);
   }
 
   if (rf & 2) {
@@ -1914,7 +1914,7 @@ function PanelCameraComponent_app_async_slider_15_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_toggle_group_16_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 23);
   }
 
   if (rf & 2) {
@@ -1925,7 +1925,7 @@ function PanelCameraComponent_app_async_toggle_group_16_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_17_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 21);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 24);
   }
 
   if (rf & 2) {
@@ -1936,7 +1936,7 @@ function PanelCameraComponent_app_async_slider_17_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_toggle_group_18_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 25);
   }
 
   if (rf & 2) {
@@ -1947,12 +1947,45 @@ function PanelCameraComponent_app_async_toggle_group_18_Template(rf, ctx) {
 
 function PanelCameraComponent_app_async_slider_19_Template(rf, ctx) {
   if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-slider", 26);
   }
 
   if (rf & 2) {
     const ctx_r9 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r9.whiteBalanceCapability);
+  }
+}
+
+function PanelCameraComponent_app_async_toggle_group_20_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 27);
+  }
+
+  if (rf & 2) {
+    const ctx_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r10.meteoLocationCapability);
+  }
+}
+
+function PanelCameraComponent_app_async_toggle_group_21_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 28);
+  }
+
+  if (rf & 2) {
+    const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r11.meteoTimeCapability);
+  }
+}
+
+function PanelCameraComponent_app_async_toggle_group_22_Template(rf, ctx) {
+  if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelement"](0, "app-async-toggle-group", 29);
+  }
+
+  if (rf & 2) {
+    const ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("capability", ctx_r12.meteoWeatherCapability);
   }
 }
 
@@ -1971,6 +2004,9 @@ class PanelCameraComponent {
     this.whiteBalanceModeCapability = undefined;
     this.whiteBalanceCapability = undefined;
     this.luminosityCapability = undefined;
+    this.meteoLocationCapability = undefined;
+    this.meteoTimeCapability = undefined;
+    this.meteoWeatherCapability = undefined;
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => {
       this.camera = this.siteService.selectedCamera;
       this.updateVisibilityFlags();
@@ -1979,6 +2015,8 @@ class PanelCameraComponent {
   }
 
   updateVisibilityFlags() {
+    var _a, _b, _c;
+
     if (this.camera != null) {
       this.qualityCapability = this.camera.getValueCapability(_materials_capabilities_double_value_type__WEBPACK_IMPORTED_MODULE_0__.DoubleValueType.Quality);
       if (this.qualityCapability != null) this.qualityCapability.beginEdit();
@@ -2000,6 +2038,12 @@ class PanelCameraComponent {
       if (this.whiteBalanceModeCapability != null) this.whiteBalanceModeCapability.beginEdit();
       this.luminosityCapability = this.camera.getValueCapability(_materials_capabilities_double_value_type__WEBPACK_IMPORTED_MODULE_0__.DoubleValueType.Luminosity);
       if (this.luminosityCapability != null) this.luminosityCapability.beginEdit();
+      this.meteoLocationCapability = this.camera.getSwitchCapability(_materials_capabilities_switch_value_type__WEBPACK_IMPORTED_MODULE_1__.SwitchValueType.MeteoLocation);
+      (_a = this.meteoLocationCapability) === null || _a === void 0 ? void 0 : _a.beginEdit();
+      this.meteoTimeCapability = this.camera.getSwitchCapability(_materials_capabilities_switch_value_type__WEBPACK_IMPORTED_MODULE_1__.SwitchValueType.MeteoTime);
+      (_b = this.meteoTimeCapability) === null || _b === void 0 ? void 0 : _b.beginEdit();
+      this.meteoWeatherCapability = this.camera.getSwitchCapability(_materials_capabilities_switch_value_type__WEBPACK_IMPORTED_MODULE_1__.SwitchValueType.MeteoWeather);
+      (_c = this.meteoWeatherCapability) === null || _c === void 0 ? void 0 : _c.beginEdit();
     } else {
       this.gammaCapability = undefined;
       this.whiteBalanceCapability = undefined;
@@ -2010,6 +2054,9 @@ class PanelCameraComponent {
       this.gainModeCapability = undefined;
       this.gainCapability = undefined;
       this.luminosityCapability = undefined;
+      this.meteoLocationCapability = undefined;
+      this.meteoTimeCapability = undefined;
+      this.meteoWeatherCapability = undefined;
     }
   }
 
@@ -2036,9 +2083,9 @@ PanelCameraComponent.ɵfac = function PanelCameraComponent_Factory(t) {
 PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵdefineComponent"]({
   type: PanelCameraComponent,
   selectors: [["app-panel-camera"]],
-  decls: 23,
-  vars: 10,
-  consts: [[1, "card-login"], [1, "icon-title"], [1, "card-content-container"], ["displayName", "Quality", 3, "capability", 4, "ngIf"], ["displayName", "Black level", 3, "capability", 4, "ngIf"], ["displayName", "Luminosity", 3, "capability", 4, "ngIf"], ["displayName", "Gamma", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time Mode", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time", 3, "capability", 4, "ngIf"], ["displayName", "Gain Mode", 3, "capability", 4, "ngIf"], ["displayName", "Gain", 3, "capability", 4, "ngIf"], ["displayName", "White Balance Mode", 3, "capability", 4, "ngIf"], ["displayName", "White Balance", 3, "capability", 4, "ngIf"], ["mat-button", "", 1, "full-width", 3, "click"], ["displayName", "Quality", 3, "capability"], ["displayName", "Black level", 3, "capability"], ["displayName", "Luminosity", 3, "capability"], ["displayName", "Gamma", 3, "capability"], ["displayName", "Exposure Time Mode", 3, "capability"], ["displayName", "Exposure Time", 3, "capability"], ["displayName", "Gain Mode", 3, "capability"], ["displayName", "Gain", 3, "capability"], ["displayName", "White Balance Mode", 3, "capability"], ["displayName", "White Balance", 3, "capability"]],
+  decls: 26,
+  vars: 13,
+  consts: [[1, "card-login"], [1, "icon-title"], [1, "card-content-container"], ["displayName", "Quality", 3, "capability", 4, "ngIf"], ["displayName", "Black level", 3, "capability", 4, "ngIf"], ["displayName", "Luminosity", 3, "capability", 4, "ngIf"], ["displayName", "Gamma", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time Mode", 3, "capability", 4, "ngIf"], ["displayName", "Exposure Time", 3, "capability", 4, "ngIf"], ["displayName", "Gain Mode", 3, "capability", 4, "ngIf"], ["displayName", "Gain", 3, "capability", 4, "ngIf"], ["displayName", "White Balance Mode", 3, "capability", 4, "ngIf"], ["displayName", "White Balance", 3, "capability", 4, "ngIf"], ["displayName", "Meteo Location", 3, "capability", 4, "ngIf"], ["displayName", "Meteo Timer", 3, "capability", 4, "ngIf"], ["displayName", "Meteo Weather", 3, "capability", 4, "ngIf"], ["mat-button", "", 1, "full-width", 3, "click"], ["displayName", "Quality", 3, "capability"], ["displayName", "Black level", 3, "capability"], ["displayName", "Luminosity", 3, "capability"], ["displayName", "Gamma", 3, "capability"], ["displayName", "Exposure Time Mode", 3, "capability"], ["displayName", "Exposure Time", 3, "capability"], ["displayName", "Gain Mode", 3, "capability"], ["displayName", "Gain", 3, "capability"], ["displayName", "White Balance Mode", 3, "capability"], ["displayName", "White Balance", 3, "capability"], ["displayName", "Meteo Location", 3, "capability"], ["displayName", "Meteo Timer", 3, "capability"], ["displayName", "Meteo Weather", 3, "capability"]],
   template: function PanelCameraComponent_Template(rf, ctx) {
     if (rf & 1) {
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title")(3, "mat-icon", 1);
@@ -2060,12 +2107,15 @@ PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](17, PanelCameraComponent_app_async_slider_17_Template, 1, 1, "app-async-slider", 10);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](18, PanelCameraComponent_app_async_toggle_group_18_Template, 1, 1, "app-async-toggle-group", 11);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](19, PanelCameraComponent_app_async_slider_19_Template, 1, 1, "app-async-slider", 12);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](20, PanelCameraComponent_app_async_toggle_group_20_Template, 1, 1, "app-async-toggle-group", 13);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](21, PanelCameraComponent_app_async_toggle_group_21_Template, 1, 1, "app-async-toggle-group", 14);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtemplate"](22, PanelCameraComponent_app_async_toggle_group_22_Template, 1, 1, "app-async-toggle-group", 15);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementEnd"]()();
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](20, "mat-card-actions")(21, "button", 13);
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵlistener"]("click", function PanelCameraComponent_Template_button_click_21_listener() {
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementStart"](23, "mat-card-actions")(24, "button", 16);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵlistener"]("click", function PanelCameraComponent_Template_button_click_24_listener() {
         return ctx.onCloseClick();
       });
-      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtext"](22, "Close");
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵtext"](25, "Close");
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵelementEnd"]()()();
     }
 
@@ -2090,6 +2140,12 @@ PanelCameraComponent.ɵcmp = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.whiteBalanceModeCapability != null);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
       _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.whiteBalanceCapability != null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.meteoLocationCapability != null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.meteoTimeCapability != null);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵadvance"](1);
+      _angular_core__WEBPACK_IMPORTED_MODULE_6__["ɵɵproperty"]("ngIf", ctx.meteoWeatherCapability != null);
     }
   },
   directives: [_angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCard, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardHeader, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardTitle, _angular_material_icon__WEBPACK_IMPORTED_MODULE_8__.MatIcon, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardSubtitle, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardContent, _angular_common__WEBPACK_IMPORTED_MODULE_9__.NgIf, _async_slider_async_slider_component__WEBPACK_IMPORTED_MODULE_4__.AsyncSliderComponent, _async_toggle_group_async_toggle_group_component__WEBPACK_IMPORTED_MODULE_5__.AsyncToggleGroupComponent, _angular_material_card__WEBPACK_IMPORTED_MODULE_7__.MatCardActions, _angular_material_button__WEBPACK_IMPORTED_MODULE_10__.MatButton],
@@ -2635,6 +2691,9 @@ var SwitchValueType;
     SwitchValueType["GainMode"] = "GainMode";
     SwitchValueType["WhiteBalanceMode"] = "WhiteBalanceMode";
     SwitchValueType["PolarityMode"] = "PolarityMode";
+    SwitchValueType["MeteoWeather"] = "MeteoWeather";
+    SwitchValueType["MeteoTime"] = "MeteoTime";
+    SwitchValueType["MeteoLocation"] = "MeteoLocation";
 })(SwitchValueType || (SwitchValueType = {}));
 
 
@@ -3868,7 +3927,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LoginComponent": () => (/* binding */ LoginComponent)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js-sha512 */ 2414);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(js_sha512__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 3184);
@@ -3929,7 +3988,7 @@ class LoginComponent {
   onConnectButtonClick() {
     var _this = this;
 
-    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this.loginRunning = true;
 
       _this.userService.clearToken();
@@ -4305,7 +4364,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "WsService": () => (/* binding */ WsService)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! uuid */ 2535);
 /* harmony import */ var _materials_factory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../materials/factory */ 7568);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
@@ -4349,7 +4408,7 @@ class WsService {
     };
 
     this.socket.onclose = /*#__PURE__*/function () {
-      var _ref = (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
+      var _ref = (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
         _this.wsClose(event);
       });
 
@@ -4391,7 +4450,7 @@ class WsService {
   }
 
   wsClose(event) {
-    return (0,C_Dev_Test_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Seasense_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       console.log("wsClose", event);
     })();
   }
