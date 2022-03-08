@@ -2,6 +2,7 @@
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
     using Exavision.Seasense.Protocols.Seamos.Enums;
+    using Serilog;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -244,14 +245,7 @@
         /// <param name="data">The data<see cref="byte[]"/>.</param>
         public override void DeserializeBytes(byte[] data) {
             List<byte> lst = new List<byte>(data);
-            /*
-            if (lst[0] == this.CommandByte1) {
-                lst.RemoveAt(0);
-            }
-            if (lst[0] == this.CommandByte2) {
-                lst.RemoveAt(0);
-            }
-            */
+
             this.ReticuleX = this.DequeueInt(lst);
             this.ReticuleY = this.DequeueInt(lst);
             this.RoiZoomX = this.DequeueInt(lst);
@@ -278,7 +272,6 @@
             this.ReticuleMode = this.DequeueReticuleMode(lst);
             this.ShutterInfo = this.DequeueShutterInfo(lst);
             this.Fps = this.DequeueFps(lst);
-
             Tuple<MeteoPresetWeather, MeteoPresetLocation, MeteoPresetTime> meteoPreset = this.DequeueMeteoPreset(lst);
             this.MeteoPresetWeather = meteoPreset.Item1;
             this.MeteoPresetLocation = meteoPreset.Item2;
@@ -404,6 +397,8 @@
 
             meteoPresetTime = bits[2] ? MeteoPresetTime.Night : MeteoPresetTime.Day;
             meteoPresetLocation = bits[3] ? MeteoPresetLocation.Ground : MeteoPresetLocation.Sea;
+            Log.Information("DequeueMeteoPreset Weather " + meteoPresetWeather.ToString() + " Location " + meteoPresetLocation.ToString() + " Time " + meteoPresetTime.ToString() + " read byte " + lst[0]);
+
             return new Tuple<MeteoPresetWeather, MeteoPresetLocation, MeteoPresetTime>(meteoPresetWeather, meteoPresetLocation, meteoPresetTime);
         }
 
@@ -439,6 +434,7 @@
             }
             bits.Set(2, meteoPresetTime == MeteoPresetTime.Night);
             bits.Set(3, meteoPresetLocation == MeteoPresetLocation.Ground);
+            Log.Information("EnqueueMeteoPreset Weather " + meteoPresetWeather.ToString() + " Location " + meteoPresetLocation.ToString() + " Time " + meteoPresetTime.ToString() + " result byte " + value);
             data.Add(value);
         }
 

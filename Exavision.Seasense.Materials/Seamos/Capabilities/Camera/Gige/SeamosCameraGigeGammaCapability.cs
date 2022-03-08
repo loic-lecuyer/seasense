@@ -9,7 +9,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
         public SeamosCameraGigeGammaCapability(SeamosDayCamera camera) {
             this.Camera = camera;
             this.MinValue = 0;
-            this.MaxValue = 100;
+            this.MaxValue = 47;
         }
         public override DoubleValueType DoubleValueType => DoubleValueType.Gamma;
 

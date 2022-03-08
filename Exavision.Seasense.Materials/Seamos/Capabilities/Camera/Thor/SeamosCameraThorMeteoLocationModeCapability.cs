@@ -40,6 +40,11 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             request.Weather = weather;
             request.Time = time;
             request.Location = loc;
+
+
+
+
+
             this.camera.Unit.Client.Send(request);
             ignoreHardwareResponse = false;
         }

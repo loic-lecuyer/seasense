@@ -3,38 +3,52 @@
     <mat-card-title><mat-icon class="icon-title">camera_enhance</mat-icon>Camera Advanced Parameters</mat-card-title>
     <mat-card-subtitle>Be carefull with this settings</mat-card-subtitle>
   </mat-card-header>
-  <mat-card-content>
+  <mat-card-content >
 
-      <mat-tab-group>
-        <mat-tab label="Image" *ngIf="luminosityCapability != null || contrastCapability != null || gammaCapability != null || qualityCapability != null" class="tab-content-container">
-          <app-async-slider *ngIf="luminosityCapability != null" displayName="Luminosity" [capability]="luminosityCapability"> </app-async-slider>
-          <app-async-slider *ngIf="contrastCapability != null" displayName="Contrast" [capability]="contrastCapability"> </app-async-slider>
-          <app-async-slider *ngIf="gammaCapability != null" displayName="Gamma" [capability]="gammaCapability"> </app-async-slider>
-          <app-async-slider *ngIf="qualityCapability != null" displayName="Quality" [capability]="qualityCapability"> </app-async-slider>
+      <mat-tab-group >
+        <mat-tab label="Image" *ngIf="luminosityCapability != null || contrastCapability != null || gammaCapability != null || qualityCapability != null">
+          <div class="tab-content-container">
+            <app-async-slider *ngIf="luminosityCapability != null" displayName="Luminosity" [capability]="luminosityCapability"> </app-async-slider>
+            <app-async-slider *ngIf="contrastCapability != null" displayName="Contrast" [capability]="contrastCapability"> </app-async-slider>
+            <app-async-slider *ngIf="gammaCapability != null" displayName="Gamma" [capability]="gammaCapability"> </app-async-slider>
+            <app-async-slider *ngIf="qualityCapability != null" displayName="Quality" [capability]="qualityCapability"> </app-async-slider>
+          </div>        
         </mat-tab>
-        <mat-tab label="Meteo" *ngIf="meteoLocationCapability != null || meteoTimeCapability != null || meteoWeatherCapability != null" class="tab-content-container">
-          <app-async-toggle-group *ngIf="meteoLocationCapability != null" displayName="Meteo Location" [capability]="meteoLocationCapability"> </app-async-toggle-group>
-          <app-async-toggle-group *ngIf="meteoTimeCapability != null" displayName="Meteo Timer" [capability]="meteoTimeCapability"> </app-async-toggle-group>
-          <app-async-toggle-group *ngIf="meteoWeatherCapability != null" displayName="Meteo Weather" [capability]="meteoWeatherCapability"> </app-async-toggle-group>
+
+
+        <mat-tab label="Meteo" *ngIf="meteoLocationCapability != null || meteoTimeCapability != null || meteoWeatherCapability != null">
+          <div class="tab-content-container">
+            <app-async-toggle-group *ngIf="meteoLocationCapability != null" displayName="Meteo Location" [capability]="meteoLocationCapability"> </app-async-toggle-group>
+            <app-async-toggle-group *ngIf="meteoTimeCapability != null" displayName="Meteo Timer" [capability]="meteoTimeCapability"> </app-async-toggle-group>
+            <app-async-toggle-group *ngIf="meteoWeatherCapability != null" displayName="Meteo Weather" [capability]="meteoWeatherCapability"> </app-async-toggle-group>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Exposition" *ngIf="exposureTimeModeCapability != null || exposureTimeCapability != null || gainCapability != null || gainModeCapability != null || shutterModeCapability != null">
+          <div class="tab-content-container">
+            <app-async-toggle-group *ngIf="exposureTimeModeCapability != null" displayName="Exposure Time Mode" [capability]="exposureTimeModeCapability"></app-async-toggle-group>
+            <app-async-slider *ngIf="exposureTimeCapability != null" displayName="Exposure Time" [capability]="exposureTimeCapability"> </app-async-slider>
+            <app-async-slider *ngIf="gainCapability != null" displayName="Gain" [capability]="gainCapability"> </app-async-slider>
+            <app-async-toggle-group *ngIf="gainModeCapability != null" displayName="Gain Mode" [capability]="gainModeCapability"></app-async-toggle-group>
+            <app-async-toggle-group *ngIf="shutterModeCapability != null" displayName="Shutter" [capability]="shutterModeCapability"> </app-async-toggle-group>
+          </div>
+
 
         </mat-tab>
-        <mat-tab label="Exposition" *ngIf="exposureTimeModeCapability != null || exposureTimeCapability != null || gainCapability != null || gainModeCapability != null || shutterModeCapability != null" class="tab-content-container">
-          <app-async-toggle-group *ngIf="exposureTimeModeCapability != null" displayName="Exposure Time Mode" [capability]="exposureTimeModeCapability"></app-async-toggle-group>
-          <app-async-slider *ngIf="exposureTimeCapability != null" displayName="Exposure Time" [capability]="exposureTimeCapability"> </app-async-slider>
-          <app-async-slider *ngIf="gainCapability != null" displayName="Gain" [capability]="gainCapability"> </app-async-slider>
-          <app-async-toggle-group *ngIf="gainModeCapability != null" displayName="Gain Mode" [capability]="gainModeCapability"></app-async-toggle-group>
-          <app-async-toggle-group *ngIf="shutterModeCapability != null" displayName="Shutter" [capability]="shutterModeCapability"> </app-async-toggle-group>
-
+        <mat-tab label="Black & White" *ngIf="blackLevelCapability != null || whiteBalanceModeCapability != null || whiteBalanceCapability != null">
+          <div class="tab-content-container">
+            <app-async-slider *ngIf="blackLevelCapability != null" displayName="Black level" [capability]="blackLevelCapability"> </app-async-slider>
+            <app-async-toggle-group *ngIf="whiteBalanceModeCapability != null" displayName="White Balance Mode" [capability]="whiteBalanceModeCapability"></app-async-toggle-group>
+            <app-async-slider *ngIf="whiteBalanceCapability != null" displayName="White Balance" [capability]="whiteBalanceCapability"> </app-async-slider>
+          </div>
         </mat-tab>
-        <mat-tab label="Black & White" *ngIf="blackLevelCapability != null || whiteBalanceModeCapability != null || whiteBalanceCapability != null != null"  class="tab-content-container">
-          <app-async-slider *ngIf="blackLevelCapability != null" displayName="Black level" [capability]="blackLevelCapability"> </app-async-slider>
-          <app-async-toggle-group *ngIf="whiteBalanceModeCapability != null" displayName="White Balance Mode" [capability]="whiteBalanceModeCapability"></app-async-toggle-group>
-          <app-async-slider *ngIf="whiteBalanceCapability != null" displayName="White Balance" [capability]="whiteBalanceCapability"> </app-async-slider>
-        </mat-tab>
-        <mat-tab label="Misc" *ngIf="reticuleModeCapability != null || colorModeCapability != null"  class="tab-content-container">
-          <app-async-toggle-group *ngIf="reticuleModeCapability != null" displayName="Reticule" [capability]="reticuleModeCapability"> </app-async-toggle-group>
-          <app-async-toggle-group *ngIf="colorModeCapability != null" displayName="Color" [capability]="colorModeCapability"> </app-async-toggle-group>
 
+
+        <mat-tab label="Misc" *ngIf="reticuleModeCapability != null || colorModeCapability != null">
+          <div class="tab-content-container">
+            <app-async-toggle-group *ngIf="reticuleModeCapability != null" displayName="Reticule" [capability]="reticuleModeCapability"> </app-async-toggle-group>
+            <app-async-toggle-group *ngIf="colorModeCapability != null" displayName="Color" [capability]="colorModeCapability"> </app-async-toggle-group>
+          </div>
         </mat-tab>
       </mat-tab-group>
 

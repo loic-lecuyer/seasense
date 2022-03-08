@@ -26,6 +26,7 @@ export class AsyncSliderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+   
   }
 
  

@@ -133,17 +133,10 @@ body {
 }
 mat-button-toggle-group {
   flex-wrap: wrap;
+  border:0px !important;
 }
 mat-button-toggle {
   border: solid 1px rgba(255, 255, 255, 0.12);
 }
 
-
-::ng-deep .mat-tab-label {
-  height: 27px !important;
-  min-height: 5px !important;
-  margin: 3px !important;
-  width: 50px !important;
-  min-width: 20px !important;
-}
 
