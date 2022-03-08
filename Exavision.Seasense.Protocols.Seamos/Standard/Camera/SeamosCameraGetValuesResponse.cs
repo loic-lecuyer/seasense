@@ -2,7 +2,6 @@
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
     using Exavision.Seasense.Protocols.Seamos.Enums;
-    using Serilog;
     using System;
     using System.Collections;
     using System.Collections.Generic;
@@ -397,8 +396,6 @@
 
             meteoPresetTime = bits[2] ? MeteoPresetTime.Night : MeteoPresetTime.Day;
             meteoPresetLocation = bits[3] ? MeteoPresetLocation.Ground : MeteoPresetLocation.Sea;
-            Log.Information("DequeueMeteoPreset Weather " + meteoPresetWeather.ToString() + " Location " + meteoPresetLocation.ToString() + " Time " + meteoPresetTime.ToString() + " read byte " + lst[0]);
-
             return new Tuple<MeteoPresetWeather, MeteoPresetLocation, MeteoPresetTime>(meteoPresetWeather, meteoPresetLocation, meteoPresetTime);
         }
 
@@ -411,30 +408,36 @@
         /// <param name="data">The data<see cref="List{byte}"/>.</param>
         private void EnqueueMeteoPreset(MeteoPresetWeather meteoPresetWeather, MeteoPresetLocation meteoPresetLocation, MeteoPresetTime meteoPresetTime, List<byte> data) {
             byte value = 0x00;
-            BitArray bits = new BitArray(new byte[] { value });
-            switch (meteoPresetWeather) {
-                case MeteoPresetWeather.Cloud:
-                    bits.Set(0, false);
-                    bits.Set(1, false);
-                    break;
-                case MeteoPresetWeather.Sun:
-                    bits.Set(0, true);
-                    bits.Set(1, false);
-                    break;
-                case MeteoPresetWeather.Rain:
-                    bits.Set(0, false);
-                    bits.Set(1, true);
-                    break;
-                case MeteoPresetWeather.Fog:
-                    bits.Set(0, true);
-                    bits.Set(1, true);
-                    break;
-
-
+            if (meteoPresetWeather == MeteoPresetWeather.Cloud) {
+                value = 0;
             }
-            bits.Set(2, meteoPresetTime == MeteoPresetTime.Night);
-            bits.Set(3, meteoPresetLocation == MeteoPresetLocation.Ground);
-            Log.Information("EnqueueMeteoPreset Weather " + meteoPresetWeather.ToString() + " Location " + meteoPresetLocation.ToString() + " Time " + meteoPresetTime.ToString() + " result byte " + value);
+            else if (meteoPresetWeather == MeteoPresetWeather.Sun) {
+                value = 1;
+            }
+            else if (meteoPresetWeather == MeteoPresetWeather.Rain) {
+                value = 2;
+            }
+            else if (meteoPresetWeather == MeteoPresetWeather.Fog) {
+                value = 3;
+            }
+
+
+            if (meteoPresetTime == MeteoPresetTime.Day) {
+                value += 0;
+            }
+            else if (meteoPresetTime == MeteoPresetTime.Night) {
+                value += 4;
+            }
+
+
+            if (meteoPresetLocation == MeteoPresetLocation.Sea) {
+                value += 0;
+            }
+            else if (meteoPresetLocation == MeteoPresetLocation.Ground) {
+                value += 8;
+            }
+            value += 128;
+
             data.Add(value);
         }
 

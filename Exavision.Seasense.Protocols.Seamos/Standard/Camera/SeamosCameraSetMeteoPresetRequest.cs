@@ -2,6 +2,7 @@
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
     using Exavision.Seasense.Protocols.Seamos.Enums;
+    using System.Collections;
 
     /// <summary>
     /// Defines the <see cref="SeamosCameraSetMeteoPresetRequest" />.
@@ -39,103 +40,28 @@
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
         public override void DeserializeBytes(byte[] data) {
-            int value = data[0] - 128;
-            if (value == 0) {
-                this.Weather = MeteoPresetWeather.Cloud;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Sea;
 
+            BitArray bits = new BitArray(new byte[] { data[0] });
+            if (!bits[0] && !bits[1]) {
+                Weather = MeteoPresetWeather.Cloud;
             }
-            else if (value == 1) {
-                this.Weather = MeteoPresetWeather.Sun;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Sea;
+            else if (bits[0] && !bits[1]) {
+                Weather = MeteoPresetWeather.Sun;
+            }
+            else if (!bits[0] && bits[1]) {
+                Weather = MeteoPresetWeather.Rain;
+            }
+            else if (bits[0] && bits[1]) {
+                Weather = MeteoPresetWeather.Fog;
+            }
+            else {
+                Weather = MeteoPresetWeather.Sun;
+            }
 
-            }
-            else if (value == 2) {
-                this.Weather = MeteoPresetWeather.Rain;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Sea;
+            Time = bits[2] ? MeteoPresetTime.Night : MeteoPresetTime.Day;
+            Location = bits[3] ? MeteoPresetLocation.Ground : MeteoPresetLocation.Sea;
 
-            }
-            else if (value == 3) {
-                this.Weather = MeteoPresetWeather.Fog;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Sea;
 
-            }
-            else if (value == 4) {
-                this.Weather = MeteoPresetWeather.Cloud;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Sea;
-
-            }
-            else if (value == 5) {
-                this.Weather = MeteoPresetWeather.Sun;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Sea;
-
-            }
-            else if (value == 6) {
-                this.Weather = MeteoPresetWeather.Rain;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Sea;
-
-            }
-            else if (value == 7) {
-                this.Weather = MeteoPresetWeather.Fog;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Sea;
-
-            }
-            else if (value == 8) {
-                this.Weather = MeteoPresetWeather.Cloud;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
-            else if (value == 9) {
-                this.Weather = MeteoPresetWeather.Sun;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
-            else if (value == 10) {
-                this.Weather = MeteoPresetWeather.Rain;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
-            else if (value == 11) {
-                this.Weather = MeteoPresetWeather.Fog;
-                this.Time = MeteoPresetTime.Day;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
-            else if (value == 12) {
-                this.Weather = MeteoPresetWeather.Cloud;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
-            else if (value == 13) {
-                this.Weather = MeteoPresetWeather.Sun;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
-            else if (value == 14) {
-                this.Weather = MeteoPresetWeather.Rain;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
-            else if (value == 15) {
-                this.Weather = MeteoPresetWeather.Fog;
-                this.Time = MeteoPresetTime.Night;
-                this.Location = MeteoPresetLocation.Ground;
-
-            }
         }
 
         /// <summary>
@@ -173,6 +99,7 @@
                 data += 8;
             }
             data += 128;
+
             return new byte[] { CommandByte1, CommandByte2, data };
         }
     }

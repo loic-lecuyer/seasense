@@ -2,6 +2,7 @@
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Models;
+using Serilog;
 using System.Threading;
 using System.Threading.Tasks;
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
@@ -27,17 +28,22 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
         private async Task ZoomInLoop() {
             ICameraZoomAbsolutePositionCapability zoomPosition = this.camera.GetCapability<ICameraZoomAbsolutePositionCapability>();
 
+            double zoomMultiplier = zoomPosition.ZoomMultiplier;
             while (!this.cancellerZoomIn.IsCancellationRequested) {
-                double zoomMultiplier = zoomPosition.ZoomMultiplier + 0.1;
-                if (zoomMultiplier > 20) zoomMultiplier = 20;
+                zoomMultiplier += 0.1;
+                if (zoomMultiplier > 20) {
+                    zoomMultiplier = 20;
+                    break;
+                }
                 IntRect zoomRoi = new IntRect() {
-                    Width = (int)(this.camera.ImageWidth / zoomMultiplier),
-                    Height = (int)(this.camera.ImageHeight / zoomMultiplier),
+                    Width = (int)((double)this.camera.ImageWidth / zoomMultiplier),
+                    Height = (int)((double)this.camera.ImageHeight / zoomMultiplier),
 
                 };
                 zoomRoi.X = (this.camera.ImageWidth - zoomRoi.Width) / 2;
                 zoomRoi.Y = (this.camera.ImageHeight - zoomRoi.Height) / 2;
                 this.SendZoom(zoomRoi);
+                Log.Information("Send Zoom In Loop " + zoomRoi.Width);
                 await Task.Delay(100, cancellerZoomIn.Token);
             }
         }
@@ -65,9 +71,13 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
         private async Task ZoomOutLoop() {
             ICameraZoomAbsolutePositionCapability zoomPosition = this.camera.GetCapability<ICameraZoomAbsolutePositionCapability>();
 
+            double zoomMultiplier = zoomPosition.ZoomMultiplier;
             while (!this.cancellerZoomOut.IsCancellationRequested) {
-                double zoomMultiplier = zoomPosition.ZoomMultiplier - 0.1;
-                if (zoomMultiplier < 1) zoomMultiplier = 1;
+                zoomMultiplier -= 0.1;
+                if (zoomMultiplier < 1) {
+                    zoomMultiplier = 1;
+                    break;
+                }
                 IntRect zoomRoi = new IntRect() {
                     Width = (int)(this.camera.ImageWidth / zoomMultiplier),
                     Height = (int)(this.camera.ImageHeight / zoomMultiplier),
@@ -75,6 +85,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
                 };
                 zoomRoi.X = (this.camera.ImageWidth - zoomRoi.Width) / 2;
                 zoomRoi.Y = (this.camera.ImageHeight - zoomRoi.Height) / 2;
+                Log.Information("Send Zoom Out Loop " + zoomRoi.Width);
                 this.SendZoom(zoomRoi);
                 await Task.Delay(100, cancellerZoomOut.Token);
             }

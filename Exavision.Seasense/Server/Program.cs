@@ -35,12 +35,12 @@ namespace Exavision.Seasense.Server {
                     rollOnFileSizeLimit: true,
                     fileSizeLimitBytes: 123456)
                   .WriteTo.Console()
-                  .MinimumLevel.Override("Microsoft", LogEventLevel.Information)                  
+                  .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                   .CreateLogger();
             ushort portHttp, portHttps;
             IPAddress ipAddress;
             ParseSettings(appPath, out ipAddress, out portHttp, out portHttps);
-            CreateHostBuilder(appPath,isService, ipAddress, portHttp, portHttps, args).Build().Run();
+            CreateHostBuilder(appPath, isService, ipAddress, portHttp, portHttps, args).Build().Run();
         }
 
         private static void ParseSettings(string appPath, out IPAddress ipAddress, out ushort portHttp, out ushort portHttps) {
@@ -59,7 +59,7 @@ namespace Exavision.Seasense.Server {
             string urlHttp = "http://" + ipAddress + ":" + portHttp;
             string urlHttps = "https://" + ipAddress + ":" + portHttps;
             Log.Information("URL : " + urlHttp + " , " + urlHttps);
-            IHostBuilder builder = Host.CreateDefaultBuilder(args)           
+            IHostBuilder builder = Host.CreateDefaultBuilder(args)
              .UseSerilog()
              .ConfigureWebHostDefaults(webBuilder => {
                  webBuilder.UseUrls(new string[] { urlHttp, urlHttps })
@@ -71,7 +71,7 @@ namespace Exavision.Seasense.Server {
                      });
 
                  }).UseStartup<Startup>();
-             });           
+             });
             if (isService) {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
                     builder.UseSystemd();
