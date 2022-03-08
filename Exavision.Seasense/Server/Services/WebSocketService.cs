@@ -26,6 +26,7 @@ namespace Exavision.Seasense.Server.Services {
         private readonly ITokenService tokenService;
         private readonly IUserRepository userRepository;
         private readonly ISiteService siteService;
+        private readonly IStreamingService streamService;
         private readonly JsonSerializerSettings serializationSetting;
         private readonly List<WebSocketClient> clients = new List<WebSocketClient>();
         public async Task HandleRequest(HttpContext context, Func<Task> next) {
@@ -39,13 +40,14 @@ namespace Exavision.Seasense.Server.Services {
             }
         }
 
-      
-        public WebSocketService(IOptions<MvcNewtonsoftJsonOptions> mvcSerializationOptions, ITokenService tokenService, IUserRepository userRepository, ISiteService siteService) {
+
+        public WebSocketService(IOptions<MvcNewtonsoftJsonOptions> mvcSerializationOptions, ITokenService tokenService, IUserRepository userRepository, ISiteService siteService, IStreamingService streamService) {
 
             this.serializationSetting = mvcSerializationOptions.Value.SerializerSettings;
             this.tokenService = tokenService;
             this.userRepository = userRepository;
             this.siteService = siteService;
+            this.streamService = streamService;
         }
         private WebSocketClient AddClient(WebSocket webSocket) {
             lock (clientLocker) {
@@ -199,7 +201,15 @@ namespace Exavision.Seasense.Server.Services {
                 else this.SendError(client, request.RequestId, "Invalid capability type");
 
             }
-
+            else if (request is WsCameraScreenshotRequest cameraScreenshotRequest) {
+                IUnit unit = this.siteService.FindUnitById(cameraScreenshotRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraScreenshotRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                if (material is ICamera camera) {
+                    string path = this.streamService.Screenshot(camera);
+                }
+            }
 
             else {
                 this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);

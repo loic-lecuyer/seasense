@@ -2,6 +2,7 @@
 using Exavision.Seasense.Shared.Streaming;
 using Exavision.Seasense.Streaming;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Exavision.Seasense.Server.Services {
     public class StreamingService : IStreamingService {
@@ -32,13 +33,35 @@ namespace Exavision.Seasense.Server.Services {
                     if (provider == null) return null;
                     else {
                         provider.StartProvider();
-                        ImageByteStreamer streamer = new ImageByteStreamer(provider,camera.ImageWidth,camera.ImageHeight);
+                        ImageByteStreamer streamer = new ImageByteStreamer(provider, camera.ImageWidth, camera.ImageHeight);
                         streamers.Add(materialId, streamer);
                         return streamer;
                     }
-                }  
+                }
             }
             return null;
+        }
+
+        public string Screenshot(ICamera camera) {
+            IImageByteStreamer streamer = GetImageByteStreamer(camera.Id);
+            if (streamer == null) return null;
+            bool timeouted = false;
+            byte[] data = null;
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            while (!timeouted) {
+                data = streamer.Provider.GetImageBytes();
+                if (data != null) break;
+                if (timer.Elapsed.TotalSeconds > 2) break;
+
+            }
+            if (data != null) {
+                // save picture
+            }
+
+            timer.Stop();
+            return null;
+
         }
     }
 }

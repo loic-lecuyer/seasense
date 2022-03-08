@@ -21,23 +21,23 @@ namespace Exavision.Seasense.Streaming {
         /// <summary>
         /// Defines the url.
         /// </summary>
-        private readonly IImageByteProvider provider;
+        private IImageByteProvider provider;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="provider"></param>
-        public ImageByteStreamer(IImageByteProvider provider,int width,int height) {
+        public ImageByteStreamer(IImageByteProvider provider, int width, int height) {
             this.provider = provider;
             string appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             this.defaultImageBuffer = File.ReadAllBytes(Path.Combine(appPath, "no-stream.jpg"));
-            Image image= Image.Load(this.defaultImageBuffer);
-            image.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Crop, Size =new Size (width,height) }));
-            using (MemoryStream ms = new MemoryStream() ) {
+            Image image = Image.Load(this.defaultImageBuffer);
+            image.Mutate(x => x.Resize(new ResizeOptions { Mode = ResizeMode.Crop, Size = new Size(width, height) }));
+            using (MemoryStream ms = new MemoryStream()) {
                 image.Save(ms, new JpegEncoder());
                 ms.Seek(0, SeekOrigin.Begin);
                 this.defaultImageBuffer = ms.ToArray();
             }
-        
+
         }
         /// <summary>
         /// 
@@ -67,7 +67,7 @@ namespace Exavision.Seasense.Streaming {
             context.Response.Headers.Add("Pragma", "no-cache");
             context.Response.Headers.Add("Cache-Control", "no-cache, private");
             await this.ResponseWithDefaultImage(context, timer);
-            await this.WaitForFirstImage(context,timer);
+            await this.WaitForFirstImage(context, timer);
             contexts.Add(context);
             try {
                 int errorCount = 0;
@@ -88,18 +88,18 @@ namespace Exavision.Seasense.Streaming {
             catch (Exception ex) {
                 await this.ResponseWithDefaultImage(context, timer);
                 timer.Stop();
-                
+
                 Log.Warning("StreamMiddleware : Error when read stream " + context.Request.Path.Value + " " + ex.Message);
             }
             contexts.Remove(context);
         }
 
 
-        private async Task ResponseWithDefaultImage(HttpContext context,Stopwatch timer) {
+        private async Task ResponseWithDefaultImage(HttpContext context, Stopwatch timer) {
             try {
-               
+
                 List<byte> datas = new List<byte>();
-              
+
                 datas.AddRange(Encoding.ASCII.GetBytes(string.Format(mjpegLengthPattern, defaultImageBuffer.Length)));
                 datas.AddRange(defaultImageBuffer);
                 datas.AddRange(doubleCarretReturnBytes);
@@ -122,9 +122,13 @@ namespace Exavision.Seasense.Streaming {
         private readonly byte[] doubleCarretReturnBytes = Encoding.ASCII.GetBytes("\r\n\r\n");
         private byte[] defaultImageBuffer;
 
+        public IImageByteProvider Provider => this.provider;
+
+
+
         private async Task<bool> StreamImage(HttpContext context) {
             List<byte> datas = new List<byte>();
-            byte[] buffer = this.provider.GetImageBytes();
+            byte[] buffer = this.Provider.GetImageBytes();
 
 
             if (buffer != null && buffer.Length > 0) {
@@ -150,13 +154,13 @@ namespace Exavision.Seasense.Streaming {
             }
             else await Task.Delay(1);
         }
-        private async Task WaitForFirstImage(HttpContext context,Stopwatch timer) {
+        private async Task WaitForFirstImage(HttpContext context, Stopwatch timer) {
             double waitSeconds = 0;
             int waitCount = 0;
 
-            while (provider.GetImageBytes() == null || provider.GetImageBytes().Length == 0) {
+            while (Provider.GetImageBytes() == null || Provider.GetImageBytes().Length == 0) {
                 await Task.Delay(500);
-                await this.ResponseWithDefaultImage(context,timer);
+                await this.ResponseWithDefaultImage(context, timer);
                 waitCount++;
                 waitSeconds = waitCount * 5D / 1000D;
                 if (waitSeconds > 10) {
