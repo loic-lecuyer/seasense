@@ -27,6 +27,7 @@
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
     <None Remove="Client\src\app\api\ws\speed-vector.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-auto-focus-one-push-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-scenneshot-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-in-start-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts" />
@@ -138,6 +139,7 @@
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-auto-focus-one-push-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-scenneshot-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

@@ -18,6 +18,8 @@ namespace Exavision.Seasense.Shared.Materials {
 
         public MaterialType MaterialType => MaterialType.Unit;
 
+     
+
         public virtual S GetSetting() {
             S setting = new S();
             setting.MaterialType = this.MaterialType;
@@ -43,6 +45,7 @@ namespace Exavision.Seasense.Shared.Materials {
 
             foreach (IMaterial material in this.Materials) {
 
+               
                 SettingMaterial settingMateiral = (from sm in setting.Materials where sm.ImplementationType.Equals(material.GetType().Name) select sm).FirstOrDefault();
                 MethodInfo setsettingMethod = material.GetType().GetMethod("SetSetting", new Type[] { settingMateiral.GetType() });
                 setsettingMethod.Invoke(material, new object[] { settingMateiral });

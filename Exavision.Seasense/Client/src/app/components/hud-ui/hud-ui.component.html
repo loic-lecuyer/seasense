@@ -71,7 +71,7 @@
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">fiber_manual_record</mat-icon>
   </app-hud-button>
   <!-- Screenshot -->
-  <app-hud-button *ngIf="hasScreenshotCapability">
+  <app-hud-button (buttonUp)="onScreenshot()" *ngIf="hasScreenshotCapability">
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Screenshot" aria-hidden="false" aria-label="Screenshot">photo_camera</mat-icon>
   </app-hud-button>
   <!-- Switch -->

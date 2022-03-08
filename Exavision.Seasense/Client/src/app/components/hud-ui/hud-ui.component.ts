@@ -13,6 +13,7 @@ import { Material } from '../../materials/material';
 import { MaterialType } from '../../materials/material-type';
 import { SiteService } from '../../services/site.service';
 import { UiService } from '../../services/ui.service';
+import { WsService } from '../../services/ws.service';
 
 @Component({
   selector: 'app-hud-ui',
@@ -46,7 +47,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
   private siteStateSubscription: Subscription;
-  constructor(private siteService: SiteService, private snackBar: MatSnackBar, private uiService: UiService) {
+  constructor(private siteService: SiteService, private snackBar: MatSnackBar, private uiService: UiService, private wsService: WsService) {
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.siteStateSubscription = this.siteService.siteStateSubject.subscribe(() => {
@@ -164,6 +165,12 @@ export class HudUiComponent implements OnInit, OnDestroy {
     if (cap == null) return;
     cap.setGyrostabilization(enabled);
 
+  }
+  onScreenshot() {
+    if (this.siteService.selectedCamera != null && this.siteService.selectedUnit != null) {
+      this.wsService.screenshot(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id);
+
+    }
   }
   onAutoFocusButtonDown() {
     if (this.siteService.selectedCamera == undefined) return;

@@ -10,7 +10,7 @@ using System.Reflection;
 namespace Exavision.Seasense.Shared.Materials {
     public abstract class Material<S, U> : IMaterial where S : SettingMaterial, new() where U : IUnit, new() {
         private readonly U unit;
-
+      
         public string DisplayName { get; protected set; }
         public string Id { get; private set; } = Guid.NewGuid().ToString();
         public List<IMaterial> Materials { get; set; } = new List<IMaterial>();

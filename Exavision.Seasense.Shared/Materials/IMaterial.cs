@@ -9,9 +9,9 @@ namespace Exavision.Seasense.Shared.Materials {
         void Start();
         void Stop();
         public string Id { get; }
-        List<IMaterial> Materials { get; set; }
-        List<ICapability> Capabilities { get; set; }
-
+        List<IMaterial> Materials { get; }
+        List<ICapability> Capabilities { get; }
+  
         SettingMaterial GetSettingMaterial();
 
         public string DisplayName { get; }

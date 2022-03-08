@@ -208,6 +208,7 @@ namespace Exavision.Seasense.Server.Services {
                 if (material == null) throw new InvalidOperationException("Invalid material Id");
                 if (material is ICamera camera) {
                     string path = this.streamService.Screenshot(camera);
+                    if (String.IsNullOrEmpty(path)) this.SendError(client, request.RequestId, "Error during screenshot, show log for more information ");
                 }
             }
 

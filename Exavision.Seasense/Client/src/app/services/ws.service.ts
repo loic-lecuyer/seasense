@@ -17,11 +17,12 @@ import { WsLazerMeasurementShootRequest } from '../api/ws/ws-lazer-measurement-s
 import { WsDoubleValueSetRequest } from '../api/ws/ws-double-value-set-request';
 import { SwitchValue } from '../models/switch-value';
 import { WsSwitchValueSetRequest } from '../api/ws/ws-switch-value-set-request';
+import { WsCameraScreenshotRequest } from '../api/ws/ws-camera-scenneshot-request';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
- 
+
  
 
   public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
@@ -253,4 +254,22 @@ export class WsService {
     
 
   }
+
+  screenshot(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraScreenshotRequest = {
+      $type: "WsCameraScreenshotRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token,
+      
+    };
+    console.log("WebSocket send WsCameraScreenshotRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+    
+    throw new Error('Method not implemented.');
+  }
+
 }

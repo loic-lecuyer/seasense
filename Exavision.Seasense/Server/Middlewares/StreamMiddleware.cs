@@ -61,14 +61,14 @@
                     }
                     else {
                         await _next(context);
-                        return;
+                        
                     }
                 }
 
             }
             else {
                 await _next(context);
-                return;
+                
             }
         }
 
