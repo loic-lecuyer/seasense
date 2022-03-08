@@ -23,6 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Streamin
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exavision.Seasense.Protocols.Spinnaker", "Exavision.Seasense.Protocols.Spinnaker\Exavision.Seasense.Protocols.Spinnaker.csproj", "{336B0132-B601-4CFC-B853-BED69629953D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{465F900F-9680-4F36-8F3C-F7B5CFCEC1BA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

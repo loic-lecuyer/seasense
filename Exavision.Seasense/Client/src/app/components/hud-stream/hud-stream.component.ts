@@ -47,12 +47,14 @@ export class HudStreamComponent implements OnInit, OnDestroy {
 
         if (value.materialType == MaterialType.DayCamera || value.materialType == MaterialType.ThermalCamera) {
           let camera: Camera = <Camera>value;
+        
           let isSelectedCamera = value.id === this.siteService.selectedCamera?.id;
           let stream: IStream = {
             displayName: value.displayName,
             isMainStream: isSelectedCamera,
             materialId: value.id,
-            url: baseStreamUrl + "/" + value.id,
+            url: camera.streamUrl,
+           // url: baseStreamUrl + "/" + value.id,
             displayHeight: 0,
             displayWidth: 0,
             streamWidth: camera.streamWidth,

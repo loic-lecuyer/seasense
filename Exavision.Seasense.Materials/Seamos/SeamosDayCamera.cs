@@ -14,8 +14,8 @@ namespace Exavision.Seasense.Materials.Seamos {
 
         private readonly Values spinnakerValues = new Values();
         private readonly SpinnakerClient client;
-        public override int ImageWidth { get => 1980; }
-        public override int ImageHeight { get => 1080; }
+        public override int ImageWidth { get => 1200; }
+        public override int ImageHeight { get => 900; }
         public Values SpinnakerValues { get => this.spinnakerValues; }
 
         private string streamUrl;

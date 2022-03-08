@@ -1,5 +1,6 @@
 ﻿namespace Exavision.Seasense.Server.Middlewares {
     using Exavision.Seasense.Server.Services;
+    using Exavision.Seasense.Shared.Streaming;
     using Exavision.Seasense.Streaming;
     using Microsoft.AspNetCore.Http;
     using System.Threading.Tasks;
@@ -42,7 +43,7 @@
             if (materialId.IndexOf("/") != -1) {
                 materialId = materialId.Substring(0, materialId.IndexOf("/"));
             }
-            ImageByteStreamer streamer = this.streamingService.GetImageByteStreamer(materialId);
+            IImageByteStreamer streamer = this.streamingService.GetImageByteStreamer(materialId);
             if (streamer != null) {
                 await StreamAsync(context, streamer);
             }
@@ -60,7 +61,7 @@
         /// <returns>The <see cref="Task"/>.</returns>
         /// 
 
-        private static async Task StreamAsync(HttpContext context, ImageByteStreamer streamer) {
+        private static async Task StreamAsync(HttpContext context, IImageByteStreamer streamer) {
             await streamer.StreamAsync(context);
 
         }

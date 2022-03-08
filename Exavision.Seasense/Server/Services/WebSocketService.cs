@@ -23,11 +23,11 @@ using System.Threading.Tasks;
 namespace Exavision.Seasense.Server.Services {
     public class WebSocketService : IWebSocketService {
         private readonly object clientLocker = new object();
-
         private readonly ITokenService tokenService;
         private readonly IUserRepository userRepository;
         private readonly ISiteService siteService;
-        private List<WebSocketClient> clients = new List<WebSocketClient>();
+        private readonly JsonSerializerSettings serializationSetting;
+        private readonly List<WebSocketClient> clients = new List<WebSocketClient>();
         public async Task HandleRequest(HttpContext context, Func<Task> next) {
             if (context.WebSockets.IsWebSocketRequest) {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
@@ -39,7 +39,7 @@ namespace Exavision.Seasense.Server.Services {
             }
         }
 
-        JsonSerializerSettings serializationSetting;
+      
         public WebSocketService(IOptions<MvcNewtonsoftJsonOptions> mvcSerializationOptions, ITokenService tokenService, IUserRepository userRepository, ISiteService siteService) {
 
             this.serializationSetting = mvcSerializationOptions.Value.SerializerSettings;
@@ -209,7 +209,7 @@ namespace Exavision.Seasense.Server.Services {
         private void SendResponse(WsResponse response, WebSocketClient client) {
             try {
                 string responseText = JsonConvert.SerializeObject(response, this.serializationSetting);
-                client.Send(responseText);
+                client.Send(responseText).ContinueWith((Task task) => { Log.Error("Error in " + this.GetType().Name + " when set value : " + task.Exception.Message); }, TaskContinuationOptions.OnlyOnFaulted);
             }
             catch (Exception ex) {
                 Log.Error("WebSocketService Error when send response " + ex.Message);
@@ -221,7 +221,7 @@ namespace Exavision.Seasense.Server.Services {
                 RequestId = requestId
             };
             string responseText = JsonConvert.SerializeObject(response);
-            client.Send(responseText);
+            client.Send(responseText).ContinueWith((Task task) => { Log.Error("Error in " + this.GetType().Name + " when set value : " + task.Exception.Message); }, TaskContinuationOptions.OnlyOnFaulted);
         }
 
         private void SendError(WebSocketClient client, string requestId, string errorMessage) {
@@ -230,7 +230,7 @@ namespace Exavision.Seasense.Server.Services {
                 ErrorMessage = errorMessage
             };
             string responseText = JsonConvert.SerializeObject(response);
-            client.Send(responseText);
+            client.Send(responseText).ContinueWith((Task task) => { Log.Error("Error in " + this.GetType().Name + " when set value : " + task.Exception.Message); }, TaskContinuationOptions.OnlyOnFaulted);
         }
 
         private void Client_OnDisconnected(object sender, WebSocketClient e) {

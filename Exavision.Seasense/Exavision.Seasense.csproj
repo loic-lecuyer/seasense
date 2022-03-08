@@ -5,6 +5,10 @@
     <TypeScriptToolsVersion>4.5</TypeScriptToolsVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;CS8032</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Client\src\app\api\http\get-setting-request.ts" />
     <None Remove="Client\src\app\api\http\get-setting-response.ts" />
@@ -75,6 +79,10 @@
     <None Remove="Client\src\app\models\unit-type.ts" />
     <None Remove="Client\src\app\models\user.ts" />
     <None Remove="Client\src\app\pages\configuration\configuration-node.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>
@@ -278,5 +286,7 @@
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="xcopy &quot;$(ProjectDir)www\*.*&quot; &quot;$(TargetDir)\www&quot; /Y /I /E" />
   </Target>
+  
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

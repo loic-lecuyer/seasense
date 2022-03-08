@@ -1,5 +1,7 @@
 ﻿using Exavision.Seasense.Protocols.Spinnaker.Models;
 using Exavision.Seasense.Shared.Capabilities;
+using Serilog;
+using System.Threading.Tasks;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
     public class SeamosCameraGigeExposureTimeCapability : DoubleValueCapability, ISeamosGigeCapability {
@@ -21,7 +23,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Gige {
         public override void SetValue(double value) {
             base.SetValue(value);
             this.Camera.SpinnakerValues.ExposureTime.Value = value;
-            this.Camera.SendValues();
+            this.Camera.SendValues().ContinueWith((Task task) => { Log.Error("Error in " + this.GetType().Name + " when set value : " + task.Exception.Message); }, TaskContinuationOptions.OnlyOnFaulted);
 
         }
 

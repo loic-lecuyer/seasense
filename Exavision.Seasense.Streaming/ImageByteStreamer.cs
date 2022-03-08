@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Exavision.Seasense.Streaming {
-    public class ImageByteStreamer {
+    public class ImageByteStreamer : IImageByteStreamer {
 
 
 

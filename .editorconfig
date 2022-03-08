@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS8032: Impossible de créer une instance de l'analyseur Microsoft.Extensions.Logging.Generators.LoggerMessageGenerator à partir de C:\Users\Champy\.nuget\packages\microsoft.extensions.logging.abstractions\6.0.0\analyzers\dotnet\roslyn3.11\cs\Microsoft.Extensions.Logging.Generators.dll : Impossible de charger le fichier ou l'assembly 'Microsoft.CodeAnalysis, Version=3.11.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35' ou une de ses dépendances. Le fichier spécifié est introuvable..
+dotnet_diagnostic.CS8032.severity = none

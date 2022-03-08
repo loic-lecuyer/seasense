@@ -12,7 +12,7 @@ namespace Exavision.Seasense.Server.Services {
         public StreamingService(ISiteService siteService) {
             this.siteService = siteService;
         }
-        public ImageByteStreamer GetImageByteStreamer(string materialId) {
+        public IImageByteStreamer GetImageByteStreamer(string materialId) {
             if (streamers.ContainsKey(materialId)) {
                 return streamers[materialId];
             }

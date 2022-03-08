@@ -58,7 +58,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
 
         public override void ZoomOutStart() {
             this.cancellerZoomOut = new CancellationTokenSource();
-            Task.Factory.StartNew(ZoomOutLoop, this.cancellerZoomIn.Token);
+            Task.Factory.StartNew(ZoomOutLoop, this.cancellerZoomOut.Token);
 
         }
 

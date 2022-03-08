@@ -29,6 +29,7 @@ export abstract class Camera implements Material  {
   unit: Unit;
   streamWidth: number;
   streamHeight: number;
+  streamUrl: string;
   constructor(settingMaterial: SettingMaterial, site: Site, unit: Unit, wsService: WsService, factory: Factory) {
     this.id = settingMaterial.id;
     this.materials = [];
@@ -41,7 +42,7 @@ export abstract class Camera implements Material  {
     let settingCamera: SettingCamera = <SettingCamera>settingMaterial;
     this.streamWidth = settingCamera.streamWidth;
     this.streamHeight = settingCamera.streamHeight;
-  
+    this.streamUrl = settingCamera.streamUrl;
     settingMaterial.materials.forEach((settingMaterialChild: SettingMaterial) => {
       let material: Material = factory.createMaterial(settingMaterialChild, site, unit, this.wsService);
       this.materials.push(material);
