@@ -101,6 +101,7 @@ export class HudStreamComponent implements OnInit, OnDestroy {
         this.mainStream.displayLeft = left;
         this.mainStream.displayWidth = computedWidth;
         this.mainStream.displayHeight = displayHeight;
+        
       }
       else {
         let top: number = (displayHeight - computedHeight) / 2;
@@ -110,7 +111,8 @@ export class HudStreamComponent implements OnInit, OnDestroy {
         this.mainStream.displayHeight = computedHeight;
       }
     
-     
+      this.uiService.displayStreamWidth = this.mainStream.displayWidth;
+      this.uiService.displayStreamHeight = this.mainStream.displayHeight;
     }
   }
 
@@ -151,6 +153,8 @@ export class HudStreamComponent implements OnInit, OnDestroy {
       if (this.mousePan < 0) this.mousePan += 360;
       this.mousePan = this.mousePan % 360;
       this.isMouseOnImage = true;
+      this.uiService.mousePan = this.mousePan;
+      this.uiService.mouseTilt = this.mouseTilt;
       //console.log("pan " + pan);
       //console.log("tilt " + tilt);
 
@@ -158,6 +162,8 @@ export class HudStreamComponent implements OnInit, OnDestroy {
     }
     else {
       this.isMouseOnImage = false;
+      this.uiService.mousePan = null;
+      this.uiService.mouseTilt = null;
     }
 
 

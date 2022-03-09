@@ -7,7 +7,10 @@ import { Subject } from 'rxjs';
 export class UiService {
 
   public showPipZoomSubject: Subject<boolean> = new Subject<boolean>();
-
+  public mousePan: number | null = null;
+  public mouseTilt: number | null = null;
+  public displayStreamWidth: number | null = null;
+  public displayStreamHeight: number | null = null;
   public showPanelCameraSubject: Subject<boolean> = new Subject<boolean>();
   private isPipZoomVisible: boolean = false;
   private isPanelCameraVisible: boolean = false;

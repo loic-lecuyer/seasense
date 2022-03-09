@@ -1,0 +1,7 @@
+<div class="bottom-left-box">
+  <div class="bottom-left-box-info">Pan : {{currentPan.toFixed(2)}}</div>
+  <div class="bottom-left-box-info">Tilt : {{currentTilt.toFixed(2)}}</div>
+  <div class="bottom-left-box-info">HFov : {{currentHfov.toFixed(2)}}</div>
+  <div *ngIf="uiService.mousePan != null" class="bottom-left-box-info">Mouse Pan : {{uiService.mousePan.toFixed(2)}}</div>
+  <div *ngIf="uiService.mouseTilt != null" class="bottom-left-box-info">Mouse Tilt : {{uiService.mouseTilt.toFixed(2)}}</div>
+</div>

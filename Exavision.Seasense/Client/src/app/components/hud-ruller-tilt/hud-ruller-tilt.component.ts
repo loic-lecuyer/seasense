@@ -8,6 +8,7 @@ import { MaterialType } from '../../materials/material-type';
 import { CompasText } from '../../models/compas-text';
 import { CompasTick } from '../../models/compas-tick';
 import { SiteService } from '../../services/site.service';
+import { UiService } from '../../services/ui.service';
 
 @Component({
   selector: 'app-hud-ruller-tilt',
@@ -23,7 +24,7 @@ export class HudRullerTiltComponent implements OnInit, OnDestroy {
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
   private siteStateSubscription: Subscription;
-  constructor(private el: ElementRef, private siteService: SiteService) {
+  constructor(private el: ElementRef, private siteService: SiteService,private uiService: UiService) {
     this.initializeTickAndText();
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateTickAndText(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateTickAndText(); });
@@ -37,6 +38,10 @@ export class HudRullerTiltComponent implements OnInit, OnDestroy {
   }
 
   updateTickAndText() {
+    if (this.uiService.displayStreamHeight == null) {
+      this.isVisible = false;
+      return;
+    }
     if (this.siteService.selectedUnit == null) {
       this.isVisible = false;
       return;
@@ -68,7 +73,7 @@ export class HudRullerTiltComponent implements OnInit, OnDestroy {
     let tilt = absolutPositionCap.tilt;
     let style = getComputedStyle(this.el.nativeElement);
     let displayHeight = parseFloat(style.height.replace('px', ''));
-    let degreePerPixel = vFov / displayHeight;
+    let degreePerPixel = vFov / this.uiService.displayStreamHeight;
 
     let minTick = Math.round(tilt) - (this.textCount / 2);
 

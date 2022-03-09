@@ -44,6 +44,7 @@ import { UiService } from './services/ui.service';
 import { AsyncSliderComponent } from './components/async-slider/async-slider.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AsyncToggleGroupComponent } from './components/async-toggle-group/async-toggle-group.component';
+import { HudInfoComponent } from './components/hud-info/hud-info.component';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -67,7 +68,8 @@ export const httpInterceptorProviders = [
     HudLrfButtonComponent,
     PanelCameraComponent,
     AsyncSliderComponent,
-    AsyncToggleGroupComponent    
+    AsyncToggleGroupComponent,
+    HudInfoComponent    
   ],
   imports: [
     BrowserModule,

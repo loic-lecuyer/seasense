@@ -9,6 +9,7 @@ import { Turret } from '../../materials/turret';
 import { CompasText } from '../../models/compas-text';
 import { CompasTick } from '../../models/compas-tick';
 import { SiteService } from '../../services/site.service';
+import { UiService } from '../../services/ui.service';
 
 @Component({
   selector: 'app-hud-ruller-pan',
@@ -30,7 +31,7 @@ export class HudRullerPanComponent implements OnInit, OnDestroy {
   private cameraSelectedSubscription: Subscription;
   private siteStateSubscription: Subscription;
 
-  constructor(private el: ElementRef,private siteService: SiteService) {
+  constructor(private el: ElementRef, private siteService: SiteService, private uiService: UiService) {
     this.initializeTickAndText();
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateTickAndText(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateTickAndText(); });
@@ -44,6 +45,10 @@ export class HudRullerPanComponent implements OnInit, OnDestroy {
   }
 
   updateTickAndText() {
+    if (this.uiService.displayStreamWidth == null) {
+      this.isVisible = false;
+      return;
+    }
     if (this.siteService.selectedUnit == null) {
       this.isVisible = false;
       return;
@@ -73,7 +78,7 @@ export class HudRullerPanComponent implements OnInit, OnDestroy {
     let pan = absolutPositionCap.pan;
     let style = getComputedStyle(this.el.nativeElement);
     let displayWidth = parseFloat(style.width.replace('px', ''));
-    let degreePerPixel = hfov / displayWidth;
+    let degreePerPixel = hfov / this.uiService.displayStreamWidth;
     let minTick = Math.round(pan) - (this.textCount / 2);
 
     // Mise a jour des degrées
