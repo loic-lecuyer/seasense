@@ -3280,13 +3280,13 @@ mat-toolbar {
 }
 
 .card-icon-title {
-  font-size: 48px;
-  width: 48x;
-  height: 48px;
-  margin: 0px;
-  margin-right: 24px;
-  width: 48px;
-  height: 48px;
+  font-size: 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  margin: 0px !important;
+  margin-right: 24px !important;
+  width: 48px !important;
+  height: 48px !important;
 }
 
 .card-title {

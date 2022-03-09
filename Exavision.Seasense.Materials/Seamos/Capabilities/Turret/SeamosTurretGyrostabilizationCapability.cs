@@ -5,10 +5,10 @@ using Exavision.Seasense.Shared.Materials;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
     public class SeamosTurretGyrostabilizationCapability : TurretGyrostabilizationCapability, ISeamosCapability {
-        private SeamosUnit unit;
+        private SeamosTurret turret;
         private bool isEnabled = false;
-        public SeamosTurretGyrostabilizationCapability(SeamosUnit unit) {
-            this.unit = unit;
+        public SeamosTurretGyrostabilizationCapability(SeamosTurret turret) {
+            this.turret = turret;
         }
 
         public override bool IsEnabled => isEnabled;
@@ -35,7 +35,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
         }
 
         public override void SetGyrostabilization(bool enabled) {
-            IMaterial turret = this.unit.GetMaterial<ITurret>();
+            IMaterial turret = this.turret.Unit.GetMaterial<ITurret>();
             double panSpeed = 0;
             double tiltSpeed = 0;
             if (turret != null) {
@@ -46,7 +46,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
                 }
             }
 
-            ITurretGetPositionExatrack2Absolute command = this.unit.Protocol.Resolve<ITurretGetPositionExatrack2Absolute>(MaterialTarget.Turret);
+            ITurretGetPositionExatrack2Absolute command = this.turret.Unit.Protocol.Resolve<ITurretGetPositionExatrack2Absolute>(MaterialTarget.Turret);
             command.CommandTarget = CommandTargetExatrack2.PTU;
             command.MoveMode = MoveModeExatrack2.Speed;
             command.MaterialTarget = MaterialTarget.Turret;
@@ -54,7 +54,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
             command.PanSpeed = panSpeed;
             command.TiltSpeed = tiltSpeed;
             command.StabilizationState = enabled ? StabilizationStateExatrack2.On : StabilizationStateExatrack2.Off;
-            this.unit.Client.Send(command);
+            this.turret.Unit.Client.Send(command);
 
         }
     }

@@ -16,6 +16,8 @@ namespace Exavision.Seasense.Protocols.Spinnaker {
         private HttpClient client;
         private GetValuesRequest requestGetValues;
         private SetValuesRequest requestSetValues;
+        private bool hasConnectionError = false;
+        public bool IsConnected { get { return !this.hasConnectionError; } }
 
         public string BaseUrl { get => this.baseUrl; set => this.baseUrl = value; }
 
@@ -55,6 +57,7 @@ namespace Exavision.Seasense.Protocols.Spinnaker {
                 result = await message.Content.ReadAsStringAsync();
                 if (!String.IsNullOrEmpty(result)) {
                     GetValuesResponse response = JsonConvert.DeserializeObject<GetValuesResponse>(result, this.JsonSerializerSettings);
+                    this.hasConnectionError = false;
                     return response.Values;
 
                 }
@@ -63,6 +66,7 @@ namespace Exavision.Seasense.Protocols.Spinnaker {
             }
             catch (Exception ex) {
                 Log.Error("Error When send To Spinnaker " + this.apiHttpAddress + " : " + ex.Message);
+                this.hasConnectionError = true;
 
             }
             return null;
@@ -93,10 +97,12 @@ namespace Exavision.Seasense.Protocols.Spinnaker {
                 string serializedContent = JsonConvert.SerializeObject(requestSetValues, localJsonSerializerSettings);
                 HttpResponseMessage message = await this.client.PostAsync(this.apiHttpAddress, new StringContent(serializedContent, Encoding.UTF8, "application/json"));
                 Log.Information("Sending POST To Spinnaker Finish");
+                this.hasConnectionError = false;
                 //result = await message.Content.ReadAsStringAsync();
             }
             catch (Exception ex) {
                 Log.Error("Error when send values to spinnaker " + ex.Message);
+                this.hasConnectionError = true;
             }
 
         }

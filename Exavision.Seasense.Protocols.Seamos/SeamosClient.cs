@@ -10,6 +10,12 @@ namespace Exavision.Seasense.Protocols.Seamos {
         private string portStr;
         private readonly SeamosProtocol protocol;
         private TcpCoreStringClient client;
+        public bool IsConnected { 
+            get {
+                if (client != null && client.Connected) return true;
+                return false;
+            } 
+        }
         public event EventHandler<ISeamosCommand> OnCommandReceive;
 
         public SeamosClient(SeamosProtocol protocol) {

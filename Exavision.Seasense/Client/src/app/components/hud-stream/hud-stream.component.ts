@@ -177,7 +177,8 @@ export class HudStreamComponent implements OnInit, OnDestroy {
     }
   }
   @HostListener('document:click', ['$event'])
-  onImageClick() {
+  onImageClick(evt: any) {
+
     if (this.mainStream == null) return;
     if (this.siteService.selectedCamera == null) return;
     if (this.siteService.selectedUnit == null) return;
@@ -187,7 +188,12 @@ export class HudStreamComponent implements OnInit, OnDestroy {
     if (turret == undefined) return;
     let capMoveAbosulte: TurretMoveAbsoluteCapability | undefined = turret.getCapability<TurretMoveAbsoluteCapability>(CapabilityType.TurretMoveAbsolute);
     if (capMoveAbosulte == undefined) return;
-    capMoveAbosulte.move(this.mousePan, this.mouseTilt);
+    if (evt.srcElement.id === "main-app-stream-click-handler") {
+      capMoveAbosulte.move(this.mousePan, this.mouseTilt);
+    }
+    
+    
+   
 
 
   }

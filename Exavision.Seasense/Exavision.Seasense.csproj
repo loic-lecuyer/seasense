@@ -72,6 +72,7 @@
     <None Remove="Client\src\app\materials\states\lazer-measurement\lazer-measurement-shoot-state.ts" />
     <None Remove="Client\src\app\materials\states\material-state.ts" />
     <None Remove="Client\src\app\materials\states\site-state.ts" />
+    <None Remove="Client\src\app\materials\states\status-state.ts" />
     <None Remove="Client\src\app\materials\states\switch-value-state.ts" />
     <None Remove="Client\src\app\materials\states\turret\turret-absolute-position-state.ts" />
     <None Remove="Client\src\app\materials\states\turret\turret-gyrostabilization-state.ts" />
@@ -234,6 +235,7 @@
     <TypeScriptCompile Include="Client\src\app\materials\states\capability-state.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\states\status-state.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\states\switch-value-state.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>

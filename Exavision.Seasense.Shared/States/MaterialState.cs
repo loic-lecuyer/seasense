@@ -9,5 +9,7 @@ namespace Exavision.Seasense.Shared.States {
         public List<CapabilityState> Capabilities { get; set; } = new List<CapabilityState>();
 
         public List<MaterialState> Materials { get; set; } = new List<MaterialState>();
+
+        public List<StatusState> Status { get; set; } = new List<StatusState>();
     }
 }

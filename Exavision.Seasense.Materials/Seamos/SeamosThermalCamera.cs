@@ -3,6 +3,7 @@ using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
+using Exavision.Seasense.Shared.States;
 using System;
 using System.Collections.Generic;
 namespace Exavision.Seasense.Materials.Seamos {
@@ -29,19 +30,17 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosCameraThorShutterModeCapability(this));
             this.Capabilities.Add(new SeamosCameraThorReticuleModeCapability(this));
             this.Capabilities.Add(new SeamosCameraThorColorModeCapability(this));
-            /*
-             * 
            
-        
-            
-  
-            this.Capabilities.Add(new SeamosThermalFocus(tcpStringClient, protocol)); chaud patate  
-            this.Capabilities.Add(new SeamosThermalZoneHisto(tcpStringClient, protocol));
-            this.Capabilities.Add(new SeamosThermalCameraSystemCommand(tcpStringClient, protocol));
-            this.Capabilities.Add(new SeamosThermalVersionInfo(tcpStringClient, protocol));
-            this.Capabilities.Add(new MaterialPollingManager(this));
-            this.Capabilities.Add(new CameraStitchCapability(this));
-             * */
+        }
+        public override MaterialState GetState() {
+            MaterialState state = base.GetState();
+            if (this.Unit.Client.IsConnected) {
+                state.Status.Add(new StatusState() { Status = Status.Ok, Message = "Tcp connection ok" });
+            } else {
+                state.Status.Add(new StatusState() { Status = Status.Error, Message = "Tcp connection error" });
+            }
+
+            return state;
         }
         public override SettingSeamosThermalCamera GetSetting(SettingSeamosThermalCamera setting) {
             setting.StreamUrl = this.streamUrl;

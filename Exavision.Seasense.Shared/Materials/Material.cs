@@ -65,7 +65,9 @@ namespace Exavision.Seasense.Shared.Materials {
 
         }
 
-        public abstract S GetSetting(S setting);
+        public virtual S GetSetting(S setting) {
+            return setting;
+        }
         public SettingMaterial GetSettingMaterial() {
             SettingMaterial SettingMaterial = this.GetSetting();
             SettingMaterial.Id = this.Id;
@@ -76,14 +78,14 @@ namespace Exavision.Seasense.Shared.Materials {
         public virtual void Stop() { }
 
         public T GetCapability<T>() where T : ICapability {
-            return (T)(from c in this.Capabilities where typeof(T).IsAssignableFrom(c.GetType()) select c).FirstOrDefault();
+            return (from c in this.Capabilities where c is T select (T)c).FirstOrDefault();
         }
         public virtual MaterialState GetState() {
             MaterialState materialState = new MaterialState();
             materialState.Id = this.Id;
             this.Materials.ForEach((IMaterial material) => {
                 MaterialState materialStateChild = material.GetState();
-                materialState.Materials.Add(materialState);
+                materialState.Materials.Add(materialStateChild);
             });
             this.Capabilities.ForEach((ICapability capability) => {
                 CapabilityState capabilityState = capability.GetState();

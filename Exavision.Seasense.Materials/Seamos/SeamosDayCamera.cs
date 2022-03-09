@@ -5,6 +5,7 @@ using Exavision.Seasense.Protocols.Spinnaker.Models;
 using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
+using Exavision.Seasense.Shared.States;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,7 +36,16 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosCameraGigeWhiteBalanceCapability(this));
             this.Capabilities.Add(new SeamosCameraGigeWhiteBalanceModeCapability(this));
         }
+        public override MaterialState GetState() {
+            MaterialState state = base.GetState();
+            if (this.client.IsConnected) {
+                state.Status.Add(new StatusState() { Status = Status.Ok, Message = "Http connection ok" });
+            } else {
+                state.Status.Add(new StatusState() { Status = Status.Error, Message = "Http connection error" });
+            }
 
+            return state;
+        }
 
         internal async Task SendValues() {
             await this.client.SetValues(this.spinnakerValues);
@@ -91,5 +101,6 @@ namespace Exavision.Seasense.Materials.Seamos {
                 }
             });
         }
+       
     }
 }

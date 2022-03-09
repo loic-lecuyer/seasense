@@ -1,6 +1,7 @@
 ﻿using Exavision.Seasense.Materials.Seamos.Capabilities.LazerMeasurement;
 using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Materials;
+using Exavision.Seasense.Shared.States;
 using System;
 
 namespace Exavision.Seasense.Materials.Seamos {
@@ -10,12 +11,16 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.DisplayName = "Seamos Lazer Measurement";
             this.Capabilities.Add(new SeamosLazerMeasurementShootCapability(unit));
         }
-        public override SettingSeamosLazerMeasurement GetSetting(SettingSeamosLazerMeasurement setting) {
-            return setting;
-        }
-        public override void SetSetting(SettingSeamosLazerMeasurement setting) {
-            base.SetSetting(setting);
-            Console.WriteLine("SeamosLazerMeasurement SetSetting");
+      
+        public override MaterialState GetState() {
+            MaterialState state = base.GetState();
+            if (this.Unit.Client.IsConnected) {
+                state.Status.Add(new StatusState() { Status = Status.Ok, Message = "Tcp connection ok" });
+            } else {
+                state.Status.Add(new StatusState() { Status = Status.Error, Message = "Tcp connection error" });
+            }
+
+            return state;
         }
     }
 }

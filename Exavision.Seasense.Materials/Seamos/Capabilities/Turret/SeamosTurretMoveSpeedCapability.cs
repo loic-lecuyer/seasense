@@ -6,7 +6,7 @@ using System;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
     public class SeamosTurretMoveSpeedCapability : TurretMoveSpeedCapability<SettingSeamosTurretMoveSpeedCapability> {
-        private readonly SeamosUnit unit;
+        private readonly SeamosTurret turret;
 
         public double MaxPanSpeed { get; private set; } = 40;
         public double MaxTiltSpeed { get; private set; } = 40;
@@ -17,8 +17,8 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
 
         public override double CurrentTiltSpeed => currentTiltSpeed;
 
-        public SeamosTurretMoveSpeedCapability(SeamosUnit unit) {
-            this.unit = unit;
+        public SeamosTurretMoveSpeedCapability(SeamosTurret turret) {
+            this.turret = turret;
         }
 
 
@@ -28,14 +28,10 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
             setting.MaxTiltSpeed = this.MaxTiltSpeed;
             return setting;
         }
-        /// <summary>
-        /// TODO : Gestion du flag de stan , gestion asservissement au zoom
-        /// </summary>
-        /// <param name="axisX"></param>
-        /// <param name="axisY"></param>
+       
         public override void MoveSpeed(double axisX, double axisY) {
             StabilizationStateExatrack2 stabState = StabilizationStateExatrack2.Off;
-            IMaterial turret = this.unit.GetMaterial<ITurret>();
+            IMaterial turret = this.turret.Unit.GetMaterial<ITurret>();
             if (turret != null) {
                 ITurretGyrostabilizationCapability gyroCap = turret.GetCapability<ITurretGyrostabilizationCapability>();
                 if (gyroCap.IsEnabled) {
@@ -46,7 +42,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
                 }
 
             }
-            ITurretSetPositionExatrack2Absolute command = this.unit.Protocol.Resolve<ITurretSetPositionExatrack2Absolute>(MaterialTarget.Turret);
+            ITurretSetPositionExatrack2Absolute command = this.turret.Unit.Protocol.Resolve<ITurretSetPositionExatrack2Absolute>(MaterialTarget.Turret);
             command.CommandTarget = CommandTargetExatrack2.PTU;
             command.MoveMode = MoveModeExatrack2.Speed;
             // TODO a corriger pour inslurte le flag de stab
@@ -60,7 +56,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Turret {
             this.currentTiltSpeed = command.TiltSpeed;
             // command.PanSpeed *= this.MaxPanSpeed;
             //   command.TiltSpeed *= this.MaxTiltSpeed;
-            this.unit.Client.Send(command);
+            this.turret.Unit.Client.Send(command);
 
 
         }

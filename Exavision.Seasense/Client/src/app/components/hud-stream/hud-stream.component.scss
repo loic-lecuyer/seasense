@@ -19,3 +19,10 @@
   user-select: none !important;
 }
 
+.main-stream-click-handler {
+  z-index: 500;
+  position: absolute;
+  left: 0px;
+  right: 0px;
+}
+
