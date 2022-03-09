@@ -103,6 +103,21 @@ namespace Exavision.Seasense.Server.Services {
                 this.SendValid(request.RequestId, client);
 
             }
+            else if (request is WsTurretMoveAbsoluteRequest turretMoveAbsoluteRequest) {
+
+                IUnit unit = this.siteService.FindUnitById(turretMoveAbsoluteRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(turretMoveAbsoluteRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ITurretMoveAbsoluteCapability capability = material.GetCapability<ITurretMoveAbsoluteCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
+                capability.MoveAbsolute(turretMoveAbsoluteRequest.Position.Pan, turretMoveAbsoluteRequest.Position.Tilt);
+                this.SendValid(request.RequestId, client);
+
+            }
+
+
+
             else if (request is WsGetStateRequest reqGetState) {
                 WsResponse response = new WsGetStateResponse() { RequestId = request.RequestId, Site = this.siteService.GetState() };
                 this.SendResponse(response, client);

@@ -2,7 +2,6 @@
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Models;
-using Serilog;
 
 namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
     public class SeamosCameraThorZoomAbsolutePositionCapability : CameraZoomAbsolutePositionCapability<SettingSeamosCameraThorZoomAbsolutePositionCapability>, ISeamosCapability {
@@ -43,12 +42,9 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
         public void ProcessHardwareResponse(ISeamosCommand command) {
             if (command is ICameraGetValuesResponse response) {
                 if (response.RoiZoomEnable) {
-                    Log.Information("Thor Update Zoom " + response.RoiZoomWidth);
                     this.zoomRoi = new IntRect() { X = response.RoiZoomX, Y = response.RoiZoomY, Width = response.RoiZoomWidth, Height = response.RoiZoomHeight };
-
                 }
                 else {
-                    Log.Information("Thor Update Zoom to no ");
                     this.zoomRoi = null;
                 }
             }

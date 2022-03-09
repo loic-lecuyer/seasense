@@ -18,6 +18,7 @@ import { WsDoubleValueSetRequest } from '../api/ws/ws-double-value-set-request';
 import { SwitchValue } from '../models/switch-value';
 import { WsSwitchValueSetRequest } from '../api/ws/ws-switch-value-set-request';
 import { WsCameraScreenshotRequest } from '../api/ws/ws-camera-scenneshot-request';
+import { WsTurretMoveAbsoluteRequest } from '../api/ws/ws-turret-move-absolute-request';
 @Injectable({
   providedIn: 'root'
 })
@@ -130,6 +131,26 @@ export class WsService {
     };
     console.log("wsService send turretMoveSpeed " + axisX + " " + axisY);
     let data: string = JSON.stringify(request);   
+    this.socket?.send(data);
+
+  }
+
+  turretMoveAbsolute(unitId: string, materialId: string, pan: number, tilt: number) {
+    if (this.userService.token == null) return;
+    let request: WsTurretMoveAbsoluteRequest = {
+      $type: "WsTurretMoveAbsoluteRequest",
+      requestId: uuid.v4(),
+      unitId: unitId,
+      materialId: materialId,
+      position: {
+        pan: pan,
+        tilt:tilt
+      },    
+
+      token: this.userService.token
+    };
+    console.log("wsService send turretMoveAbsolute " + pan + " " + tilt);
+    let data: string = JSON.stringify(request);
     this.socket?.send(data);
 
   }

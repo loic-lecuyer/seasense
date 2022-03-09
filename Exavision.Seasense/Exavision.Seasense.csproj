@@ -25,6 +25,7 @@
     <None Remove="Client\src\app\api\http\unit-create-empty-response.ts" />
     <None Remove="Client\src\app\api\http\validate-token-request.ts" />
     <None Remove="Client\src\app\api\http\validate-token-response.ts" />
+    <None Remove="Client\src\app\api\ws\pan-tilt-position.ts" />
     <None Remove="Client\src\app\api\ws\speed-vector.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-auto-focus-one-push-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-scenneshot-request.ts" />
@@ -40,6 +41,7 @@
     <None Remove="Client\src\app\api\ws\ws-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-switch-value-set-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-gyrostabilization-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-turret-move-absolute-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-turret-move-speed-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-valid-response.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
@@ -135,6 +137,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\http\validate-token-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\ws\pan-tilt-position.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\speed-vector.ts" />
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-auto-focus-one-push-request.ts">
       <SubType>Code</SubType>
@@ -147,6 +152,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-error-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-turret-move-absolute-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-valid-response.ts">

@@ -6,6 +6,10 @@ import { Material } from '../../materials/material';
 import { MaterialType } from '../../materials/material-type';
 import { Camera } from '../../materials/camera';
 import { UiService } from '../../services/ui.service';
+import { CapabilityType } from '../../materials/capabilities/capability-type';
+import { CameraZoomAbsolutePositionCapability } from '../../materials/capabilities/camera/camera-zoom-absolute-position-capability';
+import { TurretAbsolutePositionCapability } from '../../materials/capabilities/turret/turret-absolute-position-capability';
+import { TurretMoveAbsoluteCapability } from '../../materials/capabilities/turret/turret-move-absolute-capability';
 
 
 @Component({
@@ -18,8 +22,9 @@ export class HudStreamComponent implements OnInit, OnDestroy {
 
 
   @Input() showMagnifier: boolean = false;
-
-
+  public isMouseOnImage: boolean = false;
+  public mousePan: number = 0;
+  public mouseTilt: number = 0;
   public mainStream: IStream | undefined = undefined;
   private streams: IStream[] = [];
   private unitSelectedSubscription: Subscription;
@@ -31,6 +36,10 @@ export class HudStreamComponent implements OnInit, OnDestroy {
     this.showPipZoomSubscription = this.uiService.showPipZoomSubject.subscribe((value: boolean) => { this.showMagnifier = value; })
 
   }
+
+ 
+
+
   updateStreamList() {
     this.streams = [];
     if (this.siteService.selectedUnit != null) {
@@ -106,7 +115,68 @@ export class HudStreamComponent implements OnInit, OnDestroy {
   }
 
 
- 
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(e: any) {
+    if (this.mainStream == null) return;
+    if (this.siteService.selectedCamera == null) return;
+    if (this.siteService.selectedUnit == null) return;
+    let turret: Material | undefined = this.siteService.selectedUnit.getMaterial(MaterialType.Turret);
+    if (turret == undefined) return;
+    let capPanTiltPos: TurretAbsolutePositionCapability | undefined = turret.getCapability<TurretAbsolutePositionCapability>(CapabilityType.TurretAbsolutePosition);
+    if (capPanTiltPos == undefined) return;
+    let capZoomPos: CameraZoomAbsolutePositionCapability | undefined = this.siteService.selectedCamera.getCapability<CameraZoomAbsolutePositionCapability>(CapabilityType.CameraZoomAbsolutePosition);
+    if (capZoomPos == undefined) return;
+    // get mouse position from document
+    let mousePageX: number = e.pageX;
+    let mousePageY: number = e.pageY;   
+    let localX = mousePageX;
+    // Remove Header
+    let localY = mousePageY - 64;
+    if (localX >= this.mainStream.displayLeft &&
+      localX <= (this.mainStream.displayLeft + this.mainStream.displayWidth) &&
+      localY >= this.mainStream.displayTop &&
+      localY <= (this.mainStream.displayTop + this.mainStream.displayHeight)) {
+      let ratioX = ((localX - this.mainStream.displayLeft) / this.mainStream.displayWidth) - 0.5;
+      let ratioY = ((localY - this.mainStream.displayTop) / this.mainStream.displayHeight) - 0.5;
+      let verticalFieldOfView = (capZoomPos.horizontalFieldOfView / this.siteService.selectedCamera.streamWidth) * this.siteService.selectedCamera.streamHeight;
+      //console.log("horizontalFieldOfView " + capZoomPos.horizontalFieldOfView);
+      //console.log("verticalFieldOfView " + verticalFieldOfView);
+      let offsetPan = ratioX * capZoomPos.horizontalFieldOfView;
+      let offsetTilt = ratioY * verticalFieldOfView;
+      offsetTilt = offsetTilt * -1;
+      //console.log("offsetPan " + offsetPan);
+      //console.log("offsetTilt " + offsetTilt);
+      this.mousePan = capPanTiltPos.pan + offsetPan;
+      this.mouseTilt = capPanTiltPos.tilt + offsetTilt;
+      if (this.mousePan < 0) this.mousePan += 360;
+      this.mousePan = this.mousePan % 360;
+      this.isMouseOnImage = true;
+      //console.log("pan " + pan);
+      //console.log("tilt " + tilt);
+
+
+    }
+    else {
+      this.isMouseOnImage = false;
+    }
+
+
+  }
+  @HostListener('document:click', ['$event'])
+  onImageClick() {
+    if (this.mainStream == null) return;
+    if (this.siteService.selectedCamera == null) return;
+    if (this.siteService.selectedUnit == null) return;
+    if (this.isMouseOnImage == false) return;
+    
+    let turret: Material | undefined = this.siteService.selectedUnit.getMaterial(MaterialType.Turret);
+    if (turret == undefined) return;
+    let capMoveAbosulte: TurretMoveAbsoluteCapability | undefined = turret.getCapability<TurretMoveAbsoluteCapability>(CapabilityType.TurretMoveAbsolute);
+    if (capMoveAbosulte == undefined) return;
+    capMoveAbosulte.move(this.mousePan, this.mouseTilt);
+
+    
+  }
 
   ngOnDestroy() {
     this.unitSelectedSubscription.unsubscribe();

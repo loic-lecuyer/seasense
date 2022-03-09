@@ -990,7 +990,6 @@ class HudRullerPanComponent {
         let textIndex = 0;
         this.texts.forEach((text) => {
             delta = text.degree - pan;
-            let ratio = Math.abs(delta) / (displayWidth * degreePerPixel / 8);
             x = (displayWidth / 2) + (delta / degreePerPixel);
             let textDegree = (text.degree + 360) % 360;
             text.text = textDegree.toFixed(0) + "°";
@@ -1001,7 +1000,6 @@ class HudRullerPanComponent {
         });
         this.ticks.forEach((tick) => {
             delta = tick.degree - pan;
-            let ratio = Math.abs(delta) / (displayWidth * degreePerPixel / 8);
             x = (displayWidth / 2) + (delta / degreePerPixel);
             y = 28;
             if ((tick.degree % 1) == 0) {
@@ -1303,6 +1301,9 @@ class HudStreamComponent {
         this.renderer = renderer;
         this.uiService = uiService;
         this.showMagnifier = false;
+        this.isMouseOnImage = false;
+        this.mousePan = 0;
+        this.mouseTilt = 0;
         this.mainStream = undefined;
         this.streams = [];
         this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateStreamList(); });
@@ -1375,6 +1376,72 @@ class HudStreamComponent {
             }
         }
     }
+    onMouseMove(e) {
+        if (this.mainStream == null)
+            return;
+        if (this.siteService.selectedCamera == null)
+            return;
+        if (this.siteService.selectedUnit == null)
+            return;
+        let turret = this.siteService.selectedUnit.getMaterial("Turret" /* Turret */);
+        if (turret == undefined)
+            return;
+        let capPanTiltPos = turret.getCapability("TurretAbsolutePosition" /* TurretAbsolutePosition */);
+        if (capPanTiltPos == undefined)
+            return;
+        let capZoomPos = this.siteService.selectedCamera.getCapability("CameraZoomAbsolutePosition" /* CameraZoomAbsolutePosition */);
+        if (capZoomPos == undefined)
+            return;
+        // get mouse position from document
+        let mousePageX = e.pageX;
+        let mousePageY = e.pageY;
+        let localX = mousePageX;
+        // Remove Header
+        let localY = mousePageY - 64;
+        if (localX >= this.mainStream.displayLeft &&
+            localX <= (this.mainStream.displayLeft + this.mainStream.displayWidth) &&
+            localY >= this.mainStream.displayTop &&
+            localY <= (this.mainStream.displayTop + this.mainStream.displayHeight)) {
+            let ratioX = ((localX - this.mainStream.displayLeft) / this.mainStream.displayWidth) - 0.5;
+            let ratioY = ((localY - this.mainStream.displayTop) / this.mainStream.displayHeight) - 0.5;
+            let verticalFieldOfView = (capZoomPos.horizontalFieldOfView / this.siteService.selectedCamera.streamWidth) * this.siteService.selectedCamera.streamHeight;
+            //console.log("horizontalFieldOfView " + capZoomPos.horizontalFieldOfView);
+            //console.log("verticalFieldOfView " + verticalFieldOfView);
+            let offsetPan = ratioX * capZoomPos.horizontalFieldOfView;
+            let offsetTilt = ratioY * verticalFieldOfView;
+            offsetTilt = offsetTilt * -1;
+            //console.log("offsetPan " + offsetPan);
+            //console.log("offsetTilt " + offsetTilt);
+            this.mousePan = capPanTiltPos.pan + offsetPan;
+            this.mouseTilt = capPanTiltPos.tilt + offsetTilt;
+            if (this.mousePan < 0)
+                this.mousePan += 360;
+            this.mousePan = this.mousePan % 360;
+            this.isMouseOnImage = true;
+            //console.log("pan " + pan);
+            //console.log("tilt " + tilt);
+        }
+        else {
+            this.isMouseOnImage = false;
+        }
+    }
+    onImageClick() {
+        if (this.mainStream == null)
+            return;
+        if (this.siteService.selectedCamera == null)
+            return;
+        if (this.siteService.selectedUnit == null)
+            return;
+        if (this.isMouseOnImage == false)
+            return;
+        let turret = this.siteService.selectedUnit.getMaterial("Turret" /* Turret */);
+        if (turret == undefined)
+            return;
+        let capMoveAbosulte = turret.getCapability("TurretMoveAbsolute" /* TurretMoveAbsolute */);
+        if (capMoveAbosulte == undefined)
+            return;
+        capMoveAbosulte.move(this.mousePan, this.mouseTilt);
+    }
     ngOnDestroy() {
         this.unitSelectedSubscription.unsubscribe();
         this.cameraSelectedSubscription.unsubscribe();
@@ -1386,7 +1453,7 @@ class HudStreamComponent {
 }
 HudStreamComponent.ɵfac = function HudStreamComponent_Factory(t) { return new (t || HudStreamComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_site_service__WEBPACK_IMPORTED_MODULE_0__.SiteService), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.ElementRef), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_2__.Renderer2), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_ui_service__WEBPACK_IMPORTED_MODULE_1__.UiService)); };
 HudStreamComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineComponent"]({ type: HudStreamComponent, selectors: [["app-hud-stream"]], hostAttrs: [1, "hud-layer"], hostBindings: function HudStreamComponent_HostBindings(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵlistener"]("resize", function HudStreamComponent_resize_HostBindingHandler($event) { return ctx.onResized($event); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵresolveWindow"]);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵlistener"]("resize", function HudStreamComponent_resize_HostBindingHandler($event) { return ctx.onResized($event); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵresolveWindow"])("mousemove", function HudStreamComponent_mousemove_HostBindingHandler($event) { return ctx.onMouseMove($event); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵresolveDocument"])("click", function HudStreamComponent_click_HostBindingHandler($event) { return ctx.onImageClick($event); }, false, _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵresolveDocument"]);
     } }, inputs: { showMagnifier: "showMagnifier" }, decls: 2, vars: 2, consts: [["class", "main-stream", 3, "width", "height", "top", "left", "src", 4, "ngIf"], [4, "ngIf"], [1, "main-stream", 3, "src"], [1, "stream-div-zoom"], ["alt", "stream zoom image", "referrerpolicy", "unsafe-url", 1, "stream-img-zoom", 3, "src"]], template: function HudStreamComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](0, HudStreamComponent_img_0_Template, 1, 9, "img", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](1, HudStreamComponent_div_1_Template, 3, 17, "div", 1);
@@ -2952,12 +3019,19 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 class TurretMoveAbsoluteCapability {
     constructor(settingCapability) {
-        this.pan = 0;
-        this.tilt = 0;
         this.id = settingCapability.id;
         this.capabilityType = "TurretMoveAbsolute" /* TurretMoveAbsolute */;
     }
     setState(valueState) {
+    }
+    move(pan, tilt) {
+        var _a;
+        if (this.material == null)
+            return;
+        if (this.material.unit == null)
+            return;
+        console.log("Call wsService.turretMoveAbsolute " + pan + " " + tilt);
+        (_a = this.material) === null || _a === void 0 ? void 0 : _a.wsService.turretMoveAbsolute(this.material.unit.id, this.material.id, pan, tilt);
     }
 }
 
@@ -4107,7 +4181,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LoginComponent": () => (/* binding */ LoginComponent)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js-sha512 */ 2414);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(js_sha512__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 3184);
@@ -4168,7 +4242,7 @@ class LoginComponent {
   onConnectButtonClick() {
     var _this = this;
 
-    return (0,C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this.loginRunning = true;
 
       _this.userService.clearToken();
@@ -4544,7 +4618,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "WsService": () => (/* binding */ WsService)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! uuid */ 2535);
 /* harmony import */ var _materials_factory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../materials/factory */ 7568);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
@@ -4588,7 +4662,7 @@ class WsService {
     };
 
     this.socket.onclose = /*#__PURE__*/function () {
-      var _ref = (0,C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
+      var _ref = (0,C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
         _this.wsClose(event);
       });
 
@@ -4630,7 +4704,7 @@ class WsService {
   }
 
   wsClose(event) {
-    return (0,C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       console.log("wsClose", event);
     })();
   }
@@ -4676,6 +4750,26 @@ class WsService {
       token: this.userService.token
     };
     console.log("wsService send turretMoveSpeed " + axisX + " " + axisY);
+    let data = JSON.stringify(request);
+    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
+  }
+
+  turretMoveAbsolute(unitId, materialId, pan, tilt) {
+    var _a;
+
+    if (this.userService.token == null) return;
+    let request = {
+      $type: "WsTurretMoveAbsoluteRequest",
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
+      unitId: unitId,
+      materialId: materialId,
+      position: {
+        pan: pan,
+        tilt: tilt
+      },
+      token: this.userService.token
+    };
+    console.log("wsService send turretMoveAbsolute " + pan + " " + tilt);
     let data = JSON.stringify(request);
     (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
   }

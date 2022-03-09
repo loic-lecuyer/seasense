@@ -99,21 +99,19 @@ export class HudRullerPanComponent implements OnInit, OnDestroy {
     let textIndex: number = 0;
     this.texts.forEach((text: CompasText) => {
       delta = text.degree - pan;
-
-      let ratio = Math.abs(delta) / (displayWidth * degreePerPixel / 8);
+ 
       x = (displayWidth / 2) + (delta / degreePerPixel);
       let textDegree: number = (text.degree + 360) % 360;
       text.text = textDegree.toFixed(0) + "°";
       text.x = x - (text.degree.toFixed(0).length * 10 / 2);
       text.y = 20;
-      text.opacity = 1;
-    
+      text.opacity = 1;    
       textIndex++;
 
     });
     this.ticks.forEach((tick: CompasTick) => {
       delta = tick.degree - pan;
-      let ratio = Math.abs(delta) / (displayWidth * degreePerPixel/ 8);
+     
       x = (displayWidth / 2) + (delta / degreePerPixel);
       y = 28;
       if ((tick.degree % 1) == 0) {
@@ -123,8 +121,7 @@ export class HudRullerPanComponent implements OnInit, OnDestroy {
       tick.x2 = x;
       tick.y1 = y;
       tick.y2 = 32;
-      tick.opacity = 1;
-    
+      tick.opacity = 1;    
       degree += 0.1;
     });
 

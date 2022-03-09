@@ -10,8 +10,6 @@ namespace Exavision.Seasense.Shared.Capabilities.Turret {
             return setting;
         }
 
-
-
-
+        public abstract void MoveAbsolute(double pan, double tilt);
     }
 }
