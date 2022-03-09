@@ -45,6 +45,8 @@ import { AsyncSliderComponent } from './components/async-slider/async-slider.com
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { AsyncToggleGroupComponent } from './components/async-toggle-group/async-toggle-group.component';
 import { HudInfoComponent } from './components/hud-info/hud-info.component';
+import { PanelMediaComponent } from './components/panel-media/panel-media.component';
+import { PanelSavComponent } from './components/panel-sav/panel-sav.component';
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -69,7 +71,9 @@ export const httpInterceptorProviders = [
     PanelCameraComponent,
     AsyncSliderComponent,
     AsyncToggleGroupComponent,
-    HudInfoComponent    
+    HudInfoComponent,
+    PanelMediaComponent,
+    PanelSavComponent    
   ],
   imports: [
     BrowserModule,

@@ -1,26 +1,44 @@
 .title {
   font-family: "Expansivabold", Arial, Verdana, Tahoma, sans-serif;
-  font-size: 32px;
+  font-size: 30px !important;
   margin: 0px;
   padding: 0px;
-  margin-top: 8px;
-  user-select: none;
-  line-height: 32px;
+  user-select: none; 
   margin-left: 8px;
+  margin-bottom:0px;
+  margin-top:auto;
 }
 
 .sub-title {
   font-family: "Expansivabold", Arial, Verdana, Tahoma, sans-serif;
-  font-size: 12px !important;
+  font-size: 22px !important;
   margin: 0px;
   padding: 0px;
   user-select: none;
-  line-height: 24px;
-  height: 24px;
   font-style: italic;
   margin-left: 8px;
+  margin-bottom: 0px;
+  margin-top: auto;
 }
-.unit-select{
-    width:200px;
 
+.logo-small {
+  width: 75px;
+  height: 48px;
+  background-image: url("/assets/logo-small.png");
+  margin-bottom: 0px;
+  margin-top: auto;
 }
+.user-info {
+
+  font-size: 14px;
+  margin: 0px;
+  padding: 0px;
+}
+.select-unit-combo{
+    width:200px;
+}
+.app-title-container {
+  margin-bottom: 4px !important;
+  margin-top: auto !important;
+}
+

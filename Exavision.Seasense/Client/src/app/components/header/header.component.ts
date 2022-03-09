@@ -20,12 +20,13 @@ export class HeaderComponent implements OnInit {
   private siteLoadedSubscription: Subscription;
   public units: Unit[] = [];
   public selectedUnitId: string | undefined = undefined;
-  constructor(public userService: UserService, private httpService: HttpService, private router: Router, private siteService: SiteService, private wsService: WsService, private uiService: UiService) {
+  constructor(public userService: UserService, public httpService: HttpService, public router: Router, private siteService: SiteService, private wsService: WsService, private uiService: UiService) {
     this.siteLoadedSubscription = this.siteService.siteLoadedSubject.subscribe((site: Site | undefined) => {
       if (site == null) this.units = [];
       else this.units = site.units;
       this.selectedUnitId = this.siteService.selectedUnit?.id;
     });
+    
   }
   onCameraButtonClick() {
     this.uiService.showPanelCamera();
@@ -41,6 +42,7 @@ export class HeaderComponent implements OnInit {
 
   }
   onHomeClick() {
+    this.router.navigate(['/home']);
   }
   onSelectedUnitChange(unitId: string) {
     this.siteService.selectUnitById(unitId);    
@@ -59,5 +61,25 @@ export class HeaderComponent implements OnInit {
         this.router.navigate(['/login'])
       },
     });  
+  }
+  onFullScreenClick() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  
+  }
+  onSwitchLeftToRightclick() {
+    this.uiService.switchLeftToRight();
+  }
+  onShowMediaClick() {
+    this.uiService.showPanelMedia();
+  }
+
+  onShowSavClick() {
+    this.uiService.showPanelSav();
   }
 }

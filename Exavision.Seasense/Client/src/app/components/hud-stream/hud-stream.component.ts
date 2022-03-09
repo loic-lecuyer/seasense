@@ -30,14 +30,17 @@ export class HudStreamComponent implements OnInit, OnDestroy {
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
   private showPipZoomSubscription: Subscription;
+  private siteStateSubscription: Subscription;
+  private documentMouseMoveEvent: any | null;
   constructor(private siteService: SiteService, private el: ElementRef, private renderer: Renderer2, private uiService: UiService) {
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateStreamList(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateStreamList(); });
+    this.siteStateSubscription=  this.siteService.siteStateSubject.subscribe(() => { this.computeMousePanAndTilt(); });
     this.showPipZoomSubscription = this.uiService.showPipZoomSubject.subscribe((value: boolean) => { this.showMagnifier = value; })
 
   }
 
- 
+
 
 
   updateStreamList() {
@@ -56,20 +59,20 @@ export class HudStreamComponent implements OnInit, OnDestroy {
 
         if (value.materialType == MaterialType.DayCamera || value.materialType == MaterialType.ThermalCamera) {
           let camera: Camera = <Camera>value;
-        
+
           let isSelectedCamera = value.id === this.siteService.selectedCamera?.id;
           let stream: IStream = {
             displayName: value.displayName,
             isMainStream: isSelectedCamera,
             materialId: value.id,
             //url: camera.streamUrl,
-            url: baseStreamUrl +  value.id,
+            url: baseStreamUrl + value.id,
             displayHeight: 0,
             displayWidth: 0,
             streamWidth: camera.streamWidth,
             streamHeight: camera.streamHeight,
             displayLeft: 0,
-            displayTop:0
+            displayTop: 0
           };
           console.log("Add stream info ", stream);
           if (isSelectedCamera) {
@@ -77,14 +80,14 @@ export class HudStreamComponent implements OnInit, OnDestroy {
           }
           this.streams.push(stream);
 
-        } 
+        }
       });
     }
     this.setStreamSize();
   }
 
   @HostListener('window:resize', ['$event'])
-  onResized(evt: any) {    
+  onResized(evt: any) {
     this.setStreamSize();
   }
   setStreamSize() {
@@ -100,7 +103,7 @@ export class HudStreamComponent implements OnInit, OnDestroy {
         this.mainStream.displayTop = 0;
         this.mainStream.displayLeft = left;
         this.mainStream.displayWidth = computedWidth;
-        this.mainStream.displayHeight = displayHeight;        
+        this.mainStream.displayHeight = displayHeight;
       }
       else {
         let top: number = (displayHeight - computedHeight) / 2;
@@ -109,7 +112,7 @@ export class HudStreamComponent implements OnInit, OnDestroy {
         this.mainStream.displayWidth = displayWidth;
         this.mainStream.displayHeight = computedHeight;
       }
-    
+
       this.uiService.displayStreamWidth = this.mainStream.displayWidth;
       this.uiService.displayStreamHeight = this.mainStream.displayHeight;
     }
@@ -118,6 +121,14 @@ export class HudStreamComponent implements OnInit, OnDestroy {
 
   @HostListener('document:mousemove', ['$event'])
   onMouseMove(e: any) {
+    this.documentMouseMoveEvent = e;
+    this.computeMousePanAndTilt();
+
+
+
+  }
+  computeMousePanAndTilt() {
+    if (this.documentMouseMoveEvent == null) return;
     if (this.mainStream == null) return;
     if (this.siteService.selectedCamera == null) return;
     if (this.siteService.selectedUnit == null) return;
@@ -128,8 +139,8 @@ export class HudStreamComponent implements OnInit, OnDestroy {
     let capZoomPos: CameraZoomAbsolutePositionCapability | undefined = this.siteService.selectedCamera.getCapability<CameraZoomAbsolutePositionCapability>(CapabilityType.CameraZoomAbsolutePosition);
     if (capZoomPos == undefined) return;
     // get mouse position from document
-    let mousePageX: number = e.pageX;
-    let mousePageY: number = e.pageY;   
+    let mousePageX: number = this.documentMouseMoveEvent.pageX;
+    let mousePageY: number = this.documentMouseMoveEvent.pageY;
     let localX = mousePageX;
     // Remove Header
     let localY = mousePageY - 64;
@@ -164,8 +175,6 @@ export class HudStreamComponent implements OnInit, OnDestroy {
       this.uiService.mousePan = null;
       this.uiService.mouseTilt = null;
     }
-
-
   }
   @HostListener('document:click', ['$event'])
   onImageClick() {
@@ -173,20 +182,21 @@ export class HudStreamComponent implements OnInit, OnDestroy {
     if (this.siteService.selectedCamera == null) return;
     if (this.siteService.selectedUnit == null) return;
     if (this.isMouseOnImage == false) return;
-    
+
     let turret: Material | undefined = this.siteService.selectedUnit.getMaterial(MaterialType.Turret);
     if (turret == undefined) return;
     let capMoveAbosulte: TurretMoveAbsoluteCapability | undefined = turret.getCapability<TurretMoveAbsoluteCapability>(CapabilityType.TurretMoveAbsolute);
     if (capMoveAbosulte == undefined) return;
     capMoveAbosulte.move(this.mousePan, this.mouseTilt);
 
-    
+
   }
 
   ngOnDestroy() {
     this.unitSelectedSubscription.unsubscribe();
     this.cameraSelectedSubscription.unsubscribe();
     this.showPipZoomSubscription.unsubscribe();
+    this.siteStateSubscription.unsubscribe();
 
   }
   ngOnInit(): void {

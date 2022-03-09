@@ -51,7 +51,7 @@ export class SwitchValueCapability implements Capability {
       this.value = value;
     }
     else {
-      console.log("null value for set state of capability " + this.capabilityType + " " + this.switchValueType);
+   //  console.log("null value for set state of capability " + this.capabilityType + " " + this.switchValueType);
     }
  
   }

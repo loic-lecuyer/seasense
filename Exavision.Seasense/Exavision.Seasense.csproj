@@ -81,6 +81,7 @@
     <None Remove="Client\src\app\models\switch-value.ts" />
     <None Remove="Client\src\app\models\unit-type.ts" />
     <None Remove="Client\src\app\models\user.ts" />
+    <None Remove="Client\src\app\models\vector2.ts" />
     <None Remove="Client\src\app\pages\configuration\configuration-node.ts" />
   </ItemGroup>
 
@@ -272,6 +273,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\models\switch-value.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\models\vector2.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\models\user.ts" />

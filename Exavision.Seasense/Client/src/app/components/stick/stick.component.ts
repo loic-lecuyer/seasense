@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 import { CapabilityType } from '../../materials/capabilities/capability-type';
 import { TurretMoveSpeedCapability } from '../../materials/capabilities/turret/turret-move-speed-capability';
 import { MaterialType } from '../../materials/material-type';
+import { Vector2 } from '../../models/vector2';
+import { GamepadService } from '../../services/gamepad.service';
 import { SiteService } from '../../services/site.service';
 @Component({
   selector: 'app-stick',
@@ -22,11 +24,14 @@ export class StickComponent implements AfterViewInit, OnInit, OnChanges, AfterCo
   public lastSendAxisX: number = 0;
   public lastSendAxisY: number = 0;
   private unitSelectedSubscription: Subscription;
-  constructor(private cdref: ChangeDetectorRef, private siteService: SiteService) {
+  constructor(private cdref: ChangeDetectorRef, private siteService: SiteService, private gamePadService: GamepadService) {
     this.commandIntervalTimer = setInterval(() => {
       this.updateStickInfos();
     }, this.commandInterval);
-
+    this.gamePadService.initialize();
+    this.gamePadService.gamepadAxisSubject.subscribe((moveVector: Vector2) => {
+      this.turretMoveSpeedCapability?.moveSpeed(moveVector.x, moveVector.y);
+    });
     this.findTurretMoveSpeedCapability();
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(this.findTurretMoveSpeedCapability);
 
@@ -94,7 +99,9 @@ export class StickComponent implements AfterViewInit, OnInit, OnChanges, AfterCo
         this.axisX = data.vector.x;
         this.axisY = data.vector.y;
       });
-     }, 500);
+    }, 500);
+    
+  
     
   }
 

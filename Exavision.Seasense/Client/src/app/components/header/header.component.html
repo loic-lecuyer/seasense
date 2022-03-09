@@ -1,24 +1,76 @@
 <mat-toolbar class="display-flex" color="primary">
-  <div class="display-flex flex-1 flex-align-end">
+  <div class="display-flex flex-1 flex-align-stretch">
     <button [matMenuTriggerFor]="menu" mat-button>
-      <mat-icon aria-hidden="false" aria-label="Example home icon">view_headline</mat-icon>
+      <mat-icon [inline]="true" class="big-icon" aria-hidden="false" aria-label="Click to open menu">view_headline</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button (click)="onConfigurationButtonClick()" mat-menu-item>Configuration</button>
-      <button (click)="onCameraButtonClick()" mat-menu-item>Camera</button>
-      <button mat-menu-item>Sav</button>
+      <button *ngIf="userService.user != null && !router.url.includes('configuration') && (userService.user.role.toString() === 'Sav' || userService.user.role.toString() === 'Admin')" (click)="onConfigurationButtonClick()" mat-menu-item><mat-icon>settings</mat-icon>Configuration</button>
+      <button *ngIf="userService.user != null && !router.url.includes('configuration')" (click)="onCameraButtonClick()" mat-menu-item> <mat-icon>camera_enhance</mat-icon>Camera</button>
+      <button  *ngIf="userService.user != null && !router.url.includes('configuration')"  (click)="onShowMediaClick()" mat-menu-item><mat-icon>video_library</mat-icon>Medias</button>
+      <button *ngIf="userService.user != null && userService.user.role.toString() === 'Sav'" (click)="onShowSavClick()" mat-menu-item><mat-icon>bug_report</mat-icon>Sav</button>
     </mat-menu>
-    <div matTooltip="Go to home page" (click)="onHomeClick()" class="title">Seasens</div>
-    <div matTooltip="Go to home page" (click)="onHomeClick()" class="sub-title">By Exavision</div>
-    <div class="flex-1"></div>
-    <div *ngIf="this.userService.user != null" class="display-flex">
-      <mat-label class="margin-4">Unit :</mat-label>
-      <mat-select [(value)]="selectedUnitId" #unitSelect (selectionChange)="onSelectedUnitChange(unitSelect.value)" class="unit-select margin-4">
-        <mat-option [value]="unit.id" *ngFor="let unit of units">
-          {{unit.displayName}}
-        </mat-option>
-      </mat-select>
+
+
+    <div class="display-flex flex-dir-col">
+      <div class="flex-1"></div>
+      <div class="flex-dir-row display-flex app-title-container">
+        <div class="logo-small"></div>
+        <div matTooltip="Go to home page" (click)="onHomeClick()" class="title">Seasens</div>
+        <div matTooltip="Go to home page" (click)="onHomeClick()" class="sub-title">By Exavision</div>
+      </div>
+
+      <div class="flex-1"></div>
     </div>
-    <button *ngIf="this.userService.user != null" (click)="onLogoutClick()" mat-raised-button color="accent">Logout</button>
+    
+
+
+    
+
+
+
+    <div class="flex-1"></div>
+
+
+    <mat-divider  *ngIf="this.userService.user != null" class="margin-4" [vertical]="true"></mat-divider>
+
+    <div  *ngIf="this.userService.user != null &&  !router.url.includes('configuration')"  class="flex-dir-col display-flex select-unit-combo" >
+      <div class="flex-1"></div>
+      <div class="user-info display-flex flex-dir-row">
+        <div>Selected unit</div>
+      </div>
+      <div class="user-info display-flex flex-dir-row">
+
+        <mat-select [(value)]="selectedUnitId" #unitSelect (selectionChange)="onSelectedUnitChange(unitSelect.value)">
+          <mat-option [value]="unit.id" *ngFor="let unit of units">
+            {{unit.displayName}}
+          </mat-option>
+        </mat-select>
+      </div>
+    </div>
+
+
+    <mat-divider  *ngIf="this.userService.user != null" class="margin-4" [vertical]="true"></mat-divider>
+
+
+
+
+    <div class="flex-dir-col display-flex" *ngIf="this.userService.user != null">
+      <div class="flex-1"></div>
+      <div class="user-info display-flex flex-dir-row" >
+        <div>User : {{this.userService.user.login}} Role : {{this.userService.user.role}}</div>
+
+      </div>
+      <div class="user-info display-flex flex-dir-row" *ngIf="this.userService.user != null">
+        <mat-icon class="clickable margin-4" matTooltip="Switch to fullscreen" (click)="onFullScreenClick()">fullscreen</mat-icon>
+        <mat-icon class="clickable margin-4" matTooltip="Switch LeftToRight <-> RightToLeft" (click)="onSwitchLeftToRightclick()">flip_camera_android</mat-icon>
+        <mat-icon class="clickable margin-4" matTooltip="Configuration"  *ngIf="userService.user != null && !router.url.includes('configuration')  && (userService.user.role.toString() === 'Sav' || userService.user.role.toString() === 'Admin')"  (click)="onConfigurationButtonClick()">settings</mat-icon>
+        <mat-icon class="clickable margin-4" matTooltip="Logout" *ngIf="this.userService.user != null" (click)="onLogoutClick()">logout</mat-icon>
+      </div>
+    </div>
+
+
+
+
+
   </div>
 </mat-toolbar>

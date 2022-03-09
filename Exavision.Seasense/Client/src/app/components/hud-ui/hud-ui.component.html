@@ -49,25 +49,17 @@
 
 </div>
 <div *ngIf="!isLeftToRight" class="hud-column flex-dir-col">
-
-</div>
-<div class="spacer">
-
-</div>
-
-
-<div *ngIf="isLeftToRight" class="hud-column flex-dir-col">
   <app-compass></app-compass>
- 
+
   <div class="spacer"></div>
   <!-- Wash -->
   <app-hud-button *ngIf="hasWasherCapability">
-    
+
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">cleaning_services</mat-icon>
   </app-hud-button>
 
   <!-- Record -->
-  <app-hud-button  *ngIf="hasRecordCapability">
+  <app-hud-button *ngIf="hasRecordCapability">
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">fiber_manual_record</mat-icon>
   </app-hud-button>
   <!-- Screenshot -->
@@ -76,8 +68,46 @@
   </app-hud-button>
   <!-- Switch -->
   <app-hud-button *ngIf="hasMultipleCamera" (buttonDown)="onSwitchCameraDown()">
-    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Switch to next camera" aria-hidden="false" aria-label="Switch to next camera">swap_horizontal_circle</mat-icon>   
-    
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Switch to next camera" aria-hidden="false" aria-label="Switch to next camera">swap_horizontal_circle</mat-icon>
+
+  </app-hud-button>
+
+  <!--Stabilization -->
+  <app-hud-check (checkChange)="onStablizationCheckChange($event)" [isChecked]="isTurretGyroStabilizationEnabled" *ngIf="hasGyroStabilizationCapability">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Gyrostabilization" aria-hidden="false" aria-label="Gyrostabilization">video_stable</mat-icon>
+
+  </app-hud-check>
+
+  <div class="spacer"></div>
+  <app-stick *ngIf="hasMoveSpeedCapability"></app-stick>
+</div>
+<div class="spacer">
+
+</div>
+
+
+<div *ngIf="isLeftToRight" class="hud-column flex-dir-col">
+  <app-compass></app-compass>
+
+  <div class="spacer"></div>
+  <!-- Wash -->
+  <app-hud-button *ngIf="hasWasherCapability">
+
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">cleaning_services</mat-icon>
+  </app-hud-button>
+
+  <!-- Record -->
+  <app-hud-button *ngIf="hasRecordCapability">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">fiber_manual_record</mat-icon>
+  </app-hud-button>
+  <!-- Screenshot -->
+  <app-hud-button (buttonUp)="onScreenshot()" *ngIf="hasScreenshotCapability">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Screenshot" aria-hidden="false" aria-label="Screenshot">photo_camera</mat-icon>
+  </app-hud-button>
+  <!-- Switch -->
+  <app-hud-button *ngIf="hasMultipleCamera" (buttonDown)="onSwitchCameraDown()">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Switch to next camera" aria-hidden="false" aria-label="Switch to next camera">swap_horizontal_circle</mat-icon>
+
   </app-hud-button>
 
   <!--Stabilization -->
@@ -92,5 +122,51 @@
 
 
 <div *ngIf="!isLeftToRight" class="hud-column flex-dir-col">
+  <div class="spacer">
 
+  </div>
+
+  <!-- Button LRF -->
+  <mat-label class="lrf-info-label">{{lrfInfo}}</mat-label>
+  <app-hud-lrf-button *ngIf="hasLrf">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Lazer Measurement" aria-hidden="false" aria-label="Lazer Measurement">sensors</mat-icon>
+  </app-hud-lrf-button>
+
+  <!-- Zoom In -->
+  <app-hud-button *ngIf="hasZoomContinuousCapability" (buttonDown)="onZoomInDown()" (buttonUp)="onZoomUp()">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Zoom In" aria-hidden="false" aria-label="Zoom In">zoom_in</mat-icon>
+  </app-hud-button>
+
+  <!-- Zoom PIP -->
+  <app-hud-button (buttonDown)="onPipZoomButtonDown()">
+    <mat-icon *ngIf="hasPipZoom" class="hud-button-icon" [inline]="true" matTooltip="Switch Zoom Center On/Off" aria-hidden="false" aria-label="Switch Zoom Center On/Off">crop_free</mat-icon>
+  </app-hud-button>
+
+
+  <!-- Zoom Out -->
+  <app-hud-button *ngIf="hasZoomContinuousCapability" (buttonDown)="onZoomOutDown()" (buttonUp)="onZoomUp()">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Zoom Out" aria-hidden="false" aria-label="Zoom Out">zoom_out</mat-icon>
+  </app-hud-button>
+
+
+  <!-- Auto Focus -->
+  <app-hud-button (buttonDown)="onAutoFocusButtonDown()" *ngIf="hasCameraAutoFocusCapability">
+
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Auto Focus" aria-hidden="false" aria-label="Auto Focus"> filter_center_focus</mat-icon>
+
+  </app-hud-button>
+
+  <!-- Focus Near -->
+  <app-hud-button *ngIf="hasCameraFocusContinuousCapability">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Focus Near" aria-hidden="false" aria-label="Focus Near">portrait</mat-icon>
+  </app-hud-button>
+
+  <!-- Focus Far -->
+  <app-hud-button *ngIf="hasCameraFocusContinuousCapability">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Focus Far" aria-hidden="false" aria-label="Focus Far">panorama</mat-icon>
+  </app-hud-button>
+
+  <div class="spacer">
+
+  </div>
 </div>

@@ -47,6 +47,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
   private siteStateSubscription: Subscription;
+  private isLeftTorighSubscription: Subscription;
   constructor(private siteService: SiteService, private snackBar: MatSnackBar, private uiService: UiService, private wsService: WsService) {
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
@@ -55,6 +56,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
       this.updateSwitchState();
       this.updateLrfInfo();
     });
+    this.isLeftTorighSubscription = this.uiService.isLeftTorightSubject.subscribe((isleftToRigth: boolean) => { this.isLeftToRight = isleftToRigth; });
   }
   onPipZoomButtonDown() {
     this.uiService.showHidePipZoom();  
@@ -64,6 +66,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
     this.unitSelectedSubscription.unsubscribe();
     this.cameraSelectedSubscription.unsubscribe();
     this.siteStateSubscription.unsubscribe();
+    this.isLeftTorighSubscription.unsubscribe();
   }
   ngOnInit(): void {
     this.updateVisibilityFlags();
