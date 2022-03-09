@@ -100,8 +100,7 @@ export class HudStreamComponent implements OnInit, OnDestroy {
         this.mainStream.displayTop = 0;
         this.mainStream.displayLeft = left;
         this.mainStream.displayWidth = computedWidth;
-        this.mainStream.displayHeight = displayHeight;
-        
+        this.mainStream.displayHeight = displayHeight;        
       }
       else {
         let top: number = (displayHeight - computedHeight) / 2;
