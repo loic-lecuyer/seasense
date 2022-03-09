@@ -43,7 +43,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
                 zoomRoi.X = (this.camera.ImageWidth - zoomRoi.Width) / 2;
                 zoomRoi.Y = (this.camera.ImageHeight - zoomRoi.Height) / 2;
                 this.SendZoom(zoomRoi);
-                Log.Information("Send Zoom In Loop " + zoomRoi.Width);
+                Log.Information("Send Zoom In Loop width " + zoomRoi.Width + " zoom multiplier " + zoomMultiplier);
                 await Task.Delay(100, cancellerZoomIn.Token);
             }
         }
@@ -55,7 +55,6 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             requestZoomZone.Width = zoomRoi.Width;
             requestZoomZone.Height = zoomRoi.Height;
             this.camera.Unit.Client.Send(requestZoomZone);
-
             ICameraSetZoneZoomEnabledRequest requestZoomZoneEnable = this.camera.Unit.Protocol.Resolve<ICameraSetZoneZoomEnabledRequest>(MaterialTarget.ThermalCamera);
             requestZoomZoneEnable.IsEnabled = true;
             this.camera.Unit.Client.Send(requestZoomZoneEnable);
@@ -85,7 +84,7 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
                 };
                 zoomRoi.X = (this.camera.ImageWidth - zoomRoi.Width) / 2;
                 zoomRoi.Y = (this.camera.ImageHeight - zoomRoi.Height) / 2;
-                Log.Information("Send Zoom Out Loop " + zoomRoi.Width);
+                Log.Information("Send Zoom Out Loop width " + zoomRoi.Width + " multiplier " + zoomMultiplier);
                 this.SendZoom(zoomRoi);
                 await Task.Delay(100, cancellerZoomOut.Token);
             }

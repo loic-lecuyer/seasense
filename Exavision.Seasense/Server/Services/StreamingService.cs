@@ -57,7 +57,8 @@ namespace Exavision.Seasense.Server.Services {
                 IImageByteProvider provider = null;
                 if (camera.StreamUrl.StartsWith("http")) {
                     provider = new MjpegImageByteProvider(camera.StreamUrl);
-                } else if (camera.StreamUrl.StartsWith("rtsp")) {
+                }
+                else if (camera.StreamUrl.StartsWith("rtsp")) {
                     provider = new RtspImageByteProvider(camera.StreamUrl);
                 }
 
@@ -73,6 +74,7 @@ namespace Exavision.Seasense.Server.Services {
                     if (timer.Elapsed.TotalSeconds > 2) break;
 
                 }
+                timer.Stop();
                 provider.StopProvider();
                 if (data != null) {
                     DateTime now = DateTime.Now;
@@ -80,14 +82,13 @@ namespace Exavision.Seasense.Server.Services {
                     File.WriteAllBytes(fileName, data);
                     return fileName;
                 }
-
-                timer.Stop();
                 return null;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 Log.Error("Error during scrennshot " + ex.Message + " " + ex.StackTrace);
                 return null;
             }
-           
+
 
         }
     }
