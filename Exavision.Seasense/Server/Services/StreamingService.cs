@@ -1,5 +1,7 @@
-﻿using Exavision.Seasense.Shared.Materials;
+﻿using Exavision.Seasense.Server.Models;
+using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
+using Exavision.Seasense.Shared.States;
 using Exavision.Seasense.Shared.Streaming;
 using Exavision.Seasense.Streaming;
 using Microsoft.AspNetCore.Hosting;
@@ -30,16 +32,9 @@ namespace Exavision.Seasense.Server.Services {
             else {
                 IMaterial material = this.siteService.FindMaterialById(materialId);
                 if (material == null) return null;
-                IImageByteProvider provider = null;
+
                 if (material is ICamera camera) {
-                    if (!string.IsNullOrEmpty(camera.StreamUrl)) {
-                        if (camera.StreamUrl.StartsWith("http")) {
-                            provider = new MjpegImageByteProvider(camera.StreamUrl);
-                        }
-                        else if (camera.StreamUrl.StartsWith("rtsp")) {
-                            provider = new RtspImageByteProvider(camera.StreamUrl);
-                        }
-                    }
+                    IImageByteProvider provider = CreateImageByteProvider(camera.StreamUrl);
                     if (provider == null) return null;
                     else {
                         provider.StartProvider();
@@ -50,6 +45,20 @@ namespace Exavision.Seasense.Server.Services {
                 }
             }
             return null;
+        }
+
+        public IImageByteProvider CreateImageByteProvider(string url) {
+            IImageByteProvider provider = null;
+            if (!string.IsNullOrEmpty(url)) {
+                if (url.StartsWith("http")) {
+                    provider = new MjpegImageByteProvider(url);
+                }
+                else if (url.StartsWith("rtsp")) {
+                    provider = new RtspImageByteProvider(url);
+                }
+            }
+
+            return provider;
         }
         private void CreateMediaDirectoryIfNotExist() {
             if (!Directory.Exists(MEDIA_DIRECTORY)) {
@@ -101,9 +110,9 @@ namespace Exavision.Seasense.Server.Services {
         }
 
         public List<MediaFile> GetMediaFiles(HttpContext context) {
-            string url = "http://" + context.Request.Host + "/Media";
+            string url = "http://" + context.Request.Host + "/Medias";
             if (context.Request.IsHttps) {
-                url = "https://" + context.Request.Host + "/Media";
+                url = "https://" + context.Request.Host + "/Medias";
             }
             string[] allowedExtensions = new string[] { "jpg", "png", "bmp", "avi", "mpg", "mp4", "mpeg" };
             List<MediaFile> list = new List<MediaFile>();
@@ -124,9 +133,66 @@ namespace Exavision.Seasense.Server.Services {
                     list.Add(media);
                 }
             }
-
+            list = (from l in list orderby l.CreationDate descending select l).ToList();
 
             return list;
+        }
+        private List<Tuple<Recording, ImageByteRecorder>> recordings = new List<Tuple<Recording, ImageByteRecorder>>();
+
+        public string StartRecord(ICamera camera, User user) {
+
+            IImageByteProvider provider = this.CreateImageByteProvider(camera.Id);
+            if (provider == null) return null;
+            Recording recording = new Recording(user, camera.Id, camera.DisplayName);
+            try {
+                ImageByteRecorder recorder = new ImageByteRecorder(provider, recording.FileName);
+                recorder.Start();
+                this.recordings.Add(new Tuple<Recording, ImageByteRecorder>(recording, recorder));
+                return recording.Id;
+            }
+            catch (Exception ex) {
+                Log.Error("Error when start recording " + ex.Message);
+
+            }
+            return null;
+        }
+
+        public List<RecordingState> GetRecordingStates() {
+            List<RecordingState> states = new List<RecordingState>();
+            this.recordings.ForEach((Tuple<Recording, ImageByteRecorder> rec) => {
+                string description = "File " + rec.Item1.FileName + " recording from ";
+
+                TimeSpan diff = DateTime.Now - rec.Item1.StartDate;
+                description += diff.Hours.ToString("00") + ":" + diff.Minutes.ToString("00") + ":" + diff.Seconds.ToString("00") + ":" + diff.Milliseconds.ToString("0000");
+                RecordingState state = new RecordingState() {
+                    FileName = rec.Item1.FileName,
+                    StartDate = rec.Item1.StartDate,
+                    UserLogin = rec.Item1.User.Login,
+                    Id = rec.Item1.Id,
+                    MaterialId = rec.Item1.MaterialId,
+                    Description = description
+                };
+                states.Add(state);
+            });
+
+            return states;
+        }
+
+        public void StopRecord(string recordId) {
+            Tuple<Recording, ImageByteRecorder> recording = (from r in this.recordings where r.Item1.Id.Equals(recordId) select r).FirstOrDefault();
+            if (recording != null) {
+                recording.Item2.Stop();
+                this.recordings.Remove(recording);
+            }
+        }
+
+        public void StopRecords(User user) {
+            List<Tuple<Recording, ImageByteRecorder>> recordToStop = (from r in recordings where r.Item1.User.Login.Equals(user.Login) select r).ToList();
+            foreach (Tuple<Recording, ImageByteRecorder> recording in recordToStop) {
+                recording.Item2.Stop();
+                recordings.Remove(recording);
+            }
+            recordToStop.Clear();
         }
     }
 }

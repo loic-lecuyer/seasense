@@ -17,19 +17,25 @@ import { WsLazerMeasurementShootRequest } from '../api/ws/ws-lazer-measurement-s
 import { WsDoubleValueSetRequest } from '../api/ws/ws-double-value-set-request';
 import { SwitchValue } from '../models/switch-value';
 import { WsSwitchValueSetRequest } from '../api/ws/ws-switch-value-set-request';
-import { WsCameraScreenshotRequest } from '../api/ws/ws-camera-scenneshot-request';
+import { WsCameraScreenshotRequest } from '../api/ws/ws-camera-screeneshot-request';
 import { WsTurretMoveAbsoluteRequest } from '../api/ws/ws-turret-move-absolute-request';
 import { WsGetMediaListRequest } from '../api/ws/ws-get-media-list-request';
 import { WsGetMediaListResponse } from '../api/ws/ws-get-media-list-response';
 import { MediaFile } from '../models/media-file';
+import { WsCameraScreenshotResponse } from '../api/ws/ws-camera-screeneshot-response';
+import { WsCameraStartRecordRequest } from '../api/ws/ws-camera-start-record-request';
+import { WsCameraStopRecordRequest } from '../api/ws/ws-camera-stop-record-request';
+import { WsCameraStartRecordResponse } from '../api/ws/ws-camera-start-record-response';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
-
+ 
 
   public mediaFilesSubject: Subject<MediaFile[]> = new Subject<MediaFile[]>();
   public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
+  public screenshootSubject: Subject<string> = new Subject<string>();
+  public startRecordSubject: Subject<WsCameraStartRecordResponse> = new Subject<WsCameraStartRecordResponse>();
   private stateTimer: any;
   private stateInterval: number = 100;
 
@@ -85,7 +91,17 @@ export class WsService {
         if (response.$type === 'WsGetMediaListResponse') {
           this.mediaFilesSubject.next((<WsGetMediaListResponse>response).files)
         }
+        if (response.$type === 'WsCameraScreenshotResponse' && this.userService.user != null) {
+          let cameraScreenshotResponse: WsCameraScreenshotResponse = <WsCameraScreenshotResponse>response;
+          if (cameraScreenshotResponse.userLogin === this.userService.user.login) {
+            this.screenshootSubject.next(cameraScreenshotResponse.fileName);
+          }
+          
+        }
 
+        if (response.$type === 'WsCameraStartRecordResponse') {
+          this.startRecordSubject.next(<WsCameraStartRecordResponse>response)
+        }
        
       }
      
@@ -296,6 +312,39 @@ export class WsService {
     let data: string = JSON.stringify(request);
     this.socket?.send(data);
   
+  }
+
+  startRecord(unitId: string, materialId: string)  : string | null{
+    let requestId: string = uuid.v4();
+    if (this.userService.token == null) return null;
+    let request: WsCameraStartRecordRequest = {
+      $type: "WsCameraStartRecordRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token
+
+    };
+    console.log("WebSocket send WsCameraStartRecordRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+    return requestId;
+  }
+
+
+  stopRecord(unitId: string, materialId: string,recordId : string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraStopRecordRequest = {
+      $type: "WsCameraStopRecordRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      recordId: recordId,
+      token: this.userService.token
+    };
+    console.log("WebSocket send WsCameraStopRecordRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
   }
   getMediaList() {
     if (this.userService.token == null) return;

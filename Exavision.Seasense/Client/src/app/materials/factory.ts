@@ -35,6 +35,8 @@ import { WsValidResponse } from "../api/ws/ws-valid-response";
 import { WsErrorResponse } from "../api/ws/ws-error-response";
 import { SwitchValueType } from "./capabilities/switch-value-type";
 import { WsGetMediaListResponse } from "../api/ws/ws-get-media-list-response";
+import { WsCameraScreenshotResponse } from "../api/ws/ws-camera-screeneshot-response";
+import { WsCameraStartRecordResponse } from "../api/ws/ws-camera-start-record-response";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -67,7 +69,18 @@ export class Factory {
         return getMediaListResponse;
         break;
 
+      case "WsCameraScreenshotResponse":
+        let cameraScreenshotResponse: WsCameraScreenshotResponse = <WsCameraScreenshotResponse>data;
+        return cameraScreenshotResponse;
+        break;
 
+
+      case "WsCameraStartRecordResponse":
+        let cameraStartRecordResponse: WsCameraStartRecordResponse = <WsCameraStartRecordResponse>data;
+        return cameraStartRecordResponse;
+        break;
+
+   
         
       default:
         console.error("No creation implemtation in facotry for type " + typeName);

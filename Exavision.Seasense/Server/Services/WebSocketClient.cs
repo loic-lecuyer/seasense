@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Exavision.Seasense.Shared.Models;
+using Microsoft.AspNetCore.Http;
 using Serilog;
 using System;
 using System.Net.WebSockets;
@@ -13,6 +14,7 @@ namespace Exavision.Seasense.Server.Services {
         private CancellationTokenSource cancelSource;
 
         public HttpContext Context => this.context;
+        public User User { get; set; }
 
         public event EventHandler<WebSocketClient> OnDisconnected;
         public event EventHandler<WebSocketClientMessage> OnReceiveMessage;

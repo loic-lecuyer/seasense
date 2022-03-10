@@ -59,8 +59,9 @@
   </app-hud-button>
 
   <!-- Record -->
-  <app-hud-button *ngIf="hasRecordCapability">
-    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">fiber_manual_record</mat-icon>
+  <app-hud-button (click)="onRecordClick()" *ngIf="hasRecordCapability">
+    <mat-icon *ngIf="runningRecord == null" class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">fiber_manual_record</mat-icon>
+    <mat-icon *ngIf="runningRecord != null" class="hud-button-icon" [inline]="true" matTooltip="Stop Recording" aria-hidden="false" aria-label="Stop Recording">stop</mat-icon>
   </app-hud-button>
   <!-- Screenshot -->
   <app-hud-button (buttonUp)="onScreenshot()" *ngIf="hasScreenshotCapability">
@@ -97,8 +98,9 @@
   </app-hud-button>
 
   <!-- Record -->
-  <app-hud-button *ngIf="hasRecordCapability">
-    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">fiber_manual_record</mat-icon>
+  <app-hud-button (click)="onRecordClick()" *ngIf="hasRecordCapability">
+    <mat-icon *ngIf="runningRecord == null" class="hud-button-icon" [inline]="true" matTooltip="Start Recording" aria-hidden="false" aria-label="Start Recording">fiber_manual_record</mat-icon>
+    <mat-icon *ngIf="runningRecord != null" class="hud-button-icon" [inline]="true" matTooltip="Stop Recording" aria-hidden="false" aria-label="Stop Recording">stop</mat-icon>
   </app-hud-button>
   <!-- Screenshot -->
   <app-hud-button (buttonUp)="onScreenshot()" *ngIf="hasScreenshotCapability">

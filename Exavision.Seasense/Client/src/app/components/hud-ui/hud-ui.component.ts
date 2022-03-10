@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Data } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { WsCameraStartRecordResponse } from '../../api/ws/ws-camera-start-record-response';
 import { Camera } from '../../materials/camera';
 import { CameraAutoFocusOnePushCapability } from '../../materials/capabilities/camera/camera-auto-focus-one-push-capability';
 import { CameraZoomContinuousCapability } from '../../materials/capabilities/camera/camera-zoom-continuous-capability';
@@ -11,6 +12,7 @@ import { TurretGyrostabilizationCapability } from '../../materials/capabilities/
 import { TurretMoveSpeedCapability } from '../../materials/capabilities/turret/turret-move-speed-capability';
 import { Material } from '../../materials/material';
 import { MaterialType } from '../../materials/material-type';
+import { RecordingState } from '../../materials/states/recording-state';
 import { SiteService } from '../../services/site.service';
 import { UiService } from '../../services/ui.service';
 import { WsService } from '../../services/ws.service';
@@ -25,7 +27,9 @@ export class HudUiComponent implements OnInit, OnDestroy {
 
  
 
+  
 
+  public runningRecord: RecordingState | undefined = undefined;
   public isLeftToRight: boolean = true;
   public hasPipZoom: boolean = false;
   public hasMultipleCamera: boolean = false;
@@ -40,14 +44,13 @@ export class HudUiComponent implements OnInit, OnDestroy {
   public hasScreenshotCapability: boolean = false;
   public hasGyroStabilizationCapability: boolean = false;
   public hasLrf: boolean = false;
-
-
   public isTurretGyroStabilizationEnabled: boolean = false;
-
   private unitSelectedSubscription: Subscription;
   private cameraSelectedSubscription: Subscription;
   private siteStateSubscription: Subscription;
   private isLeftTorighSubscription: Subscription;
+
+
   constructor(private siteService: SiteService, private snackBar: MatSnackBar, private uiService: UiService, private wsService: WsService) {
     this.unitSelectedSubscription = this.siteService.unitSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
     this.cameraSelectedSubscription = this.siteService.cameraSelectedSubject.subscribe(() => { this.updateVisibilityFlags(); });
@@ -57,6 +60,9 @@ export class HudUiComponent implements OnInit, OnDestroy {
       this.updateLrfInfo();
     });
     this.isLeftTorighSubscription = this.uiService.isLeftTorightSubject.subscribe((isleftToRigth: boolean) => { this.isLeftToRight = isleftToRigth; });
+
+    
+    
   }
   onPipZoomButtonDown() {
     this.uiService.showHidePipZoom();  
@@ -67,6 +73,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
     this.cameraSelectedSubscription.unsubscribe();
     this.siteStateSubscription.unsubscribe();
     this.isLeftTorighSubscription.unsubscribe();
+  
   }
   ngOnInit(): void {
     this.updateVisibilityFlags();
@@ -128,7 +135,12 @@ export class HudUiComponent implements OnInit, OnDestroy {
       if (cap != null) {
         this.isTurretGyroStabilizationEnabled = cap.isGyrostabilizationEnabled;
       }
-    } 
+    }
+
+    if (this.siteService.site != null && this.siteService.site.recordings != null && this.siteService.selectedCamera != null) {
+      this.runningRecord = this.siteService.site.recordings.find((val: RecordingState) => { return val.materialId === this.siteService.selectedCamera?.id });
+    }
+
   }
 
 
@@ -173,6 +185,17 @@ export class HudUiComponent implements OnInit, OnDestroy {
     if (this.siteService.selectedCamera != null && this.siteService.selectedUnit != null) {
       this.wsService.screenshot(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id);
 
+    }
+  }
+  onRecordClick() {
+    if (this.siteService.selectedCamera != null && this.siteService.selectedUnit != null) {
+      if (!this.runningRecord) {
+        this.wsService.startRecord(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id);
+      }
+      else {
+        this.wsService.stopRecord(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id, this.runningRecord.id);
+      }
+      
     }
   }
   onAutoFocusButtonDown() {

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Data } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MediaFile } from '../../models/media-file';
@@ -14,6 +14,8 @@ export class PanelMediaComponent implements OnInit, OnDestroy {
   public files: MediaFile[] = [];
   displayedColumns: string[] = [ 'name','size','date','type','download','open'];
   private mediaFilesSubscription: Subscription;
+  @ViewChild('refLink') refLink: ElementRef | null = null;
+    screenshotSubscription: Subscription;
   constructor(private uiService: UiService, private wsService: WsService) {
 
 
@@ -21,9 +23,15 @@ export class PanelMediaComponent implements OnInit, OnDestroy {
       this.files = [];
       this.files = this.files.concat(files);
     });
+
+    this.screenshotSubscription = this.wsService.screenshootSubject.subscribe((fileName: string) => {
+      this.wsService.getMediaList();
+
+    });
   }
   ngOnDestroy() {
     this.mediaFilesSubscription.unsubscribe();
+    this.screenshotSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -66,5 +74,20 @@ export class PanelMediaComponent implements OnInit, OnDestroy {
       this.padTo2Digits(date.getMonth() + 1),
       date.getFullYear(),
     ].join('/') + ' ' + date.toTimeString().split(' ')[0];
+  }
+  onDownloadClick(file: MediaFile) {
+    if (this.refLink == null) return;
+    this.refLink.nativeElement.setAttribute('download', file.name);
+    this.refLink.nativeElement.href = file.url;
+    console.log("Download url " + file.url);
+    this.refLink.nativeElement.click();
+  }
+  onOpenInNewTabClick(file: MediaFile) {
+    console.log("Open url " + file.url);
+    window.open(file.url, "_blank");
+
+  }
+  onDeleteClick(file: MediaFile) {    
+
   }
 }

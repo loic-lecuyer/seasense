@@ -5,6 +5,7 @@ import { SettingCapability } from "./settings/setting-capability";
 import { SettingSite } from "./settings/setting-site";
 import { SettingUnit } from "./settings/setting-unit";
 import { CapabilityState } from "./states/capability-state";
+import { RecordingState } from "./states/recording-state";
 import { SiteState } from "./states/site-state";
 import { UnitState } from "./states/unit-state";
 import { Unit } from "./unit";
@@ -15,6 +16,7 @@ export class Site {
   public id: string;
   public units: Unit[] = [];
   public capabilities: Capability[] = [];
+  public recordings: RecordingState[] = [];
   constructor(settingSite: SettingSite, wsService: WsService, factory: Factory ) {
    
     this.id = settingSite.id;
@@ -32,6 +34,7 @@ export class Site {
   }
 
   setState(siteState: SiteState) {
+    this.recordings = siteState.recordings;
     siteState.units.forEach((valueState: UnitState) => {
       let unit: Unit | undefined = this.units.find((valueUnit: Unit) => { return valueUnit.id === valueState.id; });
       if (unit != null) {

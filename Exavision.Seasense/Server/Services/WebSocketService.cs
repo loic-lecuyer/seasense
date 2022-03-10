@@ -10,6 +10,7 @@ using Exavision.Seasense.Shared.Capabilities.LazerMeasurement;
 using Exavision.Seasense.Shared.Capabilities.Turret;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
+using Exavision.Seasense.Shared.States;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -17,6 +18,7 @@ using Newtonsoft.Json;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
@@ -70,8 +72,9 @@ namespace Exavision.Seasense.Server.Services {
                 requestId = request.RequestId;
                 if (this.tokenService.IsTokenValid(request.Token, out string userId)) {
                     User user = this.userRepository.FindUserById(userId);
-                    if (user == null) throw new InvalidOperationException("Invalid user Id");
 
+                    if (user == null) throw new InvalidOperationException("Invalid user Id");
+                    if (e.Client.User == null) e.Client.User = user;
                     this.ProcessRequest(request, user, e.Client);
 
 
@@ -91,6 +94,7 @@ namespace Exavision.Seasense.Server.Services {
         }
 
         private void ProcessRequest(WsRequest request, User user, WebSocketClient client) {
+
 
             if (request is WsTurretMoveSpeedRequest reqTurretMoveSpeed) {
 
@@ -120,7 +124,9 @@ namespace Exavision.Seasense.Server.Services {
 
 
             else if (request is WsGetStateRequest reqGetState) {
-                WsResponse response = new WsGetStateResponse() { RequestId = request.RequestId, Site = this.siteService.GetState() };
+                SiteState siteState = this.siteService.GetState();
+                siteState.Recordings = this.streamService.GetRecordingStates();
+                WsResponse response = new WsGetStateResponse() { RequestId = request.RequestId, Site = siteState };
                 this.SendResponse(response, client);
             }
             else if (request is WsCameraZoomStopRequest cameraZoomStopRequest) {
@@ -225,6 +231,15 @@ namespace Exavision.Seasense.Server.Services {
                 if (material is ICamera camera) {
                     string path = this.streamService.Screenshot(camera);
                     if (String.IsNullOrEmpty(path)) this.SendError(client, request.RequestId, "Error during screenshot, show log for more information ");
+                    else {
+                        FileInfo info = new FileInfo(path);
+                        WsCameraScreenshotResponse response = new WsCameraScreenshotResponse() {
+                            RequestId = cameraScreenshotRequest.RequestId,
+                            FileName = info.Name,
+                            UserLogin = user.Login
+                        };
+                        this.SendResponse(response, client);
+                    }
                 }
             }
             else if (request is WsGetMediaListRequest getMediaListRequest) {
@@ -233,8 +248,34 @@ namespace Exavision.Seasense.Server.Services {
                 response.RequestId = request.RequestId;
                 this.SendResponse(response, client);
             }
+            else if (request is WsCameraStartRecordRequest startRecordRequest) {
+                IUnit unit = this.siteService.FindUnitById(startRecordRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(startRecordRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                if (material is ICamera camera) {
+                    string recordId = this.streamService.StartRecord(camera, user);
+                    if (!String.IsNullOrEmpty(recordId)) {
+                        WsCameraStartRecordResponse resp = new WsCameraStartRecordResponse() {
+                            RequestId = startRecordRequest.RequestId,
+                            RecordId = recordId
 
+                        };
+                        this.SendResponse(resp, client);
 
+                    }
+                    else { this.SendError(client, request.RequestId, "can't start record " + request.Type); }
+                }
+                else { this.SendError(client, request.RequestId, "Can only record camera " + request.Type); }
+            }
+
+            else if (request is WsCameraStopRecordRequest stopRecordRequest) {
+                IUnit unit = this.siteService.FindUnitById(stopRecordRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(stopRecordRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                this.streamService.StopRecord(stopRecordRequest.RecordId);
+            }
             else {
                 this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);
             }
@@ -269,6 +310,7 @@ namespace Exavision.Seasense.Server.Services {
 
         private void Client_OnDisconnected(object sender, WebSocketClient e) {
             lock (this.clientLocker) {
+                this.streamService.StopRecords(e.User);
                 if (this.clients.Contains(e)) this.clients.Remove(e);
                 e.OnDisconnected -= this.Client_OnDisconnected;
                 e.OnReceiveMessage -= this.Client_OnReceiveMessage;

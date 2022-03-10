@@ -1,12 +1,12 @@
 <div class="flex-1 display-flex flex-dir-col">
   <div class="display-flex flex-dir-row">
-    <div class="flex-1"></div>
+  
 
-    <div class="display-flex flex-dir-col">
+    <div class="display-flex flex-dir-col flex-1 flex-align-center">
       <div *ngIf="this.siteService.selectedUnit != null" class="status-info display-flex flex-dir-row margin-4 flex-align-center">
         <div (mouseover)="setDetailMaterial(material)" (mouseout)="setDetailMaterial(null)" class="margin-4 display-flex flex-dir-row" *ngFor="let material of this.siteService.selectedUnit.materials">
           <div [attr.class]="getMaterialStatusClass(material)" class="led margin-4"></div>
-          <div class="margin-4">{{material.displayName}}</div>  
+          <div class="margin-4 stoke-text">{{material.displayName}}</div>
         </div>
       </div>
 
@@ -14,23 +14,31 @@
         <div class="display-flex flex-dir-row margin-4 flex-align-center" *ngFor="let status of detailMaterial.status">
           <div class="flex-1"></div>
           <div class="led margin-4" [ngClass]="{'green': status.status === 'Ok', 'yellow': status.status === 'Warning', 'red': status.status === 'Error'}"></div>
-          <div class="margin-4">{{status.message}}</div>
+          <div class="margin-4 stoke-text">{{status.message}}</div>
           <div class="flex-1"></div>
         </div>
+      </div>
+
+      <div class="margin-4 stoke-text" @fade *ngIf="mediaInfo != null">
+        {{mediaInfo}}
+      </div>
+      <div class="margin-4 stoke-text" *ngFor="let rec of recordings">
+        {{rec.description}}
+
       </div>
     </div>
    
 
-    <div class="flex-1"></div>
+   
   </div>
 
   <div class="flex-1"></div>
   <div class="bottom-left-box">
-    <div class="bottom-left-box-info">Pan : {{currentPan.toFixed(2)}}</div>
-    <div class="bottom-left-box-info">Tilt : {{currentTilt.toFixed(2)}}</div>
-    <div class="bottom-left-box-info">HFov : {{currentHfov.toFixed(2)}}</div>
-    <div *ngIf="uiService.mousePan != null" class="bottom-left-box-info">Mouse Pan : {{uiService.mousePan.toFixed(2)}}</div>
-    <div *ngIf="uiService.mouseTilt != null" class="bottom-left-box-info">Mouse Tilt : {{uiService.mouseTilt.toFixed(2)}}</div>
+    <div *ngIf="uiService.mousePan != null" class="bottom-left-box-info stoke-text">Mouse Pan : {{uiService.mousePan.toFixed(2)}}</div>
+    <div *ngIf="uiService.mouseTilt != null" class="bottom-left-box-info stoke-text">Mouse Tilt : {{uiService.mouseTilt.toFixed(2)}}</div>
+    <div class="bottom-left-box-info stoke-text">Pan : {{currentPan.toFixed(2)}}</div>
+    <div class="bottom-left-box-info stoke-text">Tilt : {{currentTilt.toFixed(2)}}</div>
+    <div class="bottom-left-box-info stoke-text">HFov : {{currentHfov.toFixed(2)}}</div>
   </div>
 </div>
 
