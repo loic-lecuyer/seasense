@@ -1,9 +1,26 @@
 <div class="flex-1 display-flex flex-dir-col">
-  <div class="display-flex flex-dir-row" >
+  <div class="display-flex flex-dir-row">
     <div class="flex-1"></div>
-    <div *ngIf="this.siteService.selectedUnit != null" class="status-info display-flex flex-dir-row" >
-      <div class="margin-4" *ngFor="let material of this.siteService.selectedUnit.materials">{{ material.displayName }}</div>
+
+    <div class="display-flex flex-dir-col">
+      <div *ngIf="this.siteService.selectedUnit != null" class="status-info display-flex flex-dir-row margin-4 flex-align-center">
+        <div (mouseover)="setDetailMaterial(material)" (mouseout)="setDetailMaterial(null)" class="margin-4 display-flex flex-dir-row" *ngFor="let material of this.siteService.selectedUnit.materials">
+          <div [attr.class]="getMaterialStatusClass(material)" class="led margin-4"></div>
+          <div class="margin-4">{{material.displayName}}</div>  
+        </div>
+      </div>
+
+      <div *ngIf="detailMaterial != null" class="display-flex">
+        <div class="display-flex flex-dir-row margin-4 flex-align-center" *ngFor="let status of detailMaterial.status">
+          <div class="flex-1"></div>
+          <div class="led margin-4" [ngClass]="{'green': status.status === 'Ok', 'yellow': status.status === 'Warning', 'red': status.status === 'Error'}"></div>
+          <div class="margin-4">{{status.message}}</div>
+          <div class="flex-1"></div>
+        </div>
+      </div>
     </div>
+   
+
     <div class="flex-1"></div>
   </div>
 

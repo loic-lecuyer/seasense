@@ -28,6 +28,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { HudUiComponent } from './components/hud-ui/hud-ui.component';
+import { CdkTableModule } from '@angular/cdk/table';
 import { HudStreamComponent } from './components/hud-stream/hud-stream.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { HudStatusComponent } from './components/hud-status/hud-status.component';
@@ -47,6 +48,8 @@ import { AsyncToggleGroupComponent } from './components/async-toggle-group/async
 import { HudInfoComponent } from './components/hud-info/hud-info.component';
 import { PanelMediaComponent } from './components/panel-media/panel-media.component';
 import { PanelSavComponent } from './components/panel-sav/panel-sav.component';
+import { OverlayModule } from '@angular/cdk/overlay';
+
 /** Http interceptor providers in outside-in order */
 export const httpInterceptorProviders = [
   { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
@@ -83,11 +86,13 @@ export const httpInterceptorProviders = [
     FormsModule,
     MatButtonModule,
     MatSliderModule,
+    CdkTableModule,
     MatSelectModule,
     MatRippleModule,
     ScrollingModule,
     MatListModule,
     MatTreeModule,
+    OverlayModule,
     MatToolbarModule,
     MatCardModule,
     MatTabsModule,

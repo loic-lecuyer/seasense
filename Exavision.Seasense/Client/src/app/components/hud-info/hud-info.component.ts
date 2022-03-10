@@ -5,6 +5,7 @@ import { CapabilityType } from '../../materials/capabilities/capability-type';
 import { TurretAbsolutePositionCapability } from '../../materials/capabilities/turret/turret-absolute-position-capability';
 import { Material } from '../../materials/material';
 import { MaterialType } from '../../materials/material-type';
+import { Status, StatusState } from '../../materials/states/status-state';
 import { SiteService } from '../../services/site.service';
 import { UiService } from '../../services/ui.service';
 
@@ -19,7 +20,9 @@ export class HudInfoComponent implements OnInit, OnDestroy {
   currentTilt: number = 0;
   currentPan: number = 0;
   currentHfov: number = 0;
+  isTooltipOpen: boolean = false;
   private stateSubscription: Subscription;
+  public detailMaterial: Material | null = null;
   constructor(public siteService: SiteService, public uiService: UiService) {
     this.stateSubscription=   this.siteService.siteStateSubject.subscribe(() => { this.updateValues(); });
   }
@@ -41,6 +44,29 @@ export class HudInfoComponent implements OnInit, OnDestroy {
     this.stateSubscription.unsubscribe();
   }
   ngOnInit(): void {
+  }
+  getMaterialStatusClass(material: Material): string {
+    let errorCount: number = 0;
+    let warningCount: number = 0;
+    material.status.forEach((val: StatusState) => {
+      if (val.status == Status.Error) {
+        errorCount++;
+      }
+      if (val.status == Status.Warning) {
+        warningCount++;
+      }
+    });
+    if (errorCount > 0) {
+      return "red led";
+    }
+    else if (warningCount > 0) {
+      return "yellow led";
+    }
+    return "green led";
+  }
+
+  setDetailMaterial(material: Material | null) {
+    this.detailMaterial = material;
   }
 
 }

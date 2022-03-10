@@ -34,6 +34,7 @@ import { SettingSwitchValueCapability } from "./settings/setting-switch-value-ca
 import { WsValidResponse } from "../api/ws/ws-valid-response";
 import { WsErrorResponse } from "../api/ws/ws-error-response";
 import { SwitchValueType } from "./capabilities/switch-value-type";
+import { WsGetMediaListResponse } from "../api/ws/ws-get-media-list-response";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -60,6 +61,14 @@ export class Factory {
         let errorResponse: WsErrorResponse = <WsErrorResponse>data;
         return errorResponse;
         break;
+
+      case "WsGetMediaListResponse":
+        let getMediaListResponse: WsGetMediaListResponse = <WsGetMediaListResponse>data;
+        return getMediaListResponse;
+        break;
+
+
+        
       default:
         console.error("No creation implemtation in facotry for type " + typeName);
         throw "No creation implemtation in facotry for type " + typeName;

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
@@ -88,14 +89,7 @@ namespace Exavision.Seasense.Server {
             app.UseMiddleware<StreamMiddleware>();
             app.UseMiddleware<JwtMiddleware>();
             app.UseRouting();
-            app.UseSpaStaticFiles(new StaticFileOptions {
-                OnPrepareResponse = context => {
-                    if (context.File.Name == "index.html") {
-                        context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
-                        context.Context.Response.Headers.Add("Expires", "-1");
-                    }
-                }
-            });
+
 
             var webSocketOptions = new WebSocketOptions() {
                 KeepAliveInterval = TimeSpan.FromSeconds(3)
@@ -107,18 +101,28 @@ namespace Exavision.Seasense.Server {
 
                 });
             });
+            string mediaPath = Path.Combine(env.ContentRootPath, StreamingService.MEDIA_DIRECTORY);
+            if (!Directory.Exists(mediaPath)) Directory.CreateDirectory(mediaPath);
+            app.UseStaticFiles(new StaticFileOptions() {
+                FileProvider = new PhysicalFileProvider(mediaPath),
+                RequestPath = "/Medias"
+            });
 
 
-
-
+            app.UseSpaStaticFiles(new StaticFileOptions {
+                OnPrepareResponse = context => {
+                    if (context.File.Name == "index.html") {
+                        context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                        context.Context.Response.Headers.Add("Expires", "-1");
+                    }
+                }
+            });
             app.UseSpa(spa => {
                 if (env.IsDevelopment()) {
                     spa.Options.SourcePath = "Client";
                 }
             });
-            app.UseStaticFiles(new StaticFileOptions() {
-                ServeUnknownFileTypes = true
-            });
+
             app.UseMvc();
 
             app.UseEndpoints(endpoints => {

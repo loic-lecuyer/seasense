@@ -34,6 +34,8 @@
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-double-value-set-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-error-response.ts" />
+    <None Remove="Client\src\app\api\ws\ws-get-media-list-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-get-media-list-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-state-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-state-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-lazer-measurement-shoot-request.ts" />
@@ -78,6 +80,7 @@
     <None Remove="Client\src\app\materials\states\turret\turret-gyrostabilization-state.ts" />
     <None Remove="Client\src\app\materials\states\unit-state.ts" />
     <None Remove="Client\src\app\materials\unit.ts" />
+    <None Remove="Client\src\app\models\media-file.ts" />
     <None Remove="Client\src\app\models\stream.ts" />
     <None Remove="Client\src\app\models\switch-value.ts" />
     <None Remove="Client\src\app\models\unit-type.ts" />
@@ -154,6 +157,12 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-error-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-media-list-response.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-media-list-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-turret-move-absolute-request.ts">
@@ -270,6 +279,9 @@
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\settings\setting-site.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\site.ts" />
+    <TypeScriptCompile Include="Client\src\app\models\media-file.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\models\unit-type.ts" />
     <TypeScriptCompile Include="Client\src\app\models\stream.ts">
       <SubType>Code</SubType>

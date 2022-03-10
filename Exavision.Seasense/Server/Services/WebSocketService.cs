@@ -1,6 +1,7 @@
 ﻿using Exavision.Seasense.Api.WebSocket.Camera;
 using Exavision.Seasense.Api.WebSocket.Core;
 using Exavision.Seasense.Api.WebSocket.LazerMeasurement;
+using Exavision.Seasense.Api.WebSocket.Medias;
 using Exavision.Seasense.Api.WebSocket.States;
 using Exavision.Seasense.Api.WebSocket.Turret;
 using Exavision.Seasense.Shared.Capabilities;
@@ -32,7 +33,7 @@ namespace Exavision.Seasense.Server.Services {
         public async Task HandleRequest(HttpContext context, Func<Task> next) {
             if (context.WebSockets.IsWebSocketRequest) {
                 var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                WebSocketClient client = this.AddClient(webSocket);
+                WebSocketClient client = this.AddClient(webSocket, context);
                 await client.Start();
             }
             else {
@@ -49,9 +50,9 @@ namespace Exavision.Seasense.Server.Services {
             this.siteService = siteService;
             this.streamService = streamService;
         }
-        private WebSocketClient AddClient(WebSocket webSocket) {
+        private WebSocketClient AddClient(WebSocket webSocket, HttpContext context) {
             lock (clientLocker) {
-                WebSocketClient client = new(webSocket);
+                WebSocketClient client = new(webSocket, context);
                 client.OnDisconnected += this.Client_OnDisconnected;
                 client.OnReceiveMessage += this.Client_OnReceiveMessage;
                 this.clients.Add(client);
@@ -226,6 +227,13 @@ namespace Exavision.Seasense.Server.Services {
                     if (String.IsNullOrEmpty(path)) this.SendError(client, request.RequestId, "Error during screenshot, show log for more information ");
                 }
             }
+            else if (request is WsGetMediaListRequest getMediaListRequest) {
+                WsGetMediaListResponse response = new WsGetMediaListResponse();
+                response.Files = this.streamService.GetMediaFiles(client.Context);
+                response.RequestId = request.RequestId;
+                this.SendResponse(response, client);
+            }
+
 
             else {
                 this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);

@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.AspNetCore.Http;
+using Serilog;
 using System;
 using System.Net.WebSockets;
 using System.Text;
@@ -8,12 +9,17 @@ using System.Threading.Tasks;
 namespace Exavision.Seasense.Server.Services {
     public class WebSocketClient {
         private WebSocket webSocket;
+        private readonly HttpContext context;
         private CancellationTokenSource cancelSource;
+
+        public HttpContext Context => this.context;
+
         public event EventHandler<WebSocketClient> OnDisconnected;
         public event EventHandler<WebSocketClientMessage> OnReceiveMessage;
 
-        public WebSocketClient(WebSocket webSocket) {
+        public WebSocketClient(WebSocket webSocket, HttpContext context) {
             this.webSocket = webSocket;
+            this.context = context;
         }
 
         internal async Task Start() {

@@ -19,13 +19,16 @@ import { SwitchValue } from '../models/switch-value';
 import { WsSwitchValueSetRequest } from '../api/ws/ws-switch-value-set-request';
 import { WsCameraScreenshotRequest } from '../api/ws/ws-camera-scenneshot-request';
 import { WsTurretMoveAbsoluteRequest } from '../api/ws/ws-turret-move-absolute-request';
+import { WsGetMediaListRequest } from '../api/ws/ws-get-media-list-request';
+import { WsGetMediaListResponse } from '../api/ws/ws-get-media-list-response';
+import { MediaFile } from '../models/media-file';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
 
- 
 
+  public mediaFilesSubject: Subject<MediaFile[]> = new Subject<MediaFile[]>();
   public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
   private stateTimer: any;
   private stateInterval: number = 100;
@@ -79,7 +82,10 @@ export class WsService {
         if (response.$type === 'WsGetStateResponse') {
           this.siteStateSubject.next((<WsGetStateResponse>response).site)
         } 
-      
+        if (response.$type === 'WsGetMediaListResponse') {
+          this.mediaFilesSubject.next((<WsGetMediaListResponse>response).files)
+        }
+
        
       }
      
@@ -289,8 +295,19 @@ export class WsService {
     console.log("WebSocket send WsCameraScreenshotRequest");
     let data: string = JSON.stringify(request);
     this.socket?.send(data);
-    
-    throw new Error('Method not implemented.');
+  
   }
+  getMediaList() {
+    if (this.userService.token == null) return;
+    let request: WsGetMediaListRequest = {
+      $type: "WsGetMediaListRequest",    
+      requestId: uuid.v4(),   
+      token: this.userService.token,
 
+    };
+    console.log("WebSocket send WsGetMediaListRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+
+  }
 }
