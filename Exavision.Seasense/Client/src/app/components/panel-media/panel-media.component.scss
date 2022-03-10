@@ -3,6 +3,16 @@
   top: 100px;
   left: 100px;
   width: 600px;
-  height: 600px;
+  height: 600px !important;
+  max-height: 600px !important;
   z-index: 1000;
+}
+table {
+  width: 100%;
+}
+.media-container {
+  height: 300px !important;
+  max-height: 300px !important;
+  max-width: 100% !important;
+  overflow: auto !important;
 }

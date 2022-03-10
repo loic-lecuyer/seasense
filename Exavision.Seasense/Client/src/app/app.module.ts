@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HttpService } from './services/http.service';
+import { MatTableModule } from '@angular/material/table';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UserService } from './services/user.service';
 import { JwtInterceptor } from './interceptor/jwt-interceptor';
@@ -92,6 +93,7 @@ export const httpInterceptorProviders = [
     ScrollingModule,
     MatListModule,
     MatTreeModule,
+    MatTableModule,
     OverlayModule,
     MatToolbarModule,
     MatCardModule,
