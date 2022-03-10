@@ -9,6 +9,7 @@ import { SettingMaterial } from "./settings/setting-material";
 import { Site } from "./site";
 import { CapabilityState } from "./states/capability-state";
 import { MaterialState } from "./states/material-state";
+import { StatusState } from "./states/status-state";
 import { UnitState } from "./states/unit-state";
 import { Unit } from "./unit";
 
@@ -17,6 +18,7 @@ export class Turret implements Material {
   id: string;
   materials: Material[];
   capabilities: Capability[] = [];
+  status: StatusState[] = [];
   displayName: string;
   materialType: MaterialType;
   wsService: WsService;
@@ -52,6 +54,7 @@ export class Turret implements Material {
 
   }
   setState(state: MaterialState): void {
+    this.status = state.status;
     state.capabilities.forEach((valueState: CapabilityState) => {
       let cap: Capability | undefined = this.capabilities.find((valueCap: Capability) => { return valueCap.id === valueState.id; });
       if (cap != null) {

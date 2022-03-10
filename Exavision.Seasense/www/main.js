@@ -916,23 +916,41 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-function HudInfoComponent_div_7_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "div", 1);
+function HudInfoComponent_div_3_div_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "div", 9);
     _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const material_r4 = ctx.$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate"](material_r4.displayName);
+} }
+function HudInfoComponent_div_3_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "div", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](1, HudInfoComponent_div_3_div_1_Template, 2, 1, "div", 8);
     _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate1"]("Mouse Pan : ", ctx_r0.uiService.mousePan.toFixed(2), "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵproperty"]("ngForOf", ctx_r0.siteService.selectedUnit.materials);
 } }
-function HudInfoComponent_div_8_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "div", 1);
+function HudInfoComponent_div_13_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "div", 5);
     _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate1"]("Mouse Tilt : ", ctx_r1.uiService.mouseTilt.toFixed(2), "");
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate1"]("Mouse Pan : ", ctx_r1.uiService.mousePan.toFixed(2), "");
+} }
+function HudInfoComponent_div_14_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate1"]("Mouse Tilt : ", ctx_r2.uiService.mouseTilt.toFixed(2), "");
 } }
 class HudInfoComponent {
     constructor(siteService, uiService) {
@@ -968,21 +986,29 @@ class HudInfoComponent {
     }
 }
 HudInfoComponent.ɵfac = function HudInfoComponent_Factory(t) { return new (t || HudInfoComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_site_service__WEBPACK_IMPORTED_MODULE_0__.SiteService), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_ui_service__WEBPACK_IMPORTED_MODULE_1__.UiService)); };
-HudInfoComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineComponent"]({ type: HudInfoComponent, selectors: [["app-hud-info"]], hostAttrs: [1, "hud-layer"], decls: 9, vars: 5, consts: [[1, "bottom-left-box"], [1, "bottom-left-box-info"], ["class", "bottom-left-box-info", 4, "ngIf"]], template: function HudInfoComponent_Template(rf, ctx) { if (rf & 1) {
+HudInfoComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineComponent"]({ type: HudInfoComponent, selectors: [["app-hud-info"]], hostAttrs: [1, "hud-layer"], decls: 15, vars: 6, consts: [[1, "flex-1", "display-flex", "flex-dir-col"], [1, "display-flex", "flex-dir-row"], [1, "flex-1"], ["class", "status-info display-flex flex-dir-row", 4, "ngIf"], [1, "bottom-left-box"], [1, "bottom-left-box-info"], ["class", "bottom-left-box-info", 4, "ngIf"], [1, "status-info", "display-flex", "flex-dir-row"], ["class", "margin-4", 4, "ngFor", "ngForOf"], [1, "margin-4"]], template: function HudInfoComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](0, "div", 0)(1, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelement"](2, "div", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](3, HudInfoComponent_div_3_Template, 2, 1, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelement"](4, "div", 2);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](3, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelement"](5, "div", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](6, "div", 4)(7, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](8);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](5, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](9, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](10);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](7, HudInfoComponent_div_7_Template, 2, 1, "div", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](8, HudInfoComponent_div_8_Template, 2, 1, "div", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementStart"](11, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtext"](12);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](13, HudInfoComponent_div_13_Template, 2, 1, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtemplate"](14, HudInfoComponent_div_14_Template, 2, 1, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵelementEnd"]()();
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵproperty"]("ngIf", ctx.siteService.selectedUnit != null);
+        _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](5);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate1"]("Pan : ", ctx.currentPan.toFixed(2), "");
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](2);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵtextInterpolate1"]("Tilt : ", ctx.currentTilt.toFixed(2), "");
@@ -992,7 +1018,7 @@ HudInfoComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_2_
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵproperty"]("ngIf", ctx.uiService.mousePan != null);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵproperty"]("ngIf", ctx.uiService.mouseTilt != null);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__.NgIf], styles: [".bottom-left-box[_ngcontent-%COMP%] {\n  margin-bottom: 8px;\n  margin-left: 8px;\n}\n\n.bottom-left-box-info[_ngcontent-%COMP%] {\n  color: white;\n  font-size: 14px;\n  margin: 4px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh1ZC1pbmZvLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBRUksa0JBQUE7RUFDQSxnQkFBQTtBQUFKOztBQUVBO0VBQ0ksWUFBQTtFQUNBLGVBQUE7RUFDQSxXQUFBO0FBQ0oiLCJmaWxlIjoiaHVkLWluZm8uY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuYm90dG9tLWxlZnQtYm94XHJcbntcclxuICAgIG1hcmdpbi1ib3R0b206OHB4O1xyXG4gICAgbWFyZ2luLWxlZnQ6OHB4O1xyXG59XHJcbi5ib3R0b20tbGVmdC1ib3gtaW5mb3tcclxuICAgIGNvbG9yOndoaXRlO1xyXG4gICAgZm9udC1zaXplOjE0cHg7XHJcbiAgICBtYXJnaW46NHB4O1xyXG59XHJcbiJdfQ== */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__.NgIf, _angular_common__WEBPACK_IMPORTED_MODULE_3__.NgForOf], styles: ["[_nghost-%COMP%] {\n  color: white;\n  font-size: 14px;\n  font-weight: bold;\n}\n\n.bottom-left-box-info[_ngcontent-%COMP%] {\n  color: white;\n  font-size: 14px;\n  margin: 4px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImh1ZC1pbmZvLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBQTtFQUNBLGVBQUE7RUFDQSxpQkFBQTtBQUNGOztBQU1BO0VBQ0ksWUFBQTtFQUNBLGVBQUE7RUFDQSxXQUFBO0FBSEoiLCJmaWxlIjoiaHVkLWluZm8uY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyI6aG9zdCB7XHJcbiAgY29sb3I6IHdoaXRlO1xyXG4gIGZvbnQtc2l6ZTogMTRweDtcclxuICBmb250LXdlaWdodDpib2xkO1xyXG59XHJcblxyXG4uYm90dG9tLWxlZnQtYm94XHJcbntcclxuICAgIFxyXG59XHJcbi5ib3R0b20tbGVmdC1ib3gtaW5mb3tcclxuICAgIGNvbG9yOndoaXRlO1xyXG4gICAgZm9udC1zaXplOjE0cHg7XHJcbiAgICBtYXJnaW46NHB4O1xyXG59XHJcbiJdfQ== */"] });
 
 
 /***/ }),
@@ -3153,6 +3179,7 @@ __webpack_require__.r(__webpack_exports__);
 class Camera {
     constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
+        this.status = [];
         this.id = settingMaterial.id;
         this.materials = [];
         this.site = site;
@@ -3175,6 +3202,7 @@ class Camera {
         });
     }
     setState(state) {
+        this.status = state.status;
         state.capabilities.forEach((valueState) => {
             let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
             if (cap != null) {
@@ -3849,6 +3877,7 @@ __webpack_require__.r(__webpack_exports__);
 class InertialMeasurement {
     constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
+        this.status = [];
         this.id = settingMaterial.id;
         this.materials = [];
         this.wsService = wsService;
@@ -3871,6 +3900,7 @@ class InertialMeasurement {
         return cap;
     }
     setState(state) {
+        this.status = state.status;
         state.capabilities.forEach((valueState) => {
             let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
             if (cap != null) {
@@ -3906,6 +3936,7 @@ __webpack_require__.r(__webpack_exports__);
 class LazerMeasurement {
     constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
+        this.status = [];
         this.id = settingMaterial.id;
         this.materials = [];
         this.wsService = wsService;
@@ -3928,6 +3959,7 @@ class LazerMeasurement {
         return cap;
     }
     setState(state) {
+        this.status = state.status;
         state.capabilities.forEach((valueState) => {
             let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
             if (cap != null) {
@@ -4026,6 +4058,7 @@ __webpack_require__.r(__webpack_exports__);
 class Turret {
     constructor(settingMaterial, site, unit, wsService, factory) {
         this.capabilities = [];
+        this.status = [];
         this.id = settingMaterial.id;
         this.materials = [];
         this.site = site;
@@ -4052,6 +4085,7 @@ class Turret {
         return cap;
     }
     setState(state) {
+        this.status = state.status;
         state.capabilities.forEach((valueState) => {
             let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
             if (cap != null) {
@@ -4083,6 +4117,7 @@ __webpack_require__.r(__webpack_exports__);
 class Unit {
     constructor(settingMaterial, site, wsService, factory) {
         this.capabilities = [];
+        this.status = [];
         this.unit = this;
         this.site = site;
         this.id = settingMaterial.id;
@@ -4137,6 +4172,7 @@ class Unit {
         return this.materials.find((value) => { return value.materialType == materialType; });
     }
     setState(unitState) {
+        this.status = unitState.status;
         unitState.capabilities.forEach((valueState) => {
             let cap = this.capabilities.find((valueCap) => { return valueCap.id === valueState.id; });
             if (cap != null) {

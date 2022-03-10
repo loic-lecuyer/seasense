@@ -11,12 +11,13 @@ import { Site } from "./site";
 import { CapabilityState } from "./states/capability-state";
 import { MaterialState } from "./states/material-state";
 import { UnitState } from "./states/unit-state";
-
+import { StatusState } from "./states/status-state";
 export class Unit implements Material {
   
   id: string;
   materials: Material[];
   capabilities: Capability[] = [];
+  status: StatusState[] = [];
   displayName: string;
   materialType: MaterialType;
   wsService: WsService;
@@ -30,6 +31,7 @@ export class Unit implements Material {
     this.materials = [];
     this.wsService = wsService;
     this.materialType = MaterialType.Unit;
+
    
     this.displayName = settingMaterial.displayName;
     settingMaterial.materials.forEach((settingMaterialChild: SettingMaterial) => {
@@ -91,6 +93,7 @@ export class Unit implements Material {
 
  
   setState(unitState: UnitState) {
+    this.status = unitState.status;
     unitState.capabilities.forEach((valueState: CapabilityState) => {
       let cap: Capability | undefined = this.capabilities.find((valueCap: Capability) => { return valueCap.id === valueState.id; });
       if (cap != null) {

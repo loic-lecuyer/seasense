@@ -20,7 +20,7 @@ export class HudInfoComponent implements OnInit, OnDestroy {
   currentPan: number = 0;
   currentHfov: number = 0;
   private stateSubscription: Subscription;
-  constructor(private siteService: SiteService, public uiService: UiService) {
+  constructor(public siteService: SiteService, public uiService: UiService) {
     this.stateSubscription=   this.siteService.siteStateSubject.subscribe(() => { this.updateValues(); });
   }
   updateValues() {

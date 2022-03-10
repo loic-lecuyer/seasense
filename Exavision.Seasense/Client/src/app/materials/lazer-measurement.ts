@@ -9,6 +9,7 @@ import { SettingMaterial } from "./settings/setting-material";
 import { Site } from "./site";
 import { CapabilityState } from "./states/capability-state";
 import { MaterialState } from "./states/material-state";
+import { StatusState } from "./states/status-state";
 import { Unit } from "./unit";
 
 export class LazerMeasurement implements Material {
@@ -16,6 +17,7 @@ export class LazerMeasurement implements Material {
   materials: Material[];
   capabilities: Capability[] = [];
   displayName: string;
+  status: StatusState[] = [];
   materialType: MaterialType;
   wsService: WsService;
   site: Site;
@@ -44,6 +46,7 @@ export class LazerMeasurement implements Material {
 
   }
   setState(state: MaterialState): void {
+    this.status = state.status;
     state.capabilities.forEach((valueState: CapabilityState) => {
       let cap: Capability | undefined = this.capabilities.find((valueCap: Capability) => { return valueCap.id === valueState.id; });
       if (cap != null) {

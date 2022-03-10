@@ -4,6 +4,7 @@ import { CapabilityType } from "./capabilities/capability-type";
 import { MaterialType } from "./material-type";
 import { Site } from "./site";
 import { MaterialState } from "./states/material-state";
+import { StatusState } from "./states/status-state";
 
 import { Unit } from "./unit";
 
@@ -14,6 +15,7 @@ export interface Material {
   materialType: MaterialType;
   materials: Material[];
   capabilities: Capability[];
+  status: StatusState[];
   wsService: WsService;
   site: Site;
   unit: Unit;
