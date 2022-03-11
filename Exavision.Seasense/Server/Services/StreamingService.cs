@@ -141,11 +141,13 @@ namespace Exavision.Seasense.Server.Services {
 
         public string StartRecord(ICamera camera, User user) {
 
-            IImageByteProvider provider = this.CreateImageByteProvider(camera.Id);
+            IImageByteProvider provider = this.CreateImageByteProvider(camera.StreamUrl);
             if (provider == null) return null;
             Recording recording = new Recording(user, camera.Id, camera.DisplayName);
             try {
-                ImageByteRecorder recorder = new ImageByteRecorder(provider, recording.FileName);
+                string mediaPath = Path.Combine(env.ContentRootPath, StreamingService.MEDIA_DIRECTORY);
+                string filePath = Path.Combine(mediaPath, recording.FileName);
+                ImageByteRecorder recorder = new ImageByteRecorder(provider, filePath, camera.ImageWidth,camera.ImageHeight);
                 recorder.Start();
                 this.recordings.Add(new Tuple<Recording, ImageByteRecorder>(recording, recorder));
                 return recording.Id;

@@ -1,4 +1,6 @@
-﻿using Exavision.Seasense.Shared.Streaming;
+﻿using Emgu.CV;
+using Emgu.CV.Structure;
+using Exavision.Seasense.Shared.Streaming;
 using FFMediaToolkit;
 using FFMediaToolkit.Encoding;
 using FFMediaToolkit.Graphics;
@@ -16,6 +18,8 @@ namespace Exavision.Seasense.Streaming {
     public class ImageByteRecorder {
         private readonly IImageByteProvider provider;
         private readonly string fileName;
+        private readonly int width;
+        private readonly int height;
         private CancellationTokenSource canceller;
         private Task task;
         private byte[] currentFrame;
@@ -25,9 +29,11 @@ namespace Exavision.Seasense.Streaming {
 
         public int Fps { get; private set; } = 25;
 
-        public ImageByteRecorder(IImageByteProvider provider, string fileName) {
+        public ImageByteRecorder(IImageByteProvider provider, string fileName,int width,int height) {
             this.provider = provider;
             this.fileName = fileName;
+            this.width = width;
+            this.height = height;
         }
 
         public void Start() {
@@ -47,33 +53,53 @@ namespace Exavision.Seasense.Streaming {
         }
 
         private void Loop() {
-            if (!this.WaitForFirstImage()) {
-                this.Stop();
-                return;
-            }
-            Stopwatch watcher = new Stopwatch();
-            DateTime previousDate = DateTime.Now;
-            TimeSpan previousTime = TimeSpan.FromMilliseconds(0);
-            while (!this.canceller.IsCancellationRequested) {
-                if (this.currentFrame == null) continue;
-                if (!this.IsValidJpegFrame(this.currentFrame)) continue;
-                using (MemoryStream ms = new MemoryStream(this.currentFrame)) {
-                    bmp = new Bitmap(ms);
-                    this.CreateMediaOutput(bmp);
-                    ImageData data = ToImageData(bmp);
-                    this.mediaOutput.Video.AddFrame(data);
-                    Log.Information("Add frame");
-                    DateTime now = DateTime.Now;
-                    TimeSpan elapsed = now - previousDate;
-                    previousTime += elapsed;
-                    previousDate = now;
-                    int wait = (int)((1000D / this.Fps) - watcher.Elapsed.TotalMilliseconds);
-                    if (wait <= 0) wait = 1;
-                    this.canceller.Token.WaitHandle.WaitOne(wait);
-                    watcher.Reset();
+            try {
+                if (!this.WaitForFirstImage()) {
+                    this.Stop();
+                    return;
                 }
+                Stopwatch watcher = new Stopwatch();
+                DateTime previousDate = DateTime.Now;
+                TimeSpan previousTime = TimeSpan.FromMilliseconds(0);
+                int fourcc = VideoWriter.Fourcc('H', '2', '6', '4');
+                Backend[] backends = CvInvoke.WriterBackends;
+                int backend_idx = 0; //any backend;
+                foreach (Backend be in backends) {
+                    if (be.Name.Equals("MSMF")) {
+                        backend_idx = be.ID;
+                        break;
+                    }
+                }
+                VideoWriter writer = new VideoWriter(this.fileName, backend_idx, fourcc, 25, new Size(this.width, this.height), true);
+                Log.Information("Start Recording " + this.fileName);
+                int index = 1;
+                while (!this.canceller.IsCancellationRequested) {
+                    if (this.currentFrame == null) continue;
+                    if (!this.IsValidJpegFrame(this.currentFrame)) continue;
+                    using (MemoryStream ms = new MemoryStream(this.currentFrame)) {
+                        File.WriteAllBytes(this.fileName + "_" + index.ToString("00000") + ".jpg", this.currentFrame);
+                        bmp = new Bitmap(ms);
+                        Mat mat = bmp.ToMat();
+                        writer.Write(mat);
+                        Log.Information("Recording add frame ...");
+                        DateTime now = DateTime.Now;
+                        TimeSpan elapsed = now - previousDate;
+                        previousTime += elapsed;
+                        previousDate = now;
+                        int wait = (int)((1000D / this.Fps) - watcher.Elapsed.TotalMilliseconds);
+                        if (wait <= 0) wait = 1;
+                        this.canceller.Token.WaitHandle.WaitOne(wait);
+                        watcher.Reset();
+                        index++;
+                    }
 
+                }
+                writer.Dispose();
+                Log.Information("File recorded " + this.fileName);
+            } catch (Exception ex) {
+                Log.Error("Error during recording " + ex.Message);
             }
+           
         }
         public ImageData ToImageData(Bitmap bitmap) {
             var rect = new Rectangle(Point.Empty, bitmap.Size);
@@ -133,6 +159,8 @@ namespace Exavision.Seasense.Streaming {
             }
             return false;
         }
-        public void Stop() { }
+        public void Stop() {
+            if (this.canceller != null) this.canceller.Cancel();
+        }
     }
 }

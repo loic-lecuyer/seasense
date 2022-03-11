@@ -25,7 +25,7 @@ namespace Exavision.Seasense.Server.Models {
             this.filePrefix = filePrefix;
             DateTime now = DateTime.Now;
 
-            this.FileName = this.filePrefix + "_" + now.Year + "-" + now.Month + "-" + now.Day + "__" + now.Hour + ":" + now.Minute + ":" + now.Second + ".mpeg";
+            this.FileName = this.filePrefix + "_" + now.Year + "-" + now.Month + "-" + now.Day + "__" + now.Hour + "-" + now.Minute + "-" + now.Second + ".mp4";
 
         }
 

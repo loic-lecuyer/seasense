@@ -1,0 +1,1289 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Exavision.Seasense.Core</name>
+    </assembly>
+    <members>
+        <member name="M:Exavision.Seasense.Core.Algorithm.Pid.#ctor(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            PID Constructor
+            </summary>
+            <param name="Kp">Proportional Gain</param>
+            <param name="Ki">Integral Gain</param>
+            <param name="Kd">Derivative Gain</param>
+            <param name="N">Derivative Filter Coefficient</param>
+            <param name="OutputUpperLimit">Controller Upper Output Limit</param>
+            <param name="OutputLowerLimit">Controller Lower Output Limit</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Algorithm.Pid.AddValue(System.Double,System.Double,System.TimeSpan)">
+            <summary>
+            PID iterator, call this function every sample period to get the current controller output.
+            setpoint and processValue should use the same units.
+            </summary>
+            <param name="setPoint">Current Desired Setpoint</param>
+            <param name="processValue">Current Process Value</param>
+            <param name="ts">Timespan Since Last Iteration, Use Default Sample Period for First Call</param>
+            <returns>Current Controller Output</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Algorithm.Pid.ResetController">
+            <summary>
+            Reset controller history effectively resetting the controller.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Algorithm.Pid.Kp">
+            <summary>
+            Proportional Gain, consider resetting controller if this parameter is drastically changed.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Algorithm.Pid.Ki">
+            <summary>
+            Integral Gain, consider resetting controller if this parameter is drastically changed.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Algorithm.Pid.Kd">
+            <summary>
+            Derivative Gain, consider resetting controller if this parameter is drastically changed.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Algorithm.Pid.N">
+            <summary>
+            Derivative filter coefficient.
+            A smaller N for more filtering.
+            A larger N for less filtering.
+            Consider resetting controller if this parameter is drastically changed.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Algorithm.Pid.TsMin">
+            <summary>
+            Minimum allowed sample period to avoid dividing by zero!
+            The Ts value can be mistakenly set to too low of a value or zero on the first iteration.
+            TsMin by default is set to 1 millisecond.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Algorithm.Pid.OutputUpperLimit">
+            <summary>
+            Upper output limit of the controller.
+            This should obviously be a numerically greater value than the lower output limit.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Algorithm.Pid.OutputLowerLimit">
+            <summary>
+            Lower output limit of the controller
+            This should obviously be a numerically lesser value than the upper output limit.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Extensions.BitArrayExtensions">
+            <summary>
+            Usefull extension methode on BitArray
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.BitArrayExtensions.GetBytes(System.Collections.BitArray,System.Int32)">
+            <summary>
+            Convert BitArray to byte[]
+            </summary>
+            <param name="bits">Source BitArray</param>
+            <param name="count">Number of byte to convert</param>
+            <returns>byte[] with  count * 2 as length</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.BitArrayExtensions.GetNumberValue(System.Collections.BitArray,System.Int32,System.Int32)">
+            <summary>
+            Convert BitArray to int
+            </summary>
+            <param name="bits">Source BitArray</param>
+            <param name="index">Start index</param>
+            <param name="count">Number of byte to convert</param>
+            <returns>int value, sum of power of two for each bit has true</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.BitArrayExtensions.SetNumberValue(System.Collections.BitArray,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Convert int value to BitArray
+            </summary>
+            <param name="bits">Source BitArray</param>
+            <param name="value">Int value to convert</param>
+            <param name="index">Start index in BitArray</param>
+            <param name="count">Number of bit used to convert</param>      
+        </member>
+        <member name="T:Exavision.Seasense.Core.Extensions.ByteExtensions">
+            <summary>
+            Usefull extension method of Byte and Byte[] class
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.Clamp(System.Byte,System.Int32,System.Int32)">
+            <summary>
+            Restrict value beetween min and max
+            </summary>
+            <param name="value">Value</param>
+            <param name="min">Minimum value</param>
+            <param name="max">Maximum value</param>
+            <returns>Restricted value</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.Find(System.Collections.Generic.List{System.Byte},System.Int32[])">
+            <summary>
+            Find sequence of number in list of byte
+            @TODO : Replace by TryFind (No -1 return)
+            </summary>
+            <param name="buff">Source list of byte</param>
+            <param name="search">Number sequence to find</param>
+            <returns>Index of the number sequence in source list of byte or -1 if not find</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.Find(System.Collections.Generic.List{System.Byte},System.Byte[])">
+            <summary>
+            Find sequence of byte in list of byte
+            @TODO Transform to TryFind (no return -1)
+            </summary>
+            <param name="buff">source list of byte</param>
+            <param name="search">searched byte sequence</param>
+            <returns>Index of sequence or -1 if not find</returns>       
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.Find(System.Byte[],System.Int32[])">
+            <summary>
+            Find sequence of number in array of byte
+            @TODO Transform to TryFind (no return -1)
+            </summary>
+            <param name="buff">source array of byte</param>
+            <param name="search">searched number sequence</param>
+            <returns>Index of sequence in source array or -1 if not find</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.Find(System.Byte[],System.Byte[])">
+            <summary>
+            Find sequence of byte in byte array
+            @TODO Transform to TryFind (no return -1)
+            </summary>
+            <param name="buff">Source byte array</param>
+            <param name="search">Searched byte sequence</param>
+            <returns>Searched byte sequence index in source byte array or -1 if not find</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.FindReverse(System.Collections.Generic.List{System.Byte},System.Int32[])">
+            <summary>
+            Find sequence of number in list of byte in reverse order
+            @TODO Transform to TryFindReverse (no return -1)
+            </summary>
+            <param name="buff">Source byte list</param>
+            <param name="search">Searched number sequence</param>
+            <returns>Searched byte sequence index in source byte list or -1 if not find</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.FindReverse(System.Byte[],System.Int32[])">
+            <summary>
+            Find sequence of number in array of byte in reverse order
+            @TODO Transform to TryFindReverse (no return -1)
+            </summary>
+            <param name="buff">Source byte array</param>
+            <param name="search">Searched number sequence</param>
+            <returns>Searched number sequence index in source byte array or -1 if not find</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.FindReverse(System.Byte[],System.Byte[])">
+            <summary>
+            Find sequence of byte in array of byte in reverse order
+            @TODO Transform to TryFindReverse (no return -1)
+            </summary>
+            <param name="buff">Source byte array</param>
+            <param name="search">Searched byte sequence</param>
+            <returns>Searched byte sequence index in source byte array or -1 if not find</returns>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Extensions.ByteExtensions.HexAlphabet">
+            <summary>
+            Defines letter in Hexadeciaml alphabet
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.ToHexString(System.Byte[])">
+            <summary>
+            Convert byte array to string in Uppercase
+            </summary>
+            <param name="bytes">Byte array to convert</param>
+            <returns>String representation of byte array in UpperCase</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.ToHexString(System.Byte)">
+            <summary>
+            Convert byte to string in Uppercase
+            </summary>
+            <param name="b">Byte to convert</param>
+            <returns>String representation of byte array in UpperCase</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.GetBit(System.Byte,System.Int32)">
+            <summary>
+            Check value of bit inside byte
+            </summary>
+            <param name="data">Source byte value</param>
+            <param name="index">Index of bit</param>
+            <returns>True/False value of the bit</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.GetMsbSignedShort(System.Byte[],System.Int32)">
+            <summary>
+            Extract unsigned short from byte array in most significant bit first order
+            </summary>
+            <param name="data">Source byte array</param>
+            <param name="index">Start index</param>
+            <returns>Unisgned short value</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.GetLsbUnsignedShort(System.Byte[],System.Int32)">
+            <summary>
+            Extract unsigned short from byte array in low significant bit first order
+            </summary>
+            <param name="data">Source byte array</param>
+            <param name="index">Start index</param>
+            <returns>Unisgned short value</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.SetMsbUnsignedShort(System.Byte[],System.Int32,System.UInt16)">
+            <summary>
+            Set unsinged most significant bit first order value inside byte array
+            </summary>
+            <param name="data">Source byte array</param>
+            <param name="index">Start index</param>
+            <param name="value">Value to iject in byte array</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.ByteExtensions.GetMsbUnsignedShort(System.Byte[],System.Int32)">
+            <summary>
+            Extract unsigned short from byte array in most significant bit first order
+            </summary>
+            <param name="data">Source byte array</param>
+            <param name="index">Start index</param>
+            <returns>Unisgned short value</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Extensions.DoubleExtensions">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Extensions.DoubleExtensions" />.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.DoubleExtensions.Clamp(System.Double,System.Double,System.Double)">
+            <summary>
+            Restreint une valeur entre un ninimum et un maximum.
+            </summary>
+            <param name="value">Valeur à restreindre.</param>
+            <param name="min">Minimum.</param>
+            <param name="max">Maximum.</param>
+            <returns>Valeur restreinte.</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Extensions.LongExtension">
+            <summary>
+            Usefull extension for Long Class
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.LongExtension.ConvertBytesToMegabytes(System.Int64)">
+            <summary>
+            Convert byte array length to MB
+            </summary>
+            <param name="bytes">Length of byte array</param>
+            <returns>Number of MB</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Extensions.SocketExtensions">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Extensions.SocketExtensions" />.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.SocketExtensions.TryConnect(System.Net.Sockets.Socket,System.Net.EndPoint,System.TimeSpan)">
+            <summary>
+            Tente une connexion sur un point de terminsaison réseau.
+            </summary>
+            <param name="socket">Le socket a connecté.</param>
+            <param name="endpoint">Le point de terminaison du socket.</param>
+            <param name="timeout">Le temps maximal de connexion.</param>
+            <returns>.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.SocketExtensions.Connect(System.Net.Sockets.Socket,System.Net.EndPoint,System.TimeSpan)">
+            <summary>
+            Connexion asynchrone resynchronisé.
+            </summary>
+            <param name="socket">Le socket a connecté.</param>
+            <param name="endpoint">Le point de terminaison du socket.</param>
+            <param name="timeout">Le temps maximal de connexion.</param>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Extensions.StringExtensions">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Extensions.StringExtensions" />.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.StringExtensions.ToValidFileName(System.String)">
+            <summary>
+            Convertie un chaine en nom de fichier valide.
+            </summary>
+            <param name="name">The name<see cref="T:System.String"/>Le nom de fichier éventuelement invalide.</param>
+            <returns>The <see cref="T:System.String"/>Le nom de fichier valide.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.StringExtensions.ParseZoomLevels(System.String)">
+            <summary>
+            Parse zoom level string with format 1,1.2,1.4,2.5
+            </summary>
+            <param name="dayCameraZooms">Zoom level string </param>
+            <returns>List of zoom multiplier</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.StringExtensions.GetHexVal(System.Char)">
+            <summary>
+            Rnvoie la valeur entière héxadécimal d'un char.
+            </summary>
+            <param name="hex">The hex<see cref="T:System.Char"/>Le char à convertir.</param>
+            <returns>The <see cref="T:System.Int32"/>Valeur entière représantant la valeur héxadécimal.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.StringExtensions.GetSeamosCheckSum(System.String)">
+            <summary>
+            Calcul un checksum Seamos.
+            </summary>
+            <param name="result">The result<see cref="T:System.String"/>.</param>
+            <returns>The <see cref="T:System.String"/>.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Extensions.StringExtensions.HexStringToBytesArray(System.String)">
+            <summary>
+            Convert string hexadecimal representation to byte array
+            </summary>
+            <param name="hex">Input string in hexadecimal format</param>
+            <returns>Byte array</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Interfaces.ITyped">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Interfaces.ITyped" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Interfaces.ITyped.Type">
+            <summary>
+            Gets the Type.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.IO.IniFile">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.IO.IniFile" />.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Exavision.Seasense.Core.IO.IniFile"/> class.
+            </summary>
+            <param name="file">The initialization file path.</param>
+            <param name="commentDelimiter">The commentDelimiter<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Exavision.Seasense.Core.IO.IniFile"/> class.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.IO.IniFile.CommentDelimiter">
+            <summary>
+            Gets or sets the CommentDelimiter
+            The comment delimiter string (default value is ";")...
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.IO.IniFile.theFile">
+            <summary>
+            Defines the theFile.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.IO.IniFile.TheFile">
+            <summary>
+            Gets or sets the TheFile
+            The initialization file path...
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.LoadFile(System.String)">
+            <summary>
+            The LoadFile.
+            </summary>
+            <param name="value">The value<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.LoadContent(System.String)">
+            <summary>
+            The LoadContent.
+            </summary>
+            <param name="content">The content<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.LoadLine(System.String,System.String)">
+            <summary>
+            The LoadLine.
+            </summary>
+            <param name="line">The line<see cref="T:System.String"/>.</param>
+            <param name="section">The section<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="F:Exavision.Seasense.Core.IO.IniFile.dictionary">
+            <summary>
+            Defines the dictionary.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.TryGetValue(System.String,System.String,System.String@)">
+            <summary>
+            The TryGetValue.
+            </summary>
+            <param name="section">The section<see cref="T:System.String"/>.</param>
+            <param name="key">The key<see cref="T:System.String"/>.</param>
+            <param name="value">The value<see cref="T:System.String"/>.</param>
+            <returns>The <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.GetValue(System.String,System.String,System.String)">
+            <summary>
+            Gets a string value by section and key.
+            </summary>
+            <param name="section">The section.</param>
+            <param name="key">The key.</param>
+            <param name="defaultValue">The default value.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="P:Exavision.Seasense.Core.IO.IniFile.Item(System.String,System.String)">
+            <summary>
+            Gets a string value by section and key.
+            </summary>
+            <param name="section">The section.</param>
+            <param name="key">The key.</param>
+            <returns>The value.</returns>
+            <seealso cref="M:Exavision.Seasense.Core.IO.IniFile.GetValue(System.String,System.String,System.String)"/>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.GetInteger(System.String,System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Gets an integer value by section and key.
+            </summary>
+            <param name="section">The section.</param>
+            <param name="key">The key.</param>
+            <param name="defaultValue">The default value.</param>
+            <param name="minValue">Optional minimum value to be enforced.</param>
+            <param name="maxValue">Optional maximum value to be enforced.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.GetDouble(System.String,System.String,System.Double,System.Double,System.Double)">
+            <summary>
+            Gets a double floating-point value by section and key.
+            </summary>
+            <param name="section">The section.</param>
+            <param name="key">The key.</param>
+            <param name="defaultValue">The default value.</param>
+            <param name="minValue">Optional minimum value to be enforced.</param>
+            <param name="maxValue">Optional maximum value to be enforced.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.GetBoolean(System.String,System.String,System.Boolean)">
+            <summary>
+            Gets a boolean value by section and key.
+            </summary>
+            <param name="section">The section.</param>
+            <param name="key">The key.</param>
+            <param name="defaultValue">The default value.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.IniFile.GetAllValues(System.String,System.String)">
+            <summary>
+            Gets an array of string values by section and key.
+            </summary>
+            <param name="section">The section.</param>
+            <param name="key">The key.</param>
+            <returns>The array of values, or null if none found.</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.IO.WebVttEvent">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.IO.WebVttEvent" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.IO.WebVttEvent.Start">
+            <summary>
+            Gets or sets the Start.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.IO.WebVttEvent.End">
+            <summary>
+            Gets or sets the End.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.IO.WebVttEvent.Text">
+            <summary>
+            Gets or sets the Text.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.IO.WebVttFileWriter">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.IO.WebVttFileWriter" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.IO.WebVttFileWriter.TextEvents">
+            <summary>
+            Gets or sets the TextEvents.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.WebVttFileWriter.AddTitleEvent(System.TimeSpan,System.TimeSpan,System.String)">
+            <summary>
+            The AddTitleEvent.
+            </summary>
+            <param name="start">The start<see cref="T:System.TimeSpan"/>.</param>
+            <param name="end">The end<see cref="T:System.TimeSpan"/>.</param>
+            <param name="text">The text<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.IO.WebVttFileWriter.Write(System.String)">
+            <summary>
+            Write Subtitle File
+            </summary>
+            <param name="fileName">Subtitle filename</param>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.IStringClient">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.IStringClient" />.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.IStringClient.Start(System.Net.EndPoint,System.String)">
+            <summary>
+            The Start.
+            </summary>
+            <param name="endPoint">The endPoint<see cref="T:System.Net.EndPoint"/>.</param>
+            <param name="separator">The separator<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.IStringClient.Send(System.String)">
+            <summary>
+            The Send.
+            </summary>
+            <param name="data">The data<see cref="T:System.String"/>.</param>
+            <returns>The <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.IStringClient.Stop">
+            <summary>
+            The Stop.
+            </summary>
+        </member>
+        <member name="E:Exavision.Seasense.Core.Network.IStringClient.OnMessageReceived">
+            <summary>
+            Defines the OnMessageReceived.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.IStringClient.GetLatestMessages">
+            <summary>
+            Get Latest network communication message
+            </summary>
+            <returns>List of string representation of network message (hexadecimal string)</returns>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.IStringClient.Connected">
+            <summary>
+            Gets the Connected
+            Gets a value indicating whether Connected..
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpByteClient">
+            <summary>
+            Tcp client can extract specific byte trame
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.latestMessages">
+            <summary>
+            Defines the latestMessages.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.latestMessageMaxCount">
+            <summary>
+            Defines the latestMessageMaxCount.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpByteClient.MinSendDelay">
+            <summary>
+            Defines the minSendDelay.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.latestMessageLocker">
+            <summary>
+            Defines the latestMessageLocker.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.enableReceive">
+            <summary>
+            Defines the enableReceive.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.enableSend">
+            <summary>
+            Defines the enableSend.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.sendQueue">
+            <summary>
+            Defines the sendQueue.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.hasMessageToSend">
+            <summary>
+            Defines the hasMessageToSend.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpByteClient.Client">
+            <summary>
+            Gets or sets the Client.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.taskSend">
+            <summary>
+            Defines the taskSend.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.taskReceive">
+            <summary>
+            Defines the taskReceive.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.cancelSource">
+            <summary>
+            Defines the cancelSource.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.endpoint">
+            <summary>
+            Defines the endpoint.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.networkStream">
+            <summary>
+            Defines the networkStream.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpByteClient.Connected">
+            <summary>
+            Gets or sets a value indicating whether Connected.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpByteClient.sendDate">
+            <summary>
+            Defines the sendDate.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpByteClient.SendLatency">
+            <summary>
+            Gets the SendLatency.
+            </summary>
+        </member>
+        <member name="E:Exavision.Seasense.Core.Network.TcpByteClient.OnMessageReceived">
+            <summary>
+            Defines the OnMessageReceived.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.GetLatestMessages">
+            <summary>
+            Get Latest network communication message
+            </summary>
+            <returns>List of string representation of network message (hexadecimal string)</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoClient"/> class.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.Send(System.Byte[])">
+            <summary>
+            Send byte array of data to client
+            </summary>
+            <param name="data">Byte array to send</param>
+            <returns>True if message succesfull sended</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.Start(System.Net.EndPoint)">
+            <summary>
+            The Start.
+            </summary>
+            <param name="endPoint">The endPoint<see cref="T:System.Net.EndPoint"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.LoopSend">
+            <summary>
+            The LoopSend.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.SendAllQueue">
+            <summary>
+            The SendAllQueue.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.TrySendMessage(System.Byte[])">
+            <summary>
+            Try to send byte array message to client
+            </summary>
+            <param name="command">Byte array message</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.LoopReceive">
+            <summary>
+            The LoopReceive.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.TryRead(System.Collections.Generic.List{System.Byte})">
+            <summary>
+            Try read data from network stream
+            </summary>
+            <param name="buffer">List of byte to apppend readed byte</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.TryExtractTrame(System.Collections.Generic.List{System.Byte},System.Byte[]@)">
+            <summary>
+            Try to extract specific trame from buffer
+            If trame is finded buffer is reduce is length
+            </summary>
+            <param name="circularBuffer">Input list of byte</param>
+            <param name="trame">Byte array of specific trame </param>
+            <returns></returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.AddToLatestMessage(System.String)">
+            <summary>
+            The AddToLatestMessage.
+            </summary>
+            <param name="message">The message<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.CleanLatestMessages">
+            <summary>
+            The CleanLatestMessages.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpByteClient.Stop">
+            <summary>
+            The Stop.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpCoreStringClient">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpCoreStringClient" />.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.sendResetEvent">
+            <summary>
+            Defines the sendResetEvent.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.sendQueue">
+            <summary>
+            Defines the sendQueue.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.latestMessages">
+            <summary>
+            Defines the latestMessages.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.latestMessageMaxCount">
+            <summary>
+            Defines the latestMessageMaxCount.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.latestMessageLocker">
+            <summary>
+            Defines the latestMessageLocker.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.sendLocker">
+            <summary>
+            Defines the sendLocker.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpCoreStringClient.Client">
+            <summary>
+            Gets or sets the Client.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.receiveTask">
+            <summary>
+            Defines the receiveTask.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.sendTask">
+            <summary>
+            Defines the sendTask.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.cancelSource">
+            <summary>
+            Defines the cancelSource.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpCoreStringClient.Endpoint">
+            <summary>
+            Gets or sets the Endpoint.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.separator">
+            <summary>
+            Defines the separator.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.writer">
+            <summary>
+            Defines the writer.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.reader">
+            <summary>
+            Defines the reader.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringClient.minSendDelay">
+            <summary>
+            Defines the minSendDelay.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpCoreStringClient.Connected">
+            <summary>
+            Gets or sets a value indicating whether Connected.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpCoreStringClient.EnableReceive">
+            <summary>
+            Gets or sets a value indicating whether EnableReceive.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpCoreStringClient.EnableSend">
+            <summary>
+            Gets or sets a value indicating whether EnableSend.
+            </summary>
+        </member>
+        <member name="E:Exavision.Seasense.Core.Network.TcpCoreStringClient.OnMessageReceived">
+            <summary>
+            Defines the OnMessageReceived.
+            </summary>
+        </member>
+        <member name="E:Exavision.Seasense.Core.Network.TcpCoreStringClient.OnDisconnected">
+            <summary>
+            Defines the OnDisconnected.
+            </summary>
+        </member>
+        <member name="E:Exavision.Seasense.Core.Network.TcpCoreStringClient.OnConnected">
+            <summary>
+            Defines the OnConnected.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.GetLatestMessages">
+            <summary>
+            Get the latest network communication message
+            </summary>
+            <returns>String representation (hexadecimal) of latest network communication message</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.Start(System.Net.EndPoint,System.String)">
+            <summary>
+            The Start.
+            </summary>
+            <param name="endPoint">The endPoint<see cref="T:System.Net.EndPoint"/>.</param>
+            <param name="separator">The separator<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.SendLoop">
+            <summary>
+            The SendLoop.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.Send(System.String)">
+            <summary>
+            The Send.
+            </summary>
+            <param name="data">The data<see cref="T:System.String"/>.</param>
+            <returns>The <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.ReceiveLoop">
+            <summary>
+            The ReceiveLoop.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.ReceiveLoopProcess">
+            <summary>
+            The ReceiveLoopProcess.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.TryConnect">
+            <summary>
+            The TryConnect.
+            </summary>
+            <returns>The <see cref="T:System.Boolean"/>.</returns>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.TryRead(System.IO.StreamReader,System.Text.StringBuilder)">
+            <summary>
+            The TryRead.
+            </summary>
+            <param name="reader">The reader<see cref="T:System.IO.StreamReader"/>.</param>
+            <param name="builder">The builder<see cref="T:System.Text.StringBuilder"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.AddToLatestMessage(System.String)">
+            <summary>
+            The AddToLatestMessage.
+            </summary>
+            <param name="message">The message<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.CleanLatestMessages">
+            <summary>
+            The CleanLatestMessages.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringClient.Stop">
+            <summary>
+            The Stop.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpCoreStringServer">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpCoreStringServer" />.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringServer.task">
+            <summary>
+            Defines the task.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringServer.server">
+            <summary>
+            Defines the server.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringServer.clients">
+            <summary>
+            Defines the clients.
+            </summary>
+        </member>
+        <member name="E:Exavision.Seasense.Core.Network.TcpCoreStringServer.OnMessageReceived">
+            <summary>
+            Defines the OnMessageReceived.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringServer.cancelSource">
+            <summary>
+            Defines the cancelSource.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringServer.endPoint">
+            <summary>
+            Defines the endPoint.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringServer.separator">
+            <summary>
+            Defines the separator.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpCoreStringServer.clientsLocker">
+            <summary>
+            Initializes a new instance of the <see cref="T:Exavision.Seasense.Core.Network.TcpCoreStringServer"/> class..
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringServer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Exavision.Seasense.Core.Network.TcpCoreStringServer"/> class.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringServer.Start(System.Net.EndPoint,System.String)">
+            <summary>
+            The Start.
+            </summary>
+            <param name="endPoint">The endPoint<see cref="T:System.Net.EndPoint"/>.</param>
+            <param name="separator">The separator<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringServer.Listen">
+            <summary>
+            The Listen.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringServer.Client_OnDisconnected(System.Object,Exavision.Seasense.Core.Network.TcpCoreStringClient)">
+            <summary>
+            The Client_OnDisconnected.
+            </summary>
+            <param name="sender">The sender<see cref="T:System.Object"/>.</param>
+            <param name="e">The e<see cref="T:Exavision.Seasense.Core.Network.TcpCoreStringClient"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringServer.Client_OnMessageReceived(System.Object,System.String)">
+            <summary>
+            The Client_OnMessageReceived.
+            </summary>
+            <param name="sender">The sender<see cref="T:System.Object"/>.</param>
+            <param name="e">The e<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringServer.Stop">
+            <summary>
+            The Stop.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpCoreStringServer.Send(System.String)">
+            <summary>
+            The Send.
+            </summary>
+            <param name="data">The data<see cref="T:System.String"/>.</param>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpPelcoClient">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoClient" />.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpPelcoClient.trameDescriptions">
+            <summary>
+            Defines the trameDescriptions.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoClient.#ctor">
+            <summary>
+            Create TcpPelcoClient instance
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoClient.TryExtractTrame(System.Collections.Generic.List{System.Byte},System.Byte[]@)">
+            <summary>
+            Try to extract trame from description
+            </summary>
+            <param name="circularBuffer">List of byte readed</param>
+            <param name="trame">Byte Array trame conform to description</param>
+            <returns></returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpPelcoDefaultTrameDescription">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoDefaultTrameDescription" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoDefaultTrameDescription.StartByte">
+            <summary>
+            Gets the StartByte.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoDefaultTrameDescription.Length">
+            <summary>
+            Gets the Length.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoDefaultTrameDescription.Checksum(System.Byte[])">
+            <summary>
+            Compute Pleco checksum from byte array 
+            </summary>
+            <param name="data">Pelco message byte array</param>
+            <returns>Byte of checksum for pelco message</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpPelcoExatrack2TrameDescription">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoExatrack2TrameDescription" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoExatrack2TrameDescription.StartByte">
+            <summary>
+            Gets the StartByte.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoExatrack2TrameDescription.Length">
+            <summary>
+            Gets the Length.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoExatrack2TrameDescription.Checksum(System.Byte[])">
+            <summary>
+            Compute pelco Checksum
+            </summary>
+            <param name="data">Source byte array from pelco message</param>
+            <returns>Checksum byte of pelco message</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpPelcoExatrackTrameDescription">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoExatrackTrameDescription" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoExatrackTrameDescription.StartByte">
+            <summary>
+            Gets the StartByte.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoExatrackTrameDescription.Length">
+            <summary>
+            Gets the Length.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoExatrackTrameDescription.Checksum(System.Byte[])">
+            <summary>
+            Compute Pleco checksum from byte array 
+            </summary>
+            <param name="data">Pelco message byte array</param>
+            <returns>Byte of checksum for pelco message</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpPelcoServer">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoServer" />.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpPelcoServer.task">
+            <summary>
+            Defines the task.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpPelcoServer.clients">
+            <summary>
+            Defines the clients.
+            </summary>
+        </member>
+        <member name="E:Exavision.Seasense.Core.Network.TcpPelcoServer.OnMessageReceived">
+            <summary>
+            Defines the OnMessageReceived.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpPelcoServer.cancelSource">
+            <summary>
+            Defines the cancelSource.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpPelcoServer.endPoint">
+            <summary>
+            Defines the endPoint.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.Network.TcpPelcoServer.server">
+            <summary>
+            Defines the server.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoServer.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoServer"/> class.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoServer.Start(System.Net.EndPoint)">
+            <summary>
+            The Start.
+            </summary>
+            <param name="endPoint">The endPoint<see cref="T:System.Net.EndPoint"/>.</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoServer.Listen">
+            <summary>
+            The Listen.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoServer.Client_OnMessageReceived(System.Object,System.Byte[])">
+            <summary>
+            Handle OnMessageReceived event of TcpByteClient
+            </summary>
+            <param name="sender">TcpByteClient</param>
+            <param name="e">Readed byte array from TcpbyteClient</param>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoServer.Stop">
+            <summary>
+            The Stop.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoServer.Send(System.Byte[])">
+            <summary>
+            Send byte array message to all clien conneced to server
+            </summary>
+            <param name="data">Byte array message to send</param>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Network.TcpPelcoTrameDescription">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Network.TcpPelcoTrameDescription" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoTrameDescription.StartByte">
+            <summary>
+            Gets the StartByte.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Network.TcpPelcoTrameDescription.Length">
+            <summary>
+            Gets the Length.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Network.TcpPelcoTrameDescription.Checksum(System.Byte[])">
+            <summary>
+            Compute Pleco checksum from byte array 
+            </summary>
+            <param name="data">Pelco message byte array</param>
+            <returns>Byte of checksum for pelco message</returns>
+        </member>
+        <member name="T:Exavision.Seasense.Core.System.SystemInfo">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.System.SystemInfo" />.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.System.SystemInfo.start">
+            <summary>
+            Defines the start.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.System.SystemInfo.oldCPUTime">
+            <summary>
+            Defines the oldCPUTime.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.System.SystemInfo.lastMonitorTime">
+            <summary>
+            Defines the lastMonitorTime.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.System.SystemInfo.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Exavision.Seasense.Core.System.SystemInfo"/> class.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.System.SystemInfo.CpuPrecentUsage">
+            <summary>
+            Gets or sets the CpuPrecentUsage.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.System.SystemInfo.MemoryBytesUsage">
+            <summary>
+            Gets or sets the MemoryBytesUsage.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.System.SystemInfo.NetworkBytesPerSecondUsage">
+            <summary>
+            Gets or sets the NetworkBytesPerSecondUsage.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.System.SystemInfo.LastBytesSend">
+            <summary>
+            Gets or sets the LastBytesSend.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.System.SystemInfo.LastBytesReceive">
+            <summary>
+            Gets or sets the LastBytesReceive.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.System.SystemInfo.lastComputeDate">
+            <summary>
+            Defines the lastComputeDate.
+            </summary>
+        </member>
+        <member name="F:Exavision.Seasense.Core.System.SystemInfo.adapters">
+            <summary>
+            Defines the adapters.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.System.SystemInfo.Compute">
+            <summary>
+            The Compute.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Threading.ThreadUtils">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Threading.ThreadUtils" />.
+            </summary>
+        </member>
+        <member name="M:Exavision.Seasense.Core.Threading.ThreadUtils.Sleep(System.Func{System.Boolean},System.Int32)">
+            <summary>
+            The Sleep.
+            </summary>
+            <param name="check">The check<see cref="T:System.Func`1"/>.</param>
+            <param name="maxSleepMs">The maxSleepMs<see cref="T:System.Int32"/>.</param>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Types.Angle">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Types.Angle" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Types.Angle.Degree">
+            <summary>
+            Gets or sets the Degree.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Types.LogInfo">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Types.LogInfo" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Types.LogInfo.Date">
+            <summary>
+            Gets or sets the Date.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Types.LogInfo.Link">
+            <summary>
+            Gets or sets the Link.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Types.NormalizedSigned">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Types.NormalizedSigned" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Types.NormalizedSigned.Value">
+            <summary>
+            Gets or sets the Value.
+            </summary>
+        </member>
+        <member name="T:Exavision.Seasense.Core.Types.VersionInfo">
+            <summary>
+            Defines the <see cref="T:Exavision.Seasense.Core.Types.VersionInfo" />.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Types.VersionInfo.ComponentName">
+            <summary>
+            Gets or sets the ComponentName.
+            </summary>
+        </member>
+        <member name="P:Exavision.Seasense.Core.Types.VersionInfo.Version">
+            <summary>
+            Gets or sets the Version.
+            </summary>
+        </member>
+    </members>
+</doc>

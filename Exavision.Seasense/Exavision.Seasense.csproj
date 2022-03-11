@@ -3,9 +3,14 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <TypeScriptToolsVersion>4.5</TypeScriptToolsVersion>
+    <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;CS8032</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <NoWarn>1701;1702;CS8032</NoWarn>
   </PropertyGroup>
 
@@ -309,6 +314,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="openh264-2.2.0-win64.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="seasense.pfx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -316,18 +324,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="lib-windows\" />
-  </ItemGroup>
   
   <Target Name="BuildAngular" AfterTargets="Publish">
     <Exec WorkingDirectory="Client" Command="ng build --outputPath=$(PublishDir)\www" />  
 	<Exec WorkingDirectory="$(PublishDir)" Command="rmdir Client /s /q" />  
 	<Exec WorkingDirectory="$(PublishDir)" Command="rmdir Server /s /q" />
-  </Target>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(ProjectDir)lib-windows&quot; &quot;$(TargetDir)lib-windows&quot; /e /y /i /r" />
   </Target>
   
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
