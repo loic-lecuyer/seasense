@@ -37,6 +37,10 @@ export class ConfigurationComponent implements OnInit {
       displayName: "Seamos",
       value:"SeamosUnit"
     });
+    this.unitTypes.push({
+      displayName: "Nemosys",
+      value: "NemosysPelcoUnit"
+    });
     this.createTreeNodes();
   }
   
