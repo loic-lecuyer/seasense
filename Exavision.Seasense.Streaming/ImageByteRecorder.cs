@@ -1,16 +1,10 @@
 ﻿using Emgu.CV;
-using Emgu.CV.Structure;
 using Exavision.Seasense.Shared.Streaming;
-using FFMediaToolkit;
-using FFMediaToolkit.Encoding;
-using FFMediaToolkit.Graphics;
 using Serilog;
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,12 +18,12 @@ namespace Exavision.Seasense.Streaming {
         private Task task;
         private byte[] currentFrame;
         private Bitmap bmp;
-        private MediaOutput mediaOutput;
+
 
 
         public int Fps { get; private set; } = 25;
 
-        public ImageByteRecorder(IImageByteProvider provider, string fileName,int width,int height) {
+        public ImageByteRecorder(IImageByteProvider provider, string fileName, int width, int height) {
             this.provider = provider;
             this.fileName = fileName;
             this.width = width;
@@ -37,7 +31,7 @@ namespace Exavision.Seasense.Streaming {
         }
 
         public void Start() {
-            this.provider.StartProvider();
+
 
             try {
 
@@ -54,6 +48,8 @@ namespace Exavision.Seasense.Streaming {
 
         private void Loop() {
             try {
+                this.provider.StartProvider();
+
                 if (!this.WaitForFirstImage()) {
                     this.Stop();
                     return;
@@ -74,14 +70,19 @@ namespace Exavision.Seasense.Streaming {
                 Log.Information("Start Recording " + this.fileName);
                 int index = 1;
                 while (!this.canceller.IsCancellationRequested) {
+                    this.currentFrame = this.provider.GetImageBytes();
                     if (this.currentFrame == null) continue;
                     if (!this.IsValidJpegFrame(this.currentFrame)) continue;
                     using (MemoryStream ms = new MemoryStream(this.currentFrame)) {
-                        File.WriteAllBytes(this.fileName + "_" + index.ToString("00000") + ".jpg", this.currentFrame);
+
                         bmp = new Bitmap(ms);
                         Mat mat = bmp.ToMat();
+                        Mat sizedMat = new Mat();
+                        if (mat.Width != this.width || mat.Height != this.height) {
+                            CvInvoke.Resize(mat, sizedMat, new Size(this.width, this.height));
+                            mat = sizedMat;
+                        }
                         writer.Write(mat);
-                        Log.Information("Recording add frame ...");
                         DateTime now = DateTime.Now;
                         TimeSpan elapsed = now - previousDate;
                         previousTime += elapsed;
@@ -94,43 +95,16 @@ namespace Exavision.Seasense.Streaming {
                     }
 
                 }
+                this.provider.StopProvider();
                 writer.Dispose();
                 Log.Information("File recorded " + this.fileName);
-            } catch (Exception ex) {
-                Log.Error("Error during recording " + ex.Message);
-            }
-           
-        }
-        public ImageData ToImageData(Bitmap bitmap) {
-            var rect = new Rectangle(Point.Empty, bitmap.Size);
-            var bitmapData = bitmap.LockBits(rect, ImageLockMode.ReadOnly, bitmap.PixelFormat);
-            var length = bitmapData.Stride * bitmapData.Height;
-            var data = new byte[length];
-            Marshal.Copy(bitmapData.Scan0, data, 0, length);
-            bitmap.UnlockBits(bitmapData);
-            return ImageData.FromArray(data, ImagePixelFormat.Bgr24, bitmap.Size);
-        }
-        private void CreateMediaOutput(Bitmap image) {
-            try {
-
-                int imageWidth = image.Width;
-                int imageHeight = image.Height;
-
-                VideoEncoderSettings settings = new VideoEncoderSettings(width: imageWidth, height: imageHeight, framerate: this.Fps, codec: VideoCodec.H264) {
-                    EncoderPreset = EncoderPreset.UltraFast,
-                    CRF = 17
-                };
-
-                MediaOutput output = MediaBuilder.CreateContainer(this.fileName).WithVideo(settings).Create();
-                this.mediaOutput = output;
-
-
             }
             catch (Exception ex) {
-                string log = "Error when create media output  (FFMPEG " + FFmpegLoader.FFmpegPath + " version " + FFmpegLoader.FFmpegVersion + " ) " + ex.Message;
-                Log.Warning(log);
+                Log.Error("Error during recording " + ex.Message);
             }
+
         }
+
         private bool WaitForFirstImage() {
             Stopwatch watcher = new Stopwatch();
             watcher.Start();

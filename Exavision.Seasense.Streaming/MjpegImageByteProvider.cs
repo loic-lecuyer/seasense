@@ -179,7 +179,7 @@ namespace Exavision.Seasense.Streaming {
                     stream = response.GetResponseStream();
                     Log.Verbose("MjpegReader GetResponseStream Ok");
                     this.LoopJpeg(stream);
-                  
+
                 }
                 catch (Exception ex) {
                     this.HasError = true;
@@ -204,9 +204,11 @@ namespace Exavision.Seasense.Streaming {
         /// </summary>
         /// <param name="stream">The stream<see cref="Stream"/>.</param>
         private void LoopJpeg(Stream stream) {
+            int index = 1;
             while (!canceller.IsCancellationRequested) {
                 // Plutot que de rechercher le début et la fin de la jpeg on vérifie si la content length est spécifié
                 byte[] contentTypeBytes = System.Text.Encoding.ASCII.GetBytes("Content-Type: image/jpeg");
+
                 byte[] contentLengthBytes = System.Text.Encoding.ASCII.GetBytes("Content-Length:");
                 List<byte> datas = new List<byte>();
                 byte[] buffer = new byte[BufferSize];
@@ -243,8 +245,11 @@ namespace Exavision.Seasense.Streaming {
                                     Array.Copy(dataArray, jpegHeaderPos, jpeg, 0, contentLength);
                                     lock (ImageBytesLocker) {
                                         this.imageBytes = jpeg;
+
                                     }
+
                                     datas.RemoveRange(0, jpegHeaderPos + contentLength);
+
                                 }
                                 else {
                                     int startSearchJpegEnd = jpegHeaderPos + JpegHeader.Length;
@@ -256,20 +261,25 @@ namespace Exavision.Seasense.Streaming {
                                         Array.Copy(dataArray, jpegHeaderPos, jpeg, 0, jpegLength);
                                         lock (ImageBytesLocker) {
                                             this.imageBytes = jpeg;
+
                                         }
+                                        //Log.Information("Extract jpeg by Tag");
                                         datas.RemoveRange(0, jpegEndPos + JpegEnd.Length);
                                     }
                                 }
 
                             }
-                        } else if (contentLength != -1){
+                        }
+                        else if (contentLength != -1) {
                             int startSearchJpegHeader = contentTypeBytesIndex + contentTypeBytes.Length;
                             int jpegHeaderPos = datas.Find(startSearchJpegHeader, JpegHeader);
                             byte[] jpeg = new byte[contentLength];
                             Array.Copy(dataArray, jpegHeaderPos, jpeg, 0, contentLength);
                             lock (ImageBytesLocker) {
                                 this.imageBytes = jpeg;
+
                             }
+                            //Log.Information("Extract jpeg by content length");
                             datas.RemoveRange(0, jpegHeaderPos + contentLength);
                         }
                         if (datas.Count > BufferSize * 10) {

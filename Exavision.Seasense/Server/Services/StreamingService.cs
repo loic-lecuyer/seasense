@@ -69,13 +69,7 @@ namespace Exavision.Seasense.Server.Services {
         public string Screenshot(ICamera camera) {
             try {
                 this.CreateMediaDirectoryIfNotExist();
-                IImageByteProvider provider = null;
-                if (camera.StreamUrl.StartsWith("http")) {
-                    provider = new MjpegImageByteProvider(camera.StreamUrl);
-                }
-                else if (camera.StreamUrl.StartsWith("rtsp")) {
-                    provider = new RtspImageByteProvider(camera.StreamUrl);
-                }
+                IImageByteProvider provider = CreateImageByteProvider(camera.StreamUrl);
 
                 if (provider == null) return null;
                 provider.StartProvider();
@@ -147,7 +141,7 @@ namespace Exavision.Seasense.Server.Services {
             try {
                 string mediaPath = Path.Combine(env.ContentRootPath, StreamingService.MEDIA_DIRECTORY);
                 string filePath = Path.Combine(mediaPath, recording.FileName);
-                ImageByteRecorder recorder = new ImageByteRecorder(provider, filePath, camera.ImageWidth,camera.ImageHeight);
+                ImageByteRecorder recorder = new ImageByteRecorder(provider, filePath, camera.ImageWidth, camera.ImageHeight);
                 recorder.Start();
                 this.recordings.Add(new Tuple<Recording, ImageByteRecorder>(recording, recorder));
                 return recording.Id;
