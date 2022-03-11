@@ -4,7 +4,7 @@
   </div>
 
   <!-- Button LRF -->
-  <mat-label class="lrf-info-label">{{lrfInfo}}</mat-label>
+  <mat-label *ngIf="hasLrf" class="lrf-info-label">{{lrfInfo}}</mat-label>
   <app-hud-lrf-button *ngIf="hasLrf">
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Lazer Measurement" aria-hidden="false" aria-label="Lazer Measurement">sensors</mat-icon>
   </app-hud-lrf-button>
@@ -15,8 +15,8 @@
   </app-hud-button>
 
   <!-- Zoom PIP -->
-  <app-hud-button (buttonDown)="onPipZoomButtonDown()">
-    <mat-icon *ngIf="hasPipZoom" class="hud-button-icon" [inline]="true" matTooltip="Switch Zoom Center On/Off" aria-hidden="false" aria-label="Switch Zoom Center On/Off">crop_free</mat-icon>
+  <app-hud-button  *ngIf="hasPipZoom" (buttonDown)="onPipZoomButtonDown()">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Switch Zoom Center On/Off" aria-hidden="false" aria-label="Switch Zoom Center On/Off">crop_free</mat-icon>
   </app-hud-button>
 
 
@@ -129,7 +129,7 @@
   </div>
 
   <!-- Button LRF -->
-  <mat-label class="lrf-info-label">{{lrfInfo}}</mat-label>
+  <mat-label *ngIf="hasLrf" class="lrf-info-label">{{lrfInfo}}</mat-label>
   <app-hud-lrf-button *ngIf="hasLrf">
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Lazer Measurement" aria-hidden="false" aria-label="Lazer Measurement">sensors</mat-icon>
   </app-hud-lrf-button>
@@ -140,8 +140,8 @@
   </app-hud-button>
 
   <!-- Zoom PIP -->
-  <app-hud-button (buttonDown)="onPipZoomButtonDown()">
-    <mat-icon *ngIf="hasPipZoom" class="hud-button-icon" [inline]="true" matTooltip="Switch Zoom Center On/Off" aria-hidden="false" aria-label="Switch Zoom Center On/Off">crop_free</mat-icon>
+  <app-hud-button  *ngIf="hasPipZoom" (buttonDown)="onPipZoomButtonDown()">
+    <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Switch Zoom Center On/Off" aria-hidden="false" aria-label="Switch Zoom Center On/Off">crop_free</mat-icon>
   </app-hud-button>
 
 

@@ -33,9 +33,9 @@
         </mat-tree>
       </div>
       <mat-divider vertical="true"></mat-divider>
-      <div class="flex-1 display-flex">
+      <div class="flex-1 display-flex flex-dir-col">
 
-        <mat-card *ngIf="selectedNode != null" class="display-flex flex-1 mat-elevation-z0">
+        <mat-card *ngIf="selectedNode != null" class="display-flex flex-1 mat-elevation-z0 flex-dir-col">
           <mat-card-header>
             <mat-card-title>{{selectedNode.item.displayName}}</mat-card-title>
           </mat-card-header>
@@ -105,7 +105,7 @@
               <mat-form-field class="full-width" appearance="fill">
                 <mat-label>Display name</mat-label>
                 <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
-              </mat-form-field>             
+              </mat-form-field>
 
 
               <mat-form-field class="full-width" appearance="fill">
@@ -163,6 +163,56 @@
             </div>
 
 
+
+
+            <!------------------------------------------  SettingNemosysPelcoUnit  -------------------------------------------------->
+            <div class="full-size display-flex flex-dir-col" *ngIf="selectedNode.item.type == 'SettingNemosysPelcoUnit'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Hardware IP</mat-label>
+                <input name="hardwareIP" matInput [(ngModel)]="selectedNode.item.hardwareCardIp">
+              </mat-form-field>
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Hardware Port</mat-label>
+                <input name="hardwarePort" matInput [(ngModel)]="selectedNode.item.hardwareCardPort">
+              </mat-form-field>
+              <div class="flex-1"></div>
+              <button class="full-width" (click)="onRemoveSelectedNodeButtonClick()" mat-button>Remove this unit</button>
+            </div>
+
+            <!------------------------------------------  SettingNemosysPelcoDayCamera  -------------------------------------------------->
+            <div class="full-size display-flex flex-dir-col" *ngIf="selectedNode.item.type == 'SettingNemosysPelcoDayCamera'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+
+
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Stream URL</mat-label>
+                <input name="streamUrl" matInput [(ngModel)]="selectedNode.item.streamUrl">
+              </mat-form-field>
+            </div>
+
+            <!------------------------------------------  SettingNemosysPelcoThermalCamera  -------------------------------------------------->
+            <div class="full-size display-flex flex-dir-col" *ngIf="selectedNode.item.type == 'SettingNemosysPelcoThermalCamera'">
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Display name</mat-label>
+                <input name="displayName" matInput [(ngModel)]="selectedNode.item.displayName">
+              </mat-form-field>
+
+
+              <mat-form-field class="full-width" appearance="fill">
+                <mat-label>Stream URL</mat-label>
+                <input name="streamUrl" matInput [(ngModel)]="selectedNode.item.streamUrl">
+              </mat-form-field>
+            </div>
 
 
 

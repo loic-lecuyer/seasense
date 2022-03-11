@@ -3,6 +3,7 @@
     using Exavision.Seasense.Api.Http.Logout;
     using Exavision.Seasense.Api.Http.Setting;
     using Exavision.Seasense.Api.Http.Token;
+    using Exavision.Seasense.Materials.Nemosys;
     using Exavision.Seasense.Materials.Seamos;
     using Exavision.Seasense.Server.Attributes;
     using Exavision.Seasense.Server.Services;
@@ -62,6 +63,11 @@
             UnitCreateEmptyResponse response = new UnitCreateEmptyResponse();
             if (request.UnitType.Equals("SeamosUnit")) {
                 SeamosUnit unit = new SeamosUnit();
+                SettingMaterial setting = unit.GetSettingMaterial();
+                response.SettingUnit = setting;
+            }
+            if (request.UnitType.Equals("NemosysPelcoUnit")) {
+                NemosysPelcoUnit unit = new NemosysPelcoUnit();
                 SettingMaterial setting = unit.GetSettingMaterial();
                 response.SettingUnit = setting;
             }

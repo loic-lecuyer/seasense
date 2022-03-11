@@ -9,8 +9,12 @@ namespace Exavision.Seasense.Shared.Materials {
         }
         public override S GetSetting() {
             S setting = base.GetSetting();
+            setting.StreamUrl = this.StreamUrl;
+            setting.StreamWidth = this.ImageWidth;
+            setting.StreamHeight = this.ImageHeight;
             setting.MaterialType = MaterialType.DayCamera;
             return setting;
         }
+
     }
 }

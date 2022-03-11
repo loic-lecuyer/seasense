@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Exavision.Seasense.Core\Exavision.Seasense.Core.csproj" />
+    <ProjectReference Include="..\Exavision.Seasense.Shared\Exavision.Seasense.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -17,10 +17,11 @@ namespace Exavision.Seasense.Materials.Seamos {
         private readonly SpinnakerClient client;
         public override int ImageWidth { get => 1200; }
         public override int ImageHeight { get => 900; }
-        public Values SpinnakerValues { get => this.spinnakerValues; }
-
         private string streamUrl;
         public override string StreamUrl { get => streamUrl; }
+        public Values SpinnakerValues { get => this.spinnakerValues; }
+
+
         public SeamosDayCamera(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Day Camera";
             this.client = new SpinnakerClient();
@@ -40,7 +41,8 @@ namespace Exavision.Seasense.Materials.Seamos {
             MaterialState state = base.GetState();
             if (this.client.IsConnected) {
                 state.Status.Add(new StatusState() { Status = Status.Ok, Message = "Http connection ok" });
-            } else {
+            }
+            else {
                 state.Status.Add(new StatusState() { Status = Status.Error, Message = "Http connection error" });
             }
 
@@ -101,6 +103,6 @@ namespace Exavision.Seasense.Materials.Seamos {
                 }
             });
         }
-       
+
     }
 }

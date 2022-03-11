@@ -50,6 +50,10 @@
             }
             IMaterial material = this.siteService.FindMaterialById(materialId);
             if (material is ICamera camera) {
+                if (String.IsNullOrEmpty(camera.StreamUrl)) {
+                    await _next(context);
+                    return;
+                }
                 // For mjpeg do reverse proxy to have same origine and https support 
                 if (camera.StreamUrl.StartsWith("http")) {
                     await this.ReverseProxyAsync(context, camera.StreamUrl);
@@ -61,14 +65,14 @@
                     }
                     else {
                         await _next(context);
-                        
+
                     }
                 }
 
             }
             else {
                 await _next(context);
-                
+
             }
         }
 

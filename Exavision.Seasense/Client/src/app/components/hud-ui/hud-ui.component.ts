@@ -90,7 +90,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
       this.hasMultipleCamera = cameraCount > 1;
       this.hasPipZoom = cameraCount > 0 && this.siteService.selectedCamera != null;
       this.hasLrf = this.siteService.selectedUnit.getMaterial(MaterialType.LazerMeasurement) != null;
-   
+      console.log("has lrf " + this.hasLrf);
 
       this.hasGyroStabilizationCapability = this.siteService.selectedUnit.hasMaterialWithCapability(MaterialType.Turret, CapabilityType.TurretGyrostabilization);
 
