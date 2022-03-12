@@ -26,6 +26,7 @@ import { WsCameraScreenshotResponse } from '../api/ws/ws-camera-screeneshot-resp
 import { WsCameraStartRecordRequest } from '../api/ws/ws-camera-start-record-request';
 import { WsCameraStopRecordRequest } from '../api/ws/ws-camera-stop-record-request';
 import { WsCameraStartRecordResponse } from '../api/ws/ws-camera-start-record-response';
+import { WsDeleteMediaRequest } from '../api/ws/ws-delete-media-request';
 @Injectable({
   providedIn: 'root'
 })
@@ -359,4 +360,21 @@ export class WsService {
     this.socket?.send(data);
 
   }
+
+  deleteMedia(fileName: string) {
+    
+    if (this.userService.token == null) return;
+    let request: WsDeleteMediaRequest = {
+      $type: "WsDeleteMediaRequest",
+      requestId: uuid.v4(),
+      token: this.userService.token,
+      fileName: fileName
+
+    };
+    console.log("WebSocket send WsDeleteMediaRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+   
+  }
+
 }

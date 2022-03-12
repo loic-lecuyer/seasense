@@ -37,6 +37,7 @@ import { SwitchValueType } from "./capabilities/switch-value-type";
 import { WsGetMediaListResponse } from "../api/ws/ws-get-media-list-response";
 import { WsCameraScreenshotResponse } from "../api/ws/ws-camera-screeneshot-response";
 import { WsCameraStartRecordResponse } from "../api/ws/ws-camera-start-record-response";
+import { InertialMeasurementMeasureCapability } from "./capabilities/inertial-measurement/inertial-measurement-measure-capability";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -142,8 +143,11 @@ export class Factory {
         capability = new DoubleValueCapability(<SettingDoubleValueCapability>settingCapability);
         break;
       case CapabilityType.SwitchValue:
-        let settingSwitchValueCapability: SettingSwitchValueCapability = <SettingSwitchValueCapability>settingCapability;        
+        let settingSwitchValueCapability: SettingSwitchValueCapability = <SettingSwitchValueCapability>settingCapability;
         capability = new SwitchValueCapability(settingSwitchValueCapability);
+        break;
+      case CapabilityType.InertialMeasurementMeasure:       
+        capability = new InertialMeasurementMeasureCapability(settingCapability);
         break;
     }
     if (capability == null) {

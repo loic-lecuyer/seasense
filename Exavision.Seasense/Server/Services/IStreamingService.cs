@@ -14,5 +14,6 @@ namespace Exavision.Seasense.Server.Services {
         List<RecordingState> GetRecordingStates();
         void StopRecord(string recordId);
         void StopRecords(User user);
+        void DeleMedia(string fileName);
     }
 }

@@ -190,5 +190,11 @@ namespace Exavision.Seasense.Server.Services {
             }
             recordToStop.Clear();
         }
+
+        public void DeleMedia(string fileName) {
+            string mediaPath = Path.Combine(env.ContentRootPath, StreamingService.MEDIA_DIRECTORY);
+            string filePath = Path.Combine(mediaPath, fileName);
+            if (File.Exists(filePath)) File.Delete(filePath);
+        }
     }
 }

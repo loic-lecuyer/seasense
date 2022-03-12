@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class UiService {
- 
+  
 
   public showPipZoomSubject: Subject<boolean> = new Subject<boolean>();
   public mousePan: number | null = null;
@@ -16,6 +16,7 @@ export class UiService {
   public showPanelMediaSubject: Subject<boolean> = new Subject<boolean>();
   public showPanelSavSubject: Subject<boolean> = new Subject<boolean>();
   public isLeftTorightSubject: Subject<boolean> = new Subject<boolean>();
+  public mediaChangeSubject: Subject<boolean> = new Subject<boolean>();
   private isPipZoomVisible: boolean = false;
   private isPanelCameraVisible: boolean = false;
   private isPanelMediaVisible: boolean = false;
@@ -64,5 +65,10 @@ export class UiService {
     this.isPanelSavVisible = true;
     this.showPanelSavSubject.next(this.isPanelSavVisible);
   }
- 
+  notifyMediaChange(delay: number) {    
+    setTimeout(() => {
+      this.mediaChangeSubject.next(true);
+    }, delay);
+  }
+
 }

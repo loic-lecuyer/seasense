@@ -41,6 +41,7 @@
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-in-start-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-zoom-stop-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-delete-media-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-double-value-set-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-error-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-get-media-list-request.ts" />
@@ -61,6 +62,7 @@
     <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-continuous-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability-type.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\inertial-measurement\inertial-measurement-measure-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\lazer-measurement\lazer-measurement-shoot-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-absolute-position-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\turret\turret-gyrostabilization-capability.ts" />
@@ -80,6 +82,7 @@
     <None Remove="Client\src\app\materials\states\camera\camera-zoom-absolute-position-state.ts" />
     <None Remove="Client\src\app\materials\states\capability-state.ts" />
     <None Remove="Client\src\app\materials\states\double-value-state.ts" />
+    <None Remove="Client\src\app\materials\states\inertial-measurement\inertial-measurement-measure-state.ts" />
     <None Remove="Client\src\app\materials\states\lazer-measurement\lazer-measurement-shoot-state.ts" />
     <None Remove="Client\src\app\materials\states\material-state.ts" />
     <None Remove="Client\src\app\materials\states\recording-state.ts" />
@@ -105,6 +108,7 @@
 
   <ItemGroup>
     <PackageReference Include="EasySharpIni" Version="1.1.1" />
+    <PackageReference Include="FFMediaToolkit" Version="4.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.14" />
@@ -173,6 +177,9 @@
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-error-response.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-delete-media-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-get-media-list-response.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -227,6 +234,9 @@
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\inertial-measurement\inertial-measurement-measure-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\lazer-measurement\lazer-measurement-shoot-capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -256,6 +266,9 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\states\capability-state.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\states\inertial-measurement\inertial-measurement-measure-state.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\states\recording-state.ts">
@@ -314,7 +327,40 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="openh264-2.2.0-win64.dll">
+    <None Update="lib-windows\ffmpeg\avcodec-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\avdevice-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\avfilter-8.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\avformat-59.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\avutil-57.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\ffmpeg.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\ffplay.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\ffprobe.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\postproc-56.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\swresample-4.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\ffmpeg\swscale-6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="lib-windows\openh264-2.2.0-win64.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="seasense.pfx">

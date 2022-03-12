@@ -9,6 +9,7 @@ export const enum CapabilityType {
   CameraAutoFocusOnePush = "CameraAutoFocusOnePush",
   LazerMeasurementShootCapability = "LazerMeasurementShootCapability",
   DoubleValue = "DoubleValue",
-  SwitchValue ="SwitchValue"
+  SwitchValue = "SwitchValue",
+  InertialMeasurementMeasure ="InertialMeasurementMeasure"
 
 }

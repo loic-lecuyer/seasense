@@ -1,4 +1,5 @@
-﻿using Exavision.Seasense.Materials.Seamos.Settings;
+﻿using Exavision.Seasense.Materials.Seamos.Capabilities.InertialMeasurement;
+using Exavision.Seasense.Materials.Seamos.Settings;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.States;
 using System;
@@ -7,6 +8,7 @@ namespace Exavision.Seasense.Materials.Seamos {
     public class SeamosInertialMeasurement : InertialMeasurement<SettingSeamosInertialMeasurement, SeamosUnit> {
         public SeamosInertialMeasurement(SeamosUnit unit) : base(unit) {
             this.DisplayName = "Seamos Inertial Measurement";
+            this.Capabilities.Add(new SeamosInertialMeasurementMeasureCapability(this.Unit.Client));
         }
         public override MaterialState GetState() {
             MaterialState state = base.GetState();

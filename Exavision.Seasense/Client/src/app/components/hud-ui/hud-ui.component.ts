@@ -184,6 +184,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
   onScreenshot() {
     if (this.siteService.selectedCamera != null && this.siteService.selectedUnit != null) {
       this.wsService.screenshot(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id);
+      this.uiService.notifyMediaChange(500);
 
     }
   }
@@ -194,6 +195,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
       }
       else {
         this.wsService.stopRecord(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id, this.runningRecord.id);
+        this.uiService.notifyMediaChange(500);
       }
       
     }

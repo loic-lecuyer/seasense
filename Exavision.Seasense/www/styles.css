@@ -3297,4 +3297,9 @@ mat-toolbar {
   opacity: 0;
 }
 
+.multiline-tooltip {
+  white-space: pre-line !important;
+  font-size: 12px;
+}
+
 /*# sourceMappingURL=styles.css.map*/

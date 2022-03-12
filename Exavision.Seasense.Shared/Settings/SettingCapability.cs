@@ -14,7 +14,8 @@ namespace Exavision.Seasense.Shared.Settings {
         IntValue,
         DoubleValue,
         SwitchValue,
-        LazerMeasurementShootCapability
+        LazerMeasurementShootCapability,
+        InertialMeasurementMeasure
     }
     public abstract class SettingCapability : SettingBase {
 

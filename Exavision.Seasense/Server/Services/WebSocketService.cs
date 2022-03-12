@@ -276,7 +276,11 @@ namespace Exavision.Seasense.Server.Services {
                 if (material == null) throw new InvalidOperationException("Invalid material Id");
                 this.streamService.StopRecord(stopRecordRequest.RecordId);
             }
-            else {
+            else if (request is WsDeleteMediaRequest deleteMediaRequest) {
+              
+                
+                this.streamService.DeleMedia(deleteMediaRequest.FileName);
+            } else {
                 this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);
             }
 

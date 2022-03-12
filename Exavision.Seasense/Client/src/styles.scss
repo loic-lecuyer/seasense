@@ -172,3 +172,7 @@ mat-toolbar{
 .zero-opacity{
     opacity:0;
 }
+.multiline-tooltip {
+  white-space: pre-line !important;
+  font-size:12px;
+}

@@ -104,7 +104,9 @@
 
             }
             catch (Exception ex) {
-                if (!(ex is OperationCanceledException)) Log.Warning("ReverseProxyAsync end without cancellation " + ex.Message);
+                if (!(ex is OperationCanceledException)) {
+                    Log.Warning("ReverseProxyAsync end without cancellation " + ex.Message);
+                } 
             }
             Log.Information("ReverseProxyAsync Stop for " + context.Connection.RemoteIpAddress + " url " + streamUrl);
         }

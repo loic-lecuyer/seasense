@@ -2,6 +2,7 @@
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.Settings;
 using Exavision.Seasense.Shared.States;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,38 +69,49 @@ namespace Exavision.Seasense.Shared.Materials {
             Task.Factory.StartNew(PollingLoop, this.pollingCanceller.Token);
 
         }
-        private Dictionary<PollingAction, DateTime> pollingActionDates = new Dictionary<PollingAction, DateTime>();
+        private readonly Dictionary<PollingAction, DateTime> pollingActionDates = new Dictionary<PollingAction, DateTime>();
         private async Task PollingLoop() {
-            while (!pollingCanceller.IsCancellationRequested) {
-
-                List<PollingAction> actions = new List<PollingAction>();
-                actions.AddRange(this.GetPollingActions());
-                this.Capabilities.ForEach((ICapability capabilities) => {
+            pollingActionDates.Clear();
+            List<PollingAction> actions = new List<PollingAction>();
+            actions.AddRange(this.GetPollingActions());
+            this.Capabilities.ForEach((ICapability capabilities) => {
+                actions.AddRange(capabilities.GetPollingActions());
+            });
+            this.Materials.ForEach((IMaterial material) => {
+                actions.AddRange(material.GetPollingActions());
+                material.Capabilities.ForEach((ICapability capabilities) => {
                     actions.AddRange(capabilities.GetPollingActions());
                 });
-                this.Materials.ForEach((IMaterial material) => {
-                    actions.AddRange(material.GetPollingActions());
-                    material.Capabilities.ForEach((ICapability capabilities) => {
-                        actions.AddRange(capabilities.GetPollingActions());
-                    });
-                });
+            });
 
-                foreach (PollingAction action in actions) {
-                    if (!pollingActionDates.ContainsKey(action)) {
-                        action.Action.Invoke();
-                        pollingActionDates.Add(action, DateTime.Now);
-                    }
-                    else {
-                        TimeSpan span = DateTime.Now - pollingActionDates[action];
-                        if (span.TotalMilliseconds > action.Delay) {
-                            action.Action.Invoke();
-                            pollingActionDates[action] = DateTime.Now;
+            // Add polling action to dictionary if not exist
+            foreach (PollingAction action in actions) {
+                pollingActionDates.Add(action, DateTime.Now);
+            }
+            while (!pollingCanceller.IsCancellationRequested) {
+
+                try {
+                   
+                    DateTime now = DateTime.Now;
+                    List<KeyValuePair<PollingAction, DateTime>> actionToRuns = (from a in pollingActionDates where (now - a.Value).TotalMilliseconds > a.Key.Delay orderby (now - a.Value).TotalMilliseconds descending select a).ToList();
+                    if (actionToRuns.Count > 0) {
+
+                        DateTime nextDate = (from a in pollingActionDates where (now - a.Value).TotalMilliseconds < a.Key.Delay orderby (now - a.Value).TotalMilliseconds ascending select a.Value).FirstOrDefault();
+                        TimeSpan deltaToNext = now - nextDate;
+                        int waitBeetween = (int)(deltaToNext.TotalMilliseconds / actionToRuns.Count);
+                        if (waitBeetween < 1) waitBeetween = 1;
+                        Log.Information("Wait beetween polling " + waitBeetween+" ms");
+                        foreach (KeyValuePair<PollingAction, DateTime> act in actionToRuns) {
+                            act.Key.Action.Invoke();
+                            pollingActionDates[act.Key] = DateTime.Now;
+                            await Task.Delay(waitBeetween);
                         }
                     }
+
+                } catch (Exception ex) {
+                    Log.Error("Critical error in polling loop " + ex.Message);
+                    throw;
                 }
-
-                await Task.Delay(10);
-
             }
         }
 

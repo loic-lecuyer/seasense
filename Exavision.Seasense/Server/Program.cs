@@ -1,6 +1,6 @@
 using EasySharpIni;
 using EasySharpIni.Models;
-
+using FFMediaToolkit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -50,7 +50,7 @@ namespace Exavision.Seasense.Server {
                 Environment.SetEnvironmentVariable("PATH", gstreamerBinPath + ";" + ffmpegLibPath, EnvironmentVariableTarget.Process);
                 Environment.SetEnvironmentVariable("GSTREAMER_1_0_ROOT_X86_64", Path.Combine(gstreamerLibPath, "1.0", "x86_64"), EnvironmentVariableTarget.Process);
                 Environment.SetEnvironmentVariable("GST_PLUGIN_PATH", Path.Combine(gstreamerLibPath, "1.0", "x86_64", "lib", "gstreamer-1.0"), EnvironmentVariableTarget.Process);
-
+                FFmpegLoader.FFmpegPath = ffmpegLibPath;
                 Log.Information("Set FFmpegLoader.FFmpegPath " + ffmpegLibPath);
             }
             CreateHostBuilder(appPath, isService, ipAddress, portHttp, portHttps, args).Build().Run();

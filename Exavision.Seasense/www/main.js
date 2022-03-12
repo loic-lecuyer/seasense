@@ -441,6 +441,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
 /* harmony import */ var _services_site_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/site.service */ 6633);
+/* harmony import */ var _angular_material_tooltip__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material/tooltip */ 89);
+
 
 
 const _c0 = ["svgTurret"];
@@ -449,18 +451,31 @@ class CompassComponent {
     constructor(renderer, siteService) {
         this.renderer = renderer;
         this.siteService = siteService;
+        this.info = "";
         this.svgTurret = null;
         this.svgDirection = null;
         this.siteStateSubscription = this.siteService.siteStateSubject.subscribe(() => { this.updateUi(); });
     }
     updateUi() {
+        this.info = "";
+        let rotateInfoTurret = "rotate(0deg)";
+        let rotateInfoDirection = "rotate(0deg)";
         if (this.siteService.selectedUnit != null) {
-            let cap = this.siteService.selectedUnit.getMaterialCapability("Turret" /* Turret */, "TurretAbsolutePosition" /* TurretAbsolutePosition */);
-            if (cap != null) {
-                let rotateInfoTurret = "rotate(" + cap.pan.toFixed(0) + "deg)";
-                if (this.svgTurret != null) {
-                    this.renderer.setStyle(this.svgTurret.nativeElement, 'transform', rotateInfoTurret);
-                }
+            let capPosition = this.siteService.selectedUnit.getMaterialCapability("Turret" /* Turret */, "TurretAbsolutePosition" /* TurretAbsolutePosition */);
+            if (capPosition != null) {
+                rotateInfoTurret = "rotate(" + capPosition.pan.toFixed(0) + "deg)";
+                this.info += "Pan : " + capPosition.pan.toFixed(2) + "°\nTilt : " + capPosition.tilt.toFixed(2) + "°\n";
+            }
+            let capInertial = this.siteService.selectedUnit.getMaterialCapability("InertialMeasurement" /* InertialMeasurement */, "InertialMeasurementMeasure" /* InertialMeasurementMeasure */);
+            if (capInertial != null) {
+                rotateInfoDirection = "rotate(" + capInertial.angleY.toFixed(0) + "deg)";
+                this.info += "Imu X : " + capInertial.angleX.toFixed(2) + "°\nImu Y : " + capInertial.angleY.toFixed(2) + "\nImu Z : " + capInertial.angleZ.toFixed(2) + "°";
+            }
+            if (this.svgTurret != null) {
+                this.renderer.setStyle(this.svgTurret.nativeElement, 'transform', rotateInfoTurret);
+            }
+            if (this.svgDirection != null) {
+                this.renderer.setStyle(this.svgDirection.nativeElement, 'transform', rotateInfoDirection);
             }
         }
     }
@@ -479,7 +494,7 @@ CompassComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1_
         let _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.svgTurret = _t.first);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.svgDirection = _t.first);
-    } }, decls: 9, vars: 0, consts: [[1, "container"], [1, "svg-center"], ["alt", "compass background", "src", "assets/compass-next-fond.svg"], ["alt", "compass turret", "src", "assets/compass-next-turret.svg"], ["svgTurret", ""], ["alt", "compase rose", "src", "assets/compass-next-rose.svg"], ["svgDirection", ""]], template: function CompassComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, decls: 9, vars: 2, consts: [[1, "container", 3, "matTooltip", "matTooltipClass"], [1, "svg-center"], ["alt", "compass background", "src", "assets/compass-next-fond.svg"], ["alt", "compass turret", "src", "assets/compass-next-turret.svg"], ["svgTurret", ""], ["alt", "compase rose", "src", "assets/compass-next-rose.svg"], ["svgDirection", ""]], template: function CompassComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 0)(1, "div", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "img", 2);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
@@ -489,7 +504,9 @@ CompassComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1_
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](7, "img", 5, 6);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()();
-    } }, styles: [".container[_ngcontent-%COMP%] {\n  -webkit-user-select: none;\n          user-select: none;\n  height: 136px;\n  width: 136px;\n  padding: 0px;\n  margin-left: auto;\n  margin-right: auto;\n  margin-top: 16px;\n}\n\n.svg-center[_ngcontent-%COMP%] {\n  position: absolute;\n  -webkit-user-select: none;\n          user-select: none;\n  height: 120px;\n  width: 120px;\n  margin: 0px;\n  padding: 0px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbXBhc3MuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQ0E7RUFDRSx5QkFBQTtVQUFBLGlCQUFBO0VBQ0EsYUFBQTtFQUNBLFlBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxrQkFBQTtFQUNBLGdCQUFBO0FBQUY7O0FBRUE7RUFDRSxrQkFBQTtFQUNBLHlCQUFBO1VBQUEsaUJBQUE7RUFDQSxhQUFBO0VBQ0EsWUFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0FBQ0YiLCJmaWxlIjoiY29tcGFzcy5jb21wb25lbnQuc2NzcyIsInNvdXJjZXNDb250ZW50IjpbIlxyXG4uY29udGFpbmVyIHtcclxuICB1c2VyLXNlbGVjdDogbm9uZTtcclxuICBoZWlnaHQ6IDEzNnB4O1xyXG4gIHdpZHRoOiAxMzZweDtcclxuICBwYWRkaW5nOiAwcHg7XHJcbiAgbWFyZ2luLWxlZnQ6YXV0bztcclxuICBtYXJnaW4tcmlnaHQ6YXV0bztcclxuICBtYXJnaW4tdG9wOjE2cHg7XHJcbn1cclxuLnN2Zy1jZW50ZXIge1xyXG4gIHBvc2l0aW9uOiBhYnNvbHV0ZTtcclxuICB1c2VyLXNlbGVjdDogbm9uZTtcclxuICBoZWlnaHQ6IDEyMHB4O1xyXG4gIHdpZHRoOiAxMjBweDtcclxuICBtYXJnaW46IDBweDtcclxuICBwYWRkaW5nOjBweDtcclxufVxyXG4iXX0= */"] });
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("matTooltip", ctx.info)("matTooltipClass", "multiline-tooltip");
+    } }, directives: [_angular_material_tooltip__WEBPACK_IMPORTED_MODULE_2__.MatTooltip], styles: ["[_nghost-%COMP%] {\n  z-index: 1000;\n}\n\n.container[_ngcontent-%COMP%] {\n  -webkit-user-select: none;\n          user-select: none;\n  height: 136px;\n  width: 136px;\n  padding: 0px;\n  margin-left: auto;\n  margin-right: auto;\n  margin-top: 16px;\n}\n\n.svg-center[_ngcontent-%COMP%] {\n  position: absolute;\n  -webkit-user-select: none;\n          user-select: none;\n  height: 120px;\n  width: 120px;\n  margin: 0px;\n  padding: 0px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvbXBhc3MuY29tcG9uZW50LnNjc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7RUFDSSxhQUFBO0FBQ0o7O0FBQ0E7RUFDRSx5QkFBQTtVQUFBLGlCQUFBO0VBQ0EsYUFBQTtFQUNBLFlBQUE7RUFDQSxZQUFBO0VBQ0EsaUJBQUE7RUFDQSxrQkFBQTtFQUNBLGdCQUFBO0FBRUY7O0FBQUE7RUFDRSxrQkFBQTtFQUNBLHlCQUFBO1VBQUEsaUJBQUE7RUFDQSxhQUFBO0VBQ0EsWUFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0FBR0YiLCJmaWxlIjoiY29tcGFzcy5jb21wb25lbnQuc2NzcyIsInNvdXJjZXNDb250ZW50IjpbIjpob3N0e1xyXG4gICAgei1pbmRleDoxMDAwO1xyXG59XHJcbi5jb250YWluZXIge1xyXG4gIHVzZXItc2VsZWN0OiBub25lO1xyXG4gIGhlaWdodDogMTM2cHg7XHJcbiAgd2lkdGg6IDEzNnB4O1xyXG4gIHBhZGRpbmc6IDBweDtcclxuICBtYXJnaW4tbGVmdDphdXRvO1xyXG4gIG1hcmdpbi1yaWdodDphdXRvO1xyXG4gIG1hcmdpbi10b3A6MTZweDtcclxufVxyXG4uc3ZnLWNlbnRlciB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIHVzZXItc2VsZWN0OiBub25lO1xyXG4gIGhlaWdodDogMTIwcHg7XHJcbiAgd2lkdGg6IDEyMHB4O1xyXG4gIG1hcmdpbjogMHB4O1xyXG4gIHBhZGRpbmc6MHB4O1xyXG59XHJcbiJdfQ== */"] });
 
 
 /***/ }),
@@ -2486,6 +2503,7 @@ class HudUiComponent {
     onScreenshot() {
         if (this.siteService.selectedCamera != null && this.siteService.selectedUnit != null) {
             this.wsService.screenshot(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id);
+            this.uiService.notifyMediaChange(500);
         }
     }
     onRecordClick() {
@@ -2495,6 +2513,7 @@ class HudUiComponent {
             }
             else {
                 this.wsService.stopRecord(this.siteService.selectedUnit.id, this.siteService.selectedCamera.id, this.runningRecord.id);
+                this.uiService.notifyMediaChange(500);
             }
         }
     }
@@ -3190,19 +3209,19 @@ class PanelMediaComponent {
         this.uiService = uiService;
         this.wsService = wsService;
         this.files = [];
-        this.displayedColumns = ['name', 'size', 'date', 'type', 'download', 'open'];
+        this.displayedColumns = ['name', 'size', 'date', 'type', 'download', 'open', 'delete'];
         this.refLink = null;
+        this.mediaChangeSubscription = this.uiService.mediaChangeSubject.subscribe(() => {
+            this.wsService.getMediaList();
+        });
         this.mediaFilesSubscription = this.wsService.mediaFilesSubject.subscribe((files) => {
             this.files = [];
             this.files = this.files.concat(files);
         });
-        this.screenshotSubscription = this.wsService.screenshootSubject.subscribe((fileName) => {
-            this.wsService.getMediaList();
-        });
     }
     ngOnDestroy() {
         this.mediaFilesSubscription.unsubscribe();
-        this.screenshotSubscription.unsubscribe();
+        this.mediaChangeSubscription.unsubscribe();
     }
     ngOnInit() {
         this.wsService.getMediaList();
@@ -3263,6 +3282,8 @@ class PanelMediaComponent {
         window.open(file.url, "_blank");
     }
     onDeleteClick(file) {
+        this.wsService.deleteMedia(file.name);
+        this.uiService.notifyMediaChange(500);
     }
 }
 PanelMediaComponent.ɵfac = function PanelMediaComponent_Factory(t) { return new (t || PanelMediaComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_ui_service__WEBPACK_IMPORTED_MODULE_0__.UiService), _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdirectiveInject"](_services_ws_service__WEBPACK_IMPORTED_MODULE_1__.WsService)); };
@@ -3828,6 +3849,35 @@ var DoubleValueType;
 
 /***/ }),
 
+/***/ 800:
+/*!********************************************************************************************************!*\
+  !*** ./src/app/materials/capabilities/inertial-measurement/inertial-measurement-measure-capability.ts ***!
+  \********************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "InertialMeasurementMeasureCapability": () => (/* binding */ InertialMeasurementMeasureCapability)
+/* harmony export */ });
+class InertialMeasurementMeasureCapability {
+    constructor(settingCapability) {
+        this.angleX = 0;
+        this.angleY = 0;
+        this.angleZ = 0;
+        this.id = settingCapability.id;
+        this.capabilityType = "InertialMeasurementMeasure" /* InertialMeasurementMeasure */;
+    }
+    setState(valueState) {
+        let state = valueState;
+        this.angleX = state.angleX;
+        this.angleY = state.angleY;
+        this.angleZ = state.angleZ;
+    }
+}
+
+
+/***/ }),
+
 /***/ 7856:
 /*!************************************************************************************************!*\
   !*** ./src/app/materials/capabilities/lazer-measurement/lazer-measurement-shoot-capability.ts ***!
@@ -4135,6 +4185,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _capabilities_lazer_measurement_lazer_measurement_shoot_capability__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./capabilities/lazer-measurement/lazer-measurement-shoot-capability */ 7856);
 /* harmony import */ var _capabilities_double_value_capability__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./capabilities/double-value-capability */ 7412);
 /* harmony import */ var _capabilities_switch_value_capability__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./capabilities/switch-value-capability */ 8035);
+/* harmony import */ var _capabilities_inertial_measurement_inertial_measurement_measure_capability__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./capabilities/inertial-measurement/inertial-measurement-measure-capability */ 800);
+
 
 
 
@@ -4247,6 +4299,9 @@ class Factory {
             case "SwitchValue" /* SwitchValue */:
                 let settingSwitchValueCapability = settingCapability;
                 capability = new _capabilities_switch_value_capability__WEBPACK_IMPORTED_MODULE_16__.SwitchValueCapability(settingSwitchValueCapability);
+                break;
+            case "InertialMeasurementMeasure" /* InertialMeasurementMeasure */:
+                capability = new _capabilities_inertial_measurement_inertial_measurement_measure_capability__WEBPACK_IMPORTED_MODULE_17__.InertialMeasurementMeasureCapability(settingCapability);
                 break;
         }
         if (capability == null) {
@@ -5335,7 +5390,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "LoginComponent": () => (/* binding */ LoginComponent)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! js-sha512 */ 2414);
 /* harmony import */ var js_sha512__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(js_sha512__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/core */ 3184);
@@ -5396,7 +5451,7 @@ class LoginComponent {
   onConnectButtonClick() {
     var _this = this;
 
-    return (0,C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       _this.loginRunning = true;
 
       _this.userService.clearToken();
@@ -5787,6 +5842,7 @@ class UiService {
         this.showPanelMediaSubject = new rxjs__WEBPACK_IMPORTED_MODULE_0__.Subject();
         this.showPanelSavSubject = new rxjs__WEBPACK_IMPORTED_MODULE_0__.Subject();
         this.isLeftTorightSubject = new rxjs__WEBPACK_IMPORTED_MODULE_0__.Subject();
+        this.mediaChangeSubject = new rxjs__WEBPACK_IMPORTED_MODULE_0__.Subject();
         this.isPipZoomVisible = false;
         this.isPanelCameraVisible = false;
         this.isPanelMediaVisible = false;
@@ -5830,6 +5886,11 @@ class UiService {
         this.hidePanelMedia();
         this.isPanelSavVisible = true;
         this.showPanelSavSubject.next(this.isPanelSavVisible);
+    }
+    notifyMediaChange(delay) {
+        setTimeout(() => {
+            this.mediaChangeSubject.next(true);
+        }, delay);
     }
 }
 UiService.ɵfac = function UiService_Factory(t) { return new (t || UiService)(); };
@@ -5885,7 +5946,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "WsService": () => (/* binding */ WsService)
 /* harmony export */ });
-/* harmony import */ var C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
+/* harmony import */ var C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js */ 1670);
 /* harmony import */ var uuid__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! uuid */ 2535);
 /* harmony import */ var _materials_factory__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../materials/factory */ 7568);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! rxjs */ 228);
@@ -5932,7 +5993,7 @@ class WsService {
     };
 
     this.socket.onclose = /*#__PURE__*/function () {
-      var _ref = (0,C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
+      var _ref = (0,C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* (event) {
         _this.wsClose(event);
       });
 
@@ -5990,7 +6051,7 @@ class WsService {
   }
 
   wsClose(event) {
-    return (0,C_Dev_Test_Seasense_SeasenseServer_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
+    return (0,C_Dev_Seasense_Server_Exavision_Seasense_Client_node_modules_babel_runtime_helpers_esm_asyncToGenerator_js__WEBPACK_IMPORTED_MODULE_0__["default"])(function* () {
       console.log("wsClose", event);
     })();
   }
@@ -6254,6 +6315,21 @@ class WsService {
       token: this.userService.token
     };
     console.log("WebSocket send WsGetMediaListRequest");
+    let data = JSON.stringify(request);
+    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
+  }
+
+  deleteMedia(fileName) {
+    var _a;
+
+    if (this.userService.token == null) return;
+    let request = {
+      $type: "WsDeleteMediaRequest",
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
+      token: this.userService.token,
+      fileName: fileName
+    };
+    console.log("WebSocket send WsDeleteMediaRequest");
     let data = JSON.stringify(request);
     (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
   }

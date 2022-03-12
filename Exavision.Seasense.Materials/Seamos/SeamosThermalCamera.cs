@@ -62,7 +62,7 @@ namespace Exavision.Seasense.Materials.Seamos {
                     ICameraGetValuesRequest request = this.Unit.Protocol.Resolve<ICameraGetValuesRequest>(Protocols.Seamos.Commands.MaterialTarget.ThermalCamera);
                     this.Unit.Client.Send(request);
                 },
-                Delay = 100
+                Delay = 250
             });
             return actions;
         }

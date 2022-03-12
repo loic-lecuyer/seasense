@@ -12,26 +12,25 @@ import { WsService } from '../../services/ws.service';
 })
 export class PanelMediaComponent implements OnInit, OnDestroy {
   public files: MediaFile[] = [];
-  displayedColumns: string[] = [ 'name','size','date','type','download','open'];
+  displayedColumns: string[] = [ 'name','size','date','type','download','open','delete'];
   private mediaFilesSubscription: Subscription;
   @ViewChild('refLink') refLink: ElementRef | null = null;
-    screenshotSubscription: Subscription;
+    mediaChangeSubscription: Subscription;
   constructor(private uiService: UiService, private wsService: WsService) {
-
+    this.mediaChangeSubscription= this.uiService.mediaChangeSubject.subscribe(() => {
+      this.wsService.getMediaList();
+    });
 
     this.mediaFilesSubscription = this.wsService.mediaFilesSubject.subscribe((files: MediaFile[]) => {
       this.files = [];
       this.files = this.files.concat(files);
     });
 
-    this.screenshotSubscription = this.wsService.screenshootSubject.subscribe((fileName: string) => {
-      this.wsService.getMediaList();
-
-    });
+  
   }
   ngOnDestroy() {
     this.mediaFilesSubscription.unsubscribe();
-    this.screenshotSubscription.unsubscribe();
+    this.mediaChangeSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -87,7 +86,8 @@ export class PanelMediaComponent implements OnInit, OnDestroy {
     window.open(file.url, "_blank");
 
   }
-  onDeleteClick(file: MediaFile) {    
-
+  onDeleteClick(file: MediaFile) {
+    this.wsService.deleteMedia(file.name);
+    this.uiService.notifyMediaChange(500);
   }
 }

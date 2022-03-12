@@ -16,6 +16,13 @@ namespace Exavision.Seasense.Protocols.Seamos {
                 return false;
             } 
         }
+
+        public SeamosProtocol Protocol {
+            get {
+                return this.protocol;
+            }
+        }
+
         public event EventHandler<ISeamosCommand> OnCommandReceive;
 
         public SeamosClient(SeamosProtocol protocol) {
@@ -41,14 +48,14 @@ namespace Exavision.Seasense.Protocols.Seamos {
         }
         public void Send(ISeamosCommand command) {
             if (this.client != null && this.client.Connected) {
-                byte[] data = this.protocol.Serialize(command);
+                byte[] data = this.Protocol.Serialize(command);
                 string text = data.ToHexString();
                 this.client.Send(text);
             }
         }
         private void Client_OnMessageReceived(object sender, string e) {
             byte[] data = e.HexStringToBytesArray();
-            ISeamosCommand command = this.protocol.Deserialize(data);
+            ISeamosCommand command = this.Protocol.Deserialize(data);
             if (command != null) this.OnCommandReceive?.Invoke(this, command);
 
         }
