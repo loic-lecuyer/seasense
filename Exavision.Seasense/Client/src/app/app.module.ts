@@ -16,8 +16,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpService } from './services/http.service';
 import { MatTableModule } from '@angular/material/table';
+import { TextFieldModule } from '@angular/cdk/text-field';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UserService } from './services/user.service';
 import { JwtInterceptor } from './interceptor/jwt-interceptor';
@@ -87,8 +89,10 @@ export const httpInterceptorProviders = [
     FormsModule,
     MatButtonModule,
     MatSliderModule,
+    MatCheckboxModule,
     CdkTableModule,
     MatSelectModule,
+    TextFieldModule,
     MatRippleModule,
     ScrollingModule,
     MatListModule,

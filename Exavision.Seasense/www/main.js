@@ -92,35 +92,37 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_configuration_configuration_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./pages/configuration/configuration.component */ 6034);
 /* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_29__ = __webpack_require__(/*! @angular/platform-browser/animations */ 3598);
 /* harmony import */ var _components_header_header_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./components/header/header.component */ 3646);
-/* harmony import */ var _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! @angular/material/toolbar */ 9946);
-/* harmony import */ var _angular_material_card__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! @angular/material/card */ 1961);
-/* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! @angular/material/icon */ 5590);
+/* harmony import */ var _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! @angular/material/toolbar */ 9946);
+/* harmony import */ var _angular_material_card__WEBPACK_IMPORTED_MODULE_44__ = __webpack_require__(/*! @angular/material/card */ 1961);
+/* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! @angular/material/icon */ 5590);
 /* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_31__ = __webpack_require__(/*! @angular/material/button */ 7317);
-/* harmony import */ var _angular_material_input__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! @angular/material/input */ 3365);
-/* harmony import */ var _angular_material_form_field__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! @angular/material/form-field */ 9076);
+/* harmony import */ var _angular_material_input__WEBPACK_IMPORTED_MODULE_51__ = __webpack_require__(/*! @angular/material/input */ 3365);
+/* harmony import */ var _angular_material_form_field__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! @angular/material/form-field */ 9076);
 /* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_30__ = __webpack_require__(/*! @angular/forms */ 587);
-/* harmony import */ var _angular_material_tabs__WEBPACK_IMPORTED_MODULE_43__ = __webpack_require__(/*! @angular/material/tabs */ 2379);
+/* harmony import */ var _angular_material_tabs__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! @angular/material/tabs */ 2379);
+/* harmony import */ var _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! @angular/material/checkbox */ 534);
 /* harmony import */ var _services_http_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./services/http.service */ 6858);
-/* harmony import */ var _angular_material_table__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! @angular/material/table */ 7217);
+/* harmony import */ var _angular_material_table__WEBPACK_IMPORTED_MODULE_41__ = __webpack_require__(/*! @angular/material/table */ 7217);
+/* harmony import */ var _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! @angular/cdk/text-field */ 1307);
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_26__ = __webpack_require__(/*! @angular/common/http */ 8784);
 /* harmony import */ var _services_user_service__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/user.service */ 3071);
 /* harmony import */ var _interceptor_jwt_interceptor__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./interceptor/jwt-interceptor */ 8690);
-/* harmony import */ var _angular_material_select__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! @angular/material/select */ 1434);
-/* harmony import */ var _angular_material_tree__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! @angular/material/tree */ 4972);
-/* harmony import */ var _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_36__ = __webpack_require__(/*! @angular/cdk/scrolling */ 5752);
-/* harmony import */ var _angular_material_menu__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! @angular/material/menu */ 2796);
-/* harmony import */ var _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_46__ = __webpack_require__(/*! @angular/material/snack-bar */ 2528);
-/* harmony import */ var _angular_material_list__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! @angular/material/list */ 6131);
-/* harmony import */ var _angular_material_divider__WEBPACK_IMPORTED_MODULE_45__ = __webpack_require__(/*! @angular/material/divider */ 9975);
+/* harmony import */ var _angular_material_select__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! @angular/material/select */ 1434);
+/* harmony import */ var _angular_material_tree__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! @angular/material/tree */ 4972);
+/* harmony import */ var _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_38__ = __webpack_require__(/*! @angular/cdk/scrolling */ 5752);
+/* harmony import */ var _angular_material_menu__WEBPACK_IMPORTED_MODULE_49__ = __webpack_require__(/*! @angular/material/menu */ 2796);
+/* harmony import */ var _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_48__ = __webpack_require__(/*! @angular/material/snack-bar */ 2528);
+/* harmony import */ var _angular_material_list__WEBPACK_IMPORTED_MODULE_39__ = __webpack_require__(/*! @angular/material/list */ 6131);
+/* harmony import */ var _angular_material_divider__WEBPACK_IMPORTED_MODULE_47__ = __webpack_require__(/*! @angular/material/divider */ 9975);
 /* harmony import */ var _components_hud_ui_hud_ui_component__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./components/hud-ui/hud-ui.component */ 8677);
-/* harmony import */ var _angular_cdk_table__WEBPACK_IMPORTED_MODULE_33__ = __webpack_require__(/*! @angular/cdk/table */ 3865);
+/* harmony import */ var _angular_cdk_table__WEBPACK_IMPORTED_MODULE_34__ = __webpack_require__(/*! @angular/cdk/table */ 3865);
 /* harmony import */ var _components_hud_stream_hud_stream_component__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./components/hud-stream/hud-stream.component */ 6444);
 /* harmony import */ var _angular_material_slider__WEBPACK_IMPORTED_MODULE_32__ = __webpack_require__(/*! @angular/material/slider */ 1859);
 /* harmony import */ var _components_hud_status_hud_status_component__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./components/hud-status/hud-status.component */ 973);
 /* harmony import */ var _components_compass_compass_component__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./components/compass/compass.component */ 2549);
 /* harmony import */ var _components_stick_stick_component__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./components/stick/stick.component */ 2203);
 /* harmony import */ var _components_hud_button_hud_button_component__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./components/hud-button/hud-button.component */ 6999);
-/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_35__ = __webpack_require__(/*! @angular/material/core */ 8133);
+/* harmony import */ var _angular_material_core__WEBPACK_IMPORTED_MODULE_37__ = __webpack_require__(/*! @angular/material/core */ 8133);
 /* harmony import */ var _components_hud_check_hud_check_component__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./components/hud-check/hud-check.component */ 7609);
 /* harmony import */ var _components_hud_ruller_pan_hud_ruller_pan_component__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./components/hud-ruller-pan/hud-ruller-pan.component */ 4824);
 /* harmony import */ var _components_hud_ruller_tilt_hud_ruller_tilt_component__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./components/hud-ruller-tilt/hud-ruller-tilt.component */ 5988);
@@ -128,13 +130,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_panel_camera_panel_camera_component__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! ./components/panel-camera/panel-camera.component */ 7142);
 /* harmony import */ var _services_ui_service__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./services/ui.service */ 9846);
 /* harmony import */ var _components_async_slider_async_slider_component__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ./components/async-slider/async-slider.component */ 7121);
-/* harmony import */ var _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_50__ = __webpack_require__(/*! @angular/material/button-toggle */ 1959);
+/* harmony import */ var _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_52__ = __webpack_require__(/*! @angular/material/button-toggle */ 1959);
 /* harmony import */ var _components_async_toggle_group_async_toggle_group_component__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! ./components/async-toggle-group/async-toggle-group.component */ 708);
 /* harmony import */ var _components_hud_info_hud_info_component__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./components/hud-info/hud-info.component */ 8076);
 /* harmony import */ var _components_panel_media_panel_media_component__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./components/panel-media/panel-media.component */ 4294);
 /* harmony import */ var _components_panel_sav_panel_sav_component__WEBPACK_IMPORTED_MODULE_25__ = __webpack_require__(/*! ./components/panel-sav/panel-sav.component */ 9839);
-/* harmony import */ var _angular_cdk_overlay__WEBPACK_IMPORTED_MODULE_40__ = __webpack_require__(/*! @angular/cdk/overlay */ 4244);
+/* harmony import */ var _angular_cdk_overlay__WEBPACK_IMPORTED_MODULE_42__ = __webpack_require__(/*! @angular/cdk/overlay */ 4244);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_27__ = __webpack_require__(/*! @angular/core */ 3184);
+
+
 
 
 
@@ -205,13 +209,13 @@ AppModule.ɵmod = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_27__["ɵɵ
 });
 AppModule.ɵinj = /*@__PURE__*/_angular_core__WEBPACK_IMPORTED_MODULE_27__["ɵɵdefineInjector"]({
   providers: [_services_http_service__WEBPACK_IMPORTED_MODULE_6__.HttpService, _services_user_service__WEBPACK_IMPORTED_MODULE_7__.UserService, _services_ui_service__WEBPACK_IMPORTED_MODULE_20__.UiService, httpInterceptorProviders],
-  imports: [[_angular_platform_browser__WEBPACK_IMPORTED_MODULE_28__.BrowserModule, _app_routing_module__WEBPACK_IMPORTED_MODULE_0__.AppRoutingModule, _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_29__.BrowserAnimationsModule, _angular_common_http__WEBPACK_IMPORTED_MODULE_26__.HttpClientModule, _angular_forms__WEBPACK_IMPORTED_MODULE_30__.FormsModule, _angular_material_button__WEBPACK_IMPORTED_MODULE_31__.MatButtonModule, _angular_material_slider__WEBPACK_IMPORTED_MODULE_32__.MatSliderModule, _angular_cdk_table__WEBPACK_IMPORTED_MODULE_33__.CdkTableModule, _angular_material_select__WEBPACK_IMPORTED_MODULE_34__.MatSelectModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_35__.MatRippleModule, _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_36__.ScrollingModule, _angular_material_list__WEBPACK_IMPORTED_MODULE_37__.MatListModule, _angular_material_tree__WEBPACK_IMPORTED_MODULE_38__.MatTreeModule, _angular_material_table__WEBPACK_IMPORTED_MODULE_39__.MatTableModule, _angular_cdk_overlay__WEBPACK_IMPORTED_MODULE_40__.OverlayModule, _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_41__.MatToolbarModule, _angular_material_card__WEBPACK_IMPORTED_MODULE_42__.MatCardModule, _angular_material_tabs__WEBPACK_IMPORTED_MODULE_43__.MatTabsModule, _angular_material_icon__WEBPACK_IMPORTED_MODULE_44__.MatIconModule, _angular_material_divider__WEBPACK_IMPORTED_MODULE_45__.MatDividerModule, _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_46__.MatSnackBarModule, _angular_material_menu__WEBPACK_IMPORTED_MODULE_47__.MatMenuModule, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_48__.MatFormFieldModule, _angular_material_input__WEBPACK_IMPORTED_MODULE_49__.MatInputModule, _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_50__.MatButtonToggleModule]]
+  imports: [[_angular_platform_browser__WEBPACK_IMPORTED_MODULE_28__.BrowserModule, _app_routing_module__WEBPACK_IMPORTED_MODULE_0__.AppRoutingModule, _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_29__.BrowserAnimationsModule, _angular_common_http__WEBPACK_IMPORTED_MODULE_26__.HttpClientModule, _angular_forms__WEBPACK_IMPORTED_MODULE_30__.FormsModule, _angular_material_button__WEBPACK_IMPORTED_MODULE_31__.MatButtonModule, _angular_material_slider__WEBPACK_IMPORTED_MODULE_32__.MatSliderModule, _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_33__.MatCheckboxModule, _angular_cdk_table__WEBPACK_IMPORTED_MODULE_34__.CdkTableModule, _angular_material_select__WEBPACK_IMPORTED_MODULE_35__.MatSelectModule, _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_36__.TextFieldModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_37__.MatRippleModule, _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_38__.ScrollingModule, _angular_material_list__WEBPACK_IMPORTED_MODULE_39__.MatListModule, _angular_material_tree__WEBPACK_IMPORTED_MODULE_40__.MatTreeModule, _angular_material_table__WEBPACK_IMPORTED_MODULE_41__.MatTableModule, _angular_cdk_overlay__WEBPACK_IMPORTED_MODULE_42__.OverlayModule, _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_43__.MatToolbarModule, _angular_material_card__WEBPACK_IMPORTED_MODULE_44__.MatCardModule, _angular_material_tabs__WEBPACK_IMPORTED_MODULE_45__.MatTabsModule, _angular_material_icon__WEBPACK_IMPORTED_MODULE_46__.MatIconModule, _angular_material_divider__WEBPACK_IMPORTED_MODULE_47__.MatDividerModule, _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_48__.MatSnackBarModule, _angular_material_menu__WEBPACK_IMPORTED_MODULE_49__.MatMenuModule, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_50__.MatFormFieldModule, _angular_material_input__WEBPACK_IMPORTED_MODULE_51__.MatInputModule, _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_52__.MatButtonToggleModule]]
 });
 
 (function () {
   (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_27__["ɵɵsetNgModuleScope"](AppModule, {
     declarations: [_app_component__WEBPACK_IMPORTED_MODULE_1__.AppComponent, _pages_home_home_component__WEBPACK_IMPORTED_MODULE_2__.HomeComponent, _pages_login_login_component__WEBPACK_IMPORTED_MODULE_3__.LoginComponent, _pages_configuration_configuration_component__WEBPACK_IMPORTED_MODULE_4__.ConfigurationComponent, _components_header_header_component__WEBPACK_IMPORTED_MODULE_5__.HeaderComponent, _components_hud_ui_hud_ui_component__WEBPACK_IMPORTED_MODULE_9__.HudUiComponent, _components_hud_stream_hud_stream_component__WEBPACK_IMPORTED_MODULE_10__.HudStreamComponent, _components_hud_status_hud_status_component__WEBPACK_IMPORTED_MODULE_11__.HudStatusComponent, _components_compass_compass_component__WEBPACK_IMPORTED_MODULE_12__.CompassComponent, _components_stick_stick_component__WEBPACK_IMPORTED_MODULE_13__.StickComponent, _components_hud_button_hud_button_component__WEBPACK_IMPORTED_MODULE_14__.HudButtonComponent, _components_hud_check_hud_check_component__WEBPACK_IMPORTED_MODULE_15__.HudCheckComponent, _components_hud_ruller_pan_hud_ruller_pan_component__WEBPACK_IMPORTED_MODULE_16__.HudRullerPanComponent, _components_hud_ruller_tilt_hud_ruller_tilt_component__WEBPACK_IMPORTED_MODULE_17__.HudRullerTiltComponent, _components_hud_lrf_button_hud_lrf_button_component__WEBPACK_IMPORTED_MODULE_18__.HudLrfButtonComponent, _components_panel_camera_panel_camera_component__WEBPACK_IMPORTED_MODULE_19__.PanelCameraComponent, _components_async_slider_async_slider_component__WEBPACK_IMPORTED_MODULE_21__.AsyncSliderComponent, _components_async_toggle_group_async_toggle_group_component__WEBPACK_IMPORTED_MODULE_22__.AsyncToggleGroupComponent, _components_hud_info_hud_info_component__WEBPACK_IMPORTED_MODULE_23__.HudInfoComponent, _components_panel_media_panel_media_component__WEBPACK_IMPORTED_MODULE_24__.PanelMediaComponent, _components_panel_sav_panel_sav_component__WEBPACK_IMPORTED_MODULE_25__.PanelSavComponent],
-    imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_28__.BrowserModule, _app_routing_module__WEBPACK_IMPORTED_MODULE_0__.AppRoutingModule, _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_29__.BrowserAnimationsModule, _angular_common_http__WEBPACK_IMPORTED_MODULE_26__.HttpClientModule, _angular_forms__WEBPACK_IMPORTED_MODULE_30__.FormsModule, _angular_material_button__WEBPACK_IMPORTED_MODULE_31__.MatButtonModule, _angular_material_slider__WEBPACK_IMPORTED_MODULE_32__.MatSliderModule, _angular_cdk_table__WEBPACK_IMPORTED_MODULE_33__.CdkTableModule, _angular_material_select__WEBPACK_IMPORTED_MODULE_34__.MatSelectModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_35__.MatRippleModule, _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_36__.ScrollingModule, _angular_material_list__WEBPACK_IMPORTED_MODULE_37__.MatListModule, _angular_material_tree__WEBPACK_IMPORTED_MODULE_38__.MatTreeModule, _angular_material_table__WEBPACK_IMPORTED_MODULE_39__.MatTableModule, _angular_cdk_overlay__WEBPACK_IMPORTED_MODULE_40__.OverlayModule, _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_41__.MatToolbarModule, _angular_material_card__WEBPACK_IMPORTED_MODULE_42__.MatCardModule, _angular_material_tabs__WEBPACK_IMPORTED_MODULE_43__.MatTabsModule, _angular_material_icon__WEBPACK_IMPORTED_MODULE_44__.MatIconModule, _angular_material_divider__WEBPACK_IMPORTED_MODULE_45__.MatDividerModule, _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_46__.MatSnackBarModule, _angular_material_menu__WEBPACK_IMPORTED_MODULE_47__.MatMenuModule, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_48__.MatFormFieldModule, _angular_material_input__WEBPACK_IMPORTED_MODULE_49__.MatInputModule, _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_50__.MatButtonToggleModule]
+    imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_28__.BrowserModule, _app_routing_module__WEBPACK_IMPORTED_MODULE_0__.AppRoutingModule, _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_29__.BrowserAnimationsModule, _angular_common_http__WEBPACK_IMPORTED_MODULE_26__.HttpClientModule, _angular_forms__WEBPACK_IMPORTED_MODULE_30__.FormsModule, _angular_material_button__WEBPACK_IMPORTED_MODULE_31__.MatButtonModule, _angular_material_slider__WEBPACK_IMPORTED_MODULE_32__.MatSliderModule, _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_33__.MatCheckboxModule, _angular_cdk_table__WEBPACK_IMPORTED_MODULE_34__.CdkTableModule, _angular_material_select__WEBPACK_IMPORTED_MODULE_35__.MatSelectModule, _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_36__.TextFieldModule, _angular_material_core__WEBPACK_IMPORTED_MODULE_37__.MatRippleModule, _angular_cdk_scrolling__WEBPACK_IMPORTED_MODULE_38__.ScrollingModule, _angular_material_list__WEBPACK_IMPORTED_MODULE_39__.MatListModule, _angular_material_tree__WEBPACK_IMPORTED_MODULE_40__.MatTreeModule, _angular_material_table__WEBPACK_IMPORTED_MODULE_41__.MatTableModule, _angular_cdk_overlay__WEBPACK_IMPORTED_MODULE_42__.OverlayModule, _angular_material_toolbar__WEBPACK_IMPORTED_MODULE_43__.MatToolbarModule, _angular_material_card__WEBPACK_IMPORTED_MODULE_44__.MatCardModule, _angular_material_tabs__WEBPACK_IMPORTED_MODULE_45__.MatTabsModule, _angular_material_icon__WEBPACK_IMPORTED_MODULE_46__.MatIconModule, _angular_material_divider__WEBPACK_IMPORTED_MODULE_47__.MatDividerModule, _angular_material_snack_bar__WEBPACK_IMPORTED_MODULE_48__.MatSnackBarModule, _angular_material_menu__WEBPACK_IMPORTED_MODULE_49__.MatMenuModule, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_50__.MatFormFieldModule, _angular_material_input__WEBPACK_IMPORTED_MODULE_51__.MatInputModule, _angular_material_button_toggle__WEBPACK_IMPORTED_MODULE_52__.MatButtonToggleModule]
   });
 })();
 
@@ -3363,42 +3367,141 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "PanelSavComponent": () => (/* binding */ PanelSavComponent)
 /* harmony export */ });
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ 3184);
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/core */ 3184);
 /* harmony import */ var _services_ui_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../services/ui.service */ 9846);
-/* harmony import */ var _angular_material_card__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/material/card */ 1961);
-/* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/material/icon */ 5590);
-/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/material/button */ 7317);
+/* harmony import */ var _services_site_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../services/site.service */ 6633);
+/* harmony import */ var _services_ws_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../services/ws.service */ 4885);
+/* harmony import */ var _angular_material_card__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/material/card */ 1961);
+/* harmony import */ var _angular_material_icon__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/material/icon */ 5590);
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ 6362);
+/* harmony import */ var _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material/checkbox */ 534);
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/forms */ 587);
+/* harmony import */ var _angular_material_form_field__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/material/form-field */ 9076);
+/* harmony import */ var _angular_material_input__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! @angular/material/input */ 3365);
+/* harmony import */ var _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! @angular/cdk/text-field */ 1307);
+/* harmony import */ var _angular_material_button__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! @angular/material/button */ 7317);
 
 
 
 
 
+
+
+
+
+
+
+
+
+const _c0 = ["tcpMessagesCtrl"];
+function PanelSavComponent_div_9_Template(rf, ctx) { if (rf & 1) {
+    const _r4 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "div", 5)(1, "mat-checkbox", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("change", function PanelSavComponent_div_9_Template_mat_checkbox_change_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵrestoreView"](_r4); const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"](); return ctx_r3.onPollingStateChange($event); })("ngModelChange", function PanelSavComponent_div_9_Template_mat_checkbox_ngModelChange_1_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵrestoreView"](_r4); const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"](); return ctx_r5.isPollingEnabled = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](2, "Polling state");
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](3, "mat-form-field", 7)(4, "mat-label");
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](5, "TCP Messages");
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](6, "textarea", 8, 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("ngModelChange", function PanelSavComponent_div_9_Template_textarea_ngModelChange_6_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵrestoreView"](_r4); const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"](); return ctx_r6.tcpMessages = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](9, "div", 10)(10, "mat-form-field", 11)(11, "mat-label");
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](12, "Send TCP Message");
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](13, "input", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("ngModelChange", function PanelSavComponent_div_9_Template_input_ngModelChange_13_listener($event) { _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵrestoreView"](_r4); const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"](); return ctx_r7.tcpMessageToSend = $event; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](14, "button", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("click", function PanelSavComponent_div_9_Template_button_click_14_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵrestoreView"](_r4); const ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"](); return ctx_r8.onSendClick(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](15, "Send");
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("ngModel", ctx_r0.isPollingEnabled);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("ngModel", ctx_r0.tcpMessages);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("ngModel", ctx_r0.tcpMessageToSend);
+} }
 class PanelSavComponent {
-    constructor(uiService) {
+    constructor(uiService, siteService, wsService) {
         this.uiService = uiService;
+        this.siteService = siteService;
+        this.wsService = wsService;
+        this.tcpMessagesCtrl = undefined;
+        this.savCapability = undefined;
+        this.tcpMessageToSend = "";
+        this.tcpMessages = "";
+        this.isPollingEnabled = true;
+        this.siteStateSubscription = this.siteService.siteStateSubject.subscribe(() => { this.retreiveSavCapability(); });
+        this.latestComMessageSubscription = this.wsService.latestComMessageSubject.subscribe((messages) => {
+            this.tcpMessages += messages.join("\r\n");
+            if (messages.length > 0)
+                this.tcpMessages += "\r\n";
+            if (this.tcpMessagesCtrl != null) {
+                this.tcpMessagesCtrl.nativeElement.scrollTop = this.tcpMessagesCtrl.nativeElement.scrollHeight;
+            }
+        });
+    }
+    retreiveSavCapability() {
+        if (this.siteService.selectedUnit != null) {
+            this.savCapability = this.siteService.selectedUnit.getCapability("UnitSav" /* UnitSav */);
+        }
+        else {
+            this.savCapability = undefined;
+        }
+    }
+    ngOnDestroy() {
+        this.siteStateSubscription.unsubscribe();
+        this.latestComMessageSubscription.unsubscribe();
+        clearInterval(this.tcpMessageTimer);
+    }
+    onPollingStateChange(evt) {
+        if (this.savCapability != null)
+            this.savCapability.setPollingState(evt.checked);
     }
     ngOnInit() {
+        this.retreiveSavCapability();
+        this.tcpMessageTimer = setInterval(() => { if (this.savCapability != null)
+            this.savCapability.getLatestComMessage(); }, 500);
     }
     onCloseClick() {
         this.uiService.hidePanelSav();
     }
+    onSendClick() {
+        if (this.savCapability != null) {
+            this.savCapability.executeCommand(this.tcpMessageToSend);
+        }
+    }
 }
-PanelSavComponent.ɵfac = function PanelSavComponent_Factory(t) { return new (t || PanelSavComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_services_ui_service__WEBPACK_IMPORTED_MODULE_0__.UiService)); };
-PanelSavComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: PanelSavComponent, selectors: [["app-panel-sav"]], decls: 12, vars: 0, consts: [[1, "camera-card"], [1, "card-title"], [1, "card-icon-title"], ["mat-button", "", 1, "full-width", 3, "click"]], template: function PanelSavComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title", 1)(3, "mat-icon", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](4, "bug_report");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](5, "Sav");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "mat-card-subtitle");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](7, "Specific features reserved at Exavision");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()();
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "mat-card-content");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "mat-card-actions")(10, "button", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function PanelSavComponent_Template_button_click_10_listener() { return ctx.onCloseClick(); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtext"](11, "Close");
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]()()();
-    } }, directives: [_angular_material_card__WEBPACK_IMPORTED_MODULE_2__.MatCard, _angular_material_card__WEBPACK_IMPORTED_MODULE_2__.MatCardHeader, _angular_material_card__WEBPACK_IMPORTED_MODULE_2__.MatCardTitle, _angular_material_icon__WEBPACK_IMPORTED_MODULE_3__.MatIcon, _angular_material_card__WEBPACK_IMPORTED_MODULE_2__.MatCardSubtitle, _angular_material_card__WEBPACK_IMPORTED_MODULE_2__.MatCardContent, _angular_material_card__WEBPACK_IMPORTED_MODULE_2__.MatCardActions, _angular_material_button__WEBPACK_IMPORTED_MODULE_4__.MatButton], styles: ["[_nghost-%COMP%] {\n  position: absolute;\n  top: 100px;\n  left: 100px;\n  width: 600px;\n  height: 600px;\n  z-index: 1000;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInBhbmVsLXNhdi5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLGtCQUFBO0VBQ0EsVUFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBQ0EsYUFBQTtFQUNBLGFBQUE7QUFDRiIsImZpbGUiOiJwYW5lbC1zYXYuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyI6aG9zdCB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIHRvcDogMTAwcHg7XHJcbiAgbGVmdDogMTAwcHg7XHJcbiAgd2lkdGg6IDYwMHB4O1xyXG4gIGhlaWdodDogNjAwcHg7XHJcbiAgei1pbmRleDogMTAwMDtcclxufVxyXG4iXX0= */"] });
+PanelSavComponent.ɵfac = function PanelSavComponent_Factory(t) { return new (t || PanelSavComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_services_ui_service__WEBPACK_IMPORTED_MODULE_0__.UiService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_services_site_service__WEBPACK_IMPORTED_MODULE_1__.SiteService), _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdirectiveInject"](_services_ws_service__WEBPACK_IMPORTED_MODULE_2__.WsService)); };
+PanelSavComponent.ɵcmp = /*@__PURE__*/ _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineComponent"]({ type: PanelSavComponent, selectors: [["app-panel-sav"]], viewQuery: function PanelSavComponent_Query(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵviewQuery"](_c0, 5);
+    } if (rf & 2) {
+        let _t;
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵloadQuery"]()) && (ctx.tcpMessagesCtrl = _t.first);
+    } }, decls: 13, vars: 1, consts: [[1, "camera-card"], [1, "card-title"], [1, "card-icon-title"], ["class", "display-flex flex-dir-col", 4, "ngIf"], ["mat-button", "", 1, "full-width", 3, "click"], [1, "display-flex", "flex-dir-col"], [3, "ngModel", "change", "ngModelChange"], [1, "margin-4"], ["readonly", "", "matInput", "", "cdkTextareaAutosize", "", "cdkAutosizeMinRows", "20", "cdkAutosizeMaxRows", "20", 1, "tcp-messages", 3, "ngModel", "ngModelChange"], ["tcpMessagesCtrl", "", "autosize", "cdkTextareaAutosize"], [1, "display-flex", "flex-dir-row"], [1, "margin-4", "flex-1"], ["matInput", "", "placeholder", "Command to send", "name", "command-field", 3, "ngModel", "ngModelChange"], ["mat-button", "", 3, "click"]], template: function PanelSavComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](0, "mat-card", 0)(1, "mat-card-header")(2, "mat-card-title", 1)(3, "mat-icon", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](4, "bug_report");
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](5, "Sav");
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](6, "mat-card-subtitle");
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](7, "Specific features reserved at Exavision");
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()();
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](8, "mat-card-content");
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtemplate"](9, PanelSavComponent_div_9_Template, 16, 3, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementStart"](10, "mat-card-actions")(11, "button", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵlistener"]("click", function PanelSavComponent_Template_button_click_11_listener() { return ctx.onCloseClick(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵtext"](12, "Close");
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵelementEnd"]()()();
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵadvance"](9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵproperty"]("ngIf", ctx.savCapability != null);
+    } }, directives: [_angular_material_card__WEBPACK_IMPORTED_MODULE_4__.MatCard, _angular_material_card__WEBPACK_IMPORTED_MODULE_4__.MatCardHeader, _angular_material_card__WEBPACK_IMPORTED_MODULE_4__.MatCardTitle, _angular_material_icon__WEBPACK_IMPORTED_MODULE_5__.MatIcon, _angular_material_card__WEBPACK_IMPORTED_MODULE_4__.MatCardSubtitle, _angular_material_card__WEBPACK_IMPORTED_MODULE_4__.MatCardContent, _angular_common__WEBPACK_IMPORTED_MODULE_6__.NgIf, _angular_material_checkbox__WEBPACK_IMPORTED_MODULE_7__.MatCheckbox, _angular_forms__WEBPACK_IMPORTED_MODULE_8__.NgControlStatus, _angular_forms__WEBPACK_IMPORTED_MODULE_8__.NgModel, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_9__.MatFormField, _angular_material_form_field__WEBPACK_IMPORTED_MODULE_9__.MatLabel, _angular_material_input__WEBPACK_IMPORTED_MODULE_10__.MatInput, _angular_cdk_text_field__WEBPACK_IMPORTED_MODULE_11__.CdkTextareaAutosize, _angular_forms__WEBPACK_IMPORTED_MODULE_8__.DefaultValueAccessor, _angular_material_button__WEBPACK_IMPORTED_MODULE_12__.MatButton, _angular_material_card__WEBPACK_IMPORTED_MODULE_4__.MatCardActions], styles: ["[_nghost-%COMP%] {\n  position: absolute;\n  top: 100px;\n  left: 100px;\n  width: 800px;\n  height: 600px;\n  z-index: 1000;\n}\n\n.tcp-messages[_ngcontent-%COMP%] {\n  font-size: 12px;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInBhbmVsLXNhdi5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNFLGtCQUFBO0VBQ0EsVUFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBQ0EsYUFBQTtFQUNBLGFBQUE7QUFDRjs7QUFDQTtFQUNJLGVBQUE7QUFFSiIsImZpbGUiOiJwYW5lbC1zYXYuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyI6aG9zdCB7XHJcbiAgcG9zaXRpb246IGFic29sdXRlO1xyXG4gIHRvcDogMTAwcHg7XHJcbiAgbGVmdDogMTAwcHg7XHJcbiAgd2lkdGg6IDgwMHB4O1xyXG4gIGhlaWdodDogNjAwcHg7XHJcbiAgei1pbmRleDogMTAwMDtcclxufVxyXG4udGNwLW1lc3NhZ2Vze1xyXG4gICAgZm9udC1zaXplOjEycHg7XHJcbn1cclxuIl19 */"] });
 
 
 /***/ }),
@@ -4140,6 +4243,40 @@ class UnitRebootCapability {
 
 /***/ }),
 
+/***/ 337:
+/*!********************************************************************!*\
+  !*** ./src/app/materials/capabilities/unit/unit-sav-capability.ts ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "UnitSavCapability": () => (/* binding */ UnitSavCapability)
+/* harmony export */ });
+class UnitSavCapability {
+    constructor(settingCapability) {
+        this.id = settingCapability.id;
+        this.capabilityType = "UnitSav" /* UnitSav */;
+    }
+    setState(valueState) {
+    }
+    getLatestComMessage() {
+        var _a, _b;
+        (_a = this.material) === null || _a === void 0 ? void 0 : _a.unit.wsService.getLastComMessage((_b = this.material) === null || _b === void 0 ? void 0 : _b.unit.id);
+    }
+    executeCommand(command) {
+        var _a, _b;
+        (_a = this.material) === null || _a === void 0 ? void 0 : _a.unit.wsService.executeCommand((_b = this.material) === null || _b === void 0 ? void 0 : _b.unit.id, command);
+    }
+    setPollingState(isPollingEnabled) {
+        var _a, _b;
+        (_a = this.material) === null || _a === void 0 ? void 0 : _a.unit.wsService.setPollingState((_b = this.material) === null || _b === void 0 ? void 0 : _b.unit.id, isPollingEnabled);
+    }
+}
+
+
+/***/ }),
+
 /***/ 1920:
 /*!*****************************************!*\
   !*** ./src/app/materials/day-camera.ts ***!
@@ -4186,6 +4323,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _capabilities_double_value_capability__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./capabilities/double-value-capability */ 7412);
 /* harmony import */ var _capabilities_switch_value_capability__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./capabilities/switch-value-capability */ 8035);
 /* harmony import */ var _capabilities_inertial_measurement_inertial_measurement_measure_capability__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./capabilities/inertial-measurement/inertial-measurement-measure-capability */ 800);
+/* harmony import */ var _capabilities_unit_unit_sav_capability__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./capabilities/unit/unit-sav-capability */ 337);
+
 
 
 
@@ -4239,6 +4378,10 @@ class Factory {
             case "WsCameraStartRecordResponse":
                 let cameraStartRecordResponse = data;
                 return cameraStartRecordResponse;
+                break;
+            case "WsUnitGetLastComMessageResponse":
+                let unitGetLastComMessageResponse = data;
+                return unitGetLastComMessageResponse;
                 break;
             default:
                 console.error("No creation implemtation in facotry for type " + typeName);
@@ -4302,6 +4445,9 @@ class Factory {
                 break;
             case "InertialMeasurementMeasure" /* InertialMeasurementMeasure */:
                 capability = new _capabilities_inertial_measurement_inertial_measurement_measure_capability__WEBPACK_IMPORTED_MODULE_17__.InertialMeasurementMeasureCapability(settingCapability);
+                break;
+            case "UnitSav" /* UnitSav */:
+                capability = new _capabilities_unit_unit_sav_capability__WEBPACK_IMPORTED_MODULE_18__.UnitSavCapability(settingCapability);
                 break;
         }
         if (capability == null) {
@@ -5964,6 +6110,7 @@ class WsService {
     this.mediaFilesSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
     this.siteStateSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
     this.screenshootSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
+    this.latestComMessageSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
     this.startRecordSubject = new rxjs__WEBPACK_IMPORTED_MODULE_3__.Subject();
     this.stateInterval = 100;
     this.socket = null;
@@ -6045,6 +6192,10 @@ class WsService {
 
         if (response.$type === 'WsCameraStartRecordResponse') {
           this.startRecordSubject.next(response);
+        }
+
+        if (response.$type === 'WsUnitGetLastComMessageResponse') {
+          this.latestComMessageSubject.next(response.messages);
         }
       }
     }
@@ -6330,6 +6481,53 @@ class WsService {
       fileName: fileName
     };
     console.log("WebSocket send WsDeleteMediaRequest");
+    let data = JSON.stringify(request);
+    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
+  }
+
+  getLastComMessage(unitId) {
+    var _a;
+
+    if (this.userService.token == null) return;
+    let request = {
+      $type: "WsUnitGetLastComMessageRequest",
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
+      token: this.userService.token,
+      unitId: unitId
+    };
+    console.log("WebSocket send WsUnitGetLastComMessageRequest");
+    let data = JSON.stringify(request);
+    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
+  }
+
+  executeCommand(unitId, command) {
+    var _a;
+
+    if (this.userService.token == null) return;
+    let request = {
+      $type: "WsUnitExecuteCommandRequest",
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
+      token: this.userService.token,
+      unitId: unitId,
+      command: command
+    };
+    console.log("WebSocket send WsUnitExecuteCommandRequest");
+    let data = JSON.stringify(request);
+    (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
+  }
+
+  setPollingState(unitId, isPollingEnabled) {
+    var _a;
+
+    if (this.userService.token == null) return;
+    let request = {
+      $type: "WsUnitSetPollingStateRequest",
+      requestId: uuid__WEBPACK_IMPORTED_MODULE_4__["default"](),
+      token: this.userService.token,
+      unitId: unitId,
+      isPollingEnabled: isPollingEnabled
+    };
+    console.log("WebSocket send WsUnitSetPollingStateRequest");
     let data = JSON.stringify(request);
     (_a = this.socket) === null || _a === void 0 ? void 0 : _a.send(data);
   }

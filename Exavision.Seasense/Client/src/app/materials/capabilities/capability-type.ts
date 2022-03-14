@@ -1,5 +1,6 @@
 export const enum CapabilityType {
   UnitReboot = "UnitReboot",
+  UnitSav = "UnitSav",
   TurretAbsolutePosition = "TurretAbsolutePosition",
   TurretMoveSpeed = "TurretMoveSpeed",
   TurretMoveAbsolute = "TurretMoveAbsolute",

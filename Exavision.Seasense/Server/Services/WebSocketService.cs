@@ -4,10 +4,12 @@ using Exavision.Seasense.Api.WebSocket.LazerMeasurement;
 using Exavision.Seasense.Api.WebSocket.Medias;
 using Exavision.Seasense.Api.WebSocket.States;
 using Exavision.Seasense.Api.WebSocket.Turret;
+using Exavision.Seasense.Api.WebSocket.Unit;
 using Exavision.Seasense.Shared.Capabilities;
 using Exavision.Seasense.Shared.Capabilities.Camera;
 using Exavision.Seasense.Shared.Capabilities.LazerMeasurement;
 using Exavision.Seasense.Shared.Capabilities.Turret;
+using Exavision.Seasense.Shared.Capabilities.Unit;
 using Exavision.Seasense.Shared.Materials;
 using Exavision.Seasense.Shared.Models;
 using Exavision.Seasense.Shared.States;
@@ -275,11 +277,40 @@ namespace Exavision.Seasense.Server.Services {
                 if (unit == null) throw new InvalidOperationException("Invalid unit Id");
                 if (material == null) throw new InvalidOperationException("Invalid material Id");
                 this.streamService.StopRecord(stopRecordRequest.RecordId);
+                this.SendValid(request.RequestId, client);
             }
-            else if (request is WsDeleteMediaRequest deleteMediaRequest) {
-              
+            else if (request is WsDeleteMediaRequest deleteMediaRequest) {             
                 
                 this.streamService.DeleMedia(deleteMediaRequest.FileName);
+                this.SendValid(request.RequestId, client);
+            }
+            else if (request is WsUnitExecuteCommandRequest unitExecuteCommandRequest) {
+                IUnit unit = this.siteService.FindUnitById(unitExecuteCommandRequest.UnitId);
+                IUnitSavCapability savCap = unit.GetCapability<IUnitSavCapability>();
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (savCap == null) throw new InvalidOperationException("No sav capability");
+                savCap.ExecuteCommand(unitExecuteCommandRequest.Command);
+                this.SendValid(request.RequestId, client);
+
+            } else if (request is WsUnitGetLastComMessageRequest getLastComMessageRequest) {
+                IUnit unit = this.siteService.FindUnitById(getLastComMessageRequest.UnitId);
+                IUnitSavCapability savCap = unit.GetCapability<IUnitSavCapability>();
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (savCap == null) throw new InvalidOperationException("No sav capability");
+                WsUnitGetLastComMessageResponse response = new WsUnitGetLastComMessageResponse() {
+                    RequestId=getLastComMessageRequest.RequestId,
+                    Messages=savCap.GetLatestComMessage()
+                };
+                this.SendResponse(response, client);
+
+            } else if (request is WsUnitSetPollingStateRequest unitSetPollingStateRequest) {
+                IUnit unit = this.siteService.FindUnitById(unitSetPollingStateRequest.UnitId);
+                IUnitSavCapability savCap = unit.GetCapability<IUnitSavCapability>();
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (savCap == null) throw new InvalidOperationException("No sav capability");
+                savCap.SetPollingState(unitSetPollingStateRequest.IsPollingEnabled);
+                this.SendValid(request.RequestId, client);
+
             } else {
                 this.SendError(client, request.RequestId, "No serveur implementation for request of type " + request.Type);
             }

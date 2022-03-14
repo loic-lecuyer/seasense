@@ -16,7 +16,7 @@ namespace Exavision.Seasense.Shared.Materials {
         public string Id { get; private set; } = Guid.NewGuid().ToString();
         public List<IMaterial> Materials { get; set; } = new List<IMaterial>();
         public List<ICapability> Capabilities { get; set; } = new List<ICapability>();
-
+        private bool isPollingEnabled = true;
         public MaterialType MaterialType => MaterialType.Unit;
 
      
@@ -53,7 +53,14 @@ namespace Exavision.Seasense.Shared.Materials {
             }
             foreach (ICapability capability in this.Capabilities) {
 
-                SettingCapability settingCapability = (from sm in setting.Capabilities where sm.ImplementationType.Equals(capability.GetType().Name) select sm).FirstOrDefault();
+                SettingCapability settingCapability = null;
+                //(from sm in setting.Capabilities where sm.ImplementationType.Equals(capability.GetType().Name) select sm).FirstOrDefault();
+                foreach (SettingCapability settingCap in setting.Capabilities) {
+                    if (settingCap.ImplementationType.Equals(capability.GetType().Name)) {
+                        settingCapability = settingCap;
+                    }
+                }
+
                 MethodInfo setSettingMethod = capability.GetType().GetMethod("SetSetting", new Type[] { settingCapability.GetType() });
                 setSettingMethod.Invoke(capability, new object[] { settingCapability });
             }
@@ -70,6 +77,10 @@ namespace Exavision.Seasense.Shared.Materials {
 
         }
         private readonly Dictionary<PollingAction, DateTime> pollingActionDates = new Dictionary<PollingAction, DateTime>();
+
+        public void SetPollingState(bool isPollingEnabled) {
+            this.isPollingEnabled = isPollingEnabled;
+        }
         private async Task PollingLoop() {
             pollingActionDates.Clear();
             List<PollingAction> actions = new List<PollingAction>();
@@ -91,22 +102,24 @@ namespace Exavision.Seasense.Shared.Materials {
             while (!pollingCanceller.IsCancellationRequested) {
 
                 try {
-                   
-                    DateTime now = DateTime.Now;
-                    List<KeyValuePair<PollingAction, DateTime>> actionToRuns = (from a in pollingActionDates where (now - a.Value).TotalMilliseconds > a.Key.Delay orderby (now - a.Value).TotalMilliseconds descending select a).ToList();
-                    if (actionToRuns.Count > 0) {
+                    if (this.isPollingEnabled) {
+                        DateTime now = DateTime.Now;
+                        List<KeyValuePair<PollingAction, DateTime>> actionToRuns = (from a in pollingActionDates where (now - a.Value).TotalMilliseconds > a.Key.Delay orderby (now - a.Value).TotalMilliseconds descending select a).ToList();
+                        if (actionToRuns.Count > 0) {
 
-                        DateTime nextDate = (from a in pollingActionDates where (now - a.Value).TotalMilliseconds < a.Key.Delay orderby (now - a.Value).TotalMilliseconds ascending select a.Value).FirstOrDefault();
-                        TimeSpan deltaToNext = now - nextDate;
-                        int waitBeetween = (int)(deltaToNext.TotalMilliseconds / actionToRuns.Count);
-                        if (waitBeetween < 1) waitBeetween = 1;
-                        Log.Information("Wait beetween polling " + waitBeetween+" ms");
-                        foreach (KeyValuePair<PollingAction, DateTime> act in actionToRuns) {
-                            act.Key.Action.Invoke();
-                            pollingActionDates[act.Key] = DateTime.Now;
-                            await Task.Delay(waitBeetween);
+                            DateTime nextDate = (from a in pollingActionDates where (now - a.Value).TotalMilliseconds < a.Key.Delay orderby (now - a.Value).TotalMilliseconds ascending select a.Value).FirstOrDefault();
+                            TimeSpan deltaToNext = now - nextDate;
+                            int waitBeetween = (int)(deltaToNext.TotalMilliseconds / actionToRuns.Count);
+                            if (waitBeetween < 1) waitBeetween = 1;
+                            Log.Information("Wait beetween polling " + waitBeetween + " ms");
+                            foreach (KeyValuePair<PollingAction, DateTime> act in actionToRuns) {
+                                act.Key.Action.Invoke();
+                                pollingActionDates[act.Key] = DateTime.Now;
+                                await Task.Delay(waitBeetween);
+                            }
                         }
-                    }
+                    } else await Task.Delay(500);
+
 
                 } catch (Exception ex) {
                     Log.Error("Critical error in polling loop " + ex.Message);
@@ -124,7 +137,7 @@ namespace Exavision.Seasense.Shared.Materials {
         }
 
         public IMaterial GetMaterial<T>() where T : IMaterial {
-            return (from m in this.Materials where typeof(T).IsAssignableFrom(m.GetType()) select m).FirstOrDefault();
+            return (from m in this.Materials where m is T select m).FirstOrDefault();
         }
         public T GetCapability<T>() where T : ICapability {
             return (T)(from c in this.Capabilities where typeof(T).IsAssignableFrom(c.GetType()) select c).FirstOrDefault();

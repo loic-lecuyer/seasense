@@ -21,6 +21,7 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Materials.Add(new SeamosLazerMeasurement(this));
             this.Materials.Add(new SeamosInertialMeasurement(this));
             this.Capabilities.Add(new SeamosUnitRebootCapability());
+            this.Capabilities.Add(new SeamosUnitSavCapability(this));
         }
         public override SettingSeamosUnit GetSetting(SettingSeamosUnit setting) {
             setting.HardwareCardIp = this.HardwareCardIp;

@@ -27,6 +27,10 @@ import { WsCameraStartRecordRequest } from '../api/ws/ws-camera-start-record-req
 import { WsCameraStopRecordRequest } from '../api/ws/ws-camera-stop-record-request';
 import { WsCameraStartRecordResponse } from '../api/ws/ws-camera-start-record-response';
 import { WsDeleteMediaRequest } from '../api/ws/ws-delete-media-request';
+import { WsUnitGetLastComMessageRequest } from '../api/ws/ws-unit-get-last-com-message-request';
+import { WsUnitExecuteCommandRequest } from '../api/ws/ws-unit-execute-command-request';
+import { WsUnitSetPollingStateRequest } from '../api/ws/ws-unit-set-polling-state-request';
+import { WsUnitGetLastComMessageResponse } from '../api/ws/ws-unit-get-last-com-message-response';
 @Injectable({
   providedIn: 'root'
 })
@@ -36,6 +40,7 @@ export class WsService {
   public mediaFilesSubject: Subject<MediaFile[]> = new Subject<MediaFile[]>();
   public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
   public screenshootSubject: Subject<string> = new Subject<string>();
+  public latestComMessageSubject: Subject<string[]> = new Subject<string[]>();
   public startRecordSubject: Subject<WsCameraStartRecordResponse> = new Subject<WsCameraStartRecordResponse>();
   private stateTimer: any;
   private stateInterval: number = 100;
@@ -103,7 +108,11 @@ export class WsService {
         if (response.$type === 'WsCameraStartRecordResponse') {
           this.startRecordSubject.next(<WsCameraStartRecordResponse>response)
         }
-       
+
+        if (response.$type === 'WsUnitGetLastComMessageResponse') {
+          this.latestComMessageSubject.next((<WsUnitGetLastComMessageResponse>response).messages);
+        }
+
       }
      
     }
@@ -376,5 +385,42 @@ export class WsService {
     this.socket?.send(data);
    
   }
-
+  getLastComMessage(unitId: string) {
+    if (this.userService.token == null) return;
+    let request: WsUnitGetLastComMessageRequest = {
+      $type: "WsUnitGetLastComMessageRequest",
+      requestId: uuid.v4(),
+      token: this.userService.token,
+      unitId: unitId
+    };
+    console.log("WebSocket send WsUnitGetLastComMessageRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
+  executeCommand(unitId: string, command : string) {
+    if (this.userService.token == null) return;
+    let request: WsUnitExecuteCommandRequest = {
+      $type: "WsUnitExecuteCommandRequest",
+      requestId: uuid.v4(),
+      token: this.userService.token,
+      unitId: unitId,
+      command: command
+    };
+    console.log("WebSocket send WsUnitExecuteCommandRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
+  setPollingState(unitId: string, isPollingEnabled: boolean) {
+    if (this.userService.token == null) return;
+    let request: WsUnitSetPollingStateRequest = {
+      $type: "WsUnitSetPollingStateRequest",
+      requestId: uuid.v4(),
+      token: this.userService.token,
+      unitId: unitId,
+      isPollingEnabled: isPollingEnabled
+    };
+    console.log("WebSocket send WsUnitSetPollingStateRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
 }

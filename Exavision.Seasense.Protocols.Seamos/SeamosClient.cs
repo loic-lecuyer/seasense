@@ -2,6 +2,7 @@
 using Exavision.Seasense.Core.Network;
 using Exavision.Seasense.Protocols.Seamos.Commands;
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace Exavision.Seasense.Protocols.Seamos {
@@ -21,6 +22,11 @@ namespace Exavision.Seasense.Protocols.Seamos {
             get {
                 return this.protocol;
             }
+        }
+
+        public List<string> GetLatestComMessage() {
+            if (this.client != null) return this.client.GetLatestMessages();
+            else return new List<string>();
         }
 
         public event EventHandler<ISeamosCommand> OnCommandReceive;

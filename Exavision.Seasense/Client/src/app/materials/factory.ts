@@ -38,6 +38,8 @@ import { WsGetMediaListResponse } from "../api/ws/ws-get-media-list-response";
 import { WsCameraScreenshotResponse } from "../api/ws/ws-camera-screeneshot-response";
 import { WsCameraStartRecordResponse } from "../api/ws/ws-camera-start-record-response";
 import { InertialMeasurementMeasureCapability } from "./capabilities/inertial-measurement/inertial-measurement-measure-capability";
+import { UnitSavCapability } from "./capabilities/unit/unit-sav-capability";
+import { WsUnitGetLastComMessageResponse } from "../api/ws/ws-unit-get-last-com-message-response";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -81,7 +83,11 @@ export class Factory {
         return cameraStartRecordResponse;
         break;
 
-   
+      case "WsUnitGetLastComMessageResponse":
+        let unitGetLastComMessageResponse: WsUnitGetLastComMessageResponse = <WsUnitGetLastComMessageResponse>data;
+        return unitGetLastComMessageResponse;
+        break;
+
         
       default:
         console.error("No creation implemtation in facotry for type " + typeName);
@@ -148,6 +154,9 @@ export class Factory {
         break;
       case CapabilityType.InertialMeasurementMeasure:       
         capability = new InertialMeasurementMeasureCapability(settingCapability);
+        break;
+      case CapabilityType.UnitSav:
+        capability = new UnitSavCapability(settingCapability);
         break;
     }
     if (capability == null) {
