@@ -222,7 +222,7 @@
                 }
             }
             catch (Exception ex) {
-                log = "SeamosProtocol : Error when deserialize command " + ex.Message;
+                log = "SeamosProtocol : Error when deserialize command " + ex.Message+" StackTrace "+ex.StackTrace;
                 Log.Error(log);
                 Console.WriteLine(log);
             }

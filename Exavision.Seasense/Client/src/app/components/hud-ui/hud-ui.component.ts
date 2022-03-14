@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { WsCameraStartRecordResponse } from '../../api/ws/ws-camera-start-record-response';
 import { Camera } from '../../materials/camera';
 import { CameraAutoFocusOnePushCapability } from '../../materials/capabilities/camera/camera-auto-focus-one-push-capability';
+import { CameraFocusContinuousCapability } from '../../materials/capabilities/camera/camera-focus-continuous-capability';
 import { CameraZoomContinuousCapability } from '../../materials/capabilities/camera/camera-zoom-continuous-capability';
 import { CapabilityType } from '../../materials/capabilities/capability-type';
 import { LazerMeasurementShootCapability } from '../../materials/capabilities/lazer-measurement/lazer-measurement-shoot-capability';
@@ -97,6 +98,7 @@ export class HudUiComponent implements OnInit, OnDestroy {
       if (this.siteService.selectedCamera != null) {
         this.hasCameraAutoFocusCapability = this.siteService.selectedCamera?.hasCapability(CapabilityType.CameraAutoFocusOnePush);
         this.hasZoomContinuousCapability = this.siteService.selectedCamera.hasCapability(CapabilityType.CameraZoomContinuous);
+        this.hasCameraFocusContinuousCapability = this.siteService.selectedCamera.hasCapability(CapabilityType.CameraFocusContinuous);
         this.hasRecordCapability = true;
         this.hasScreenshotCapability = true;
       }
@@ -247,5 +249,22 @@ export class HudUiComponent implements OnInit, OnDestroy {
     }
 
   }
-
+  onFocusInDown() {
+    if (this.siteService.selectedCamera != null) {
+      let cap: CameraFocusContinuousCapability | undefined = this.siteService.selectedCamera.getCapability<CameraFocusContinuousCapability>(CapabilityType.CameraFocusContinuous);
+      if (cap != null) cap.focusInStart();
+    }
+  }
+  onFocusOutDown() {
+    if (this.siteService.selectedCamera != null) {
+      let cap: CameraFocusContinuousCapability | undefined = this.siteService.selectedCamera.getCapability<CameraFocusContinuousCapability>(CapabilityType.CameraFocusContinuous);
+      if (cap != null) cap.focusOutStart();
+    }
+  }
+  onFocusUp() {
+    if (this.siteService.selectedCamera != null) {
+      let cap: CameraFocusContinuousCapability | undefined = this.siteService.selectedCamera.getCapability<CameraFocusContinuousCapability>(CapabilityType.CameraFocusContinuous);
+      if (cap != null) cap.focusStop();
+    }
+  }
 }

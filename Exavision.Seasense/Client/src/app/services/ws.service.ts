@@ -31,12 +31,14 @@ import { WsUnitGetLastComMessageRequest } from '../api/ws/ws-unit-get-last-com-m
 import { WsUnitExecuteCommandRequest } from '../api/ws/ws-unit-execute-command-request';
 import { WsUnitSetPollingStateRequest } from '../api/ws/ws-unit-set-polling-state-request';
 import { WsUnitGetLastComMessageResponse } from '../api/ws/ws-unit-get-last-com-message-response';
+import { WsCameraFocusOutStartRequest } from '../api/ws/ws-camera-focus-out-start-request';
+import { WsCameraFocusInStartRequest } from '../api/ws/ws-camera-focus-in-start-request';
+import { WsCameraFocusStopRequest } from '../api/ws/ws-camera-focus-stop-request';
 @Injectable({
   providedIn: 'root'
 })
 export class WsService {
- 
-
+  
   public mediaFilesSubject: Subject<MediaFile[]> = new Subject<MediaFile[]>();
   public siteStateSubject: Subject<SiteState> = new Subject<SiteState>();
   public screenshootSubject: Subject<string> = new Subject<string>();
@@ -228,6 +230,48 @@ export class WsService {
     let data: string = JSON.stringify(request);
     this.socket?.send(data);
   }
+
+  cameraFocusOutStart(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraFocusOutStartRequest = {
+      $type: "WsCameraFocusOutStartRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token
+    };
+    console.log("WebSocket send WsCameraFocusOutStartRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);
+  }
+  cameraFocusInStart(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraFocusInStartRequest = {
+      $type: "WsCameraFocusInStartRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token
+     };
+    console.log("WebSocket send WsCameraFocusInStartRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);    
+  }
+  cameraFocusStop(unitId: string, materialId: string) {
+    if (this.userService.token == null) return;
+    let request: WsCameraFocusStopRequest = {
+      $type: "WsCameraFocusStopRequest",
+      unitId: unitId,
+      requestId: uuid.v4(),
+      materialId: materialId,
+      token: this.userService.token
+    };
+    console.log("WebSocket send WsCameraFocusStopRequest");
+    let data: string = JSON.stringify(request);
+    this.socket?.send(data);  
+  }
+
+
 
   turretGyrostabilization(unitId: string, materialId: string, enabled: boolean) {
     if (this.userService.token == null) return;

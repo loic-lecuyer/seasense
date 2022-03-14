@@ -30,7 +30,8 @@ namespace Exavision.Seasense.Materials.Seamos {
             this.Capabilities.Add(new SeamosCameraThorShutterModeCapability(this));
             this.Capabilities.Add(new SeamosCameraThorReticuleModeCapability(this));
             this.Capabilities.Add(new SeamosCameraThorColorModeCapability(this));
-           
+            this.Capabilities.Add(new SeamosCameraThorFocusContinuousCapability(this));
+
         }
         public override MaterialState GetState() {
             MaterialState state = base.GetState();

@@ -33,6 +33,9 @@
     <None Remove="Client\src\app\api\ws\pan-tilt-position.ts" />
     <None Remove="Client\src\app\api\ws\speed-vector.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-auto-focus-one-push-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-focus-in-start-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-focus-out-start-request.ts" />
+    <None Remove="Client\src\app\api\ws\ws-camera-focus-stop-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-screeneshot-request.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-screeneshot-response.ts" />
     <None Remove="Client\src\app\api\ws\ws-camera-start-record-request.ts" />
@@ -59,6 +62,7 @@
     <None Remove="Client\src\app\api\ws\ws-valid-response.ts" />
     <None Remove="Client\src\app\jwt-interceptor.ts" />
     <None Remove="Client\src\app\materials\capabilities\camera\camera-auto-focus-one-push-capability.ts" />
+    <None Remove="Client\src\app\materials\capabilities\camera\camera-focus-continuous-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-absolute-position-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\camera\camera-zoom-continuous-capability.ts" />
     <None Remove="Client\src\app\materials\capabilities\capability-type.ts" />
@@ -170,10 +174,19 @@
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-start-record-request.ts" />
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-screeneshot-response.ts" />
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-screeneshot-request.ts" />
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-focus-in-start-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-focus-out-start-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-out-start-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-zoom-in-start-request.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\api\ws\ws-camera-focus-stop-request.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-error-response.ts">
@@ -227,6 +240,9 @@
     <TypeScriptCompile Include="Client\src\app\api\ws\ws-request.ts" />
     <TypeScriptCompile Include="Client\src\app\interceptor\jwt-interceptor.ts" />
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\camera\camera-auto-focus-one-push-capability.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Client\src\app\materials\capabilities\camera\camera-focus-continuous-capability.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="Client\src\app\materials\capabilities\camera\camera-zoom-continuous-capability.ts">

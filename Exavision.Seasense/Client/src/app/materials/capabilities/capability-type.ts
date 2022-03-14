@@ -6,6 +6,7 @@ export const enum CapabilityType {
   TurretMoveAbsolute = "TurretMoveAbsolute",
   CameraZoomAbsolutePosition = "CameraZoomAbsolutePosition",
   CameraZoomContinuous = "CameraZoomContinuous",
+  CameraFocusContinuous = "CameraFocusContinuous",
   TurretGyrostabilization = "TurretGyrostabilization",
   CameraAutoFocusOnePush = "CameraAutoFocusOnePush",
   LazerMeasurementShootCapability = "LazerMeasurementShootCapability",
