@@ -40,6 +40,7 @@ import { WsCameraStartRecordResponse } from "../api/ws/ws-camera-start-record-re
 import { InertialMeasurementMeasureCapability } from "./capabilities/inertial-measurement/inertial-measurement-measure-capability";
 import { UnitSavCapability } from "./capabilities/unit/unit-sav-capability";
 import { WsUnitGetLastComMessageResponse } from "../api/ws/ws-unit-get-last-com-message-response";
+import { CameraFocusContinuousCapability } from "./capabilities/camera/camera-focus-continuous-capability";
 export class Factory {
 
   createMessage(data: any): WsResponse {
@@ -157,6 +158,9 @@ export class Factory {
         break;
       case CapabilityType.UnitSav:
         capability = new UnitSavCapability(settingCapability);
+        break;
+      case CapabilityType.CameraFocusContinuous:
+        capability = new CameraFocusContinuousCapability(settingCapability);
         break;
     }
     if (capability == null) {

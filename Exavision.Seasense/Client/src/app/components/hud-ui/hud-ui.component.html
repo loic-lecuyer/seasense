@@ -34,12 +34,12 @@
   </app-hud-button>
 
   <!-- Focus Near -->
-  <app-hud-button *ngIf="hasCameraFocusContinuousCapability">
+  <app-hud-button (buttonDown)="onFocusInDown()" (buttonUp)="onFocusUp()" *ngIf="hasCameraFocusContinuousCapability">
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Focus Near" aria-hidden="false" aria-label="Focus Near">portrait</mat-icon>
   </app-hud-button>
 
   <!-- Focus Far -->
-  <app-hud-button *ngIf="hasCameraFocusContinuousCapability">
+  <app-hud-button (buttonDown)="onFocusOutDown()" (buttonUp)="onFocusUp()"  *ngIf="hasCameraFocusContinuousCapability">
     <mat-icon class="hud-button-icon" [inline]="true" matTooltip="Focus Far" aria-hidden="false" aria-label="Focus Far">panorama</mat-icon>
   </app-hud-button>
 

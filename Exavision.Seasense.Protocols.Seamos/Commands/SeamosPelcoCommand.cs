@@ -75,6 +75,8 @@
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
         public byte[] Serialize() {
+            if (MaterialTarget == MaterialTarget.Turret) this.ChannelByte = 0x01;
+            if (MaterialTarget == MaterialTarget.ThermalCamera) this.ChannelByte = 0x02;           
             string data = SeamosProtocol.PROTOCOL_SEAMAOS_START;
             if (this.SystemTarget == SystemTarget.Computer) { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_COMPUTER; }
             else if (this.SystemTarget == SystemTarget.ElectronicCard) { data += SeamosProtocol.PROTOCOL_SEAMAOS_SYSTEM_TARGET_ELECTRONIC_CARD; }

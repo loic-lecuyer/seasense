@@ -108,7 +108,6 @@ namespace Exavision.Seasense.Server.Services {
                 if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
                 capability.MoveSpeed(reqTurretMoveSpeed.Speed.X, reqTurretMoveSpeed.Speed.Y);
                 this.SendValid(request.RequestId, client);
-
             }
             else if (request is WsTurretMoveAbsoluteRequest turretMoveAbsoluteRequest) {
 
@@ -120,11 +119,7 @@ namespace Exavision.Seasense.Server.Services {
                 if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
                 capability.MoveAbsolute(turretMoveAbsoluteRequest.Position.Pan, turretMoveAbsoluteRequest.Position.Tilt);
                 this.SendValid(request.RequestId, client);
-
             }
-
-
-
             else if (request is WsGetStateRequest reqGetState) {
                 SiteState siteState = this.siteService.GetState();
                 siteState.Recordings = this.streamService.GetRecordingStates();
@@ -161,8 +156,35 @@ namespace Exavision.Seasense.Server.Services {
                 capability.ZoomOutStart();
                 this.SendValid(request.RequestId, client);
             }
-
-            else if (request is WsTurretGyrostabilizationRequest turretGyrostabilizationRequest) {
+            
+            else if (request is WsCameraFocusOutStartRequest cameraFocusOutStartRequest) {
+                IUnit unit = this.siteService.FindUnitById(cameraFocusOutStartRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraFocusOutStartRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ICameraFocusContinuousCapability capability = material.GetCapability<ICameraFocusContinuousCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
+                capability.FocusOutStart();
+                this.SendValid(request.RequestId, client);
+            } else if (request is WsCameraFocusInStartRequest cameraFocusInStartRequest) {
+                IUnit unit = this.siteService.FindUnitById(cameraFocusInStartRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraFocusInStartRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ICameraFocusContinuousCapability capability = material.GetCapability<ICameraFocusContinuousCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
+                capability.FocusInStart();
+                this.SendValid(request.RequestId, client);
+            } else if (request is WsCameraFocusStopRequest cameraFocusStopRequest) {
+                IUnit unit = this.siteService.FindUnitById(cameraFocusStopRequest.UnitId);
+                IMaterial material = unit.GetMaterialById(cameraFocusStopRequest.MaterialId);
+                if (unit == null) throw new InvalidOperationException("Invalid unit Id");
+                if (material == null) throw new InvalidOperationException("Invalid material Id");
+                ICameraFocusContinuousCapability capability = material.GetCapability<ICameraFocusContinuousCapability>();
+                if (capability == null) throw new InvalidOperationException("No capability of type ITurretMoveSpeedCapability on material");
+                capability.FocusStop();
+                this.SendValid(request.RequestId, client);
+            } else if (request is WsTurretGyrostabilizationRequest turretGyrostabilizationRequest) {
                 IUnit unit = this.siteService.FindUnitById(turretGyrostabilizationRequest.UnitId);
                 IMaterial material = unit.GetMaterialById(turretGyrostabilizationRequest.MaterialId);
                 if (unit == null) throw new InvalidOperationException("Invalid unit Id");
