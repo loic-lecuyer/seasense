@@ -2,7 +2,7 @@
     /// <summary>
     /// Defines the <see cref="ICameraZoomMinusRequest" />.
     /// </summary>
-    public interface ICameraZoomStopRequest : ISeamosCommand
+    public interface ICameraStopRequest : ISeamosCommand
     {
     }
 }

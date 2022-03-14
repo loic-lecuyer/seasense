@@ -77,7 +77,11 @@
         public void RegisterInstance<T, I>(Func<T> creator, MaterialTarget materialTaret) where T : SeamosCommand, I where I : ICommand {
             Tuple<MaterialTarget, Type> key = new Tuple<MaterialTarget, Type>(materialTaret, typeof(I));
             if (this.commandRepository.ContainsKey(key)) throw new InvalidOperationException("A command for " + typeof(I).Name + " are already registered");
-            this.commandRepository.Add(key, () => { return creator.Invoke(); });
+            this.commandRepository.Add(key, () => {
+                T val = creator.Invoke();
+                val.MaterialTarget = materialTaret;
+                return val;
+            });
         }
 
         /// <summary>
@@ -222,7 +226,7 @@
                 }
             }
             catch (Exception ex) {
-                log = "SeamosProtocol : Error when deserialize command " + ex.Message+" StackTrace "+ex.StackTrace;
+                log = "SeamosProtocol : Error when deserialize command " + ex.Message + " StackTrace " + ex.StackTrace;
                 Log.Error(log);
                 Console.WriteLine(log);
             }
@@ -247,8 +251,12 @@
         /// <returns>The <see cref="SeamosPelcoCommand"/>.</returns>
         private SeamosPelcoCommand DeserializePelco(MaterialTarget materialTarget, string data) {
             byte[] bytes = data.HexStringToBytesArray();
+            if (bytes[0] == 0x01) materialTarget = MaterialTarget.Turret;
+            if (bytes[0] == 0x02) materialTarget = MaterialTarget.ThermalCamera;
+            if (bytes[0] == 0x03) materialTarget = MaterialTarget.Telemeter;
             SeamosPelcoCommand command = this.FindPelcoCommand(materialTarget, bytes);
             command.SetChannel(bytes[0]);
+            command.MaterialTarget = materialTarget;
             command.DataByte1 = bytes[3];
             command.DataByte2 = bytes[4];
             return command;
@@ -261,15 +269,20 @@
         /// <param name="bytes">The bytes<see cref="byte[]"/>.</param>
         /// <returns>The <see cref="SeamosPelcoCommand"/>.</returns>
         private SeamosPelcoCommand FindPelcoCommand(MaterialTarget materialTarget, byte[] bytes) {
+
             Tuple<byte, byte, MaterialTarget> key = new Tuple<byte, byte, MaterialTarget>(bytes[1], bytes[2], materialTarget);
             if (!this.bufferePelcoCommands.ContainsKey(key)) {
                 foreach (KeyValuePair<Tuple<MaterialTarget, Type>, Func<SeamosCommand>> val in this.commandRepository) {
                     SeamosCommand command = val.Value.Invoke();
                     if (command is SeamosPelcoCommand) {
                         SeamosPelcoCommand cmd = command as SeamosPelcoCommand;
-                        if (cmd.CommandByte1.Equals(key.Item1) && cmd.CommandByte2.Equals(key.Item2) && cmd.MaterialTarget == materialTarget) {
-                            this.bufferePelcoCommands.Add(key, val.Value);
+                        if (cmd.CommandByte1.Equals(key.Item1) && cmd.CommandByte2.Equals(key.Item2)) {
+                            if (cmd.MaterialTarget == materialTarget) {
+                                this.bufferePelcoCommands.Add(key, val.Value);
+                            }
                         }
+
+
                     }
                 }
             }

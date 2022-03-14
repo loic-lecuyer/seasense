@@ -2,7 +2,7 @@
 using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
 
 namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
-    public class SeamosCameraZoomStopRequest : SeamosPelcoCommand, ICameraZoomStopRequest
+    public class SeamosCameraStopRequest : SeamosPelcoCommand, ICameraStopRequest
     {
         /// <summary>
         /// Gets the CommandByte1.
