@@ -1,6 +1,5 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos {
     using Exavision.Seasense.Core.Extensions;
-    using Exavision.Seasense.Core.Network;
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Standard.Turret;
     using Exavision.Seasense.Shared.Protocols;
@@ -55,7 +54,7 @@
             this.bufferedSeamosCommands = new Dictionary<Tuple<byte, byte, MaterialTarget>, Func<SeamosCommand>>();
             this.bufferePelcoCommands = new Dictionary<Tuple<byte, byte, MaterialTarget>, Func<SeamosCommand>>();
         }
-        
+
         /// <summary>
         /// The RegisterType.
         /// </summary>
