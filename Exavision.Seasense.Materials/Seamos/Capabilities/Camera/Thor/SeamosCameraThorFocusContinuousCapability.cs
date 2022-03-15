@@ -14,7 +14,6 @@ namespace Exavision.Seasense.Materials.Seamos.Capabilities.Camera.Thor {
             ICameraFocusPlusContinuousRequest request = this.camera.Unit.Protocol.Resolve<ICameraFocusPlusContinuousRequest>(MaterialTarget.ThermalCamera);
             request.SystemTarget = SystemTarget.ElectronicCard;
             request.MaterialTarget = MaterialTarget.ThermalCamera;
-
             this.camera.Unit.Client.Send(request);
         }
 

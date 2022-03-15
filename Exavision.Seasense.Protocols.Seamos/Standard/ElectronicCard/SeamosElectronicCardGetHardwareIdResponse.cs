@@ -3,13 +3,13 @@
     using Exavision.Seasense.Protocols.Seamos.Commands.ElectronicCard;
     using Serilog;
     using System;
+    using System.Collections.Generic;
     using System.Text;
 
     /// <summary>
     /// Defines the <see cref="SeamosElectronicCardGetHardwareIdResponse" />.
     /// </summary>
-    public class SeamosElectronicCardGetHardwareIdResponse : SeamosPascalCommand, IElectronicCardGetHardwareIdResponse
-    {
+    public class SeamosElectronicCardGetHardwareIdResponse : SeamosPascalCommand, IElectronicCardGetHardwareIdResponse {
         /// <summary>
         /// Gets or sets the HardwareId.
         /// </summary>
@@ -31,14 +31,12 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
-            int length = Math.Min(15, data.Length);
+        public override void DeserializeBytes(byte[] data) {
+            int length = Math.Min(0, data.Length);
             byte[] info = new byte[length];
             Array.Copy(data, info, length);
             this.HardwareId = Encoding.ASCII.GetString(info);
-            if (length < 15)
-            {
+            if (length < 15) {
                 string log = "SeamosGetEletronicCardHardwareIdResponse invalid length " + length;
                 Log.Warning(log);
             }
@@ -48,9 +46,12 @@
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
-            throw new NotImplementedException();
+        public override byte[] SerializeBytes() {
+            if (this.HardwareId == null) this.HardwareId = "1.0";
+            List<byte> result = new List<byte>(new byte[] { CommandByte1, CommandByte2 });
+            result.AddRange(Encoding.ASCII.GetBytes(this.HardwareId));
+            return result.ToArray();
+
         }
     }
 }

@@ -128,6 +128,23 @@
         }
 
         /// <summary>
+        /// The Resolve.
+        /// </summary>
+        /// <typeparam name="I">.</typeparam>
+        /// <param name="materialTaret">The materialTaret<see cref="MaterialTarget"/>.</param>
+        /// <returns>The <see cref="I"/>.</returns>
+        public List<ISeamosCommand> ResolveAll(MaterialTarget materialTaret) {
+            List<ISeamosCommand> commands = new List<ISeamosCommand>();
+            foreach (KeyValuePair<Tuple<MaterialTarget, Type>, Func<SeamosCommand>> key in commandRepository) {
+                if (key.Key.Item1 == materialTaret) {
+                    commands.Add(key.Value.Invoke());
+                }
+            }
+            return commands;
+
+        }
+
+        /// <summary>
         /// The Serialize.
         /// </summary>
         /// <param name="command">The command<see cref="ISeamosCommand"/>.</param>
@@ -255,6 +272,7 @@
             if (bytes[0] == 0x02) materialTarget = MaterialTarget.ThermalCamera;
             if (bytes[0] == 0x03) materialTarget = MaterialTarget.Telemeter;
             SeamosPelcoCommand command = this.FindPelcoCommand(materialTarget, bytes);
+            if (command == null) return null;
             command.SetChannel(bytes[0]);
             command.MaterialTarget = materialTarget;
             command.DataByte1 = bytes[3];
@@ -270,29 +288,36 @@
         /// <returns>The <see cref="SeamosPelcoCommand"/>.</returns>
         private SeamosPelcoCommand FindPelcoCommand(MaterialTarget materialTarget, byte[] bytes) {
 
-            Tuple<byte, byte, MaterialTarget> key = new Tuple<byte, byte, MaterialTarget>(bytes[1], bytes[2], materialTarget);
-            if (!this.bufferePelcoCommands.ContainsKey(key)) {
-                foreach (KeyValuePair<Tuple<MaterialTarget, Type>, Func<SeamosCommand>> val in this.commandRepository) {
-                    SeamosCommand command = val.Value.Invoke();
-                    if (command is SeamosPelcoCommand) {
-                        SeamosPelcoCommand cmd = command as SeamosPelcoCommand;
-                        if (cmd.CommandByte1.Equals(key.Item1) && cmd.CommandByte2.Equals(key.Item2)) {
-                            if (cmd.MaterialTarget == materialTarget) {
-                                this.bufferePelcoCommands.Add(key, val.Value);
+            try {
+                Tuple<byte, byte, MaterialTarget> key = new Tuple<byte, byte, MaterialTarget>(bytes[1], bytes[2], materialTarget);
+                if (!this.bufferePelcoCommands.ContainsKey(key)) {
+                    foreach (KeyValuePair<Tuple<MaterialTarget, Type>, Func<SeamosCommand>> val in this.commandRepository) {
+                        SeamosCommand command = val.Value.Invoke();
+                        if (command is SeamosPelcoCommand) {
+                            SeamosPelcoCommand cmd = command as SeamosPelcoCommand;
+                            if (cmd.CommandByte1.Equals(key.Item1) && cmd.CommandByte2.Equals(key.Item2)) {
+                                if (cmd.MaterialTarget == materialTarget) {
+                                    this.bufferePelcoCommands.Add(key, val.Value);
+                                }
                             }
+
+
                         }
-
-
                     }
                 }
+                if (!this.bufferePelcoCommands.ContainsKey(key)) {
+                    throw new ArgumentException("No command Registered for command Bytes " + key.Item1 + " " + key.Item2);
+                }
+                SeamosPelcoCommand pelcoCommand = (SeamosPelcoCommand)this.bufferePelcoCommands[key].Invoke();
+                pelcoCommand.MaterialTarget = materialTarget;
+                pelcoCommand.ChannelByte = bytes[0];
+                return pelcoCommand;
             }
-            if (!this.bufferePelcoCommands.ContainsKey(key)) {
-                throw new ArgumentException("No command Registered for command Bytes " + key.Item1 + " " + key.Item2);
+            catch (Exception ex) {
+                Log.Error("Can't find PascalPelcoCommand " + ex.Message + " " + ex.StackTrace);
+                return null;
             }
-            SeamosPelcoCommand pelcoCommand = (SeamosPelcoCommand)this.bufferePelcoCommands[key].Invoke();
-            pelcoCommand.MaterialTarget = materialTarget;
-            pelcoCommand.ChannelByte = bytes[0];
-            return pelcoCommand;
+
         }
 
         /// <summary>
@@ -302,24 +327,31 @@
         /// <param name="commandByte">The commandByte<see cref="byte"/>.</param>
         /// <returns>The <see cref="SeamosPascalCommand"/>.</returns>
         private SeamosPascalCommand FindPascalCommand(MaterialTarget materialTarget, byte commandByte1, byte commandByte2) {
-            Tuple<byte, byte, MaterialTarget> key = new Tuple<byte, byte, MaterialTarget>(commandByte1, commandByte2, materialTarget);
-            if (!this.bufferedSeamosCommands.ContainsKey(key)) {
-                foreach (KeyValuePair<Tuple<MaterialTarget, Type>, Func<SeamosCommand>> val in this.commandRepository) {
-                    SeamosCommand command = val.Value.Invoke();
-                    if (command is SeamosPascalCommand) {
-                        SeamosPascalCommand cmd = command as SeamosPascalCommand;
-                        if (cmd.CommandByte1.Equals(commandByte1) && cmd.CommandByte2.Equals(commandByte2) && cmd.MaterialTarget == materialTarget) {
-                            this.bufferedSeamosCommands.Add(key, val.Value);
+            try {
+                Tuple<byte, byte, MaterialTarget> key = new Tuple<byte, byte, MaterialTarget>(commandByte1, commandByte2, materialTarget);
+                if (!this.bufferedSeamosCommands.ContainsKey(key)) {
+                    foreach (KeyValuePair<Tuple<MaterialTarget, Type>, Func<SeamosCommand>> val in this.commandRepository) {
+                        SeamosCommand command = val.Value.Invoke();
+                        if (command is SeamosPascalCommand) {
+                            SeamosPascalCommand cmd = command as SeamosPascalCommand;
+                            if (cmd.CommandByte1.Equals(commandByte1) && cmd.CommandByte2.Equals(commandByte2) && cmd.MaterialTarget == materialTarget && !this.bufferedSeamosCommands.ContainsKey(key)) {
+                                this.bufferedSeamosCommands.Add(key, val.Value);
+                            }
                         }
                     }
                 }
+                if (!this.bufferedSeamosCommands.ContainsKey(key)) {
+                    throw new ArgumentException("No command Registered for command Bytes " + commandByte1.ToString("X2") + " " + commandByte2.ToString("X2"));
+                }
+                SeamosPascalCommand pascalCommand = (SeamosPascalCommand)this.bufferedSeamosCommands[key].Invoke();
+                pascalCommand.MaterialTarget = materialTarget;
+                return pascalCommand;
             }
-            if (!this.bufferedSeamosCommands.ContainsKey(key)) {
-                throw new ArgumentException("No command Registered for command Bytes " + commandByte1.ToString("X2") + " " + commandByte2.ToString("X2"));
+            catch (Exception ex) {
+                Log.Error("Error when find FindPascalCommand " + ex.Message + " " + ex.StackTrace);
+                return null;
             }
-            SeamosPascalCommand pascalCommand = (SeamosPascalCommand)this.bufferedSeamosCommands[key].Invoke();
-            pascalCommand.MaterialTarget = materialTarget;
-            return pascalCommand;
+
         }
 
         /// <summary>

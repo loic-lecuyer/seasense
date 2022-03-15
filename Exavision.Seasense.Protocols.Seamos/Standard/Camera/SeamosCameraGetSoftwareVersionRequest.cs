@@ -5,8 +5,7 @@
     /// <summary>
     /// Defines the <see cref="SeamosCameraGetSoftwareVersionRequest" />.
     /// </summary>
-    public class SeamosCameraGetSoftwareVersionRequest : SeamosPascalCommand, ICameraGetSoftwareVersionRequest
-    {
+    public class SeamosCameraGetSoftwareVersionRequest : SeamosPascalCommand, ICameraGetSoftwareVersionRequest {
         /// <summary>
         /// Gets the CommandByte.
         /// </summary>
@@ -21,17 +20,15 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
+        public override void DeserializeBytes(byte[] data) {
         }
 
         /// <summary>
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
-            return new byte[] { this.CommandByte2 };
+        public override byte[] SerializeBytes() {
+            return new byte[] { this.CommandByte1, this.CommandByte2 };
         }
     }
 }

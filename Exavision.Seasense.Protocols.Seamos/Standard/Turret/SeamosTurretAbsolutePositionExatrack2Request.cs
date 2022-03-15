@@ -5,8 +5,7 @@
     /// <summary>
     /// Defines the <see cref="SeamosTurretAbsolutePositionExatrack1Request" />.
     /// </summary>
-    public class SeamosTurretAbsolutePositionExatrack2Request : SeamosExatrack2Command, ITurretSetPositionExatrack2Absolute
-    {
+    public class SeamosTurretAbsolutePositionExatrack2Request : SeamosExatrack2Command, ITurretSetPositionExatrack2Absolute {
         /// <summary>
         /// Gets or sets the MaterialTarget.
         /// </summary>

@@ -1,5 +1,5 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Camera {
-   
+
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Camera;
     using Exavision.Seasense.Protocols.Seamos.Enums;
@@ -7,8 +7,7 @@
     /// <summary>
     /// Defines the <see cref="SeamosCameraGetStateResponse" />.
     /// </summary>
-    public class SeamosCameraGetStateResponse : SeamosPascalCommand, ICameraGetStateResponse
-    {
+    public class SeamosCameraGetStateResponse : SeamosPascalCommand, ICameraGetStateResponse {
         /// <summary>
         /// Gets the CommandByte.
         /// </summary>
@@ -29,10 +28,9 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
+        public override void DeserializeBytes(byte[] data) {
             ThorState result = (ThorState)data[0];
-           
+
             this.State = result;
         }
 
@@ -40,9 +38,8 @@
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
-            return new byte[] { };
+        public override byte[] SerializeBytes() {
+            return new byte[] { this.CommandByte1, this.CommandByte2 };
         }
     }
 }

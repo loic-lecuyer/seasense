@@ -7,8 +7,7 @@
     /// <summary>
     /// Defines the <see cref="SeamosTelemeterGetVersionResponse" />.
     /// </summary>
-    public class SeamosTelemeterGetVersionResponse : SeamosPascalCommand, ITelemeterGetVersionResponse
-    {
+    public class SeamosTelemeterGetVersionResponse : SeamosPascalCommand, ITelemeterGetVersionResponse {
         /// <summary>
         /// Gets or sets the Message.
         /// </summary>
@@ -29,8 +28,7 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
+        public override void DeserializeBytes(byte[] data) {
             this.Message = Encoding.ASCII.GetString(data);
         }
 
@@ -38,9 +36,8 @@
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
-            throw new NotImplementedException();
+        public override byte[] SerializeBytes() {
+            return Encoding.ASCII.GetBytes(this.GetType().Assembly.GetName().Version.ToString());
         }
     }
 }

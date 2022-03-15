@@ -1,13 +1,11 @@
 ﻿namespace Exavision.Seasense.Protocols.Seamos.Standard.Telemeter {
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Telemeter;
-    using System;
 
     /// <summary>
     /// Defines the <see cref="SeamosTelemeterExitTestModeRequest" />.
     /// </summary>
-    public class SeamosTelemeterExitTestModeRequest : SeamosPascalCommand, ITelemeterExitTestModeRequest
-    {
+    public class SeamosTelemeterExitTestModeRequest : SeamosPascalCommand, ITelemeterExitTestModeRequest {
         /// <summary>
         /// Gets or sets the MaterialTarget.
         /// </summary>
@@ -24,17 +22,15 @@
         /// The DeserializeBytes.
         /// </summary>
         /// <param name="data">The data<see cref="byte[]"/>.</param>
-        public override void DeserializeBytes(byte[] data)
-        {
-            throw new NotImplementedException();
+        public override void DeserializeBytes(byte[] data) {
+
         }
 
         /// <summary>
         /// The SerializeBytes.
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
-        public override byte[] SerializeBytes()
-        {
+        public override byte[] SerializeBytes() {
             return new byte[] { CommandByte1, CommandByte2 };
         }
     }
