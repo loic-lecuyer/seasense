@@ -13,7 +13,7 @@
         /// <summary>
         /// Gets or sets the HardwareId.
         /// </summary>
-        public string HardwareId { get; set; }
+        public string HardwareId { get; set; } = "";
 
         /// <summary>
         /// Gets the CommandByte.
@@ -47,7 +47,7 @@
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
         public override byte[] SerializeBytes() {
-            if (this.HardwareId == null) this.HardwareId = "1.0";
+
             List<byte> result = new List<byte>(new byte[] { CommandByte1, CommandByte2 });
             result.AddRange(Encoding.ASCII.GetBytes(this.HardwareId));
             return result.ToArray();

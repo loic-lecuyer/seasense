@@ -69,13 +69,11 @@
             this.RegisterType<SeamosCameraGetStateResponse, ICameraGetStateResponse>(MaterialTarget.ThermalCamera);
             this.RegisterInstance<SeamosCameraSetFovMode0Request, ICameraSetFovMode0Request>(() => new SeamosCameraSetFovMode0Request() { ChannelByte = 0x02 }, MaterialTarget.ThermalCamera);
             this.RegisterInstance<SeamosCameraSetFovMode1Request, ICameraSetFovMode1Request>(() => new SeamosCameraSetFovMode1Request() { ChannelByte = 0x02 }, MaterialTarget.ThermalCamera);
-            this.RegisterType<SeamosCameraSetClaheRequest, ICameraSetClaheRequest>(MaterialTarget.ThermalCamera);
+           
             this.RegisterType<SeamosCameraGetClaheRequest, ICameraGetClaheRequest>(MaterialTarget.ThermalCamera);
             this.RegisterType<SeamosCameraGetClaheResponse, ICameraGetClaheResponse>(MaterialTarget.ThermalCamera);
-            this.RegisterType<SeamosCameraSetClaheClipRequest, ICameraSetClaheClipRequest>(MaterialTarget.ThermalCamera);
             this.RegisterType<SeamosCameraGetClaheClipRequest, ICameraGetClaheClipRequest>(MaterialTarget.ThermalCamera);
-            this.RegisterType<SeamosCameraGetClaheClipResponse, ICameraGetClaheClipResponse>(MaterialTarget.ThermalCamera);
-            this.RegisterType<SeamosCameraSetClaheGridSizeRequest, ICameraSetClaheGridSizeRequest>(MaterialTarget.ThermalCamera);
+            this.RegisterType<SeamosCameraGetClaheClipResponse, ICameraGetClaheClipResponse>(MaterialTarget.ThermalCamera);         
             this.RegisterType<SeamosCameraGetClaheGridSizeRequest, ICameraGetClaheGridSizeRequest>(MaterialTarget.ThermalCamera);
             this.RegisterType<SeamosCameraGetClaheGridSizeResponse, ICameraGetClaheGridSizeResponse>(MaterialTarget.ThermalCamera);
             // Commandes centrale intertiel

@@ -13,7 +13,7 @@
         /// <summary>
         /// Gets or sets the SoftwareVersion.
         /// </summary>
-        public string SoftwareVersion { get; set; }
+        public string SoftwareVersion { get; set; } = "";
 
         /// <summary>
         /// Gets the CommandByte.
@@ -47,7 +47,7 @@
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
         public override byte[] SerializeBytes() {
-            if (this.SoftwareVersion == null) this.SoftwareVersion = "1.0";
+
             List<byte> result = new List<byte>(new byte[] { CommandByte1, CommandByte2 });
             result.AddRange(Encoding.ASCII.GetBytes(this.SoftwareVersion));
             return result.ToArray();

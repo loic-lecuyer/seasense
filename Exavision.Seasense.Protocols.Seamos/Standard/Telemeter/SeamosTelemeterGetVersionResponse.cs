@@ -2,6 +2,7 @@
     using Exavision.Seasense.Protocols.Seamos.Commands;
     using Exavision.Seasense.Protocols.Seamos.Commands.Telemeter;
     using System;
+    using System.Collections.Generic;
     using System.Text;
 
     /// <summary>
@@ -11,7 +12,7 @@
         /// <summary>
         /// Gets or sets the Message.
         /// </summary>
-        public String Message { get; set; }
+        public String Message { get; set; } = "";
 
         /// <summary>
         /// Gets or sets the MaterialTarget.
@@ -27,8 +28,16 @@
         /// <summary>
         /// The DeserializeBytes.
         /// </summary>
+      
         /// <param name="data">The data<see cref="byte[]"/>.</param>
         public override void DeserializeBytes(byte[] data) {
+
+            /// @TODO : Very strange hack !!!
+            if (data.Length > 0) {
+                byte[] reduced = new byte[data.Length - 1];
+                Array.Copy(data, reduced, reduced.Length);
+                data = reduced;
+            }
             this.Message = Encoding.ASCII.GetString(data);
         }
 
@@ -37,7 +46,11 @@
         /// </summary>
         /// <returns>The <see cref="byte[]"/>.</returns>
         public override byte[] SerializeBytes() {
-            return Encoding.ASCII.GetBytes(this.GetType().Assembly.GetName().Version.ToString());
+            List<byte> data = new List<byte>();
+            data.Add(CommandByte1);
+            data.Add(CommandByte2);
+            data.AddRange( Encoding.ASCII.GetBytes(this.Message));
+            return data.ToArray();
         }
     }
 }

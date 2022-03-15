@@ -370,6 +370,7 @@
             if (command != null) {
 
                 byte[] bytesArray = data.HexStringToBytesArray();
+                // Remove two command byte and checksum
                 byte[] dataBytes = new byte[bytesArray.Length - 2];
                 Array.Copy(bytesArray, 2, dataBytes, 0, dataBytes.Length);
                 command.DeserializeBytes(dataBytes);
